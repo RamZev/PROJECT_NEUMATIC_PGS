@@ -1,0 +1,127 @@
+<!-- neumatic\apps\maestros\templates\maestros\moneda_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Moneda" 
+												aria-expanded="true" 
+												aria-controls="Información_Moneda">
+												<strong>Información Moneda</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Moneda">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_moneda.id_for_label }}">
+															{{ form.estatus_moneda.label }}
+														</label>
+														{{ form.estatus_moneda }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_moneda.id_for_label }}">
+															{{ form.nombre_moneda.label }}
+														</label>
+														{{ form.nombre_moneda }}
+													</div>
+													
+													<div class="col-md-1">
+														<label class="form-label text-primary mb-0" for="{{ form.simbolo_moneda.id_for_label }}">
+															{{ form.simbolo_moneda.label }}
+														</label>
+														{{ form.simbolo_moneda }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cotizacion_moneda.id_for_label }}">
+															{{ form.cotizacion_moneda.label }}
+														</label>
+														{{ form.cotizacion_moneda }}
+													</div>
+													
+													<div class="col-md-1">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_afip.id_for_label }}">
+															{{ form.ws_afip.label }}
+														</label>
+														{{ form.ws_afip }}
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.predeterminada }}
+																{{ form.predeterminada.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}

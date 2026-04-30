@@ -1,0 +1,81 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\tarjetarecibo_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th></th>
+				<th>Fecha</th>
+				<th class="numeric" style="padding-right: 15px">Cupón</th>
+				<th class="numeric" style="padding-right: 15px">Lote</th>
+				<th class="numeric" style="padding-right: 15px">Cuotas</th>
+				<th>Comprobante</th>
+				<th class="numeric" style="padding-right: 15px">Importe</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for tarjeta, datos in objetos.items %}
+				<!-- Tarjeta -->
+				<tr>
+					<td colspan="7" style="padding-top: 5px;">
+						<strong>{{ tarjeta }}</strong>
+					</td>
+				</tr>
+				
+				{% for cupon in datos.cupones %}
+					<tr>
+						<td></td>
+						<td>{{ cupon.id_factura__fecha_comprobante|date:"d/m/Y" }}</td>
+						<td class="numeric" style="padding-right: 15px">{{ cupon.cupon }}</td>
+						<td class="numeric" style="padding-right: 15px">{{ cupon.lote }}</td>
+						<td class="numeric" style="padding-right: 15px">{{ cupon.cuotas }}</td>
+						<td style="white-space: pre;">{{ cupon.comprobante_completo }}</td>
+						<td class="numeric">{{ cupon.importe_tarjeta|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				<!-- Total por tipo de Tarjeta -->
+				<tr>
+					<td colspan="6" style="text-align: right;"><strong>Total Tarjeta {{ tarjeta}}:</strong></td>
+					<td class="numeric"><strong>{{ datos.subtotal|formato_es_ar }}</strong></td>
+				</tr>
+				<tr>
+					<td colspan="7"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="6" style="text-align: right;"><strong>Total General:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>			
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

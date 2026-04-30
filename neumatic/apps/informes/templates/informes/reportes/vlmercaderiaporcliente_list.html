@@ -1,0 +1,72 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlmercaderiaporcliente_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th>Marca</th>
+				<th>Medida</th>
+				<th>Código</th>
+				<th>Descripción</th>
+				<th class="numeric">Cantidad</th>
+				<th class="numeric">Precio</th>
+				<th class="numeric">Desc.</th>
+				<th class="numeric">Total</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{% for productos in objetos.values %}
+				<!-- Fila con los datos del comprobante -->
+				<tr>
+					<td colspan="8" style="padding-top: 5px;">
+						<strong>{{ productos.0.nombre_comprobante_venta }}</strong> 
+						<strong>{{ productos.0.numero }}</strong> 
+						<strong>{{ productos.0.fecha_comprobante|date:"d/m/Y" }}</strong> 
+					</td>
+				</tr>
+				<!-- Filas con el detalle del comprobante -->
+				{% for producto in productos %}
+					<tr>
+						<td>{{ producto.nombre_producto_marca }}</td>
+						<td>{{ producto.medida }}</td>
+						<td>{{ producto.id_producto_id }}</td>
+						<td>{{ producto.nombre_producto }}</td>
+						<td class="numeric">{{ producto.cantidad|formato_es_ar }}</td>
+						<td class="numeric">{{ producto.precio|formato_es_ar }}</td>
+						<td class="numeric">{{ producto.descuento|formato_es_ar }}</td>
+						<td class="numeric">{{ producto.total|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				
+				<tr>
+					<td colspan="8"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			
+		</tbody>
+	</table>
+{% endblock content %}

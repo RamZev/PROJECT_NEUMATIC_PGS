@@ -1,0 +1,189 @@
+===================================================
+Actualizar Estados de Productos - Consideraciones 
+===================================================
+- Si el CAI no existe en medidas_estados, cuál sería el estado por defecto? DSIPONIBLE o FALTANTES?
+- Todo produto ("P") con CAI debe tener un registro en medidas_estados? porque no están todos en medidas_estados.
+
+
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+REPORTES DE CAJA
+/* 3er. Reporte: Todos los comprobantes (Contado y Cta. Cte.) es el que se emplea en "Planilla de Caja -> Imprimir detalle de Comprobantes"
+   "3.- Esta consulta es igual a la anterior, pero incluye todos los comprobantes sin diferencias condición y no estadísticas." */
+
+--CREATE VIEW vlCajaComprobantesTodos AS
+SELECT factura.id_factura,
+	factura.compro, factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, factura.nombre_factura, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total, factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, factura.no_estadist
+FROM factura
+	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	LEFT JOIN usuarios_user ON factura.id_user_id = usuarios_user.id
+	LEFT JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE comprobante_venta.mult_caja <> 0 
+	AND factura.no_estadist = False
+	AND caja.numero_caja = 1001963
+ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+SELECT 
+	comprobante_venta.nombre_comprobante_venta AS 'Comprobante',
+	factura.letra_comprobante, factura.numero_comprobante, factura.fecha_comprobante,
+	factura.id_cliente_id, cliente.nombre_cliente, factura.condicion_comprobante,
+	factura.total*comprobante_venta.mult_caja AS total,
+	factura.id_user_id, usuarios_user.iniciales,
+	factura.id_sucursal_id, sucursal.nombre_sucursal
+FROM factura
+	INNER JOIN comprobante_venta ON factura.id_comprobante_venta_id = comprobante_venta.id_comprobante_venta
+	INNER JOIN cliente ON factura.id_cliente_id = cliente.id_cliente
+	INNER JOIN sucursal ON factura.id_sucursal_id = sucursal.id_sucursal
+	LEFT JOIN usuarios_user ON factura.id_user_id = usuarios_user.id
+	LEFT JOIN caja ON factura.id_caja_id = caja.id_caja
+WHERE comprobante_venta.mult_caja <> 0 
+	AND factura.no_estadist = False
+	--AND caja.numero_caja = 1001963
+	AND caja.numero_caja = 1001668
+ORDER by factura.compro, factura.letra_comprobante, factura.numero_comprobante
+
+
+-- Script para comprobar los comprobates sin id_caja.
+SELECT 
+	f.id_factura, f.compro, f.letra_comprobante, f.numero_comprobante, f.fecha_comprobante, f.total,
+	f.id_caja_id, c.numero_caja, f.id_sucursal_id, cv.mult_caja
+FROM factura f
+	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+	LEFT JOIN caja c ON f.id_caja_id = c.id_caja
+WHERE 
+	cv.mult_caja <> 0
+	AND f.id_sucursal_id = 1
+	AND fecha_comprobante = '2024-10-08'
+ORDER by f.compro, f.letra_comprobante,f.numero_comprobante
+
+##################################################################################################################################
+##################################################################################################################################
+##################################################################################################################################
+
+
+--------------------------------------------------------
+Para los reportes de Caja se necesita:
+*- Migrar los datos de cheque_recibo <== cheques.dbf
+*- Migrar los datos de tarjeta_recibo <== cuponestarj.dbf
+*- Migrar los datos de banco <== codbco.dbf
+
+- Asociar la caja a los comprobantes.
+  Todavía hay comprobantes que no tienen su caja asociada.
+*- Agregar campo booleano en cheque_recibo para indicar si el cheque es Electrónico y 
+   contemplar este dato en la migración.
+*- Crear campo compensa_factura en Factura y considerarlo en el formulario y procesamiento(vistas)
+   contemplar este dato en la migración (desde mediopagos.dbf).
+
+--------------------------------------------------------
+
+Caja (Pendiente):
+*- Reporte Detalle Cheques por rango de fechas (unificado)
+*- Considerar la sucursal del usuario autenticado y su jerarquía.
+*- Terminar reporte Planila de Caja.
+
+Otros:
+·- Considerar campo estatus en las búsquedas, listados y filtros.
+*- No permitir establecer más de 1 moneda como predeterminada.
+- No se ha migrado tipo_percep_ib desde tpercib.dbf
+·- Revisar migración de producto_minimo
+- CajaDetalle: Falta migrar id_forma_pago desde la tabla cajadetalle.dbf
+
+
+Preguntas:
+*- Se permite generar los reportes de cajas abiertas?
+	Si
+*- El orden el Planilla de Caja: Encabezado, Resumen y Detalle.
+	Indistinto
+*- El orden en el Detalle de Planilla de Caja.
+	Indistinto
+*- Los Medios o Formas de Pago en el Resumen.
+
+*- En el reporte Remitos Pendientes estoy mostrando los presupuestos que no afectan el Stock y se muestra el Total en 0 (cero).
+   Se deben mostrar o solo los comprobantes cuyo total sea diferente a cero?
+
+- En el Reporte de Resumen de Cta. Cte. filtrado por "Resumen de Cuenta Pendiente" en el sistema nuevo obliga indicar un cliente, en VFP no.
+
+
+##################################################################################################################################
+-- Script para reemplazar los valores NULL por 0.0 en stock_cliente
+UPDATE stock_cliente SET retirado = 0.0 WHERE retirado is NULL;
+
+##################################################################################################################################
+Comparación de Reportes con VPN
+
+ [Complejo]
+ 1 - Resumen de Ventas por Provincias (Resumen de Ventas I. Brutos MercadoLibre): 
+	- No cuadran los montos.
+
+# [Resuelto] Algunas consultas no cuadran.
+#  2 - Comprobantes Vencidos (VLComprobantesVencidos): 
+# 	- Cuál es el criterio del filtro en la consulta.
+# 	* Esperar a SQL Server
+
+# [Resuelto] En la VPV: Para todas las sucursales Detallado coincide, Provincias y SITRIB no son consistentes.
+#  3 - Libro IVA (VLIVAVentasProvincias y VLIVAVentasSitrib):
+# 	- Coinciden los totales pero no las provincias.
+# 	* Correcto
+# 	* Cuando se selecciona un sucursal todos cuadran, en caso contrario no.
+
+# [Resuelto] En la VPN creo que falla la agrupación, falta mostrar comprobantes.
+#  4 - Percepción x Sub Cuenta - Detallado (VLPercepIBSubcuentaDetallado):
+# 	- No cuadran, en el nuevo muestra más comprobantes.
+# 	* Correcto
+	
+[Resuelto] En la VPN aparecen menos que en el nuevo.
+ 5 - Reposición de Stock (vlreposicionstock):
+	- Están duplicados los registros en producto_minimo.
+	- No cuadran todos.
+	- Corregida la consulta.
+	* REvisar con mas detenimiento (Excel)
+
+# [No Resuelto] Todas las sucursales coincide; por sucursal no. Posiblemente sea el criterio de agrupación.
+#  6 - Stock en Depósito de Cliente (vlstockdeposito):
+# 	- No cuadran las cantidades y los productos (Posiblemente sea por LEFT JOIN con producto_cai).
+# 	* Chequear depues de la migración a SQL Server
+
+# [No Resuelto] Hay cajas que no coinciden, en el nuevo hay más detalles.
+#  7 - Egresos de Caja:
+# 	- No coinciden los comprobantes.
+# 	* Revisar cuiando migracion SQL
+# 	* La diferencia es por el filtro idventas=-2 vs tipo_movimiento=2
+	
+# [Resuelto] Agrupado por Modelo, en el VPN se está agrupando además por familia (Fam+Mod+Mar)
+#  8 - Estadísticas de Ventas por Vendedor:
+# 	- No coincien por agrupación por Modelo. En el nuevo está correcto (Mod+Mar).
+# 	* Listo. Demostrado.
+
+# [Resuelto] Aclarar cómo se calcula la columna "Compra" y si debe ser "Precio" o "Costo".
+#  9 - Estadísticas Ventas x Marca y Familia:
+# 	- No coinciden los valores de la columna Compra.
+# 	* Resuelto. Se utilizan los datos de detalle de factura y no de producto.
+#   - Confirmar luego si es el campo df.precio o df.costo!!!
+
+# [Resuelto] He actualizado la fórmula para al cálculo.
+# 10 - Estadísticas Ventas Marcas-Familia x Vendedor (VLEstadisticasVentasMarcaVendedor):
+# 	- Confirmar formula "total" y costo/precio.
+# 	* Resuelto. Se utilizan los datos de detalle de factura y no de producto.
+
+# [Resuelto] Creo que la diferencia es por el archivo provincia que es distinto al de la VPN.
+# 11 - Estadísticas Ventas x Provincias:
+# 	- Cuadran los montos pero no la distribución del detalle.
+# 	* Revisar despues de migracion a SQL
+
+# [Resuelto] El nuevo si contempla el filtro de "Solo comprobantes impositivos" o No
+# 12 - Tablas Dinámicas - para Estadísticas:
+# 	- En la VPN ingnora el checkbox (solo comprobantes impositivos).
+# 	* Listo, demostrado.
+
+# 13 - Hay 42 registros en medidas_estados con id_cai_id en NULL.
+
+##################################################################################################################################

@@ -1,0 +1,16 @@
+[
+    {
+        "cotizacion_dolar": 0,
+        "descuento_maximo": 0,
+        "dias_vencimiento": 0,
+        "estacion": "ESTACION03",
+        "estatus_parametro": 1,
+        "fcontrol": "",
+        "id_empresa_id": 1,
+        "id_parametro": 1,
+        "id_user_id": 1,
+        "interes": 0,
+        "interes_dolar": 0,
+        "usuario": "admin"
+    }
+]

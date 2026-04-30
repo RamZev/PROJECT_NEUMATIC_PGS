@@ -1,0 +1,129 @@
+
+===========================================================================================
+Verificar configuración
+===========================================================================================
+
+	cd ...\PROJECT_NEUMATIC\neumatic\utils\cleanup_foxpro
+	python limpiar_caracteres_foxpro.py --verify
+
+De esta forma se verificará la configuración búsqueda y caracteres a reemplazar.
+ 
+Esto verificará:
+ ✅ Que existan los modelos configurados en cleanup_config.py.
+ ✅ Que los campos especificados sean válidos.
+ ✅ Muestra la lista de caracteres a reemplazar.
+
+
+===========================================================================================
+Analizar (MODO SEGURO - sin modificar)
+===========================================================================================
+
+	python limpiar_caracteres_foxpro.py
+
+Esto:
+ ✅ NO modifica la base de datos.
+ ✅ Analiza todos los modelos configurados.
+ ✅ Muestra cuántos registros se modificarían.
+ ✅ Da ejemplo del primer cambio encontrado.
+ ✅ Genera log: cleanup_foxpro_20250130_143000.log
+ ✅ Recomienda si ejecutar limpieza completa.
+
+
+===========================================================================================
+Buscar caracteres específicos (opcional)
+===========================================================================================
+
+	python limpiar_caracteres_foxpro.py --search
+
+Busca los caracteres más comunes entre los datos.
+
+
+===========================================================================================
+Limpiar (MODO REAL - ¡MODIFICA!)
+===========================================================================================
+
+	python limpiar_caracteres_foxpro.py --fix
+
+Esto:
+ ⚠️ Pide confirmación antes de modificar.
+ ⚠️ Modifica permanentemente la base de datos.
+ ✅ Usa transacciones (rollback si hay error).
+ ✅ Limpia todos los caracteres corruptos.
+ ✅ Genera log detallado de cambios.
+
+
+===========================================================================================
+OPCIONES ADICIONALES
+===========================================================================================
+
+Limpiar solo un modelo específico:
+
+	#-- Solo analizar un modelo.
+	python limpiar_caracteres_foxpro.py --model maestros.Cliente
+
+	#-- Limpiar solo un modelo.
+	python limpiar_caracteres_foxpro.py --model maestros.Cliente --fix
+
+Usar archivo de log personalizado:
+
+	python limpiar_caracteres_foxpro.py --log mi_log.txt
+
+
+===========================================================================================
+EJEMPLO DE FLUJO COMPLETO RECOMENDADO:
+===========================================================================================
+
+#-- 1. Ir al directorio del script.
+	cd ....\PROJECT_NEUMATIC\neumatic\utils\cleanup_foxpro
+
+#-- 2. Hacer backup primero (RECOMENDADO).
+
+#-- 3. Verificar configuración.
+	python limpiar_caracteres_foxpro.py --verify
+
+#-- 4. Analizar sin modificar.
+	python limpiar_caracteres_foxpro.py
+
+#-- 5. Revisar el log generado.
+
+#-- 6. Si el análisis muestra cambios necesarios, limpiar:
+	python limpiar_caracteres_foxpro.py --fix
+
+
+===========================================================================================
+ACTUALIZAR cleanup_config.py
+===========================================================================================
+
+Actualizar CARACTERES_REEMPLAZO en el caso de haber otros caracteres a ser necesario 
+reemplazar o actualizar CARACTERES_ELIMINAR en el caso de eliminar.
+
+	- Agregar en CARACTERES_REEMPLAZO:
+	  ('\xXX', 'CARACTER_CORRECTO'),  # Reemplazar
+
+	- O caracteres a eliminar en CARACTERES_ELIMINAR:
+	  '\xXX',  # Eliminar
+
+Agregar más modelos/campos.
+
+	- En MODELOS_CAMPOS
+	  'ventas.Factura': ['observaciones', 'numero_factura'],
+	  'ventas.Pedido': ['notas', 'referencia'],
+
+
+===========================================================================================
+PROBLEMAS COMUNES Y SOLUCIONES
+===========================================================================================
+
+- Error: "Modelo no encontrado"
+  · Verifica que el modelo existe en apps.get_model()
+  · Asegúrate que la app esté en INSTALLED_APPS
+  · Verifica mayúsculas/minúsculas
+
+- Error: "Campo no existe"
+  · Revisa el nombre exacto del campo en la base de datos
+  · Verifica que sea CharField o TextField
+
+- No encuentra cambios pero hay caracteres raros
+  · Agrega más caracteres a CARACTERES_REEMPLAZO
+  · Usa --search para buscar específicamente
+

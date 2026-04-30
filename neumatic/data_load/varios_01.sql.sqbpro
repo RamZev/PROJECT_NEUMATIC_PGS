@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="D:/PROJECT_NEUMATIC/neumatic/data/db_neumatic.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="12105"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><current_table name="4,9:mainactividad"/><default_encoding codec=""/><browse_table_settings/></tab_browse><tab_sql><sql name="SQL 1">UPDATE detalle_factura
+SET producto_venta = (
+    SELECT nombre_producto
+    FROM producto
+    WHERE producto.id_producto = detalle_factura.id_producto_id
+)
+WHERE id_producto_id IS NOT NULL;
+
+
+UPDATE factura
+SET nombre_factura = (
+    SELECT nombre_cliente
+    FROM cliente
+    WHERE cliente.id_cliente = factura.id_cliente_id
+)
+WHERE id_cliente_id IS NOT NULL;
+
+-- Actualización de vendedor en factura
+UPDATE factura
+SET id_vendedor_id = 1
+WHERE id_vendedor_id IS NULL;
+
+-- Actualización de vendedor mostrador en cliente
+
+-- Primera actualización
+UPDATE producto 
+SET tipo_producto = UPPER(tipo_producto)
+WHERE tipo_producto IN ('s', 'p');
+
+-- Segunda actualización
+UPDATE producto
+SET tipo_producto = 'S'
+WHERE (tipo_producto IS NULL OR tipo_producto = '')
+AND (
+    UPPER(nombre_producto) LIKE '%REPARACION%' 
+    OR UPPER(nombre_producto) LIKE '%REPARACON%'
+    OR UPPER(nombre_producto) LIKE '%REP %'
+    OR UPPER(nombre_producto) LIKE '% REP%'
+    OR UPPER(nombre_producto) LIKE 'REP%'
+);
+
+-- Tercera Actualización
+UPDATE producto
+SET tipo_producto = 'P'
+WHERE (tipo_producto IS NULL OR tipo_producto = '')
+
+-- Cuarta Actualización
+UPDATE producto
+SET tipo_producto = 'P'
+WHERE tipo_producto = 'O'
+</sql><current_tab id="0"/></tab_sql></sqlb_project>

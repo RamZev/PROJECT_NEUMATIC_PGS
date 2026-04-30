@@ -1,0 +1,886 @@
+<!-- neumatic\apps\maestros\templates\maestros\empresa_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate id="empresaForm">
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<!-- Acordeón Información Empresa ------------------------------------------------------- -->
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Empresa" 
+												aria-expanded="true" 
+												aria-controls="Información_Empresa">
+												<strong>Información Empresa</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show" id="Información_Empresa">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_empresa.id_for_label }}">
+															{{ form.estatus_empresa.label }}
+														</label>
+														{{ form.estatus_empresa }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_fiscal.id_for_label }}">
+															{{ form.nombre_fiscal.label }}
+														</label>
+														{{ form.nombre_fiscal }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_comercial.id_for_label }}">
+															{{ form.nombre_comercial.label }}
+														</label>
+														{{ form.nombre_comercial }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_empresa.id_for_label }}">
+															{{ form.domicilio_empresa.label }}
+														</label>
+														{{ form.domicilio_empresa }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
+															{{ form.codigo_postal.label }}
+														</label>
+														{{ form.codigo_postal }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
+															{{ form.id_provincia.label }}
+														</label>
+														{{ form.id_provincia }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
+															{{ form.id_localidad.label }}
+														</label>
+														{{ form.id_localidad }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono.id_for_label }}">
+															{{ form.telefono.label }}
+														</label>
+														{{ form.telefono }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.email_empresa.id_for_label }}">
+															{{ form.email_empresa.label }}
+														</label>
+														{{ form.email_empresa }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.web_empresa.id_for_label }}">
+															{{ form.web_empresa.label }}
+														</label>
+														{{ form.web_empresa }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_iva.id_for_label }}">
+															{{ form.id_iva.label }}
+														</label>
+														{{ form.id_iva }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cuit.id_for_label }}">
+															{{ form.cuit.label }}
+														</label>
+														{{ form.cuit }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ingresos_bruto.id_for_label }}">
+															{{ form.ingresos_bruto.label }}
+														</label>
+														{{ form.ingresos_bruto }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.inicio_actividad.id_for_label }}">
+															{{ form.inicio_actividad.label }}
+														</label>
+														{{ form.inicio_actividad }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.cbu.id_for_label }}">
+															{{ form.cbu.label }}
+														</label>
+														{{ form.cbu }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.cbu_alias.id_for_label }}">
+															{{ form.cbu_alias.label }}
+														</label>
+														{{ form.cbu_alias }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cbu_vence.id_for_label }}">
+															{{ form.cbu_vence.label }}
+														</label>
+														{{ form.cbu_vence }}
+													</div>
+												</div>
+												
+												<!-- Token y Firma de Homologación -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_expiracion_h.id_for_label }}">
+															{{ form.ws_expiracion_h.label }}
+														</label>
+														{{ form.ws_expiracion_h }}
+														
+														<!-- Botón para limpiar el campo ws_expiracion_h -->
+														<button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="clearWsExpiracion('h')">
+															Limpiar
+														</button>
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_token_h.id_for_label }}">
+															{{ form.ws_token_h.label }}
+														</label>
+														{{ form.ws_token_h }}
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_sign_h.id_for_label }}">
+															{{ form.ws_sign_h.label }}
+														</label>
+														{{ form.ws_sign_h }}
+													</div>
+												</div>
+												<!-- Token y Firma de Producción -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_expiracion_p.id_for_label }}">
+															{{ form.ws_expiracion_p.label }}
+														</label>
+														{{ form.ws_expiracion_p }}
+														
+														<!-- Botón para limpiar el campo ws_expiracion_p -->
+														<button type="button" class="btn btn-outline-primary btn-sm w-100" onclick="clearWsExpiracion('p')">
+															Limpiar
+														</button>
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_token_p.id_for_label }}">
+															{{ form.ws_token_p.label }}
+														</label>
+														{{ form.ws_token_p }}
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_sign_p.id_for_label }}">
+															{{ form.ws_sign_p.label }}
+														</label>
+														{{ form.ws_sign_p }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_modo.id_for_label }}">
+															{{ form.ws_modo.label }}
+														</label>
+														{{ form.ws_modo }}
+													</div>
+												</div>
+												
+												<!-- ------------------------------------------- -->
+												<div class="row">
+													<div class="col-md-4">
+														
+														<label class="form-label text-primary mb-0" for="{{ form.logo_file.id_for_label }}">
+															{{ form.logo_file.label }}
+														</label>
+														{{ form.logo_file }}
+														{% if form.logo_file.help_text %}
+															<small class="form-text text-muted">{{ form.logo_file.help_text }}</small>
+														{% endif %}
+														
+														<!-- Contenedor para la previsualización del logo -->
+														<div id="logo-preview-container" class="mt-3 text-center p-2 border border-primary rounded bg-light" style="display: none;">
+															<div class="mb-2 d-flex justify-content-center align-items-center" style="min-height: 100px;">
+																<img id="logo-preview-image" 
+																	src="" 
+																	alt="Logo de la empresa" 
+																	style="max-width: 200px; max-height: 200px; width: auto, height: auto; object-fit: contain;"
+																	class="img-fluid">
+															</div>
+															<div class="small text-muted mb-2">
+																<span id="logo-preview-filename"></span>
+															</div>
+															<div class="d-grid gap-2 my-2">
+																<button type="button" class="btn btn-outline-danger btn-sm" id="btn-eliminar-logo">
+																	<i class="bi bi-trash"></i> Eliminar logo actual
+																</button>
+															</div>
+														</div>
+														
+														<!-- Mensaje cuando no hay logo -->
+														<div id="no-logo-message" class="mt-3 text-center p-2 border rounded bg-light text-muted">
+															<i class="bi bi-image"></i> No hay logo cargado
+														</div>
+														
+														<!-- Campo oculto para indicar eliminación -->
+														{{ form.eliminar_logo_flag }}
+														
+													</div>
+												</div>
+												<!-- ------------------------------------------- -->
+												
+											</div>
+										</div>
+									</div>
+									
+									<!-- Acordeón Certificados -------------------------------------------------------------- -->
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 collapsed" 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Certificados" 
+												aria-expanded="false" 
+												aria-controls="Certificados">
+												<strong>Certificados</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse" id="Certificados">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<!-- Certificado de Homologación -->
+												<div class="row mb-3">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_vence_h.id_for_label }}">
+															{{ form.ws_vence_h.label }}
+														</label>
+														{{ form.ws_vence_h }}
+														
+														<!-- Botón para Cargar el Certificado de Homologación -->
+														<button type="button" class="btn btn-outline-primary btn-sm mb-2 w-100"
+																onclick="cargarCertificado('homologacion')">
+															Cargar CRT Homologación
+														</button>
+														
+														<!-- Botón para Cargar la Clave de Homologación -->
+														<button type="button" class="btn btn-outline-primary btn-sm w-100"
+																onclick="cargarClave('homologacion')">
+															Cargar KEY Homologación
+														</button>
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_crt2.id_for_label }}">
+															{{ form.ws_archivo_crt2.label }}
+														</label>
+														{{ form.ws_archivo_crt2 }}
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_key2.id_for_label }}">
+															{{ form.ws_archivo_key2.label }}
+														</label>
+														{{ form.ws_archivo_key2 }}
+													</div>
+												</div>
+												
+												<!-- Certificado de Producción -->
+												<div class="row mt-3 mb-3">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_vence_p.id_for_label }}">
+															{{ form.ws_vence_p.label }}
+														</label>
+														{{ form.ws_vence_p }}
+														
+														<!-- Botón para Cargar el Certificado de Producción -->
+														<button type="button" class="btn btn-outline-primary btn-sm mb-2 w-100"
+																onclick="cargarCertificado('produccion')">
+															Cargar CRT Producción
+														</button>
+														
+														<!-- Botón para Cargar la Clave de Producción -->
+														<button type="button" class="btn btn-outline-primary btn-sm w-100"
+																onclick="cargarClave('produccion')">
+															Cargar KEY Producción
+														</button>
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_crt_p.id_for_label }}">
+															{{ form.ws_archivo_crt_p.label }}
+														</label>
+														{{ form.ws_archivo_crt_p }}
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.ws_archivo_key_p.id_for_label }}">
+															{{ form.ws_archivo_key_p.label }}
+														</label>
+														{{ form.ws_archivo_key_p }}
+													</div>
+												</div>
+											
+											</div>
+										</div>
+									</div>
+									
+									<!-- Acordeón Parámetros ---------------------------------------------------------------- -->
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 collapsed" 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Parámetros" 
+												aria-expanded="false" 
+												aria-controls="Parámetros">
+												<strong>Parámetros</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse" id="Parámetros">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.interes.id_for_label }}">
+															{{ form.interes.label }}
+														</label>
+														{{ form.interes }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.interes_dolar.id_for_label }}">
+															{{ form.interes_dolar.label }}
+														</label>
+														{{ form.interes_dolar }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cotizacion_dolar.id_for_label }}">
+															{{ form.cotizacion_dolar.label }}
+														</label>
+														{{ form.cotizacion_dolar }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.dias_vencimiento.id_for_label }}">
+															{{ form.dias_vencimiento.label }}
+														</label>
+														{{ form.dias_vencimiento }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.descuento_maximo.id_for_label }}">
+															{{ form.descuento_maximo.label }}
+														</label>
+														{{ form.descuento_maximo }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block script -------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	<script>
+		//-- ============================================================
+		//-- FUNCIONALIDAD PREVISUALIZACIÓN DE LOGO
+		//-- ============================================================
+		
+		//-- Elementos del DOM para previsualización.
+		const logoFileInput = document.getElementById('{{ form.logo_file.id_for_label }}');
+		const logoPreviewContainer = document.getElementById('logo-preview-container');
+		const logoPreviewImage = document.getElementById('logo-preview-image');
+		const logoPreviewFilename = document.getElementById('logo-preview-filename');
+		const noLogoMessage = document.getElementById('no-logo-message');
+		const btnEliminarLogo = document.getElementById('btn-eliminar-logo');
+		const eliminarLogoFlag = document.getElementById('{{ form.eliminar_logo_flag.id_for_label }}');
+		
+		//-- Variables para el logo actual.
+		const currentLogoUrl = '{% if form.instance.logo_empresa %}{{ form.instance.logo_empresa.url }}{% endif %}';
+		const currentLogoName = '{% if form.instance.logo_empresa %}{{ form.instance.logo_empresa.name }}{% endif %}';
+		
+		//-- Función para actualizar la previsualización.
+		function updateLogoPreview(file) {
+			if (file) {
+				//-- Validar que sea una imagen.
+				if (!file.type.startsWith('image/')) {
+					showMessage('error', 'El archivo seleccionado no es una imagen válida.');
+					logoFileInput.value = ''; //-- Limpiar el input.
+					return;
+				}
+				
+				//-- Validar tamaño máximo (2MB).
+				if (file.size > 2 * 1024 * 1024) {
+					showMessage('error', 'La imagen no debe exceder los 2MB.');
+					logoFileInput.value = ''; //-- Limpiar el input.
+					return;
+				}
+				
+				//-- Crear URL de objeto para previsualizar.
+				const reader = new FileReader();
+				
+				reader.onload = function(e) {
+					//-- Actualizar la imagen de previsualización.
+					logoPreviewImage.src = e.target.result;
+					logoPreviewFilename.textContent = file.name;
+					
+					//-- Mostrar contenedor de previsualización, ocultar mensaje.
+					logoPreviewContainer.style.display = 'block';
+					noLogoMessage.style.display = 'none';
+					
+					//-- Limpiar la bandera de eliminación.
+					if (eliminarLogoFlag) {
+						eliminarLogoFlag.value = '';
+					}
+					
+					//-- Mostrar la imagen.
+					logoPreviewImage.style.display = 'block';
+				};
+				
+				reader.onerror = function() {
+					showMessage('error', 'Error al leer el archivo.');
+				};
+				
+				reader.readAsDataURL(file);
+			}
+		}
+		
+		//-- Función para mostrar el logo actual (si existe).
+		function showCurrentLogo() {
+			if (currentLogoUrl && currentLogoUrl !== 'None' && currentLogoUrl !== '') {
+				logoPreviewImage.src = currentLogoUrl;
+				logoPreviewFilename.textContent = currentLogoName || 'Logo actual';
+				logoPreviewContainer.style.display = 'block';
+				noLogoMessage.style.display = 'none';
+				logoPreviewImage.style.display = 'block';
+				return true;
+			} else {
+				logoPreviewContainer.style.display = 'none';
+				noLogoMessage.style.display = 'block';
+				return false;
+			}
+		}
+		
+		//-- Evento cuando se selecciona un archivo.
+		if (logoFileInput) {
+			logoFileInput.addEventListener('change', function(event) {
+				const file = event.target.files[0];
+				if (file) {
+					updateLogoPreview(file);
+				} else {
+					//-- Si no hay archivo, mostrar el logo existente si existe.
+					if (!showCurrentLogo()) {
+						logoPreviewContainer.style.display = 'none';
+						noLogoMessage.style.display = 'block';
+					}
+				}
+			});
+		}
+		
+		//-- Evento para eliminar logo con botón.
+		if (btnEliminarLogo) {
+			btnEliminarLogo.addEventListener('click', function(event) {
+				//-- Marcar la bandera de eliminación.
+				if (eliminarLogoFlag) {
+					eliminarLogoFlag.value = 'true';
+				}
+				
+				//-- Ocultar la previsualización y mostrar mensaje.
+				logoPreviewContainer.style.display = 'none';
+				noLogoMessage.style.display = 'block';
+				
+				//-- Limpiar el input file.
+				if (logoFileInput) {
+					logoFileInput.value = '';
+				}
+				
+				//-- Limpiar la previsualización.
+				logoPreviewImage.src = '';
+				logoPreviewFilename.textContent = '';
+				
+				//-- Mostrar mensaje de confirmación.
+				showMessage('info', 'Logo marcado para eliminar. Se eliminará al guardar los cambios.');
+			});
+		}
+		
+		//-- ============================================================
+		//-- FUNCIONALIDAD PARA CARGAR CERTIFICADOS-CLAVES
+		//-- ============================================================
+		
+		//-- Función para cargar certificado.
+		async function cargarCertificado(tipo) {
+			//-- Crear input file oculto.
+			const input = document.createElement('input');
+			input.type = 'file';
+			input.accept = '.crt';
+			
+			input.onchange = async (event) => {
+				const file = event.target.files[0];
+				if (!file) return;
+				
+				try {
+					//-- Leer contenido del archivo.
+					const content = await readFileContent(file);
+					
+					//-- Determinar campos según tipo.
+					let campoCrt, campoVencimiento;
+					if (tipo === 'homologacion') {
+						campoCrt = document.getElementById('id_ws_archivo_crt2');
+						campoVencimiento = document.getElementById('id_ws_vence_h');
+					} else {
+						campoCrt = document.getElementById('id_ws_archivo_crt_p');
+						campoVencimiento = document.getElementById('id_ws_vence_p');
+					}
+					
+					//-- Enviar a servidor para extraer fecha de vencimiento.
+					const response = await fetch('{% url "cargar_certificado" %}', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': getCookie('csrftoken')
+						},
+						body: JSON.stringify({
+							certificado: content,
+							tipo: tipo
+						})
+					});
+					
+					const result = await response.json();
+					
+					if (result.success) {
+						//-- Actualizar contenido y fecha de vencimiento.
+						campoCrt.value = content;
+						campoVencimiento.value = result.fecha_vencimiento;
+						showMessage('success', result.mensaje);
+					} else {
+						campoCrt.value = '';
+						campoVencimiento.value = '';
+						showMessage('error', result.error);
+					}
+					
+				} catch (error) {
+					console.error('Error:', error);
+					showMessage('error', 'Error al procesar el certificado');
+				}
+			};
+			
+			input.click();
+		}
+		
+		//-- Función para cargar clave privada.
+		async function cargarClave(tipo) {
+			//-- Crear input file oculto.
+			const input = document.createElement('input');
+			input.type = 'file';
+			input.accept = '.key';
+			
+			input.onchange = async (event) => {
+				const file = event.target.files[0];
+				if (!file) return;
+				
+				try {
+					//-- Leer contenido del archivo.
+					const content = await readFileContent(file);
+					
+					//-- Determinar campo según tipo.
+					let campoKey;
+					if (tipo === 'homologacion') {
+						campoKey = document.getElementById('id_ws_archivo_key2');
+					} else {
+						campoKey = document.getElementById('id_ws_archivo_key_p');
+					}
+					
+					//-- Validar formato de clave.
+					const response = await fetch('{% url "cargar_clave" %}', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+							'X-CSRFToken': getCookie('csrftoken')
+						},
+						body: JSON.stringify({
+							clave: content,
+							tipo: tipo
+						})
+					});
+					
+					const result = await response.json();
+					
+					if (result.success) {
+						//-- Actualizar contenido.
+						campoKey.value = content;
+						showMessage('success', result.mensaje);
+					} else {
+						campoKey.value = '';
+						showMessage('error', result.error);
+					}
+					
+				} catch (error) {
+					console.error('Error:', error);
+					showMessage('error', 'Error al procesar la clave');
+				}
+			};
+			
+			input.click();
+		}
+		
+		//-- Función para leer contenido de archivo.
+		function readFileContent(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = (event) => resolve(event.target.result);
+				reader.onerror = (error) => reject(error);
+				reader.readAsText(file);
+			});
+		}
+		
+		//-- Función para limpiar campos de expiración.
+		function clearWsExpiracion(tipo) {
+			let campoExpiracion;
+			let campoTokens;
+			let campoSign;
+			
+			if (tipo === 'h') {
+				campoExpiracion = document.getElementById('id_ws_expiracion_h');
+				campoTokens = document.getElementById('id_ws_token_h');
+				campoSign = document.getElementById('id_ws_sign_h');
+			} else {
+				campoExpiracion = document.getElementById('id_ws_expiracion_p');
+				campoTokens = document.getElementById('id_ws_token_p');
+				campoSign = document.getElementById('id_ws_sign_p');
+			}
+			
+			if (campoExpiracion) campoExpiracion.value = '';
+			if (campoTokens) campoTokens.value = '';
+			if (campoSign) campoSign.value = '';
+			
+			showMessage('info', 'Campos de token y signatura limpiados');
+		}
+		
+		//-- Función para obtener cookie CSRF.
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+		
+		//-- Función para mostrar mensajes.
+		function showMessage(type, message) {
+			//-- Crear elemento de alerta.
+			const alertDiv = document.createElement('div');
+			alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type === 'success' ? 'success' : 'info'} alert-dismissible fade show`;
+			alertDiv.role = 'alert';
+			alertDiv.innerHTML = `
+				${message}
+				<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+			`;
+			
+			//-- Insertar al inicio del formulario.
+			const form = document.getElementById('empresaForm');
+			form.insertBefore(alertDiv, form.firstChild);
+			
+			//-- Auto-cerrar después de 5 segundos.
+			if (type !== 'error') {
+				setTimeout(() => {
+					alertDiv.remove();
+				}, 5000);
+			};
+		}
+		
+		//-- ============================================================
+		//-- FUNCIONALIDAD PROVINCIA-LOCALIDAD-CÓDIGO POSTAL
+		//-- ============================================================
+		
+		document.addEventListener("DOMContentLoaded", function () {
+			const codigoPostalText = document.getElementById("id_codigo_postal");
+			const provinciaSelect = document.getElementById("id_id_provincia");
+			const localidadSelect = document.getElementById("id_id_localidad");
+			
+			//-- Validar si se obtuvieron correctamente los elementos.
+			if (!codigoPostalText) {
+				console.log('El elemento con id "id_codigo_postal" no se encontró');
+				return;
+			}
+			
+			if (!provinciaSelect) {
+				console.log('El elemento con id "id_id_provincia" no se encontró');
+				return;
+			}
+			
+			if (!localidadSelect) {
+				console.log('El elemento con id "id_id_localidad" no se encontró');
+				return;
+			}
+			
+			//-- Función para resetear el select de localidad y el campo de código postal.
+			function resetLocalidadSelect(defaultText) {
+				localidadSelect.innerHTML = `<option value="">${defaultText}</option>`;
+				localidadSelect.disabled = true;
+				codigoPostalText.value = "";  //-- Limpiar el código postal.
+			}
+			
+			//-- Almacena el código postal de cada localidad.
+			let localidadesData = {};
+			
+			//-- Función para cargar las localidades y seleccionar la correcta.
+			function cargarLocalidades(provinciaId, localidadSeleccionadaId = null) {
+				const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
+				resetLocalidadSelect("Seleccione una localidad");
+				
+				if (provinciaId) {
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							localidadSelect.disabled = false;
+							localidadesData = {}; //-- Reiniciar datos de localidad.
+							
+							//-- Insertar la opción inicial.
+							localidadSelect.innerHTML = `<option value="">Seleccione una localidad</option>`;
+							
+							data.localidad.forEach(localidad => {
+								localidadesData[localidad.id_localidad] = localidad.codigo_postal;
+								const option = new Option(localidad.nombre_completo, localidad.id_localidad);
+								localidadSelect.add(option);
+							});
+							
+							//-- Si hay una localidad seleccionada (al editar o al volver de la modal).
+							if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
+								localidadSelect.value = localidadSeleccionadaId;
+								codigoPostalText.value = localidadesData[localidadSeleccionadaId];
+							}
+						});
+				}
+			}
+			
+			//-- Escucha el cambio en Provincia y carga las localidades correspondientes.
+			provinciaSelect.addEventListener("change", function () {
+				const provinciaId = this.value;
+				cargarLocalidades(provinciaId);  //-- Llamar sin localidad seleccionada.
+			});
+			
+			//-- Escucha el cambio en Localidad y actualiza el código postal.
+			localidadSelect.addEventListener("change", function () {
+				const localidadId = this.value;
+				
+				if (localidadId) {
+					codigoPostalText.value = localidadesData[localidadId] || "";
+				} else {
+					codigoPostalText.value = "";
+				}
+			});
+			
+			//-- Detectar valores iniciales (para el caso de actualizar o volver del modal).
+			const provinciaSeleccionada = provinciaSelect.value;
+			const localidadSeleccionada = localidadSelect.value;
+			const codigoPostalSeleccionado = codigoPostalText.value;
+			
+			//-- Cargar localidades y seleccionar automáticamente la localidad al cargar la página.
+			if (provinciaSeleccionada) {
+				cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
+				codigoPostalText.value = codigoPostalSeleccionado;  //-- Setear el código postal guardado.
+			}
+			else{
+				//-- Si no hay una provincia seleccionada, deshabilitar el combo de localidades.
+				cargarLocalidades(provinciaSeleccionada);  //-- Llamar sin localidad seleccionada.
+			}
+			
+			//-- Mostrar el logo actual al cargar la página.
+			showCurrentLogo();
+			
+			//-- Limpiar la bandera de eliminación inicialmente.
+			if (eliminarLogoFlag) {
+				eliminarLogoFlag.value = '';
+			}
+		});
+	</script>
+{% endblock script %}

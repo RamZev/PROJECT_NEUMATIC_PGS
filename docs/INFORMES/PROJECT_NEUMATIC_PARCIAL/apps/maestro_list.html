@@ -1,0 +1,378 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% load custom_tags %}
+
+<!-- Block Title -->
+{% block title %}
+	{{ master_title }}
+{% endblock title %}
+
+{% block style %}
+    body {
+        background-color: rgb(0, 204, 255);
+    }
+
+    .tbl-container {
+       
+    }
+		
+    .tbl-fixed {
+        overflow-x: scroll;
+        overflow-y: scroll;
+        height: fit-content;
+        max-height: 60vh;
+        margin-top: 0px;
+        font-size: 80%;
+    }
+    table {
+        min-width: max-content;
+    }
+    table th {
+        position: sticky;
+        top: 0px;
+    }
+{% endblock style %}
+
+{% debug %}
+
+<!-- Block Header -->
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock header %}
+
+<!-- Block Main -->
+{% block main %}
+	{% block sidebar %}
+		{% if user.is_authenticated %} 
+			{% include 'sidebar.html' %}
+		{% endif %}
+	{% endblock sidebar %}
+	
+	{% block maincomponent %}
+	<!-- Main Component Start -->
+			
+		<!-- Main principalcomponent Start -->
+		{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>	
+				<div class="container-fluid tbl-container">
+					<div class="card border-secondary mb-3 mt-2">
+						<div class="card-header bg-primary bg-opacity-25 text-dark d-flex 
+								justify-content-between p-1">
+							<h4>{{ master_title }}</h4>
+							<!-- Botón cerrar lista -->
+							<button type="button" class="btn-close btn-close-blue" 
+								aria-label="Close"
+								onclick="window.location.href='{% url home_view_name %}'">
+							</button>
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<!--<div class="col col-10">
+									{% include 'buscador.html' %}
+								</div> --->
+
+								<div class="container mt-3 mb-3">
+									<div class="row mb-2">
+										<!-- Campos de Email y Celular -->
+										<div class="col-md-6">
+											<label for="email">eMAIL</label>
+											<input type="email" class="form-control" id="email" name="email" placeholder="email@example.com">
+										</div>
+										<div class="col-md-6">
+											<label for="celular">Celular</label>
+											<input type="tel" class="form-control" id="celular" name="celular" placeholder="Número de celular">
+										</div>
+									</div>
+								
+									<div class="row mb-2">
+										<!-- Tipo de Salida -->
+										<div class="col-md-6">
+											<label>Tipo de Salida:</label>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo_salida" id="tabla" value="tabla">
+												<label class="form-check-label" for="tabla">Vista Preliminar en Tabla</label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo_salida" id="pdf_preliminar" value="pdf_preliminar">
+												<label class="form-check-label" for="pdf_preliminar">Vista Preliminar en PDF</label>
+											</div>
+											<!-- Envío por Email y WhatsApp como checklist -->
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo_salida" id="email_envio" value="email">
+												<label class="form-check-label" for="email_envio">Envío por eMail</label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="radio" name="tipo_salida" id="whatsapp_envio" value="whatsapp">
+												<label class="form-check-label" for="whatsapp_envio">Envío por WhatsApp</label>
+											</div>
+										</div>
+								
+										<!-- Formato de Envío -->
+										<div class="col-md-6">
+											<label>Formato de Envío:</label>
+											<div class="form-check">
+												<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_pdf" value="PDF">
+												<label class="form-check-label" for="formato_pdf">PDF</label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_csv" value="CSV">
+												<label class="form-check-label" for="formato_csv">CSV</label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_word" value="Word">
+												<label class="form-check-label" for="formato_word">Word</label>
+											</div>
+											<div class="form-check">
+												<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_excel" value="Excel">
+												<label class="form-check-label" for="formato_excel">Excel</label>
+											</div>
+										</div>
+									</div>
+								 <!-- Botones del documento pdf -->
+								 <div class="container mt-3 mb-3">
+									<button class="btn btn-outline-success me-2" onclick="verificarYMostrarTabla()">
+										Generar
+									</button>
+									<a class="btn btn-outline-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</div>
+							</div>
+							
+							<!-- Tabla oculta por defecto -->
+							<div id="tabla-container" class="row tbl-fixed my-2 mx-1" style="display: none;">
+								<!-- Inicio Tabla de Maestro -->
+								<table class="table table-bordered table-striped table-hover">
+									<thead class="table-primary">
+										{% for key, value in table_headers.items %}
+											<th class="col-{{ value.0 }}">
+												<a href="{% url list_view_name %}?order_by={{ key }}">
+													{{ value.1 }}
+													{% if key == order_by %}
+														▲
+													{% endif %}
+												</a>
+											</th>
+										{% endfor %}
+									</thead>
+									
+									<tbody>
+										{% for objeto in objetos %}
+											<tr>
+												{% for data_info in table_data %}
+													{% if data_info.date_format %}
+														<td>{{ objeto|get_attribute:data_info.field_name|default:"" |date:data_info.date_format }}</td>
+													{% else %}
+														<td>{{ objeto|get_attribute:data_info.field_name|default:"" }}</td>
+													{% endif %}
+												{% endfor %}
+												
+												<td>
+													<!-- Botón Actualizar -->
+													<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" data-form-index="{{ forloop.counter0 }}"
+															onclick="window.location.href='{% url update_view_name objeto.pk %}'" 
+															data-bs-toggle="tooltip" data-bs-placement="top" title="Actualizar Registro"
+															style="font-size: 80%; padding: 0.3rem 0.6rem;">
+														<i class="fa fa-edit"></i>
+													</button>
+	
+													<!-- Botón Eliminar -->
+													<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
+															data-bs-toggle="modal" data-bs-target="#deleteModal" 
+															data-bs-whatever-url="{% url delete_view_name objeto.pk %}" data-bs-whatever-name="{{ objeto }}"
+															style="font-size: 80%; padding: 0.3rem 0.6rem;">
+														<i class="fa fa-trash-alt"></i>
+													</button>
+	
+													<!-- Botón Ver -->
+													<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
+															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
+															style="font-size: 80%; padding: 0.3rem 0.6rem;">
+														<i class="fa fa-eye"></i>
+													</button>
+	
+												</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+								<!-- Final Tabla de Maestro -->
+							
+	
+							{% block paginador %}
+								{% include 'paginador.html' %}
+							{% endblock paginador %}
+						</div>
+						</div>
+				</div>
+			</main>
+		</div>
+		{% endblock principalcomponent %}
+		<!-- Main principalcomponent End -->
+	{% endblock maincomponent %}
+	
+{% endblock main %}
+
+{% block modals %}
+	<!-- Modal para confirmar eliminación -->
+	<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+		<div class="modal-dialog d-flex align-items-center">
+			<div class="modal-content border border-white">
+				<div class="modal-header bg-primary bg-opacity-25">
+					<h1 class="modal-title fs-5" id="deleteModalLabel">Confirmar Eliminación</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p>Se eliminará: <strong id="deleteItemName"></strong></p>
+					¿Estás seguro que eliminar el registro?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<form id="deleteForm" method="post" class="d-inline">
+						{% csrf_token %}
+						<button type="submit" class="btn btn-danger">Sí, eliminar</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal para el manejo de los mensajes de error sobre los permisos de usuario. -->
+{% endblock modals %}
+
+{% block script %}
+	<script>
+		var exampleModal = document.getElementById('deleteModal')
+		exampleModal.addEventListener('show.bs.modal', function (event) {
+			var button = event.relatedTarget
+			var recipient = button.getAttribute('data-bs-whatever-name')
+			var url = button.getAttribute('data-bs-whatever-url')
+			
+			var modalTitle = exampleModal.querySelector('.modal-title')
+			var modalBodyInput = exampleModal.querySelector('.modal-body strong')
+			var form = exampleModal.querySelector('#deleteForm')
+			
+			modalTitle.textContent = 'Eliminar ' + recipient
+			modalBodyInput.textContent = recipient
+			form.action = url
+		})
+	</script>
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const messageList = document.getElementById('message-list');
+			if (messageList.children.length > 0) {
+				const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+				errorModal.show();
+			}
+		});
+	</script>
+<script>
+	// Función para obtener el token CSRF desde el meta tag
+function getCSRFToken() {
+    return document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+}
+
+function verificarYMostrarTabla() {
+    const vistaTablaSeleccionada = document.getElementById('tabla').checked;
+    const vistaPDFSeleccionada = document.getElementById('pdf_preliminar').checked;
+    const envioEmailSeleccionado = document.getElementById('email_envio').checked;
+    const email = document.getElementById('email').value;
+
+    const formatosSeleccionados = Array.from(document.querySelectorAll('input[name="formato_envio"]:checked'))
+        .map(checkbox => checkbox.value.toLowerCase());
+
+    if (envioEmailSeleccionado && (!email || formatosSeleccionados.length === 0)) {
+        alert('Debe ingresar un correo electrónico y seleccionar al menos un formato.');
+        return;
+    }
+
+    if (envioEmailSeleccionado) {
+        // Crear FormData para enviar los datos como POST
+        let formData = new FormData();
+        formData.append('email', email);
+        formatosSeleccionados.forEach(formato => {
+            formData.append('formatos', formato);
+        });
+
+        // Obtener el token CSRF y añadirlo al encabezado
+        const csrfToken = getCSRFToken();
+
+        fetch("{% url 'listado_producto_informe' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,  // Incluye el token CSRF aquí
+            },
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Email enviado correctamente.');
+            } else {
+                alert(`Error al enviar el email: ${data.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error en la solicitud:', error);
+            alert('Hubo un problema al enviar la solicitud.');
+        });
+    } else if (vistaTablaSeleccionada) {
+        document.getElementById('tabla-container').style.display = 'block';
+    } else if (vistaPDFSeleccionada) {
+        window.open("{% url 'listado_producto_pdf' %}", '_blank');
+    } else {
+        alert('Seleccione una opción válida para continuar.');
+    }
+	if (emailEnvioRadio.checked) {
+				sendEmail();
+			}
+}
+
+// Función para enviar el correo
+function sendEmail() {
+			// Obtener el valor del email y los formatos seleccionados
+			const email = document.getElementById("email").value;
+			const formatos = Array.from(document.querySelectorAll('input[name="formato_envio"]:checked')).map(input => input.value);
+			
+			// Verificar que el correo esté ingresado y haya formatos seleccionados
+			if (!email) {
+				alert("Por favor, ingrese un correo electrónico.");
+				return;
+			}
+			if (formatos.length === 0) {
+				alert("Por favor, seleccione al menos un formato de envío.");
+				return;
+			}
+			
+			// Enviar la solicitud con fetch
+			fetch("{% url 'listado_producto_informe' %}", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": "{{ csrf_token }}"
+				},
+				body: JSON.stringify({
+					email: email,
+					formatos: formatos
+				})
+			})
+			.then(response => {
+				if (response.ok) {
+					alert("Correo enviado exitosamente.");
+				} else {
+					alert("Hubo un error al enviar el correo.");
+				}
+			})
+			.catch(error => {
+				console.error("Error:", error);
+				alert("Hubo un error al enviar el correo.");
+			});
+		}
+</script>
+
+
+{% endblock script %}

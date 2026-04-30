@@ -1,0 +1,89 @@
+ECT_NEUMATIC> git status
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   neumatic/apps/usuarios/views/user_views.py
+        modified:   neumatic/apps/ventas/views/factura_views.py
+
+no changes added to commit (use "git add" and/or "git commit -a")
+(venv) PS D:\PROJECT_NEUMATIC> git add .
+(venv) PS D:\PROJECT_NEUMATIC> git commit -m "Segunda actualización Ricardo"
+[main a13bf3f] Segunda actualización Ricardo      
+ 2 files changed, 22 insertions(+), 2 deletions(-)
+(venv) PS D:\PROJECT_NEUMATIC> git pull                                     
+remote: Enumerating objects: 71, done.
+remote: Counting objects: 100% (71/71), done.
+remote: Compressing objects: 100% (17/17), done.
+remote: Total 49 (delta 41), reused 38 (delta 30), pack-reused 0 (from 0)
+Unpacking objects: 100% (49/49), 6.44 KiB | 2.00 KiB/s, done.
+From https://github.com/RamZev/PROJECT_NEUMATIC
+   82fb80a..819ff95  main       -> origin/main
+Auto-merging neumatic/apps/usuarios/views/user_views.py
+Merge made by the 'ort' strategy.
+ .../Consulta-VLResumenCtaCte-FactPendiente.sql     |  44 ----
+ .../Consulta-VLResumenCtaCte-ResumenCtaCte.sql     |  54 ----
+ docs/Reportes/Consulta-VLVentaCompro.sql           |  23 --
+ .../Consulta-VLVentaMostrador original.sql         |  25 --
+ docs/Reportes/RemitosPendientes.sql                |  51 ----
+ docs/Reportes/RemitosPendientesOri.sql             |  37 ---
+ docs/Reportes/Repos.png                            | Bin 94338 -> 0 bytes
+ docs/Reportes/Repos2.png                           | Bin 71412 -> 0 bytes
+ docs/Reportes/Repos3 Remitos por Clientes.png      | Bin 22091 -> 0 bytes
+ docs/Reportes/VLFactPendiente.sql                  |  45 ----
+ docs/Reportes/VLMercaderiaPorCliente.sql           |  20 --
+ docs/Reportes/VLRemitosClientes.sql                |  24 --
+ docs/Reportes/VLSaldosClientes.sql                 |  21 --
+ docs/Reportes/VLTotalRemitosClientes.sql           |  17 --
+ docs/Reportes/VLVentaCompro.sql                    |  24 --
+ docs/Reportes/VLVentaComproLocalidad.sql           |  25 --
+ docs/Reportes/VLVentaMostrador.sql                 |  26 --
+ docs/Reportes/cliente.sql                          |   6 -
+ neumatic/apps/informes/crear_vista_sql.sql         |  12 +-
+ neumatic/apps/informes/models.py                   | 277 ++++++++++-----------
+ .../reportes/vlmercaderiaporcliente_list.html      |   6 +-
+ .../vlpercepibsubcuentadetallado_list.html         |   2 +-
+ .../reportes/vlpercepibvendedordetallado_list.html |   2 +-
+ .../apps/informes/views/report_views_generics.py   |   2 +
+ .../views/vlcomprobantesvencidos_list_views.py     |   5 +-
+ .../views/vlivaventasprovincias_list_views.py      |   1 -
+ .../informes/views/vlremitosclientes_list_views.py |   3 -
+ .../views/vltotalremitosclientes_list_views.py     |   7 +-
+ neumatic/apps/usuarios/views/user_views.py         |   7 +
+ neumatic/templates/top_nav.html                    |   3 +-
+ 30 files changed, 160 insertions(+), 609 deletions(-)
+ delete mode 100644 docs/Reportes/Consulta-VLResumenCtaCte-FactPendiente.sql
+ delete mode 100644 docs/Reportes/Consulta-VLResumenCtaCte-ResumenCtaCte.sql
+ delete mode 100644 docs/Reportes/Consulta-VLVentaCompro.sql
+ delete mode 100644 docs/Reportes/RemitosPendientes.sql
+ delete mode 100644 docs/Reportes/RemitosPendientesOri.sql
+ delete mode 100644 docs/Reportes/Repos.png
+ delete mode 100644 docs/Reportes/Repos2.png
+ delete mode 100644 docs/Reportes/Repos3 Remitos por Clientes.png
+ delete mode 100644 docs/Reportes/VLMercaderiaPorCliente.sql
+ delete mode 100644 docs/Reportes/VLRemitosClientes.sql
+ delete mode 100644 docs/Reportes/VLSaldosClientes.sql
+ delete mode 100644 docs/Reportes/VLTotalRemitosClientes.sql
+ delete mode 100644 docs/Reportes/VLVentaCompro.sql
+ delete mode 100644 docs/Reportes/VLVentaComproLocalidad.sql
+ delete mode 100644 docs/Reportes/VLVentaMostrador.sql
+ delete mode 100644 docs/Reportes/cliente.sql
+(venv) PS D:\PROJECT_NEUMATIC> git status
+On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean
+(venv) PS D:\PROJECT_NEUMATIC> git push
+Enumerating objects: 32, done.
+Counting objects: 100% (29/29), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (14/14), done.
+Writing objects: 100% (14/14), 1.51 KiB | 773.00 KiB/s, done.
+Total 14 (delta 11), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (11/11), completed with 11 local objects.
+To https://github.com/RamZev/PROJECT_NEUMATIC.git
+   819ff95..9247f65  main -> main
+(venv) PS D:\PROJECT_NEUMATIC>

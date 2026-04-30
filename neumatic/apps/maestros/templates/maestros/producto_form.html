@@ -1,0 +1,561 @@
+<!-- neumatic\apps\maestros\templates\maestros\producto_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									title="Ayuda"
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" 
+									class="btn-close btn-close-white" 
+									aria-label="Close"
+									title="Cerrar"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Producto" 
+												aria-expanded="true" 
+												aria-controls="Información_Producto">
+												<strong>Información Producto</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Producto">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_producto.id_for_label }}">
+															{{ form.estatus_producto.label }}
+														</label>
+														{{ form.estatus_producto }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_producto.id_for_label }}">
+															{{ form.codigo_producto.label }}
+														</label>
+														{{ form.codigo_producto }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_producto.id_for_label }}">
+															{{ form.nombre_producto.label }}
+														</label>
+														{{ form.nombre_producto }}
+													</div>
+													
+													<!-- ******** -->
+													 
+													{% if form.instance.pk %}
+														<div class="col-md-2">
+															<label class="form-label text-primary mb-0" for="{{ form.tipo_producto.id_for_label }}">
+																{{ form.tipo_producto.label }}
+															</label>
+															<!-- Campo oculto para el valor real -->
+															{{ form.tipo_producto }}
+															<!-- Input de solo lectura para mostrar el valor -->
+															<input type="text" 
+																value="{{ form.instance.get_tipo_producto_display }}" 
+																class="form-control form-control-sm border border-primary mb-2" 
+																disabled>
+														</div>
+													{% else %}
+														<div class="col-md-2">
+															<label class="form-label text-primary mb-0" for="{{ form.tipo_producto.id_for_label }}">
+																{{ form.tipo_producto.label }}
+															</label>
+															{{ form.tipo_producto }}
+														</div>
+													{% endif %}
+													
+													<!-- ******** -->
+													 
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_producto_estado.id_for_label }}">
+															{{ form.id_producto_estado.label }}
+														</label>
+														{{ form.id_producto_estado }}
+													</div>
+													
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_familia.id_for_label }}">
+															{{ form.id_familia.label }}
+														</label>
+														{{ form.id_familia }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_marca.id_for_label }}">
+															{{ form.id_marca.label }}
+														</label>
+														{{ form.id_marca }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_modelo.id_for_label }}">
+															{{ form.id_modelo.label }}
+														</label>
+														{{ form.id_modelo }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_cai.id_for_label }}">
+															{{ form.id_cai.label }}
+														</label>
+														{{ form.id_cai }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.medida.id_for_label }}">
+															{{ form.medida.label }}
+														</label>
+														{{ form.medida }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.segmento.id_for_label }}">
+															{{ form.segmento.label }}
+														</label>
+														{{ form.segmento }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.unidad.id_for_label }}">
+															{{ form.unidad.label }}
+														</label>
+														{{ form.unidad }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_fabricacion.id_for_label }}">
+															{{ form.fecha_fabricacion.label }}
+														</label>
+														{{ form.fecha_fabricacion }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.costo.id_for_label }}">
+															{{ form.costo.label }}
+														</label>
+														{{ form.costo }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_alicuota_iva.id_for_label }}">
+															{{ form.id_alicuota_iva.label }}
+														</label>
+														{{ form.id_alicuota_iva }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.precio.id_for_label }}">
+															{{ form.precio.label }}
+														</label>
+														{{ form.precio }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.descuento.id_for_label }}">
+															{{ form.descuento.label }}
+														</label>
+														{{ form.descuento }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.stock.id_for_label }}">
+															{{ form.stock.label }}
+														</label>
+														{{ form.stock }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.minimo.id_for_label }}">
+															{{ form.minimo.label }}
+														</label>
+														{{ form.minimo }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.despacho_1.id_for_label }}">
+															{{ form.despacho_1.label }}
+														</label>
+														{{ form.despacho_1 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.despacho_2.id_for_label }}">
+															{{ form.despacho_2.label }}
+														</label>
+														{{ form.despacho_2 }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.descripcion_producto.id_for_label }}">
+															{{ form.descripcion_producto.label }}
+														</label>
+														{{ form.descripcion_producto }}
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.carrito }}
+																{{ form.carrito.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.iva_exento }}
+																{{ form.iva_exento.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.obliga_operario }}
+																{{ form.obliga_operario.label }}
+															</label>
+														</div>
+													</div>
+													
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 collapsed" 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Stock" 
+												aria-expanded="true" 
+												aria-controls="Stock">
+												<strong>Stock</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse"
+											id="Stock">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<!-- Tabla para ProductoStock -->
+													<div class="col-md-5">
+														<div class="card">
+															<div class="card-header">
+																Producto Stock
+															</div>
+															<div class="card-body">
+																<div style="max-height: 250px; overflow-y: auto;">
+																	<table class="table table-sm table-bordered table-striped">
+																		<thead>
+																			<tr>
+																				<th>Depósito</th>
+																				<th class="col-1 text-center">Stock</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			{% for stock in producto_stock_list %}
+																				<tr>
+																					<td>{{ stock.id_deposito }}</td>
+																					<td class="text-end">{{ stock.stock }}</td>
+																				</tr>
+																			{% empty %}
+																				<tr>
+																					<td colspan="2" class="text-center">
+																						No hay registros de Stock
+																					</td>
+																				</tr>
+																			{% endfor %}
+																		</tbody>
+																	</table>
+																</div>
+															</div>
+														</div>
+													</div>
+													
+													<!-- Tabla para ProductoMinimo -->
+													<div class="col-md-7">
+														<div class="card">
+															<div class="card-header">
+																Producto Mínimo
+															</div>
+															<div class="card-body">
+																<div style="max-height: 250px; overflow-y: auto;">
+																	<table class="table table-sm table-bordered table-striped">
+																		<thead>
+																			<tr>
+																				{% comment %} <th>id Dep.</th> {% endcomment %}
+																				<th>Depósito</th>
+																				{% comment %} <th class="col-3">id_cai</th> {% endcomment %}
+																				<th class="col-3">CAI</th>
+																				<th class="col-1">Mínimo</th>
+																				<th></th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			{% for minimo in producto_minimo_list %}
+																				<tr>
+																					<td>{{ minimo.id_deposito__nombre_producto_deposito }}</td>
+																					<td>{{ minimo.id_cai__cai }}</td>
+																					<td class="text-end" data-deposito-cell-id="{{ minimo.id_deposito__id_producto_deposito }}" data-cai-cell-id="{{ minimo.id_cai__id_cai }}">
+																						{{ minimo.minimo }}
+																					</td>
+																					<td class="text-center">
+																						
+																						<!-- <button type="button" class="btn btn-link p-0 edit-btn"  -->
+																						<button type="button" class="btn btn-link p-0" 
+																								data-bs-toggle="modal" 
+																								data-bs-target="#editMinimoModal" 
+																								data-deposito-id="{{ minimo.id_deposito__id_producto_deposito }}" 
+																								data-deposito-nombre="{{ minimo.id_deposito__nombre_producto_deposito }}" 
+																								data-cai-id="{{ minimo.id_cai__id_cai }}" 
+																								data-cai-descripcion="{{ minimo.id_cai__cai }}" 
+																								data-minimo="{{ minimo.minimo }}"
+																								title="Editar">
+																							<i class="fa fa-edit"></i>
+																						</button>																						
+																						
+																					</td>
+																				</tr>
+																			{% empty %}
+																				<td colspan="3" class="text-center">
+																					No hay registros de Mínimos
+																				</td>
+																			{% endfor %}
+																		</tbody>
+																	</table>
+																</div>
+															</div>
+														</div>
+													</div> 
+													
+												</div>
+												
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+	
+	<!-- Modal para editar Producto Mínimo -->
+	<div class="modal fade" id="editMinimoModal" tabindex="-1" aria-labelledby="editMinimoModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				
+				<div class="modal-header text-white bg-primary opacity-75">
+					<h5 class="modal-title" id="editMinimoModalLabel">Editar Producto Mínimo</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				
+				<div class="modal-body">
+					<form id="editMinimoForm">
+						<div class="mb-3">
+							<label for="editDepositoNombre" class="form-label">Depósito</label>
+							<input type="text" class="form-control" id="editDepositoNombre" readonly>
+							<input type="hidden" id="editDepositoId">
+						</div>
+						<div class="mb-3">
+							<label for="editCaiDescripcion" class="form-label">CAI</label>
+							<input type="text" class="form-control" id="editCaiDescripcion" readonly>
+							<input type="hidden" id="editCaiId">
+						</div>
+						<div class="mb-3">
+							<label for="editMinimo" class="form-label">Mínimo</label>
+							<input type="number" class="form-control" id="editMinimo" name="minimo">
+						</div>
+					</form>
+				</div>
+							
+				<div class="modal-footer">
+					<button type="button" class="btn btnletlet-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="saveChanges">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>	
+{% endblock modals %}
+
+<!-- Block Script -------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			let editMinimoModal = document.getElementById('editMinimoModal');
+			
+			editMinimoModal.addEventListener('show.bs.modal', function (event) {
+				let button = event.relatedTarget;
+				
+				// Obtener los nombres y IDs
+				let depositoNombre = button.getAttribute('data-deposito-nombre');
+				let depositoId = button.getAttribute('data-deposito-id');
+				let caiDescripcion = button.getAttribute('data-cai-descripcion');
+				let caiId = button.getAttribute('data-cai-id');
+				let minimo = button.getAttribute('data-minimo');
+				
+				// Asigna el nombre y descripción al modal
+				document.getElementById('editDepositoNombre').value = depositoNombre;
+				document.getElementById('editCaiDescripcion').value = caiDescripcion;
+				document.getElementById('editMinimo').value = minimo;
+				
+				// Almacena los IDs en campos ocultos
+				document.getElementById('editDepositoId').value = depositoId;
+				document.getElementById('editCaiId').value = caiId;
+			});
+			
+			document.getElementById('saveChanges').addEventListener('click', function () {
+				let depositoId = document.getElementById('editDepositoId').value;
+				let caiId = document.getElementById('editCaiId').value;
+				let minimo = document.getElementById('editMinimo').value;
+				
+				fetch("{% url 'actualizar_minimo' %}", {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': '{{ csrf_token }}',
+						'Content-Type': 'application/x-www-form-urlencoded'
+					},
+					body: new URLSearchParams({
+						'id_deposito': depositoId,
+						'id_cai': caiId,
+						'minimo': minimo
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						// alert(data.message);
+						let modal = bootstrap.Modal.getInstance(editMinimoModal);
+						modal.hide();
+						
+						// Convierte el valor minimo a un número, eliminando ceros a la izquierda
+						let minimoSinCeros = parseInt(minimo, 10);
+						
+						// Actualiza el valor en la tabla sin recargar la página
+						// Selecciona la celda correcta con el atributo data-deposito-id y data-cai-id
+						let updatedCell = document.querySelector(`[data-deposito-cell-id="${depositoId}"][data-cai-cell-id="${caiId}"]`);
+						if (updatedCell) {
+							// Actualiza la celda correspondiente
+							updatedCell.textContent = minimoSinCeros;
+						}
+						
+						// Actualiza el atributo data-minimo en el botón de edición para que el valor se refleje en futuras ediciones
+						let editButton = document.querySelector(`[data-deposito-id="${depositoId}"][data-cai-id="${caiId}"]`);
+						if (editButton) {
+							// Actualiza el valor del atributo data-minimo con el valor sin ceros a la izquierda
+							editButton.setAttribute('data-minimo', minimoSinCeros);
+							
+							// Si también necesitas que el valor en el modal se muestre sin ceros, actualiza el campo también
+							document.getElementById('editMinimo').value = minimoSinCeros;
+						}
+					} else {
+						alert("Error: " + data.message);
+					}
+				});
+			});
+			
+			//-- Funcionalidad para habilitar/deshabilitar checkbox form.obliga_operario.
+			function toggleObligaOperario() {
+				let tipoProductoValue;
+				let obligaOperarioCheckbox = document.getElementById("id_obliga_operario");
+				
+				// Verificar si estamos en modo edición (campo oculto)
+				let hiddenTipoProducto = document.querySelector("input[name='tipo_producto'][type='hidden']");
+				if (hiddenTipoProducto) {
+					// Modo edición - obtener valor del campo oculto
+					tipoProductoValue = hiddenTipoProducto.value;
+				} else {
+					// Modo creación - obtener valor del select
+					let tipoProductoSelect = document.getElementById("id_tipo_producto");
+					if (tipoProductoSelect) {
+						tipoProductoValue = tipoProductoSelect.value;
+					}
+				}
+				
+				console.log("tipoProductoValue:", tipoProductoValue);
+				if (tipoProductoValue === "S") {
+					obligaOperarioCheckbox.disabled = false;
+				} else {
+					obligaOperarioCheckbox.disabled = true;
+					obligaOperarioCheckbox.checked = false;
+				}
+			}
+			
+			// Inicializa el estado en función del valor actual.
+			toggleObligaOperario();
+			
+			// Escucha cambios en el campo tipo_producto (solo en modo creación)
+			let tipoProductoSelect = document.getElementById("id_tipo_producto");
+			if (tipoProductoSelect) {
+				tipoProductoSelect.addEventListener("change", toggleObligaOperario);
+			}			
+			
+		});
+	</script>	
+{% endblock script %}

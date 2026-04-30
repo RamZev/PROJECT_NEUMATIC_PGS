@@ -1,0 +1,49 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlventamostrador.html -->
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.fecha_desde.label }}
+		{{ form.fecha_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.fecha_hasta.label }}
+		{{ form.fecha_hasta }}
+	</div>
+	
+	<div class="col-md-6">
+		{{ form.sucursal.label }}
+		{{ form.sucursal }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.tipo_venta.label }}
+		{{ form.tipo_venta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.tipo_cliente.label }}
+		{{ form.tipo_cliente }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.tipo_producto.label }}
+		{{ form.tipo_producto }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-12">
+		{{ form.datos_cliente }}
+		<label for="{{ form.datos_cliente.id_for_label }}">
+			{{ form.datos_cliente.label }}
+		</label>
+	</div>
+	
+</div>

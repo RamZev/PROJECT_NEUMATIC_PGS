@@ -1,0 +1,24 @@
+[
+    {
+        "condicion_medio_pago": 1,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_medio_pago": 1,
+        "fcontrol": "2025-02-02 19:57:32",
+        "id_medio_pago": 1,
+        "id_user_id": 1,
+        "nombre_medio_pago": "Contado",
+        "plazo_medio_pago": 0,
+        "usuario": "admin"
+    },
+    {
+        "condicion_medio_pago": 2,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_medio_pago": 1,
+        "fcontrol": "2025-02-02 19:57:44",
+        "id_medio_pago": 2,
+        "id_user_id": 1,
+        "nombre_medio_pago": "Pago a plazos",
+        "plazo_medio_pago": 15,
+        "usuario": "admin"
+    }
+]

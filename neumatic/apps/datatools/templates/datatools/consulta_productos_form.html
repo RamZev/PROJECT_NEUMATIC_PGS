@@ -1,0 +1,329 @@
+<!-- neumatic\apps\datatools\templates\datatools\consulta_productos_form.html -->
+{% extends 'datatool_form.html' %}
+{% load static %}
+{% load datatools_tags %}
+{% load custom_tags %}
+
+{% block style %}
+	/* ENCABEZADO FIJO FUNCIONAL */
+	.sticky-table-wrapper {
+		max-height: 60vh;
+		overflow-y: auto;
+		border: 1px solid #dee2e6;
+		border-radius: 0.375rem;
+	}
+
+	/* Encabezado fijo SOLO para elementos con esta clase */
+	.sticky-header {
+		position: sticky !important;
+		top: 0 !important;
+		z-index: 100 !important;
+	}
+
+	.sticky-header th {
+		background-color: #cfe2ff !important;
+		/*border-bottom: 2px solid #0d6efd !important;*/
+	}
+
+	/* Las tablas internas NO aplican sticky */
+	.sticky-table-wrapper .collapse table thead {
+		position: static !important;
+	}
+	/* ******************** */
+	
+	.tbl-fixed {
+		max-height: 60vh;
+		overflow-y: auto;
+	}
+	.decimal {
+		text-align: right;
+		/*font-family: monospace;*/
+	}
+	.small-text {
+		font-size: 0.85rem;
+		align-items: top;
+	}
+	table td, table th {
+		align-items: center;
+		vertical-align: middle;
+	}
+	
+	/* CLASES DE COLORES - más específicas */
+	.resaltado {
+		font-size: 1.5rem !important;
+		font-weight: bold !important;
+	}
+	.resaltado-azul {
+		color: #0400f8 !important;
+		text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3);
+	}
+	.resaltado-rojo {
+		color: #f80404 !important;
+		text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3);
+	}
+	.resaltado.stock-transito {
+		/*color: #f80404 !important;*/
+		color: #269704ff !important;
+		text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.3);
+		background-color: #fff8f0 !important;
+		padding: 2px 8px;
+		border-radius: 4px;
+		/*border: 1px solid #ffcc00;*/
+		border: 1px solid #269704ff;
+	}
+	
+	/* Forzar que las celdas hereden el color de su fila */
+	.table.table-bordered.table-striped tbody tr td {
+		color: inherit !important;
+		background-color: inherit !important;
+	}
+	
+	/* EXCEPCIÓN: Los botones NO deben heredar el color */
+	.table.table-bordered.table-striped tbody tr td .btn {
+		color: initial !important;
+		background-color: initial !important;
+		border-color: initial !important;
+	}
+	
+	/* Específico para btn-secondary */
+	.table.table-bordered.table-striped tbody tr td .btn-secondary {
+		color: #fff !important;
+		background-color: #6c757d !important;
+		border-color: #6c757d !important;
+	}
+	
+	/* Específico para btn-outline-info (si lo usas en otro lugar) */
+	.table.table-bordered.table-striped tbody tr td .btn-outline-info {
+		color: #0dcaf0 !important;
+		background-color: transparent !important;
+		border-color: #0dcaf0 !important;
+	}
+{% endblock style %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					<h4>Consulta de Precios</h4>
+					
+					<!-- Formulario de búsqueda -->
+					<form method="get" class="row g-3 mb-4">
+						<div class="col-md-3">
+							<input type="text" name="medida" class="form-control" 
+								placeholder="Medida" value="{{ medida }}">
+						</div>
+						<div class="col-md-4">
+							<input type="text" name="nombre" class="form-control" 
+								placeholder="Nombre" value="{{ nombre }}">
+						</div>
+						<div class="col-md-3">
+							<input type="text" name="cai" class="form-control" 
+								placeholder="CAI" value="{{ cai }}">
+						</div>
+						<div class="col-md-2">
+							<button type="submit" class="btn btn-primary">
+								<i class="bi bi-search"></i> Buscar
+							</button>
+						</div>
+						
+						<!-- Filtros de marca -->
+						<div class="col-md-12">
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="filtro_marca" 
+									id="filtro_primeras" value="primeras" 
+									{% if filtro_marca == 'primeras' %}checked{% endif %}>
+								<label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="filtro_marca" 
+									id="filtro_otras" value="otras" 
+									{% if filtro_marca == 'otras' %}checked{% endif %}>
+								<label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+							</div>
+							<div class="form-check form-check-inline">
+								<input class="form-check-input" type="radio" name="filtro_marca" 
+									id="filtro_stock" value="stock" 
+									{% if filtro_marca == 'stock' %}checked{% endif %}>
+								<label class="form-check-label" for="filtro_stock">Solo con Stock</label>
+							</div>
+						</div>
+					</form>
+					
+					<!-- Resultados -->
+					<div class="sticky-table-wrapper">
+						<table class="table table-bordered table-striped small-text">
+							<thead class="table-primary sticky-header">
+								<tr>
+									<th>Marca</th>
+									<th>Medida</th>
+									<th>CAI</th>
+									<th>Nombre</th>
+									<th>Precio</th>
+									<th>Dcto.(%)</th>
+									<th>Stock Total</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for producto in productos %}
+									{% with text_color=producto.id_producto_estado.color|text_color_from_bg %}
+										<tr style="background-color: {{ producto.id_producto_estado.color }}; color: {{ text_color }};">
+											<td>{{ producto.id_marca|default:"-" }}</td>
+											<td>{{ producto.medida }}</td>
+											<td>{{ producto.id_cai|default:"-" }}</td>
+											<td>{{ producto.nombre_producto }}</td>
+											<td class="decimal">{{ producto.precio|formato_es_ar }}</td>
+											
+											<td class="decimal">{{ producto.descuento|formato_es_ar }}</td>
+											
+											<td class="decimal">{{ producto.stock_total|formato_es_ar_entero }}</td>
+											<td style="text-align: center;">
+												<button class="btn btn-sm btn-secondary" 
+														data-bs-toggle="collapse" 
+														data-bs-target="#detalles{{ producto.id_producto }}"
+														data-bs-parent=".sticky-table-wrapper">
+													<i class="bi bi-box-seam"></i> Stock
+												</button>
+											</td>
+										</tr>
+									{% endwith %}
+									<tr class="collapse" id="detalles{{ producto.id_producto }}" data-bs-parent=".sticky-table-wrapper">
+										<td colspan="7" style="padding: 10px !important;">
+											<div class="row m-0">
+												
+												<div class="col-md-6 px-2">
+													<table class="table table-sm table-bordered">
+														<thead class="table-primary">
+															<tr>
+																<th style="width: 75%;">Depósito</th>
+																<th style="width: 25%;" class="text-center">Stock</th>
+															</tr>
+														</thead>
+														<tbody>
+															{% for deposito in producto.stock_por_deposito_list %}
+																<tr>
+																	<td>{{ deposito.deposito }}</td>
+																	<td class="decimal" style="padding-right: 15px;">{{ deposito.stock|formato_es_ar_entero }}</td>
+																</tr>
+															{% empty %}
+																<tr><td colspan="2">No hay stock registrado</td></tr>
+															{% endfor %}
+														</tbody>
+													</table>
+												</div>
+												
+												<div class="col-md-6 px-2">
+													<table class="table table-sm">
+														<thead>
+															<tr>
+																<th colspan="2" class="table-primary text-center">Detalle del Producto</th>
+															</tr>
+														</thead>
+														<tbody>
+															<tr>
+																<td class="text-end" style="width: 30%;">Código:</td>
+																<td style="width: 70%;"><strong>{{ producto.id_producto }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">CAI:</td>
+																<td><strong>{{ producto.id_cai }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Medida:</td>
+																<td><strong>{{ producto.medida }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Marca:</td>
+																<td><strong>{{ producto.id_marca }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Fecha Fabricación:</td>
+																<td><strong>{{ producto.fecha_fabricacion|default_if_none:"" }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Stock Total:</td>
+																<td><strong>{{ producto.stock_total|formato_es_ar_entero }}</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Descuento:</td>
+																<td><strong>{{ producto.descuento|default_if_none:0|formato_es_ar }}%</strong></td>
+															</tr>
+															<tr>
+																<td class="text-end">Precio:</td>
+																<td>
+																	<span class="resaltado resaltado-azul">
+																		{{ producto.precio|formato_es_ar }}
+																	</span>
+																</td>
+															</tr>
+															{% if producto.descuento > 0 %}
+																<tr>
+																	<td class="text-end">Precio con Descuento:</td>
+																	<td>
+																		<span class="resaltado resaltado-rojo">
+																			{{ producto.precio_descuento|formato_es_ar }}
+																		</span>
+																	</td>
+																</tr>
+															{% endif %}
+															{% if producto.cantidad_transito > 0 %}
+																<tr>
+																	<td class="text-end"><strong>En tránsito:</strong></td>
+																	<td>
+																		<span class="resaltado stock-transito">
+																			{{ producto.cantidad_transito|default:0|formato_es_ar_entero }}
+																		</span>
+																	</td>
+																</tr>
+															{% endif %}
+														</tbody>
+													</table>
+												</div>
+												
+											</div>
+											
+										</td>
+									</tr>
+								{% empty %}
+									<tr><td colspan="7">No se encontraron productos</td></tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+					
+					<!-- Paginación -->
+					{% if page_obj.has_other_pages %}
+						<nav aria-label="Paginación">
+							<ul class="pagination justify-content-center">
+								{% if page_obj.has_previous %}
+									<li class="page-item">
+										<a class="page-link" href="?page=1&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">&laquo; Primero</a>
+									</li>
+									<li class="page-item">
+										<a class="page-link" href="?page={{ page_obj.previous_page_number }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Anterior</a>
+									</li>
+								{% endif %}
+								
+								<li class="page-item disabled">
+									<span class="page-link">
+										Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+									</span>
+								</li>
+								
+								{% if page_obj.has_next %}
+									<li class="page-item">
+										<a class="page-link" href="?page={{ page_obj.next_page_number }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Siguiente</a>
+									</li>
+									<li class="page-item">
+										<a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&medida={{ medida }}&nombre={{ nombre }}&cai={{ cai }}&filtro_marca={{ filtro_marca }}">Última &raquo;</a>
+									</li>
+								{% endif %}
+							</ul>
+						</nav>
+					{% endif %}
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}

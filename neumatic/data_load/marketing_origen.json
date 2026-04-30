@@ -1,0 +1,92 @@
+[
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:17:21",
+        "id_marketing_origen": 1,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "SOY CLIENTE",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:17:36",
+        "id_marketing_origen": 2,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "INSTAGRAM",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:17:44",
+        "id_marketing_origen": 3,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "FACEBOOK",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:19:57",
+        "id_marketing_origen": 4,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "TELEVISION",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:18:27",
+        "id_marketing_origen": 5,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "LINKEDIN",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:18:39",
+        "id_marketing_origen": 6,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "GOOGLE",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:18:49",
+        "id_marketing_origen": 7,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "MAIL",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:19:06",
+        "id_marketing_origen": 8,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "UN AMIGO/CONOCIDO",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:19:33",
+        "id_marketing_origen": 9,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "EXPOSICION",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_marketing_origen": 1,
+        "fcontrol": "2025-06-17 14:19:41",
+        "id_marketing_origen": 10,
+        "id_user_id": 1,
+        "nombre_marketing_origen": "OTROS",
+        "usuario": "admin"
+    }
+]

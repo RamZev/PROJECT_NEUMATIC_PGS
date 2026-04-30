@@ -1,0 +1,16 @@
+- La numeracion hay problemas, no se de donde toma los punto de venta y los numero
+existen muchos registros de numero en la tabla por cada punto de venta
+
+- La Nota de Credito, no me pide a que Factura va, No la descuenta tampoco de ninguna Factura
+tampoco me pide la acturizacion
+
+- Facturas siempre me pide operario, solo va para los servicios
+
+- Cuando a un cliente hago un comprobante me valida bien si tiene el tel y mail. Pero una vez grabada ese comprobante 
+debe tambien actualizar la tabla de clientes con los datos de tel o mail ingresado, asi no me lo vuelve a pedir en cada comprobantes posterior
+Ademas si el tel o el mail no existian en la DB deel cliente lo debe grabar en el campo principal
+pero si ya tenia un teel o email y fue modificado, lo debe grabar en un campo secundario de tel o email
+
+- Los recibos tienen demaciado campos es muy confuso la confeccion
+Tampoco esta descontando la Nota de Credito en los recibos y ahi trabaja mal los suma en lugar de restarlo
+

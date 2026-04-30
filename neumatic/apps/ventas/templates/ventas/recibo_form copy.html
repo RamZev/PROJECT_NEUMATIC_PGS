@@ -1,0 +1,3329 @@
+{% extends 'proceso_form.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block style %}
+    body {
+        background-color: rgb(0, 204, 255);
+    }
+
+    .tbl-container {
+        width: 100%;
+        overflow-x: auto;
+    }
+        
+    .tbl-fixed {
+        overflow-x: scroll;
+        overflow-y: scroll;
+        height: fit-content;
+        max-height: 60vh;
+        margin-top: 0px;
+        font-size: 80%;
+    }
+    table {
+        width: 100%; /* Forzar la tabla a ocupar el 100% del contenedor */
+        table-layout: fixed; /* Fijar el ancho de las columnas */
+    }
+
+    table th, table td {
+        overflow: hidden; /* Prevenir que el contenido haga que la tabla se expanda */
+        text-overflow: ellipsis; /* Mostrar puntos suspensivos si el contenido es demasiado largo */
+        white-space: nowrap; /* Prevenir que el texto se divida en varias líneas */
+    }
+
+    table th {
+        position: sticky;
+        top: 0px;
+    }
+
+    /* Additional styling for inputs */
+    .table .form-control {
+        width: 100%; /* Ensure input fields take full width of their columns */
+    }
+
+    .small-font {
+        transform: scale(1); /* Escala todo al 80% */
+        transform-origin: top left; /* Mantiene la esquina superior izquierda como punto de origen */
+    }
+
+    .detalle-form {
+        width: 100%;
+        table-layout: fixed; /* Asegura que las columnas se distribuyan uniformemente */
+    }
+    
+    .detalle-form thead,
+    .detalle-form tbody {
+        width: 100%;
+    }
+    
+    .detalle-form th,
+    .detalle-form td {
+        width: 100%;
+        box-sizing: border-box; /* Para incluir padding y borders en el ancho total */
+    }
+
+    
+    .readonly-select {
+        background-color: #f0f0f0;
+        border-color: #ccc;
+        color: #555;
+        cursor: not-allowed;
+    }
+
+    /* Oculta inputs pero mantiene funcionalidad (versión robusta) */
+    tfoot input[type="number"],
+    tfoot input[type="text"] {
+        position: absolute !important;
+        opacity: 0 !important;
+        width: 1px !important;  /* Cambiado de 0 a 1px para compatibilidad */
+        height: 1px !important; /* Cambiado de 0 a 1px para compatibilidad */
+        margin: -1px !important;
+        padding: 0 !important;
+        border: 0 !important;
+        overflow: hidden !important;
+        clip: rect(0, 0, 0, 0) !important; /* Soporte para navegadores antiguos */
+        pointer-events: none !important; /* Opcional: evita interacciones accidentales */
+    }
+
+    /* Estilo para números formateados (versión mejorada) */
+    .formatted-number {
+        display: block; /* Cambiado de inline-block para mejor alineación */
+        width: 100%;
+        padding: 0.375rem 0.15rem; /* Tamaño estándar de inputs Bootstrap */
+        text-align: right;
+        background-color: #e7f5ff; /* Azul claro similar a acordeones */
+        border: 1px solid #0d6efd; /* Borde azul Bootstrap primary */
+        border-radius: 0.25rem; /* Esquinas redondeadas */
+        font-family: monospace; /* Alineación perfecta de dígitos */
+        margin: 2px 0; /* Pequeño margen para separación visual */
+        font-size: 0.9rem;
+    }
+
+    .decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
+    
+{% endblock style %}
+
+{% block maincomponent %}
+
+    {% block principalcomponent %}
+    <div id="layoutSidenav_content">
+		<main>
+            <!-- Elemento HTML para almacenar el valor de is_edit -->
+            <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
+
+            <div class="container-fluid tbl-container">
+                <!-- Formulario Encabezado Detalle - Inicio -->
+                <form method="post" id="factura-form" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="accordion mt-2" id="accordionPanelsStayOpenExample">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+                                Recibo
+                            </button>
+                            </h2>
+                            <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <!--  Encabezado de Factura- Inicio -->
+                                <div class="row">
+                                    <!-- sector izquierdo del encabezado start -->
+                                    <div class="col-md-6">
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.estatus_comprobante.id_for_label }}">Estatus</label>
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                {{ form.id_valida }}
+                                                {{ form.estatus_comprobante }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.id_sucursal.id_for_label }}">Sucursal</label>
+                                            </div>
+                                            
+                                            <div class="col-md-5">
+                                                {{ form.nombre_sucursal }}
+                                                {{ form.id_sucursal }}
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                {{ form.punto_venta }}
+                                                {{ form.id_punto_venta }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.id_deposito.id_for_label }}">Depósito</label>
+                                            </div>
+
+                                            <div class="col-md-9">
+                                                {{ form.id_deposito }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.id_comprobante_venta.id_for_label }}">Comprobante</label>
+                                            </div>                                            
+                                            
+                                            <div class="col-md-9">
+                                                {{ form.id_comprobante_venta }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <!-- Campo de Autocompletado para Buscar Cliente -->
+                                            <div class="col-md-3">
+                                                <label for="{{ form.buscar_cliente.id_for_label }}">Buscar Cliente</label>
+                                            </div>
+                                        
+                                            <div class="col-md-6">
+                                                {{ form.buscar_cliente }}
+                                            </div>
+
+                                            <div class="col-md-3 d-flex justify-content-end">
+                                                <button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Validar" id="validarBtn" disabled>
+                                                    <i class="bi bi-card-checklist"></i>
+                                                </button>
+
+                                                <button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Listar" data-bs-toggle="modal" data-bs-target="#agendaModal" id="listar_agenda" disabled>
+                                                    <i class="bi bi-card-list"></i>
+                                                </button>
+                                                {% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" id="listarBtn">Listar</button> {% endcomment %}
+                                                
+                                                <a href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
+                                                class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
+                                                    <i class="bi bi-building-add"></i>
+                                                </a>
+                                                
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.id_cliente.id_for_label }}">ID Cliente</label>
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                {{ form.id_cliente }}
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <label for="{{ form.cuit.id_for_label }}">CUIT</label>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                {{ form.cuit }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.nombre_factura.id_for_label }}">Nombre</label>
+                                            </div>
+                                        
+                                            <div class="col-md-9">
+                                                {{ form.nombre_factura }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.domicilio_factura.id_for_label }}">Domicilio</label>
+                                            </div>
+                                        
+                                            <div class="col-md-9">
+                                                {{ form.domicilio_factura }}
+                                                
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
+                                    <!-- sector izquierdo del encabezado end -->
+                                    
+
+                                    <!-- sector derecho del encabezado start -->
+                                    <div class="col-md-6">
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.fecha_comprobante.id_for_label }}">Fecha</label>
+                                            </div>
+                                            
+                                            <div class="col-md-4">
+                                                {{ form.fecha_comprobante }}
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                {{ form.cliente_vip }}
+                                            </div>
+
+                                        </div>
+                                        
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.compro.id_for_label }}">Comprobante</label>
+                                            </div>
+                                            
+                                            <div class="col-md-2">
+                                                {{ form.compro }}
+
+                                            </div>
+                                            
+                                            <div class="col-md-2">
+                                                {{ form.letra_comprobante }}
+
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                {{ form.numero_comprobante }}
+
+                                            </div>
+
+                                        </div>
+
+                                        {% comment %} <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.remito.id_for_label }}">Remito</label>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                {{ form.comprobante_remito }}
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                {{ form.remito }}
+                                            </div>
+
+                                            <div class="col-md-3">
+                                                {{ form.es_remito }}
+                                                <label class="form-check-label" for="{{ form.es_remito.id_for_label }}">
+                                                    Remito
+                                                </label>
+                                            </div>
+                                            
+                                        </div> {% endcomment %}
+                                        
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="id_vendedor_factura">Vendedor</label>
+                                            </div>
+                                            
+                                            <div class="col-md-7">
+                                                {{ form.vendedor_factura }}
+                                                {{ form.id_vendedor }}
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                {{ form.tipo_venta }}
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.condicion_comprobante.id_for_label }}">Condición</label>
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                {{ form.condicion_comprobante }}
+                                            </div>
+
+                                            {% comment %} <div class="col-md-4">
+                                                {{ form.no_estadist }}
+                                                <label class="form-check-label" for="{{ form.no_estadist.id_for_label }}">
+                                                    No Estadísticas
+                                                </label>
+                                            </div> {% endcomment %}
+
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.movil_factura.id_for_label }}">Móvil</label>
+                                            </div>
+                                        
+                                            <div class="col-md-4">
+                                                {{ form.movil_factura }}
+                                            </div>
+
+                                            {% comment %} <div class="col-md-4">
+                                                {{ form.stock_clie }}
+                                                <label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
+                                                    Stock Cliente
+                                                </label>
+                                            </div> {% endcomment %}
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.email_factura.id_for_label }}">Email</label>
+                                            </div>
+
+                                            <div class="col-md-9">
+                                                {{ form.email_factura }}
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.discrimina_iva.id_for_label }}">Otros</label>
+                                            </div>
+                                            
+                                            <div class="col-md-2">
+                                                {{ form.discrimina_iva }}
+                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
+                                                    DIVA
+                                                </label>
+                                            </div>
+                                            
+                                            {% comment %} <div class="col-md-3">
+                                                {{ form.es_pendiente }}
+                                                <label class="form-check-label" for="{{ form.es_pendiente.id_for_label }}">
+                                                    Pendiente
+                                                </label>
+                                            </div> {% endcomment %}
+
+                                            {% comment %} <div class="col-md-4">
+                                                {{ form.es_presupuesto }}
+                                                <label class="form-check-label" for="{{ form.es_presupuesto.id_for_label }}">
+                                                    Presupuesto
+                                                </label>
+                                            </div> {% endcomment %}
+                                        </div>
+                                    </div>
+                                    <!-- sector derecho del encabezado end -->
+                                </div>
+                                <!--  Encabezado de Factura- Fin -->
+                            </div>
+                            </div>
+                        </div>
+
+                        <div class="container my-3">
+                            <div class="row my-1">
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Retenciones</strong>
+                                    </label>
+                                    
+                                    <div>
+                                        {{ form.total_retenciones|formato_es_ar }}
+                                        <span class="formatted-number">{{ form.total_retenciones.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Efectivo</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.efectivo_recibo }}
+                                        <span class="formatted-number">{{ form.efectivo_recibo.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Dep/Transf.</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total_depositos }}
+                                        <span class="formatted-number">{{ form.total_depositos.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Tarjetas</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total_tarjetas }}
+                                        <span class="formatted-number">{{ form.total_tarjetas.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Cheques</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total_cheques }}
+                                        <span class="formatted-number">{{ form.total_cheques.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Total Formas Pago</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total_formas_pago }}
+                                        <span class="formatted-number">{{ form.total_formas_pago.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row my-1">
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Importe</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total }}
+                                        <span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Total Cobrado</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.total_cobrado }}
+                                        <span class="formatted-number">{{ form.total_cobrado.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Resto a Cobrar</strong>
+                                    </label>
+                                    <div>
+                                        {{ form.resto_cobrar }}
+                                        <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Item Detalle Recibo Two -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" 
+                                        aria-controls="panelsStayOpen-collapseTwo">
+                                    Detalle del Recibo
+                                </button>
+                            </h2>
+                            
+                            <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="row tbl-fixed my-2 mx-1" id="formset-container2">
+                                        {{ formset_recibo.management_form }}
+                                        
+                                        <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+                                            <thead class="table-primary small-font">
+                                                <tr>
+                                                    <th style="width: 16%;">Comprobante</th>
+                                                    <th style="width: 5%;">Letra</th>
+                                                    <th style="width: 13%;">Número</th>
+                                                    <th style="width: 12%;">Fecha</th>
+                                                    <th style="width: 15%;">Total</th>
+                                                    <th style="width: 15%;">Entrega</th>
+                                                    <th style="width: 15%;">Saldo</th>
+                                                    <th style="width: 15%;">Pagos</th>
+                                                    <th style="width: 5%;">Elim</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for formdet in formset_recibo %}
+                                                    <tr data-form-index="{{ forloop.counter0 }}">
+                                                        <td>
+                                                            {{ formdet.id_detalle_recibo }}
+                                                            {{ formdet.id_factura }}
+                                                            {{ formdet.id_factura_cobrada }}
+                                                            {{ formdet.comprobante }}
+                                                        </td>
+                                                        <td>{{ formdet.letra_comprobante }}</td>
+                                                        <td>{{ formdet.numero_comprobante }}</td>
+                                                        <td>{{ formdet.fecha_comprobante }}</td>
+                                                        <td>{{ formdet.total }}</td>
+                                                        <td>{{ formdet.entrega }}</td>
+                                                        <td>{{ formdet.saldo }}</td>
+                                                        <td>{{ formdet.monto_cobrado }}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                                                    data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar" 
+                                                                    {% if is_edit %}disabled{% endif %}>
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                            {{ formdet.DELETE }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+                                                            <div class="col-md-2">
+                                                                <div class="d-flex flex-column gap-2">
+                                                                    <button type="submit" class="btn btn-outline-success btn-sm">
+                                                                        {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+                                                                        <i class="bi bi-floppy"></i>
+                                                                    </button>
+                                                                    <a href="{% url 'recibo_list' %}" class="btn btn-outline-secondary btn-sm">
+                                                                        Cancelar
+                                                                        <i class="bi bi-x-circle"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Item Detalle Retencion Three -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" 
+                                        aria-controls="panelsStayOpen-collapseThree">
+                                    Detalle de las Retenciones
+                                </button>
+                            </h2>
+                            
+                            <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="row tbl-fixed my-2 mx-1" id="formset-container3" data-is-edit="{{ is_edit|lower }}">
+                                        {{ formset_retencion.management_form }}
+                                        <!-- Fila superior con formulario editable -->
+
+                                        <form>
+                                            <div class="row mb-2">
+                                                <div class="col-md-3">
+                                                    <label for="{{ form_retencion_input.id_codigo_retencion_input.id_for_label }}" class="form-label">
+                                                        {{ form_retencion_input.id_codigo_retencion_input.label }}
+                                                    </label>
+                                                    {{ form_retencion_input.id_codigo_retencion_input }}
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <label for="{{ form_retencion_input.certificado_input.id_for_label }}" class="form-label">
+                                                        {{ form_retencion_input.certificado_input.label }}
+                                                    </label>
+                                                    {{ form_retencion_input.certificado_input }}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_retencion_input.importe_retencion_input.id_for_label }}" class="form-label">
+                                                        {{ form_retencion_input.importe_retencion_input.label }}
+                                                    </label>
+                                                    {{ form_retencion_input.importe_retencion_input }}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_retencion_input.fecha_retencion_input.id_for_label }}" class="form-label">
+                                                        {{ form_retencion_input.fecha_retencion_input.label }}
+                                                    </label>
+                                                    {{ form_retencion_input.fecha_retencion_input }}
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" id="insertar-retencion" class="btn btn-primary btn-sm mt-4">Insertar</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
+                                        <!-- Tabla de retenciones -->
+                                        <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+                                            <thead class="table-primary small-font">
+                                                <tr>
+                                                    <th style="width: 25%;">Código</th>
+                                                    <th style="width: 25%;">Certificado</th>
+                                                    <th style="width: 20%;">Importe</th>
+                                                    <th style="width: 20%;">Fecha</th>
+                                                    <th style="width: 10%;">Elim</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for formret in formset_retencion %}
+                                                    <tr data-form-index="{{ forloop.counter0 }}">
+                                                        <td>
+                                                            {{ formret.id_retencion_recibo }}
+                                                            {{ formret.id_factura }}
+                                                            <input type="hidden" name="retencionrecibo_set-{{ forloop.counter0 }}-id_codigo_retencion" value="{{ formret.id_codigo_retencion.value|default:'' }}">
+                                                            {{ formret.id_codigo_retencion }}
+                                                        </td>
+                                                        <td>{{ formret.certificado }}</td>
+                                                        <td>{{ formret.importe_retencion }}</td>
+                                                        <td>{{ formret.fecha_retencion }}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                                                    data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar" 
+                                                                    {% if is_edit %}disabled{% endif %}>
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                            {{ formret.DELETE }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <td colspan="100%">
+                                                        <div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <!-- Item Detalle Deposito Four -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#panelsStayOpen-collapseFour" aria-expanded="false" 
+                                        aria-controls="panelsStayOpen-collapseFour">
+                                    Detalle de los Depósitos
+                                </button>
+                            </h2>
+                            
+                            <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="row tbl-fixed my-2 mx-1" id="formset-container4">
+                                        {{ formset_deposito.management_form }}
+                                        
+                                        <form>
+                                            <div class="row mb-3">
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_deposito_input.id_banco_input.id_for_label }}" class="form-label">
+                                                        {{ form_deposito_input.id_banco_input.label }}
+                                                    </label>
+                                                    {{ form_deposito_input.id_banco_input }}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_deposito_input.id_concepto_banco_input.id_for_label }}" class="form-label">
+                                                        {{ form_deposito_input.id_concepto_banco_input.label }}
+                                                    </label>
+                                                    {{ form_deposito_input.id_concepto_banco_input }}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_deposito_input.fecha_deposito_input.id_for_label }}" class="form-label">
+                                                        {{ form_deposito_input.fecha_deposito_input.label }}
+                                                    </label>
+                                                    {{ form_deposito_input.fecha_deposito_input }}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_deposito_input.importe_deposito_input.id_for_label }}" class="form-label">
+                                                        {{ form_deposito_input.importe_deposito_input.label }}
+                                                    </label>
+                                                    {{ form_deposito_input.importe_deposito_input }}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label for="{{ form_deposito_input.detalle_deposito_input.id_for_label }}" class="form-label">
+                                                        {{ form_deposito_input.detalle_deposito_input.label }}
+                                                    </label>
+                                                    {{ form_deposito_input.detalle_deposito_input }}
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" id="insertar-deposito" class="btn btn-primary btn-sm mt-4">Insertar</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
+                                        <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+                                            <thead class="table-primary small-font">
+                                                <tr>
+                                                    <th style="width: 20%;">Banco</th>
+                                                    <th style="width: 20%;">Concepto</th>
+                                                    <th style="width: 20%;">Fecha</th>
+                                                    <th style="width: 20%;">Importe</th>
+                                                    <th style="width: 20%;">Detalle</th>
+                                                    <th style="width: 10%;">Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for form in formset_deposito %}
+                                                    <tr data-form-index="{{ forloop.counter0 }}">
+                                                        <td>{{ form.id_deposito_recibo }}{{ form.id_factura }}{{ form.id_banco }}</td>
+                                                        <td>{{ form.id_concepto_banco }}</td>
+                                                        <td>{{ form.fecha_deposito }}</td>
+                                                        <td>{{ form.importe_deposito }}</td>
+                                                        <td>{{ form.detalle_deposito }}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-sm btn-cancelar" data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar" {% if is_edit %}disabled{% endif %}><i class="bi bi-trash"></i></button>
+                                                            {{ form.DELETE }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Item Detalle Tarjeta Five -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#panelsStayOpen-collapseFive" aria-expanded="false" 
+                                        aria-controls="panelsStayOpen-collapseFive">
+                                    Detalle del Pago con Tarjetas
+                                </button>
+                            </h2>
+                            
+                            <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="row tbl-fixed my-2 mx-1" id="formset-container5">
+                                        {{ formset_tarjeta.management_form }}
+
+                                        <form>
+                                            <div class="row mb-2">
+                                                <div class="col-3">
+                                                    <label for="{{ form_tarjeta_input.id_tarjeta_input.id_for_label }}" class="form-label">
+                                                        {{ form_tarjeta_input.id_tarjeta_input.label }}
+                                                    </label>
+                                                    {{ form_tarjeta_input.id_tarjeta_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_tarjeta_input.cupon_input.id_for_label }}" class="form-label">
+                                                        {{ form_tarjeta_input.cupon_input.label }}
+                                                    </label>
+                                                    {{ form_tarjeta_input.cupon_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_tarjeta_input.lote_input.id_for_label }}" class="form-label">
+                                                        {{ form_tarjeta_input.lote_input.label }}
+                                                    </label>
+                                                    {{ form_tarjeta_input.lote_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_tarjeta_input.cuotas_input.id_for_label }}" class="form-label">
+                                                        {{ form_tarjeta_input.cuotas_input.label }}
+                                                    </label>
+                                                    {{ form_tarjeta_input.cuotas_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_tarjeta_input.importe_tarjeta_input.id_for_label }}" class="form-label">
+                                                        {{ form_tarjeta_input.importe_tarjeta_input.label }}
+                                                    </label>
+                                                    {{ form_tarjeta_input.importe_tarjeta_input }}
+                                                </div>
+                                                <div class="col-1">
+                                                    <button type="button" id="insertar-tarjeta" class="btn btn-primary btn-sm mt-4">Insertar</button>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                        <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+                                            <thead class="table-primary small-font">
+                                                <tr>
+                                                    <th>Tarjeta</th>
+                                                    <th>Cupón</th>
+                                                    <th>Lote</th>
+                                                    <th>Cuotas</th>
+                                                    <th>Importe</th>
+                                                    <th>Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for form in formset_tarjeta %}
+                                                    <tr class="formset-row-tarjeta">
+                                                        <td>
+                                                            {{ form.id_tarjeta_recibo }}
+                                                            {{ form.id_factura }}
+                                                            {{ form.id_tarjeta }}
+                                                        </td>
+                                                        <td>{{ form.cupon }}</td>
+                                                        <td>{{ form.lote }}</td>
+                                                        <td>{{ form.cuotas }}</td>
+                                                        <td>{{ form.importe_tarjeta }}</td>
+                                                        <td>
+                                                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                                                    data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar" 
+                                                                    {% if is_edit %}disabled{% endif %}>
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                            {% comment %} <button type="button" class="btn btn-danger btn-sm delete-row-tarjeta">Eliminar</button> {% endcomment %}
+                                                            {{ form.DELETE }}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                        <!-- Item Detalle Cheque Six -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                        data-bs-target="#panelsStayOpen-collapseSix" aria-expanded="false" 
+                                        aria-controls="panelsStayOpen-collapseSix">
+                                    Detalle del Pago con Cheques
+                                </button>
+                            </h2>
+                            
+                            <div id="panelsStayOpen-collapseSix" class="accordion-collapse collapse">
+                                <div class="accordion-body">
+                                    <div class="row tbl-fixed my-2 mx-1" id="formset-container6">
+                                        {{ formset_cheque.management_form }}
+                                        
+                                        <form>
+                                            <div class="row mb-2">
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.codigo_banco_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.codigo_banco_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.codigo_banco_input }}
+                                                    <input type="hidden" name="codigo_banco_input" id="{{ form_cheque_input.codigo_banco_input.id_for_label }}">
+                                                    
+                                                </div>
+                                                
+                                                <div class="col-4">
+                                                    <label for="{{ form_cheque_input.id_banco_input2.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.id_banco_input2.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.id_banco_input2 }}
+                                                    <input type="hidden" name="id_banco_input2" id="{{ form_cheque_input.id_banco_input2.id_for_label }}">
+                                                    
+                                                </div>
+
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.sucursal_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.sucursal_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.sucursal_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.codigo_postal_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.codigo_postal_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.codigo_postal_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.numero_cheque_recibo_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.numero_cheque_recibo_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.numero_cheque_recibo_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <span id="nombre-banco" class="text-muted small"></span>
+                                                </div>
+                                            </div>
+
+                                            <div class="row mb-2">
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.cuenta_cheque_recibo_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.cuenta_cheque_recibo_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.cuenta_cheque_recibo_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.cuit_cheque_recibo_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.cuit_cheque_recibo_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.cuit_cheque_recibo_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.fecha_cheque1_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.fecha_cheque1_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.fecha_cheque1_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.fecha_cheque2_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.fecha_cheque2_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.fecha_cheque2_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <label for="{{ form_cheque_input.importe_cheque_input.id_for_label }}" class="form-label">
+                                                        {{ form_cheque_input.importe_cheque_input.label }}
+                                                    </label>
+                                                    {{ form_cheque_input.importe_cheque_input }}
+                                                </div>
+                                                <div class="col-2">
+                                                    <button type="button" id="insertar-cheque" class="btn btn-primary btn-sm mt-4">Insertar</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                        
+                                        <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+                                            <thead class="table-primary small-font">
+                                                <tr>
+                                                    <th style="width: 10%;">Código</th>
+                                                    <th style="width: 15%;">Banco</th>
+                                                    <th style="width: 10%;">Sucursal</th>
+                                                    <th style="width: 10%;">Cód. Postal</th>
+                                                    <th style="width: 10%;">Número</th>
+                                                    <th style="width: 10%;">Cuenta</th>
+                                                    <th style="width: 10%;">CUIT</th>
+                                                    <th style="width: 10%;">Fecha 1</th>
+                                                    <th style="width: 10%;">Fecha 2</th>
+                                                    <th style="width: 10%;">Importe</th>
+                                                    <th style="width: 5%;">Eliminar</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for form in formset_cheque %}
+                                                <tr data-form-index="{{ forloop.counter0 }}">
+                                                    <td>
+                                                        {{ form.id_cheque_recibo }}
+                                                        {{ form.id_factura }}
+                                                        {{ form.codigo_banco }}
+                                                    </td>
+                                                    <td>{{ form.id_banco }}</td>
+                                                    <td>{{ form.sucursal }}</td>
+                                                    <td>{{ form.codigo_postal }}</td>
+                                                    <td>{{ form.numero_cheque_recibo }}</td>
+                                                    <td>{{ form.cuenta_cheque_recibo }}</td>
+                                                    <td>{{ form.cuit_cheque_recibo }}</td>
+                                                    <td>{{ form.fecha_cheque1 }}</td>
+                                                    <td>{{ form.fecha_cheque2 }}</td>
+                                                    <td>{{ form.importe_cheque }}</td>
+                                                    <td>
+                                                        <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                                                data-form-index="{{ forloop.counter0 }}" 
+                                                                data-toggle="tooltip" title="Eliminar" 
+                                                                {% if is_edit %}disabled{% endif %}>
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                        {{ form.DELETE }}
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                    </div>
+
+                    <!-- Card del Detalle de Factura - Inicio -->
+                    
+                    <!-- Card del Detalle de Factura - Fin -->
+
+                </form>
+                <!-- Formulario Encabezado Detalle - Fin -->
+            </div>
+        </main>
+    </div>
+    {% endblock principalcomponent %}
+
+{% endblock maincomponent %}
+    
+{% block modals %}
+    <!-- Modal para Listar Agenda-->
+    <div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 90%;">
+            <div class="modal-content">
+                <div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
+                    <h5 class="modal-title fs-6" id="agendaModalLabel">Buscar en Agenda</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulario modal -->
+                    <form method="post" id="buscarAgendaForm">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <input type="text" class="form-control form-control-sm border border-primary" id="busquedaGeneral" placeholder="Buscar por id, cuit o nombre">
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" class="btn btn-outline-primary btn-sm me-2">
+                                    Buscar
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-responsive tbl-fixed">
+                            <table class="table table-striped small-text" id="tablaResultadosAgenda">
+                                <thead class="table-primary fs-7">
+                                    <tr>
+                                        <th scope="col" style="width: 10%;">ID Cliente</th>
+                                        <th scope="col" style="width: 12%;">CUIT</th>
+                                        <th scope="col" style="width: 25%;">Nombre</th>
+                                        <th scope="col" style="width: 15%;">Móvil</th> <!-- Agregado -->
+                                        <th scope="col" style="width: 20%;">Email</th> <!-- Agregado -->
+                                        <th scope="col" style="width: 20%;">Dirección</th>
+                                        <th scope="col" style="width: 8%;">Código Postal</th>
+                                        <th scope="col" style="width: 5%;">Seleccionar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Botones del formulario -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-primary btn-sm me-2" id="seleccionarAgenda">
+                                Seleccionar
+                                <i class="bi bi-check2-circle"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" id="cancelarAgenda">
+                                Cancelar
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock modals %}
+
+{% block script %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const formsetContainer = document.getElementById('formset-container2');
+            const isEdit = document.getElementById('modo-edicion').dataset.isEdit === 'true';
+            
+            /*
+            // Función para parsear valores (CRÍTICA)
+            function parseNumber(value) {
+                // Si es número, retornar directamente
+                if (typeof value === 'number') return value;
+                
+                // Si es string con formato "184.802,20"
+                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
+                    return parseFloat(
+                        value.replace(/\./g, '')  // Quita puntos de miles
+                             .replace(',', '.')   // Convierte coma decimal a punto
+                    );
+                }
+                
+                // Para strings numéricos simples "184802.20"
+                return parseFloat(value) || 0;
+            }
+            
+            // Función para formatear visualización
+            function formatNumber(value) {
+                const num = parseNumber(value);
+                return num.toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+            
+            // Actualizar visualización del total cobrado
+            function actualizarVisualizacion(campoId) {
+                const input = document.getElementById(campoId);
+                const span = input?.nextElementSibling;
+                if (input && span && span.classList.contains('formatted-number')) {
+                    span.textContent = input.value || "0.00"; // Sin formato por ahora
+                }
+            }
+            */
+
+            ///
+            function parseNumber(value) {
+                // Si es número, retornar directamente
+                if (typeof value === 'number') return value;
+                
+                // Si es string con formato "184.802,20"
+                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
+                    return parseFloat(
+                        value.replace(/\./g, '')  // Quita puntos de miles
+                             .replace(',', '.')   // Convierte coma decimal a punto
+                    );
+                }
+                
+                // Para strings numéricos simples "184802.20"
+                return parseFloat(value) || 0;
+            }
+            
+            // Función para formatear números al formato es-AR (ej: 1234,56)
+            function formatNumber(value) {
+                const num = parseNumber(value);
+                return num.toLocaleString('es-AR', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            // Función para actualizar visualización de campos
+            function actualizarVisualizacion(campoId) {
+                const input = document.getElementById(campoId);
+                const span = input?.nextElementSibling;
+                if (input && span && span.classList.contains('formatted-number')) {
+                    const value = input.value || "0.00";
+                    span.textContent = formatNumber(value);
+                } else {
+                    console.warn(`No se encontró input o span con clase formatted-number para ${campoId}`);
+                }
+            }
+            ///
+
+            
+            // Calcular el total cobrado
+            function actualizarTotalCobrado() {
+                let totalCobrado = 0;
+                const rows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
+                
+                // Salir si no hay filas o si no se encuentra el campo monto_cobrado
+                if (rows.length === 0) {
+                    document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
+                    actualizarVisualizacion('id_total_cobrado');
+                    return;
+                }
+
+                rows.forEach(row => {
+                    const montoCobradoInput = row.querySelector('[name*="-monto_cobrado"]');
+                    if (montoCobradoInput) {
+                        const montoCobrado = parseNumber(montoCobradoInput.value);
+                        totalCobrado += montoCobrado;
+                    }
+                });
+                
+                document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
+                actualizarVisualizacion('id_total_cobrado');
+            }
+
+            ///
+            function actualizarTotalRetenciones() {
+                let totalRetenciones = 0;
+                const container = document.querySelector('#formset-container3');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container3");
+                    const totalInput = document.getElementById('id_total_retenciones');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_retenciones');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_retencion"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalRetenciones += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_retenciones');
+                if (totalInput) {
+                    totalInput.value = totalRetenciones.toFixed(2);
+                    actualizarVisualizacion('id_total_retenciones');
+                } else {
+                    console.error("No se encontró el campo id_total_retenciones");
+                }
+            }
+            ///
+
+            /*
+            // Calcular el total de retenciones
+            function actualizarTotalRetenciones() {
+                let totalRetenciones = 0;
+                const container = document.querySelector('#formset-container3');
+                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
+                    document.getElementById('id_total_retenciones').value = totalRetenciones.toFixed(2);
+                    actualizarVisualizacion('id_total_retenciones');
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_retencion"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalRetenciones += value;
+                    }
+                });
+
+                document.getElementById('id_total_retenciones').value = totalRetenciones.toFixed(2);
+                actualizarVisualizacion('id_total_retenciones');
+            }
+            */
+
+            // Calcular el total de depósitos
+            function actualizarTotalDepositos() {
+                let totalDepositos = 0;
+                const container = document.querySelector('#formset-container4');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container4");
+                    const totalInput = document.getElementById('id_total_depositos');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_depositos');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_deposito"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalDepositos += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_depositos');
+                if (totalInput) {
+                    totalInput.value = totalDepositos.toFixed(2);
+                    actualizarVisualizacion('id_total_depositos');
+                } else {
+                    console.error("No se encontró el campo id_total_depositos");
+                }
+            }
+
+
+            /*
+            function actualizarTotalDepositos() {
+                let totalDepositos = 0;
+                const container = document.querySelector('#formset-container4');
+                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
+                    document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
+                    actualizarVisualizacion('id_total_depositos');
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_deposito"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalDepositos += value;
+                    }
+                });
+
+                document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
+                actualizarVisualizacion('id_total_depositos');
+            }
+            */
+
+            // Calcular el total de tarjetas
+            function actualizarTotalTarjetas() {
+                let totalTarjetas = 0;
+                const container = document.querySelector('#formset-container5');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container5");
+                    const totalInput = document.getElementById('id_total_tarjetas');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_tarjetas');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_tarjeta"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalTarjetas += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_tarjetas');
+                if (totalInput) {
+                    totalInput.value = totalTarjetas.toFixed(2);
+                    actualizarVisualizacion('id_total_tarjetas');
+                } else {
+                    console.error("No se encontró el campo id_total_tarjetas");
+                }
+            }
+            
+            /*
+            function actualizarTotalTarjetas() {
+                let totalTarjetas = 0;
+                const container = document.querySelector('#formset-container5');
+                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
+                    document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
+                    actualizarVisualizacion('id_total_tarjetas');
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_tarjeta"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalTarjetas += value;
+                    }
+                });
+
+                document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
+                actualizarVisualizacion('id_total_tarjetas');
+            }
+            */
+
+            
+            /*function actualizarTotalCheques() {
+                let totalCheques = 0;
+                const container = document.querySelector('#formset-container6');
+                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
+                    document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
+                    actualizarVisualizacion('id_total_cheques');
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_cheque"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalCheques += value;
+                    }
+                });
+
+                document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
+                actualizarVisualizacion('id_total_cheques');
+            }
+            */
+            ////
+
+            // Calcular el total de cheques
+            function actualizarTotalCheques() {
+                let totalCheques = 0;
+                const container = document.querySelector('#formset-container6');
+
+                if (!container) {
+                    console.warn("No se encontró el contenedor formset-container6");
+                    const totalInput = document.getElementById('id_total_cheques');
+                    if (totalInput) {
+                        totalInput.value = "0.00";
+                        actualizarVisualizacion('id_total_cheques');
+                    }
+                    return;
+                }
+
+                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
+                rows.forEach(row => {
+                    const input = row.querySelector('[name*="-importe_cheque"]');
+                    if (input) {
+                        const value = parseNumber(input.value);
+                        totalCheques += value;
+                    }
+                });
+
+                const totalInput = document.getElementById('id_total_cheques');
+                if (totalInput) {
+                    totalInput.value = totalCheques.toFixed(2);
+                    actualizarVisualizacion('id_total_cheques');
+                } else {
+                    console.error("No se encontró el campo id_total_cheques");
+                }
+            }
+
+            // Calcular total formas de pago y resto a cobrar
+            function actualizarResumenPagos() {
+                const totals = {
+                    efectivo: parseNumber(document.getElementById('id_efectivo_recibo')?.value) || 0,
+                    retenciones: parseNumber(document.getElementById('id_total_retenciones')?.value) || 0,
+                    depositos: parseNumber(document.getElementById('id_total_depositos')?.value) || 0,
+                    tarjetas: parseNumber(document.getElementById('id_total_tarjetas')?.value) || 0,
+                    cheques: parseNumber(document.getElementById('id_total_cheques')?.value) || 0
+                };
+                const totalFormasPago = Object.values(totals).reduce((sum, value) => sum + value, 0);
+                document.getElementById('id_total_formas_pago').value = totalFormasPago.toFixed(2);
+                actualizarVisualizacion('id_total_formas_pago');
+
+                const totalCobrado = parseNumber(document.getElementById('id_total_cobrado')?.value) || 0;
+                const restoCobrar = totalCobrado - totalFormasPago;
+                document.getElementById('id_resto_cobrar').value = restoCobrar.toFixed(2);
+                actualizarVisualizacion('id_resto_cobrar');
+            }
+
+            // Función principal para actualizar todo
+            function actualizarTodo() {
+                // alert("Entró a actualizarTodo1");
+                actualizarTotalCobrado();
+                actualizarTotalRetenciones();
+                actualizarTotalDepositos();
+                actualizarTotalTarjetas();
+                actualizarTotalCheques();
+                actualizarResumenPagos();
+                actualizarResumenPagos();
+            }
+            
+            // Actualizar facturas pendientes
+            window.updateFacturasPendientes = function(facturas) {
+                if (isEdit) return; // No agregar filas en modo edición
+                const tbody = formsetContainer.querySelector('.detalle-form tbody');
+                tbody.innerHTML = ''; // Limpiar tabla
+                const formControlClass = 'form-control form-control-sm border border-primary small-font';
+                const readonlyClass = 'readonly-select';
+                const montoCobradoClass = 'form-control form-control-sm border border-primary text-end';
+
+                facturas.forEach((factura, index) => {
+                    const saldo = parseNumber(factura.monto_pendiente);
+                    const newFormHTML = `
+                        <tr data-form-index="${index}" class="small-font">
+                            <td>
+                                <input type="hidden" name="detallerecibo_set-${index}-id_detalle_recibo">
+                                <input type="hidden" name="detallerecibo_set-${index}-id_factura">
+                                <input type="hidden" name="detallerecibo_set-${index}-id_factura_cobrada" value="${factura.id_factura}">
+                                <input type="text" name="detallerecibo_set-${index}-comprobante" class="${formControlClass} ${readonlyClass}" value="${factura.tipo_comprobante}" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="detallerecibo_set-${index}-letra_comprobante" class="${formControlClass} ${readonlyClass}" value="${factura.letra_comprobante}" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="detallerecibo_set-${index}-numero_comprobante" class="${formControlClass} ${readonlyClass}" value="${factura.numero_comprobante}" readonly>
+                            </td>
+                            <td>
+                                <input type="text" name="detallerecibo_set-${index}-fecha_comprobante" class="${formControlClass} ${readonlyClass}" value="${factura.fecha_comprobante}" readonly>
+                            </td>
+                            <td>
+                                <input type="number" name="detallerecibo_set-${index}-total" class="${formControlClass} text-end ${readonlyClass}" value="${factura.total}" readonly>
+                            </td>
+                            <td>
+                                <input type="number" name="detallerecibo_set-${index}-entrega" class="${formControlClass} text-end ${readonlyClass}" value="${factura.entrega}" readonly>
+                            </td>
+                            <td>
+                                <input type="number" name="detallerecibo_set-${index}-saldo" class="${formControlClass} text-end ${readonlyClass}" value="${saldo.toFixed(2)}" readonly>
+                            </td>
+                            <td>
+                                <input type="number" name="detallerecibo_set-${index}-monto_cobrado" class="${montoCobradoClass}" value="0.00" min="0" step="0.01" required style="font-size: 0.8rem; padding: 0.25rem;">
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${index}" data-toggle="tooltip" title="Eliminar" ${isEdit ? 'disabled' : ''}>
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                                <input type="checkbox" name="detallerecibo_set-${index}-DELETE" id="id_detallerecibo_set-${index}-DELETE" style="display: none;">
+                            </td>
+                        </tr>
+                    `;
+                    tbody.insertAdjacentHTML('beforeend', newFormHTML);
+                });
+
+                document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = facturas.length;
+                actualizarTodo();
+
+                
+            }
+
+            // Manejar cambios en monto_cobrado
+            formsetContainer.addEventListener('input', function (event) {
+                if (event.target.matches('[name*="-monto_cobrado"]')) {
+                    
+                    const row = event.target.closest('tr');
+                    const montoCobrado = parseNumber(event.target.value);
+                    const saldo = parseNumber(row.querySelector('[name*="-saldo"]').value);
+                    if (montoCobrado > saldo) {
+                        alert('El monto cobrado no puede ser mayor al saldo.');
+                        event.target.value = saldo.toFixed(2);
+                    }
+                    actualizarTodo();
+                }
+            });
+
+            // Manejar cambios en efectivo_recibo
+            document.getElementById('id_efectivo_recibo').addEventListener('input', function () {
+                actualizarResumenPagos();
+            });
+
+            ////////// Inicio de Sección Retenciones
+            /* #region Retenciones */
+            const insertarBtn3 = document.getElementById('insertar-retencion');
+            const formsetContainer3 = document.getElementById('formset-container3');
+            const totalForms3 = document.getElementById('id_retencionrecibo_set-TOTAL_FORMS');
+            const isEdit3 = formsetContainer3.getAttribute('data-is-edit') === 'true';
+
+            insertarBtn3.addEventListener('click', function () {
+                const codigoRetencion = formsetContainer3.querySelector('#id_id_codigo_retencion_input').value;
+                const certificado = formsetContainer3.querySelector('#id_certificado_input').value;
+                const importe = formsetContainer3.querySelector('#id_importe_retencion_input').value;
+                const fecha = formsetContainer3.querySelector('#id_fecha_retencion_input').value;
+
+                if (!codigoRetencion || !certificado || !importe || !fecha) {
+                    alert('Por favor, complete todos los campos!!');
+                    return;
+                }
+
+                const formIdx = parseInt(totalForms3.value);
+                const newFormHTML = `
+                    <tr data-form-index="${formIdx}">
+                        <td>
+                            <input type="hidden" name="retencionrecibo_set-${formIdx}-id_retencion_recibo">
+                            <input type="hidden" name="retencionrecibo_set-${formIdx}-id_factura" value="">
+                            <input type="hidden" name="retencionrecibo_set-${formIdx}-id_codigo_retencion" value="${codigoRetencion}">
+                            <select name="retencionrecibo_set-${formIdx}-id_codigo_retencion" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="${codigoRetencion}">${formsetContainer3.querySelector('#id_id_codigo_retencion_input option:checked').text}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="retencionrecibo_set-${formIdx}-certificado" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${certificado}">
+                        </td>
+                        <td>
+                            <input type="number" name="retencionrecibo_set-${formIdx}-importe_retencion" class="form-control form-control-sm border border-primary text-end" style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
+                        </td>
+                        <td>
+                            <input type="date" name="retencionrecibo_set-${formIdx}-fecha_retencion" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha}">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" ${isEdit3 ? 'disabled' : ''}>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <input type="checkbox" name="retencionrecibo_set-${formIdx}-DELETE" style="display: none;">
+                        </td>
+                    </tr>
+                `;
+
+                formsetContainer3.querySelector('tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                totalForms3.value = formIdx + 1;
+
+                formsetContainer3.querySelector('#id_id_codigo_retencion_input').value = '';
+                formsetContainer3.querySelector('#id_certificado_input').value = '';
+                formsetContainer3.querySelector('#id_importe_retencion_input').value = '';
+                formsetContainer3.querySelector('#id_fecha_retencion_input').value = '';
+
+                actualizarTodo();
+                
+            });
+
+            formsetContainer3.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-delete') && !isEdit3) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    if (confirm('¿Está seguro de eliminar esta retención?')) {
+                        deleteInput.checked = true;
+                        row.style.display = 'none';
+                        if (typeof actualizarContadorFormsets3 === 'function') {
+                            actualizarContadorFormsets3();
+                        }
+                        if (typeof actualizarTodo === 'function') {
+                            actualizarTodo();
+                        }
+                    }
+                }
+            });
+
+            function actualizarContadorFormsets3() {
+                const visibleRows = formsetContainer3.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                totalForms3.value = visibleRows;
+            }
+
+            /* #endregion */
+            //////////
+
+            ////////// Inicio de Sección Depósitos
+            /* #region Helpers */
+            const insertarBtn4 = document.getElementById('insertar-deposito');
+            const formsetContainer4 = document.getElementById('formset-container4');
+            const totalForms4 = document.getElementById('id_depositorecibo_set-TOTAL_FORMS');
+            const isEdit4 = formsetContainer4.getAttribute('data-is-edit') === 'true';
+
+            insertarBtn4.addEventListener('click', function () {
+                const banco = formsetContainer4.querySelector('#id_id_banco_input').value;
+                const concepto = formsetContainer4.querySelector('#id_id_concepto_banco_input').value;
+                const fecha = formsetContainer4.querySelector('#id_fecha_deposito_input').value;
+                const importe = formsetContainer4.querySelector('#id_importe_deposito_input').value;
+                const detalle = formsetContainer4.querySelector('#id_detalle_deposito_input').value;
+
+                // if (!banco || !concepto || !fecha || !importe || !detalle) {
+                if (!banco || !concepto || !fecha || !importe) {
+                    alert('Por favor, complete todos los campos!!');
+                    return;
+                }
+
+                const formIdx = parseInt(totalForms4.value);
+                const bancoText = formsetContainer4.querySelector('#id_id_banco_input option:checked').text;
+                const conceptoText = formsetContainer4.querySelector('#id_id_concepto_banco_input option:checked').text;
+
+                const newFormHTML = `
+                    <tr data-form-index="${formIdx}">
+                        <td>
+                            <input type="hidden" name="depositorecibo_set-${formIdx}-id_deposito_recibo">
+                            <input type="hidden" name="depositorecibo_set-${formIdx}-id_factura" value="">
+                            <input type="hidden" name="depositorecibo_set-${formIdx}-id_banco" value="${banco}">
+                            <select name="depositorecibo_set-${formIdx}-id_banco" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="${banco}">${bancoText}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="hidden" name="depositorecibo_set-${formIdx}-id_concepto_banco" value="${concepto}">
+                            <select name="depositorecibo_set-${formIdx}-id_concepto_banco" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="${concepto}">${conceptoText}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="date" name="depositorecibo_set-${formIdx}-fecha_deposito" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha}">
+                        </td>
+                        <td>
+                            <input type="number" name="depositorecibo_set-${formIdx}-importe_deposito" class="form-control form-control-sm border border-primary text-end" style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
+                        </td>
+                        <td>
+                            <input type="text" name="depositorecibo_set-${formIdx}-detalle_deposito" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${detalle}">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" ${isEdit4 ? 'disabled' : ''}>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <input type="checkbox" name="depositorecibo_set-${formIdx}-DELETE" style="display: none;">
+                        </td>
+                    </tr>
+                `;
+
+                formsetContainer4.querySelector('tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                totalForms4.value = formIdx + 1;
+
+                formsetContainer4.querySelector('#id_id_banco_input').value = '';
+                formsetContainer4.querySelector('#id_id_concepto_banco_input').value = '';
+                formsetContainer4.querySelector('#id_fecha_deposito_input').value = '';
+                formsetContainer4.querySelector('#id_importe_deposito_input').value = '';
+                formsetContainer4.querySelector('#id_detalle_deposito_input').value = '';
+
+                actualizarTodo();
+            });
+
+            formsetContainer4.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-delete') && !isEdit4) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    if (confirm('¿Está seguro de eliminar este depósito?')) {
+                        deleteInput.checked = true;
+                        row.style.display = 'none';
+                        if (typeof actualizarContadorFormsets4 === 'function') {
+                            actualizarContadorFormsets4();
+                        }
+                        if (typeof actualizarTodo === 'function') {
+                            actualizarTodo();
+                        }
+                    }
+                }
+            });
+
+            function actualizarContadorFormsets4() {
+                const visibleRows = formsetContainer4.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                totalForms4.value = visibleRows;
+            }
+
+            /* #endregion */
+            ////////// Fin de Sección Depósitos
+
+            ////////// Inicio de Sección Tarjetas
+            /* #region Helpers */
+            const insertarBtn5 = document.getElementById('insertar-tarjeta');
+            const formsetContainer5 = document.getElementById('formset-container5');
+            const totalForms5 = document.getElementById('id_tarjetarecibo_set-TOTAL_FORMS');
+            const isEdit5 = formsetContainer5.getAttribute('data-is-edit') === 'true';
+
+            insertarBtn5.addEventListener('click', function () {
+                const tarjeta = formsetContainer5.querySelector('#id_id_tarjeta_input').value;
+                const cupon = formsetContainer5.querySelector('#id_cupon_input').value;
+                const lote = formsetContainer5.querySelector('#id_lote_input').value;
+                const cuotas = formsetContainer5.querySelector('#id_cuotas_input').value;
+                const importe = formsetContainer5.querySelector('#id_importe_tarjeta_input').value;
+
+                if (!tarjeta || !cupon || !lote || !cuotas || !importe) {
+                    alert('Por favor, complete todos los campos!!');
+                    return;
+                }
+
+                const formIdx = parseInt(totalForms5.value);
+                const tarjetaText = formsetContainer5.querySelector('#id_id_tarjeta_input option:checked').text;
+
+                const newFormHTML = `
+                    <tr data-form-index="${formIdx}">
+                        <td>
+                            <input type="hidden" name="tarjetarecibo_set-${formIdx}-id_tarjeta_recibo">
+                            <input type="hidden" name="tarjetarecibo_set-${formIdx}-id_factura" value="">
+                            <input type="hidden" name="tarjetarecibo_set-${formIdx}-id_tarjeta" value="${tarjeta}">
+                            <select name="tarjetarecibo_set-${formIdx}-id_tarjeta" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="${tarjeta}">${tarjetaText}</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="tarjetarecibo_set-${formIdx}-cupon" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${cupon}">
+                        </td>
+                        <td>
+                            <input type="number" name="tarjetarecibo_set-${formIdx}-lote" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${lote}">
+                        </td>
+                        <td>
+                            <input type="number" name="tarjetarecibo_set-${formIdx}-cuotas" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;" value="${cuotas}">
+                        </td>
+                        <td>
+                            <input type="number" name="tarjetarecibo_set-${formIdx}-importe_tarjeta" class="form-control form-control-sm border border-primary text-end" style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" ${isEdit5 ? 'disabled' : ''}>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <input type="checkbox" name="tarjetarecibo_set-${formIdx}-DELETE" style="display: none;">
+                        </td>
+                    </tr>
+                `;
+
+                formsetContainer5.querySelector('tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                totalForms5.value = formIdx + 1;
+
+                formsetContainer5.querySelector('#id_id_tarjeta_input').value = '';
+                formsetContainer5.querySelector('#id_cupon_input').value = '';
+                formsetContainer5.querySelector('#id_lote_input').value = '';
+                formsetContainer5.querySelector('#id_cuotas_input').value = '';
+                formsetContainer5.querySelector('#id_importe_tarjeta_input').value = '';
+
+                actualizarTodo();
+            });
+
+            formsetContainer5.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-delete') && !isEdit5) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    if (confirm('¿Está seguro de eliminar este pago con tarjeta?')) {
+                        deleteInput.checked = true;
+                        row.style.display = 'none';
+                        if (typeof actualizarContadorFormsets5 === 'function') {
+                            actualizarContadorFormsets5();
+                        }
+                        if (typeof actualizarTodo === 'function') {
+                            actualizarTodo();
+                        }
+                    }
+                }
+            });
+
+            function actualizarContadorFormsets5() {
+                const visibleRows = formsetContainer5.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                totalForms5.value = visibleRows;
+            }
+
+            /* #endregion */
+            ////////// Fin de Sección Tarjetas
+
+            /// Nueva sección cheques
+            // Funcionalidad del botón Insertar Cheque
+            const insertarBtn6 = document.getElementById('insertar-cheque');
+            const formsetContainer6 = document.getElementById('formset-container6');
+            const totalForms6 = document.getElementById('id_chequerecibo_set-TOTAL_FORMS');
+            const isEdit6 = formsetContainer6.getAttribute('data-is-edit') === 'true';
+
+            insertarBtn6.addEventListener('click', function () {
+                const codigoBanco = formsetContainer6.querySelector('#id_codigo_banco_input').value;
+                const bancoSelect = formsetContainer6.querySelector('#id_id_banco_input2');
+                const bancoId = bancoSelect.value;
+                const nombreBanco = bancoSelect.options[bancoSelect.selectedIndex]?.text || '';
+                const sucursal = formsetContainer6.querySelector('#id_sucursal_input').value;
+                const codigoPostal = formsetContainer6.querySelector('#id_codigo_postal_input').value;
+                const numero = formsetContainer6.querySelector('#id_numero_cheque_recibo_input').value;
+                const cuenta = formsetContainer6.querySelector('#id_cuenta_cheque_recibo_input').value;
+                const cuit = formsetContainer6.querySelector('#id_cuit_cheque_recibo_input').value;
+                const fecha1 = formsetContainer6.querySelector('#id_fecha_cheque1_input').value;
+                const fecha2 = formsetContainer6.querySelector('#id_fecha_cheque2_input').value;
+                const importe = formsetContainer6.querySelector('#id_importe_cheque_input').value;
+
+                // Validar que todos los campos estén completos
+                const camposFaltantes = [];
+                if (!codigoBanco) camposFaltantes.push('Código Banco');
+                if (!bancoId) camposFaltantes.push('Banco (seleccione un banco válido)');
+                if (!sucursal) camposFaltantes.push('Sucursal');
+                if (!codigoPostal) camposFaltantes.push('Código Postal');
+                if (!numero) camposFaltantes.push('Número de Cheque');
+                // if (!cuenta) camposFaltantes.push('Cuenta');
+                // if (!cuit) camposFaltantes.push('CUIT');
+                if (!fecha1) camposFaltantes.push('Fecha de Emisión');
+                if (!fecha2) camposFaltantes.push('Fecha de Cobro');
+                if (!importe) camposFaltantes.push('Importe');
+
+                if (camposFaltantes.length > 0) {
+                    alert(`Por favor, complete los siguientes campos:\n- ${camposFaltantes.join('\n- ')}`);
+                    return;
+                }
+
+                // Validar que el código de banco sea numérico y de máximo 3 dígitos
+                if (!/^\d{1,3}$/.test(codigoBanco)) {
+                    alert('El código de banco debe ser numérico y tener hasta 3 dígitos.');
+                    return;
+                }
+
+                ///
+                // Validar que la Fecha de Cobro (fecha_cheque2) no exceda 30 días desde hoy
+                const fechaCobro = new Date(fecha2);
+                const fechaHoy = new Date();
+                const diasPermitidos = 30;
+
+                // Normalizar fechas para ignorar horas
+                fechaHoy.setHours(0, 0, 0, 0);
+                fechaCobro.setHours(0, 0, 0, 0);
+
+                const diferenciaMilisegundos = fechaHoy - fechaCobro;
+                const diferenciaDias = diferenciaMilisegundos / (1000 * 60 * 60 * 24);
+
+                if (diferenciaDias > diasPermitidos) {
+                    const diasExcedidos = Math.floor(diferenciaDias - diasPermitidos);
+                    const fechaHoyStr = fechaHoy.toLocaleDateString('es-AR');
+                    const fechaCobroStr = fechaCobro.toLocaleDateString('es-AR');
+                    alert(`La Fecha de Cobro excede el límite permitido:\n- Fecha del día: ${fechaHoyStr}\n- Fecha del cheque: ${fechaCobroStr}\n- Días permitidos: ${diasPermitidos}\n- Días excedidos: ${diasExcedidos}`);
+                    return;
+                }
+                ///
+
+                const formIdx = parseInt(totalForms6.value);
+
+                const newFormHTML = `
+                    <tr data-form-index="${formIdx}">
+                        <td>
+                            <input type="text" class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoBanco}" readonly>
+                        </td>
+                        <td>
+                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_cheque_recibo">
+                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_factura" value="">
+                            <input type="hidden" name="chequerecibo_set-${formIdx}-id_banco" value="${bancoId}">
+                            <input type="hidden" name="chequerecibo_set-${formIdx}-codigo_banco" value="${codigoBanco}">
+                            <input type="text" class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${nombreBanco}" readonly title="${nombreBanco}">
+                        </td>
+                        <td>
+                            <input type="number" name="chequerecibo_set-${formIdx}-sucursal" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${sucursal}">
+                        </td>
+                        <td>
+                            <input type="number" name="chequerecibo_set-${formIdx}-codigo_postal" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${codigoPostal}">
+                        </td>
+                        <td>
+                            <input type="number" name="chequerecibo_set-${formIdx}-numero_cheque_recibo" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${numero}">
+                        </td>
+                        <td>
+                            <input type="number" name="chequerecibo_set-${formIdx}-cuenta_cheque_recibo" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${cuenta}">
+                        </td>
+                        <td>
+                            <input type="number" name="chequerecibo_set-${formIdx}-cuit_cheque_recibo" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${cuit}">
+                        </td>
+                        <td>
+                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque1" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha1}">
+                        </td>
+                        <td>
+                            <input type="date" name="chequerecibo_set-${formIdx}-fecha_cheque2" 
+                                class="form-control form-control-sm border border-primary" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${fecha2}">
+                        </td>
+                        <td>
+                            <input type="number" name="chequerecibo_set-${formIdx}-importe_cheque" 
+                                class="form-control form-control-sm border border-primary text-end" 
+                                style="font-size: 0.8rem; padding: 0.25rem;" value="${importe}" step="0.01">
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" 
+                                    data-form-index="${formIdx}" data-toggle="tooltip" title="Eliminar" 
+                                    ${isEdit6 ? 'disabled' : ''}>
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <input type="checkbox" name="chequerecibo_set-${formIdx}-DELETE" style="display: none;">
+                        </td>
+                    </tr>
+                `;
+
+                formsetContainer6.querySelector('tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                totalForms6.value = formIdx + 1;
+
+                // Limpiar los campos del formulario
+                formsetContainer6.querySelector('#id_codigo_banco_input').value = '';
+                formsetContainer6.querySelector('#id_id_banco_input2').value = '';
+                formsetContainer6.querySelector('#id_sucursal_input').value = '';
+                formsetContainer6.querySelector('#id_codigo_postal_input').value = '';
+                formsetContainer6.querySelector('#id_numero_cheque_recibo_input').value = '';
+                formsetContainer6.querySelector('#id_cuenta_cheque_recibo_input').value = '';
+                formsetContainer6.querySelector('#id_cuit_cheque_recibo_input').value = '';
+                formsetContainer6.querySelector('#id_fecha_cheque1_input').value = '';
+                formsetContainer6.querySelector('#id_fecha_cheque2_input').value = '';
+                formsetContainer6.querySelector('#id_importe_cheque_input').value = '';
+
+                if (typeof actualizarTodo === 'function') {
+                    actualizarTodo();
+                }
+            });
+
+            formsetContainer6.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-delete') && !isEdit6) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    if (confirm('¿Está seguro de eliminar este cheque?')) {
+                        deleteInput.checked = true;
+                        row.style.display = 'none';
+                        if (typeof actualizarContadorFormsets6 === 'function') {
+                            actualizarContadorFormsets6();
+                        }
+                        if (typeof actualizarTodo === 'function') {
+                            actualizarTodo();
+                        }
+                    }
+                }
+            });
+
+            function actualizarContadorFormsets6() {
+                const visibleRows = formsetContainer6.querySelectorAll('tbody tr:not([style*="display: none"])').length;
+                totalForms6.value = visibleRows;
+            }
+            ///
+            
+
+            // Manejo de eliminación (adaptado de factura_form.html)
+            formsetContainer.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-delete') && !isEdit) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    if (confirm('¿Está seguro de eliminar esta factura del recibo?')) {
+                        if (deleteInput) {
+                            deleteInput.checked = true;
+                            row.style.display = 'none';
+                            actualizarTodo();
+                            actualizarContadorFormsets();
+                        }
+                    }
+                }
+            });
+
+            // Función para actualizar el contador de formsets (reutilizada de factura_form.html)
+            function actualizarContadorFormsets() {
+                const visibleRows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+                document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = visibleRows;
+            }
+
+            // Recalcular total al cargar la página si hay filas
+            if (formsetContainer.querySelectorAll('.detalle-form tbody tr').length > 0) {
+                actualizarTodo();
+            }
+
+            ///
+            // Captura del Evento submit de factura-form
+            const facturaForm = document.querySelector('#factura-form');
+            if (facturaForm) {
+                facturaForm.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevenir envío hasta completar validaciones
+                    let isValid = true;
+                    let errorMessages = [];
+
+                    // Paso 1: Validar campos obligatorios del formulario principal
+                    const requiredFields = [
+                        { id: 'id_id_sucursal', label: 'Sucursal' },
+                        { id: 'id_id_punto_venta', label: 'Punto de Venta' },
+                        { id: 'id_id_deposito', label: 'Depósito' },
+                        { id: 'id_id_comprobante_venta', label: 'Comprobante' },
+                        { id: 'id_id_cliente', label: 'ID Cliente' },
+                        { id: 'id_cuit', label: 'CUIT' },
+                        { id: 'id_nombre_factura', label: 'Nombre' },
+                        { id: 'id_fecha_comprobante', label: 'Fecha' },
+                        { id: 'id_compro', label: 'Comprobante' },
+                        { id: 'id_letra_comprobante', label: 'Letra Comprobante' },
+                        { id: 'id_numero_comprobante', label: 'Número Comprobante' },
+                        { id: 'id_condicion_comprobante', label: 'Condición' },
+                        { id: 'id_total', label: 'Importe' }
+                    ];
+
+                    requiredFields.forEach(field => {
+                        const input = document.getElementById(field.id);
+                        if (!input || !input.value.trim()) {
+                            isValid = false;
+                            errorMessages.push(`${field.label} es obligatorio.`);
+                            if (input) input.classList.add('is-invalid');
+                        } else {
+                            if (input) input.classList.remove('is-invalid');
+                            // Validación específica para id_total > 0
+                            if (field.id === 'id_total') {
+                                const importeInput2 = input; // Reusar el input para respetar tu definición
+                                const importe = parseFloat(importeInput2.value);
+                                if (isNaN(importe) || importe <= 0) {
+                                    isValid = false;
+                                    errorMessages.push('El Importe debe ser mayor a 0.');
+                                    importeInput2.classList.add('is-invalid');
+                                }
+                            }
+                        }
+                    });
+
+                    // Validar CUIT (formato: 11 dígitos numéricos)
+                    const cuitInput = document.getElementById('id_cuit');
+                    if (cuitInput && cuitInput.value.trim() && !/^\d{11}$/.test(cuitInput.value.trim())) {
+                        isValid = false;
+                        errorMessages.push('El CUIT debe contener 11 dígitos numéricos.');
+                        cuitInput.classList.add('is-invalid');
+                    } else if (cuitInput) {
+                        cuitInput.classList.remove('is-invalid');
+                    }
+
+                    // Paso 2: Validar totales
+                    const totalFormasPagoInput = document.getElementById('id_total_formas_pago');
+                    const importeInput = document.getElementById('id_total');
+                    const totalCobradoInput = document.getElementById('id_total_cobrado');
+
+                    const totalFormasPago = totalFormasPagoInput ? parseFloat(totalFormasPagoInput.value) || 0 : 0;
+                    const importe = importeInput ? parseFloat(importeInput.value) || 0 : 0;
+                    const totalCobrado = totalCobradoInput ? parseFloat(totalCobradoInput.value) || 0 : 0;
+
+                    // Regla 1.2: Total Formas de Pago = Total Cobrado
+                    if (totalFormasPago !== totalCobrado) {
+                        isValid = false;
+                        errorMessages.push('El Total de Formas de Pago debe ser igual al Total Cobrado.');
+                        if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
+                        if (totalCobradoInput) totalCobradoInput.classList.add('is-invalid');
+                    } else {
+                        if (totalFormasPagoInput) totalFormasPagoInput.classList.remove('is-invalid');
+                        if (totalCobradoInput) totalCobradoInput.classList.remove('is-invalid');
+                    }
+
+                    // Regla 1.3: Si > 0, deben ser iguales al Importe
+                    if (totalFormasPago > 0 && totalCobrado > 0 && (totalFormasPago !== importe || totalCobrado !== importe)) {
+                        isValid = false;
+                        errorMessages.push('El Total de Formas de Pago y el Total Cobrado deben ser iguales al Importe cuando son mayores a cero.');
+                        if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
+                        if (totalCobradoInput) totalCobradoInput.classList.add('is-invalid');
+                        if (importeInput) importeInput.classList.add('is-invalid');
+                    }
+
+                    // Mostrar errores si los hay y detener el procesamiento
+                    if (!isValid) {
+                        alert("Por favor, corrija los siguientes errores:\n- " + errorMessages.join('\n- '));
+                        return;
+                    }
+
+                    // Lógica original: Procesar formset de detalles de recibo
+                    const tbody = document.querySelector('#formset-container2 .detalle-form tbody');
+                    const rows = tbody.querySelectorAll('tr[data-form-index]');
+                    let validRows = 0;
+
+                    rows.forEach(row => {
+                        const montoCobradoInput = row.querySelector('input[name$="-monto_cobrado"]');
+                        const montoCobrado = parseFloat(montoCobradoInput.value) || 0;
+
+                        if (montoCobrado <= 0) {
+                            row.remove(); // Elimina la fila del DOM
+                        } else {
+                            // Actualiza los índices de los inputs para mantenerlos consecutivos
+                            const index = validRows;
+                            row.setAttribute('data-form-index', index);
+                            row.querySelectorAll('input, select').forEach(input => {
+                                if (input.getAttribute('name')) {
+                                    const oldName = input.getAttribute('name');
+                                    const newName = oldName.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
+                                    input.setAttribute('name', newName);
+                                }
+                                if (input.getAttribute('id')) {
+                                    const oldId = input.getAttribute('id');
+                                    const newId = oldId.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
+                                    input.setAttribute('id', newId);
+                                }
+                            });
+                            validRows++;
+                        }
+                    });
+
+                    // Actualiza TOTAL_FORMS
+                    document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = validRows;
+
+                    // Log para depuración
+                    console.log(`Filas válidas enviadas: ${validRows}`);
+                    if (validRows === 0) {
+                        console.log('No hay detalles con monto_cobrado > 0');
+                    }
+
+                    // Enviar el formulario si todo es válido
+                    facturaForm.submit();
+                });
+            }
+            ///
+
+            // Lógica del comprobante (reutilizada)
+            const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+            
+            if (comprobanteSelect) {
+                comprobanteSelect.addEventListener('change', function() {
+                    actualizarDatosComprobante(this);
+                });
+                if (comprobanteSelect.value) {
+                    actualizarDatosComprobante(comprobanteSelect);
+                }
+            }
+            
+            function actualizarDatosComprobante(selectElement) {
+                const comprobanteId = selectElement.value;
+                
+                if (!comprobanteId) {
+                    // Limpiar campos si no hay comprobante seleccionado
+                    document.getElementById('id_compro').value = '';
+                    document.getElementById('id_letra_comprobante').value = '';
+                    return;
+                }
+
+                // 1. Campo de búsqueda de cliente
+                const buscarCliente = document.getElementById('buscar_cliente');
+                if (buscarCliente) {
+                    buscarCliente.removeAttribute('readonly');
+                }
+                
+                // 2. Botón de validar
+                const validarBtn = document.getElementById('validarBtn');
+                if (validarBtn) {
+                    validarBtn.removeAttribute('disabled');
+                }
+                
+                // 3. Botón de listar agenda
+                const listarAgenda = document.getElementById('listar_agenda');
+                if (listarAgenda) {
+                    listarAgenda.removeAttribute('disabled');
+                }
+        
+                // Obtener solo los datos básicos del comprobante
+                fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error en la respuesta');
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('id_compro').value = data.codigo || '';
+
+                        // Actualizar el checkbox es_remito basado en la respuesta
+                        const esRemitoCheckbox = document.getElementById('id_es_remito');
+                        if (esRemitoCheckbox) {
+                            esRemitoCheckbox.checked = data.es_remito || false;
+                            
+                            // Si necesitas cambiar el estado visual (aunque esté disabled)
+                            if (data.es_remito) {
+                                esRemitoCheckbox.parentElement.classList.add('checked');
+                            } else {
+                                esRemitoCheckbox.parentElement.classList.remove('checked');
+                            }
+                        }
+
+                        /*
+                        // Actualizar el checkbox es_pendiente basado en la respuesta
+                        const esPendienteCheckbox = document.getElementById('id_es_pendiente');
+                        if (esPendienteCheckbox) {
+                            esPendienteCheckbox.checked = data.es_pendiente || false;
+
+                            // Si necesitas cambiar el estado visual (aunque esté disabled)
+                            if (data.es_pendiente) {
+                                esPendienteCheckbox.parentElement.classList.add('checked');
+                                
+                            } else {
+                                esPendienteCheckbox.parentElement.classList.remove('checked');
+                            }
+                        }
+                        */
+
+                        // Revisar si existe un comprobante asociado
+                        if (data.compro_asociado) {
+                            // alert(data.compro_asociado);
+                        }
+
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener código:', error);
+                        document.getElementById('id_compro').value = '';
+                    });
+
+            }
+
+            ///
+            const codigoBancoInput = document.getElementById('id_codigo_banco_input');
+            const bancoSelect = document.getElementById('id_id_banco_input2');
+
+            if (codigoBancoInput) {
+                codigoBancoInput.addEventListener('blur', function() {
+                    const codigo = this.value.trim();
+                    bancoSelect.value = '';
+
+                    // Validar que el código sea numérico y de máximo 3 dígitos
+                    if (!/^\d{1,3}$/.test(codigo)) {
+                        bancoSelect.classList.add('is-invalid');
+                        if (codigo) {
+                            bancoSelect.classList.add('is-invalid');
+                        }
+                        return;
+                    }
+
+                    // Realizar la búsqueda AJAX
+                    fetch(`/ventas/buscar/banco/?codigo_banco=${encodeURIComponent(codigo)}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            bancoSelect.value = data.id_banco;
+                            bancoSelect.classList.remove('is-invalid');
+                            bancoSelect.classList.add('is-valid');
+
+                            // Verificar si id_fecha_cheque1_input está vacío y asignar la fecha actual
+                            const fechaCheque1Input = document.getElementById('id_fecha_cheque1_input');
+                            if (fechaCheque1Input && !fechaCheque1Input.value) {
+                                const hoy = new Date();
+                                const fechaHoyStr = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                                fechaCheque1Input.value = fechaHoyStr;
+                            }
+                        } else {
+                            bancoSelect.classList.remove('is-valid');
+                            bancoSelect.classList.add('is-invalid');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en la búsqueda del banco:', error);
+                        bancoSelect.classList.remove('is-valid');
+                        bancoSelect.classList.add('is-invalid');
+                    });
+                });
+            }
+
+            if (bancoSelect) {
+                bancoSelect.addEventListener('change', function() {
+                    alert("Entró al evento del select!");
+                    
+                    const bancoId = this.value;
+                    codigoBancoInput.value = '';
+
+                    if (!bancoId) {
+                        codigoBancoInput.classList.add('is-invalid');
+                        return;
+                    }
+
+                    // Realizar la búsqueda AJAX por ID
+                    fetch(`/ventas/buscar/codigo_banco/?id_banco=${encodeURIComponent(bancoId)}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            codigoBancoInput.value = data.codigo_banco;
+                            codigoBancoInput.classList.remove('is-invalid');
+                            codigoBancoInput.classList.add('is-valid');
+                        } else {
+                            codigoBancoInput.classList.remove('is-valid');
+                            codigoBancoInput.classList.add('is-invalid');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en la búsqueda del código del banco:', error);
+                        codigoBancoInput.classList.remove('is-valid');
+                        codigoBancoInput.classList.add('is-invalid');
+                    });
+                });
+            }
+            ///
+
+            ///
+            // Control de botones en modo actualización
+            const modoEdicionElement = document.getElementById('modo-edicion');
+            const isEdit_b = modoEdicionElement.getAttribute('data-is-edit') === 'true';
+
+            const validarBtn = document.getElementById('validarBtn');
+            const listarAgendaBtn = document.getElementById('listar_agenda');
+
+            const insertarRetencion = document.getElementById('insertar-retencion');
+            const insertarDeposito = document.getElementById('insertar-deposito');
+            const insertarTarjeta = document.getElementById('insertar-tarjeta');
+            const insertarCheque = document.getElementById('insertar-cheque');
+
+            if (isEdit_b) {
+                if (validarBtn) {
+                    validarBtn.disabled = true;
+                }
+                if (listarAgendaBtn) {
+                    listarAgendaBtn.disabled = true;
+                }
+                
+                if (insertarRetencion) {
+                    insertarRetencion.disabled = true;
+                }
+                if (insertarDeposito) {
+                    insertarDeposito.disabled = true;
+                }
+                if (insertarTarjeta) {
+                    insertarTarjeta.disabled = true;
+                }
+                if (insertarCheque) {
+                    insertarCheque.disabled = true;
+                }
+
+            } else {
+                console.log('DEBUG: Modo creación - botones habilitados');
+            }
+            ///
+
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('validarBtn').addEventListener('click', function() {
+                const nroDocIdentidad = document.getElementById('id_cuit').value;
+
+                console.log("Entró al script");
+                //alert(nroDocIdentidad);
+                console.log(nroDocIdentidad);
+            
+                fetch('/ventas/validar/documento/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')  // Asegúrate de incluir el token CSRF si es necesario
+                    },
+                    body: JSON.stringify({ nro_doc_identidad: nroDocIdentidad })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        // Asignar los valores a los inputs correspondientes
+                        alert("Encontrado ojo!!!")
+                        document.getElementById('id_nombre_factura').value = data.nombre_receptor || '';
+                        document.getElementById('id_domicilio_factura').value = data.domicilio_receptor || '';
+                    } else {
+                        alert('El documento no existe.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        
+            // Función para obtener el token CSRF del cookie
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+        });
+        
+    </script>
+    {% comment %} SCRIPTS JS End {% endcomment %}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buscarAgendaForm = document.getElementById('buscarAgendaForm');
+            const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
+        
+            // alert("capturando el submit de buscarAgendaForm")
+            
+            buscarAgendaForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+        
+                const busquedaGeneral = document.getElementById('busquedaGeneral').value;
+
+                // Validar que la búsqueda tenga al menos 4 caracteres
+                if (busquedaGeneral.length < 4) {
+                    alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
+                    return;
+                }
+
+                // const url = `/ventas/buscar/agenda/?busqueda_general=${busquedaGeneral}`;
+                const url = new URL('/ventas/buscar/agenda/', window.location.origin);
+                url.searchParams.append('busqueda_general', busquedaGeneral);
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    tablaResultadosAgenda.innerHTML = ''; // Limpiar tabla de resultados
+        
+                    data.forEach(agenda => {
+
+                        const fila = `
+                            <tr>
+                                <td>${agenda.id_cliente}</td>
+                                <td>${agenda.cuit}</td>
+                                <td>${agenda.nombre_cliente}</td>
+                                <td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
+                                <td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
+                                <td>${agenda.domicilio_cliente}</td>
+                                <td>${agenda.codigo_postal}</td>
+                                <td>
+                                    <input type="radio" name="seleccionar-agenda" 
+                                        class="seleccionar-agenda" 
+                                        data-id="${agenda.id_cliente}" 
+                                        data-cuit="${agenda.cuit}" 
+                                        data-nombre="${agenda.nombre_cliente}" 
+                                        data-direccion="${agenda.domicilio_cliente}" 
+                                        data-movil="${agenda.movil_cliente}"  
+                                        data-email="${agenda.email_cliente}"
+                                        data-id_vendedor="${agenda.id_vendedor}"
+                                        data-nombre_vendedor="${agenda.id_vendedor__nombre_vendedor}"
+                                        data-tipo_venta="${agenda.id_vendedor__tipo_venta}"
+                                        data-nombre_iva="${agenda.id_tipo_iva__nombre_iva}"
+                                        data-discrimina_iva="${agenda.id_tipo_iva__discrimina_iva}"
+                                        data-condicion_venta="${agenda.condicion_venta}"
+                                        data-id_sucursal="${agenda.id_sucursal}" 
+                                        data-vip="${agenda.vip}"  
+                                        data-mayorista="${agenda.mayorista}"  
+                                        data-sub_cuenta="${agenda.sub_cuenta}"  
+                                        data-observaciones="${agenda.observaciones_cliente}"  
+                                        data-black_list="${agenda.black_list}"  
+                                        data-black_list_motivo="${agenda.black_list_motivo}">
+                                </td>
+                            </tr>
+                        `;
+                        
+                        // console.log("Fila insertada:", fila);  // 📌 Verifica si data-email está en el HTML
+                        tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+                    });
+                    
+                })
+                .catch(error => {
+                    console.error('Error al buscar en agenda:', error);
+                });
+            });
+        
+            //**-->>
+            document.getElementById('seleccionarAgenda').addEventListener('click', function() {
+                const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
+                
+                if (!seleccion) {
+                    alert('Por favor seleccione un cliente!!!');
+                    return;
+                }
+
+                const clienteId = seleccion.getAttribute('data-id');
+                const nombreCliente = seleccion.getAttribute('data-nombre');
+
+                if (clienteId) {
+                    fetch(`/ventas/clientes/${clienteId}/validar-deudas-cliente/`, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        console.log('Respuesta HTTP:', response.status, response.ok);
+                        if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Datos recibidos:', data);
+                        
+                        // Restaurar el foco antes de cerrar el modal
+                        const clienteInput = document.getElementById('id_id_cliente');
+                        if (clienteInput) clienteInput.focus();
+                        // Completar la selección del cliente (incluye cerrar el modal)
+                        completarSeleccionCliente(seleccion);
+                        // Actualizar facturas pendientes
+
+                        if (data.has_debts) {
+                            console.log('Facturas pendientes:', data.facturas_pendientes);
+                            updateFacturasPendientes(data.facturas_pendientes);
+                        } else {
+                            console.log('Sin deudas:', data.message || 'No hay deudas pendientes');
+                            alert('No hay deudas pendientes');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error en fetch:', error.message, error);
+                    });
+
+                    //completarSeleccionCliente(seleccion);
+                }
+            });
+            //**-->>
+            
+            // Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
+
+            // Función para completar la selección del cliente (extraída del código original)
+            function completarSeleccionCliente(seleccion) {
+                const id_cliente = seleccion.getAttribute('data-id');
+                const cuit = seleccion.getAttribute('data-cuit');
+                const nombre = seleccion.getAttribute('data-nombre');
+                const direccion = seleccion.getAttribute('data-direccion');
+                const movil = seleccion.getAttribute('data-movil');
+                const email = seleccion.getAttribute('data-email');
+                const id_vendedor = seleccion.getAttribute('data-id_vendedor');
+                const nombre_vendedor = seleccion.getAttribute('data-nombre_vendedor');
+                const tipo_venta = seleccion.getAttribute('data-tipo_venta');
+                const discrimina_iva = seleccion.getAttribute('data-discrimina_iva');
+                const isChecked = discrimina_iva === "true";
+                const condicion_comprobante = seleccion.getAttribute('data-condicion_venta');
+                const id_sucursal_cliente = seleccion.getAttribute('data-id_sucursal');
+                const vip = seleccion.getAttribute('data-vip') === 'true';
+            
+                //document.getElementById('id_letra_comprobante').value = document.getElementById('id_es_remito').checked ? 'R' : (isChecked ? 'A' : 'B');
+                
+                document.getElementById('id_id_cliente').value = id_cliente || '';
+                document.getElementById('id_nombre_factura').value = nombre || '';
+                document.getElementById('id_domicilio_factura').value = direccion || '';
+                document.getElementById('id_cuit').value = cuit || '';
+                document.getElementById('id_movil_factura').value = movil || '';
+                document.getElementById('id_email_factura').value = email || '';
+                document.getElementById('id_id_vendedor').value = id_vendedor || '';
+                document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+                document.getElementById('id_tipo_venta').value = tipo_venta || '';
+                document.getElementById('id_condicion_comprobante').value = condicion_comprobante || '';
+                document.getElementById('id_discrimina_iva').checked = isChecked;
+                
+                const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+            
+                const condicionComprobanteSelect = document.getElementById('id_condicion_comprobante');
+                if (condicionComprobanteSelect) {
+                    condicionComprobanteSelect.value = condicion_comprobante || '';
+                    if (condicion_comprobante === "1") {
+                        Array.from(condicionComprobanteSelect.options).forEach(function(option) {
+                            if (option.value !== condicion_comprobante) {
+                                option.disabled = true;
+                            }
+                        });
+                        condicionComprobanteSelect.classList.add('readonly-select');
+                    }
+                }
+            
+                if (id_sucursal_cliente !== id_sucursal_factura) {
+                    alert('Atención: El cliente pertenece a otra sucursal.');
+                }
+            
+                if (vip) {
+                    alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                    document.getElementById('id_cliente_vip').value = "Cliente VIP" 
+                }
+            
+                // Obtener número de comprobante (código existente)
+                const id_sucursal = document.getElementById('id_id_sucursal').value;
+                const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                const compro = document.getElementById('id_compro').value;
+            
+                if (id_sucursal && id_punto_venta && compro) {
+                    const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
+                    url.searchParams.append('id_sucursal', id_sucursal);
+                    url.searchParams.append('id_punto_venta', id_punto_venta);
+                    url.searchParams.append('comprobante', compro);
+            
+                    fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                            const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                            const inputLetra = document.getElementById('id_letra_comprobante');
+                            
+                            if (inputLetra) {
+                                inputLetra.value = data.letra;
+                            } else {
+                                alert('El elemento id_letra_comprobante no se encuentra en el DOM');
+                            }
+                            
+                            if (inputDefinitivo) {
+                                inputDefinitivo.value = data.numero_definitivo;
+                            }
+                        }
+                    });
+                }
+            
+                // Cerrar el modal de agenda
+                const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+                modal.hide();
+            }
+            
+            // Función auxiliar para obtener el token CSRF
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            //**-->>
+
+            document.getElementById('tablaResultadosAgenda').addEventListener('click', function(e) {
+                const radio = e.target.closest('input[name="seleccionar-agenda"]');
+                if (radio && radio.getAttribute('data-black_list') === 'true') {
+                    radio.checked = false;
+                    const motivo = radio.getAttribute('data-black_list_motivo') || 'Sin motivo especificado';
+                    alert(`⛔ Cliente en lista negra\nMotivo: ${motivo}`);
+                    e.stopPropagation();
+                }
+            });
+
+            // Eliminado código de autorización
+
+            const modalElement = document.getElementById('agendaModal');
+            modalElement.addEventListener('hide.bs.modal', function() {
+                const clienteInput = document.getElementById('id_id_cliente');
+                if (clienteInput) {
+                    clienteInput.focus();
+                }
+                modalElement.setAttribute('inert', '');
+            });
+            modalElement.addEventListener('shown.bs.modal', function() {
+                modalElement.removeAttribute('inert');
+            });
+
+        });
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para aplicar la lógica de solo lectura a un campo select
+            function makeSelectReadOnly(selectElement) {
+                // Guarda el valor inicial seleccionado
+                var initialValue = selectElement.value;
+        
+                // Deshabilita la interacción después de la primera selección
+                selectElement.addEventListener('change', function() {
+                    // Deshabilita todas las opciones excepto la seleccionada
+                    Array.from(selectElement.options).forEach(function(option) {
+                        if (option.value !== selectElement.value) {
+                            option.disabled = true;
+                        }
+                    });
+        
+                    // Aplica un estilo visual para indicar que es de solo lectura
+                    selectElement.classList.add('readonly-select');
+                });
+        
+                // Si ya hay un valor seleccionado al cargar la página, deshabilita las otras opciones
+                if (selectElement.value) {
+                    Array.from(selectElement.options).forEach(function(option) {
+                        if (option.value !== selectElement.value) {
+                            option.disabled = true;
+                        }
+                    });
+                    selectElement.classList.add('readonly-select');
+                }
+            }
+        
+            // Aplicar la lógica a id_deposito
+            var selectDeposito = document.getElementById('id_id_deposito');
+            if (selectDeposito) {
+                makeSelectReadOnly(selectDeposito);
+            }
+        
+            // Aplicar la lógica a id_comprobante_venta
+            var selectComprobante = document.getElementById('id_id_comprobante_venta');
+            if (selectComprobante) {
+                makeSelectReadOnly(selectComprobante);
+            }
+            
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Función para aplicar la lógica de solo lectura a un campo select
+            function makeSelectReadOnly(selectElement) {
+                // Guarda el valor inicial seleccionado
+                var initialValue = selectElement.value;
+        
+                // Deshabilita la interacción después de la primera selección
+                selectElement.addEventListener('change', function() {
+                    // Deshabilita todas las opciones excepto la seleccionada
+                    Array.from(selectElement.options).forEach(function(option) {
+                        if (option.value !== selectElement.value) {
+                            option.disabled = true;
+                        }
+                    });
+        
+                    // Aplica un estilo visual para indicar que es de solo lectura
+                    selectElement.classList.add('readonly-select');
+                });
+        
+                // Si ya hay un valor seleccionado al cargar la página, pero no es el valor por defecto, deshabilita las otras opciones
+                if (selectElement.value && selectElement.value !== selectElement.options[0].value) {
+                    Array.from(selectElement.options).forEach(function(option) {
+                        if (option.value !== selectElement.value) {
+                            option.disabled = true;
+                        }
+                    });
+                    selectElement.classList.add('readonly-select');
+                }
+            }
+        
+            // Aplicar la lógica a condicion_comprobante
+            var selectCondicionComprobante = document.getElementById('id_condicion_comprobante');
+            if (selectCondicionComprobante) {
+                makeSelectReadOnly(selectCondicionComprobante);
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Botón de "Listar" que abre la ventana modal
+            const listarBtn = document.querySelector('[data-bs-target="#agendaModal"]');
+            
+            // Evento cuando se hace clic en "Seleccionar" en la ventana modal de agenda
+            document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+                const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
+                if (seleccion) {
+                    // Deshabilitar el botón "Listar"
+                    listarBtn.disabled = true;
+                }
+            });
+        });
+    </script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const buscarClienteInput = document.getElementById('buscar_cliente');
+    
+            /*
+            buscarClienteInput.addEventListener('blur', function () {
+                let busqueda = buscarClienteInput.value.trim();
+        
+                // Si está vacío, no hacer nada
+                if (!busqueda) return;
+        
+                // Verificar que solo contenga números
+                if (!/^\d+$/.test(busqueda)) {
+                    alert("Solo se permiten valores numéricos enteros.");
+                    buscarClienteInput.value = '';
+                    buscarClienteInput.focus();
+                    return;
+                }
+        
+                // Construir la URL para la búsqueda
+                const url = new URL('/ventas/buscar/cliente/', window.location.origin);
+                url.searchParams.append('busqueda', busqueda);
+        
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        buscarClienteInput.value = '';
+                        buscarClienteInput.focus();
+                    } else {
+                        // Verificar primero si el cliente está en blacklist
+                        if (data.black_list) {
+                            alert(`🚨 CLIENTE EN LISTA NEGRA 🚨\nMotivo: ${data.black_list_motivo || 'No especificado'}`);
+                            buscarClienteInput.value = '';
+                            buscarClienteInput.focus();
+                            return;
+                        }
+                        
+                        // Validar vencimientos de documentos
+                        const clienteId = data.id_cliente;
+                        if (clienteId) {
+                            fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+                            .then(response => response.json())
+                            .then(vencimientoData => {
+                                if (vencimientoData.requiere_autorizacion) {
+                                    // Mostrar alerta con los detalles del vencimiento
+                                    const comprobante = vencimientoData.datos_comprobante || {};
+                                    let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
+                                    mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
+                                    mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
+                                    mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
+                                    mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
+                                    mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
+                                    mensaje += `Contacte a un supervisor para autorización.`;
+                                    
+                                    alert(mensaje);
+                                    buscarClienteInput.value = '';
+                                    buscarClienteInput.focus();
+                                    return;
+                                } else {
+                                    // Continuar con el flujo normal si no hay vencimientos
+                                    completarDatosCliente(data);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error validando vencimientos:', error);
+                                // Continuar con el flujo normal si hay error en la validación
+                                completarDatosCliente(data);
+                            });
+                        } else {
+                            completarDatosCliente(data);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                    alert("Hubo un error en la búsqueda.");
+                });
+    
+                // Función para completar los datos del cliente (extraída para reutilización)
+                function completarDatosCliente(data) {
+                    document.getElementById('id_id_cliente').value = data.id_cliente || '';
+                    document.getElementById('id_nombre_factura').value = data.nombre || '';
+                    document.getElementById('id_domicilio_factura').value = data.direccion || '';
+                    document.getElementById('id_cuit').value = data.cuit || '';
+                    document.getElementById('id_movil_factura').value = data.movil || '';
+                    document.getElementById('id_email_factura').value = data.email || '';
+                    document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
+                    document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
+    
+                    // Verificación de sucursal
+                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+                    if (data.id_sucursal !== id_sucursal_factura) {
+                        alert('Atención: El cliente pertenece a otra sucursal.');
+                    }
+    
+                    // Verificación VIP
+                    if (data.vip) {
+                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                        document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
+                    }
+    
+                    // Deshabilitar botones
+                    document.getElementById('listar_agenda').disabled = true;
+                    document.getElementById('buscar_cliente').disabled = true;
+                }
+            });
+            */
+
+            ///
+            /*
+            buscarClienteInput.addEventListener('blur', function () {
+                let busqueda = buscarClienteInput.value.trim();
+                if (!busqueda) return;
+                if (!/^\d+$/.test(busqueda)) {
+                    alert("Solo se permiten valores numéricos enteros.");
+                    buscarClienteInput.value = '';
+                    buscarClienteInput.focus();
+                    return;
+                }
+                const url = new URL('/ventas/buscar/cliente/', window.location.origin);
+                url.searchParams.append('busqueda', busqueda);
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        buscarClienteInput.value = '';
+                        buscarClienteInput.focus();
+                        return;
+                    }
+
+                    // Mapa de campos a llenar
+                    const fields = {
+                        'id_id_cliente': data.id_cliente,
+                        'id_cuit': data.cuit,
+                        'id_nombre_factura': data.nombre,
+                        'id_domicilio_factura': data.direccion,
+                        'id_movil_factura': data.movil,
+                        'id_email_factura': data.email,
+                        'id_id_vendedor': data.id_vendedor,
+                        'id_nombre_vendedor': data.nombre_vendedor,
+                        'id_id_sucursal': data.id_sucursal,
+                        'id_cliente_vip': data.vip ? 'True' : 'False'
+                    };
+
+                    // Verificar y llenar campos
+                    let missingFields = [];
+                    for (const [id, value] of Object.entries(fields)) {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            element.value = value != null ? value : '';
+                        } else {
+                            missingFields.push(id);
+                        }
+                    }
+
+                    // Reportar campos faltantes
+                    if (missingFields.length > 0) {
+                        console.error('Elementos no encontrados en el DOM:', missingFields);
+                        alert(`Error: Los siguientes campos no se encontraron en el formulario: ${missingFields.join(', ')}. Por favor, verifica la plantilla HTML.`);
+                    } else {
+                        console.log('Todos los campos se llenaron correctamente.');
+                    }
+
+                    // Deshabilitar botones y campo
+                    buscarClienteInput.disabled = true;
+                    const validarBtn = document.getElementById('validarBtn');
+                    const listarAgenda = document.getElementById('listar_agenda');
+                    if (validarBtn) validarBtn.disabled = true;
+                    if (listarAgenda) listarAgenda.disabled = true;
+
+                    // Nota: No se incluye la validación de deudas hasta confirmar los elementos del DOM
+                })
+                .catch(error => {
+                    console.error('Error al buscar cliente:', error);
+                    alert(`Error al buscar el cliente: ${error.message}`);
+                    buscarClienteInput.value = '';
+                    buscarClienteInput.focus();
+                });
+            });
+            */
+            ///
+
+            ///
+            buscarClienteInput.addEventListener('blur', function () {
+                let busqueda = buscarClienteInput.value.trim();
+                if (!busqueda) return;
+                if (!/^\d+$/.test(busqueda)) {
+                    alert("Solo se permiten valores numéricos enteros.");
+                    buscarClienteInput.value = '';
+                    buscarClienteInput.focus();
+                    return;
+                }
+                const url = new URL('/ventas/buscar/agenda/', window.location.origin);
+                url.searchParams.append('busqueda_general', busqueda);
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!Array.isArray(data) || data.length === 0) {
+                        alert('No se encontraron resultados');
+                        buscarClienteInput.value = '';
+                        buscarClienteInput.focus();
+                        return;
+                    }
+
+                    const cliente = data[0];
+
+                    //alert(`Valores recibidos:\ndiscrimina_iva: ${cliente.id_tipo_iva__discrimina_iva} (tipo: ${typeof cliente.id_tipo_iva__discrimina_iva})\ncondicion_venta: ${cliente.condicion_venta} (tipo: ${typeof cliente.condicion_venta})`);
+
+                    const isChecked = cliente.id_tipo_iva__discrimina_iva === true || 
+                                    cliente.id_tipo_iva__discrimina_iva === 'true' || 
+                                    cliente.id_tipo_iva__discrimina_iva === 'True' || 
+                                    cliente.id_tipo_iva__discrimina_iva === 1;
+
+                    // No incluir id_id_sucursal para no sobrescribir la sucursal del usuario
+                    const fields = {
+                        'id_id_cliente': cliente.id_cliente,
+                        'id_cuit': cliente.cuit,
+                        'id_nombre_factura': cliente.nombre_cliente,
+                        'id_domicilio_factura': cliente.domicilio_cliente,
+                        'id_movil_factura': cliente.movil_cliente,
+                        'id_email_factura': cliente.email_cliente,
+                        'id_id_vendedor': cliente.id_vendedor,
+                        'id_vendedor_factura': cliente.id_vendedor__nombre_vendedor || 'Sin asignar',
+                        'id_cliente_vip': cliente.vip ? 'Cliente VIP' : '',
+                        'id_discrimina_iva': isChecked
+                    };
+
+                    let missingFields = [];
+                    for (const [id, value] of Object.entries(fields)) {
+                        const element = document.getElementById(id);
+                        if (element) {
+                            if (id === 'id_discrimina_iva') {
+                                element.checked = value;
+                            } else {
+                                element.value = value != null ? value : '';
+                            }
+                        } else {
+                            missingFields.push(id);
+                        }
+                    }
+
+                    if (missingFields.length > 0) {
+                        console.error('Elementos no encontrados en el DOM:', missingFields);
+                        alert(`Error: Los siguientes campos no se encontraron en el formulario: ${missingFields.join(', ')}. Por favor, verifica la plantilla HTML.`);
+                        return;
+                    }
+
+                    // Verificar sucursal y mostrar alerta si es diferente
+                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+                    console.log('Sucursal del documento:', id_sucursal_factura, 'Sucursal del cliente:', cliente.id_sucursal);
+                    if (cliente.id_sucursal && cliente.id_sucursal !== id_sucursal_factura) {
+                        alert('Atención: El cliente pertenece a otra sucursal.');
+                    }
+
+                    if (cliente.vip) {
+                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                    }
+
+                    const esRemito = document.getElementById('id_es_remito')?.checked || false;
+                    const letraComprobante = esRemito ? 'R' : (isChecked ? 'A' : 'B');
+                    document.getElementById('id_letra_comprobante').value = letraComprobante;
+                    console.log('Letra asignada:', letraComprobante);
+
+                    const condicion_comprobante = String(cliente.condicion_venta || '');
+                    const condicionComprobanteSelect = document.getElementById('id_condicion_comprobante');
+                    if (condicionComprobanteSelect) {
+                        condicionComprobanteSelect.value = condicion_comprobante;
+                        if (condicion_comprobante === '1') {
+                            Array.from(condicionComprobanteSelect.options).forEach(option => {
+                                if (option.value !== '1') {
+                                    option.disabled = true;
+                                }
+                            });
+                            condicionComprobanteSelect.classList.add('readonly-select');
+                        } else {
+                            Array.from(condicionComprobanteSelect.options).forEach(option => {
+                                option.disabled = false;
+                            });
+                            condicionComprobanteSelect.classList.remove('readonly-select');
+                        }
+                        console.log('Condición de comprobante asignada:', condicion_comprobante);
+                    } else {
+                        console.warn('Campo id_condicion_comprobante no encontrado');
+                    }
+
+                    ///
+                    // Obtener parámetros para el número de comprobante
+                    const id_sucursal = document.getElementById('id_id_sucursal').value;
+                    const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                    const compro = document.getElementById('id_compro').value;
+
+                    // Validar parámetros
+                    if (id_sucursal && id_punto_venta && compro) {
+                        console.log("Ha entrado a la vista!");
+                        const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
+                        url.searchParams.append('id_sucursal', id_sucursal);
+                        url.searchParams.append('id_punto_venta', id_punto_venta);
+                        url.searchParams.append('comprobante', compro);
+
+                        fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                                const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                                const inputLetra = document.getElementById('id_letra_comprobante');
+                                
+                                if (inputLetra) {
+                                    inputLetra.value = data.letra;
+                                } else {
+                                    console.error('El elemento id_letra no se encuentra en el DOM');
+                                }
+                                
+                                if (inputDefinitivo) {
+                                    inputDefinitivo.value = data.numero_definitivo;
+                                }
+                            } else {
+                                console.error('No se pudo obtener el número de comprobante:', data.error);
+                                alert(`Error al obtener número de comprobante: ${data.error || 'Desconocido'}`);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al obtener número de comprobante:', error);
+                            alert(`Error al obtener número de comprobante: ${error.message}`);
+                        });
+                    } else {
+                        if (!id_sucursal) alert('Error: El campo Sucursal no está definido.');
+                        if (!id_punto_venta) alert('Error: El campo Punto de Venta no está definido.');
+                        if (!compro) {
+                            alert('Error: El tipo de comprobante no está definido.');
+                            document.getElementById('id_compro').focus();
+                        }
+                    }
+                    ///
+
+                    if (cliente.id_cliente) {
+                        fetch(`/ventas/clientes/${cliente.id_cliente}/validar-deudas-cliente/`, {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                            return response.json();
+                        })
+                        .then(deudaData => {
+                            if (deudaData.has_debts) {
+                                updateFacturasPendientes(deudaData.facturas_pendientes);
+                            } else {
+                                const tbody = document.querySelector('#formset-container2 .detalle-form tbody');
+                                if (tbody) {
+                                    tbody.innerHTML = '';
+                                    document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = 0;
+                                    actualizarTodo();
+                                }
+                                alert('No hay deudas pendientes');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error al validar deudas:', error);
+                            alert('Error al verificar las deudas del cliente');
+                        });
+                    }
+
+                    buscarClienteInput.disabled = true;
+                    const validarBtn = document.getElementById('validarBtn');
+                    const listarAgenda = document.getElementById('listar_agenda');
+                    if (validarBtn) validarBtn.disabled = true;
+                    if (listarAgenda) listarAgenda.disabled = true;
+
+                    console.log('Todos los campos se llenaron correctamente.');
+                })
+                .catch(error => {
+                    console.error('Error al buscar cliente:', error);
+                    alert(`Error al buscar el cliente: ${error.message}`);
+                    buscarClienteInput.value = '';
+                    buscarClienteInput.focus();
+                });
+            });
+            ///
+
+            // Nueva función para validar deudas
+            function validarDeudasCliente(clienteId) {
+                fetch(`/ventas/clientes/${clienteId}/validar-deudas-cliente/`, {
+                    method: 'GET',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.has_debts) {
+                        // Actualizar formset con facturas pendientes
+                        updateFacturasPendientes(data.facturas_pendientes);
+                    } else {
+                        // Limpiar formset si no hay deudas
+                        const tbody = document.querySelector('#formset-container2 .detalle-form tbody');
+                        if (tbody) {
+                            tbody.innerHTML = '';
+                            document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = 0;
+                            actualizarTodo();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al validar deudas:', error);
+                    alert('Error al verificar las deudas del cliente');
+                });
+            }
+            ///
+
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Obtener el elemento HTML que contiene el valor de is_edit
+            const modoEdicion = document.getElementById('modo-edicion');
+
+            // Obtener el valor de data-is-edit y convertirlo a booleano
+            const isEdit = modoEdicion.dataset.isEdit === 'true';
+
+            // Si estamos en modo de edición, deshabilitar los campos y el botón
+            if (isEdit) {
+                // Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
+                const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
+
+                inputs.forEach(input => {
+                    input.disabled = true;  // Deshabilitar campos
+                    input.classList.add('readonly-select');  // Aplicar estilo visual
+                });
+
+                //alert("El formulario está en modo de solo lectura");
+            } else {
+                //alert("El formulario está en modo de creación");
+            }
+        });   
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Seleccionar todos los inputs editables (excluyendo hidden, buttons y submits)
+            const inputs = document.querySelectorAll(`
+                #factura-form input:not([type="hidden"]):not([type="submit"]):not([type="button"]),
+                #factura-form select,
+                #factura-form textarea
+            `);
+    
+            // Agregar evento 'keydown' a cada campo
+            inputs.forEach((input, index) => {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault(); // Evitar envío del formulario
+    
+                        // Encontrar el siguiente campo disponible
+                        let nextIndex = index + 1;
+                        while (nextIndex < inputs.length && 
+                              (inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
+                            nextIndex++;
+                        }
+    
+                        // Si hay un siguiente campo, mover el foco
+                        if (nextIndex < inputs.length) {
+                            inputs[nextIndex].focus();
+    
+                            // Si es un <select>, abrir el dropdown automáticamente
+                            if (inputs[nextIndex].tagName === 'SELECT') {
+                                setTimeout(() => {
+                                    inputs[nextIndex].click();
+                                }, 50);
+                            }
+                        }
+                    }
+                });
+            });
+    
+            // Bloqueo adicional para evitar envío por Enter en cualquier campo
+            const form = document.getElementById('factura-form');
+            form.addEventListener('submit', function(e) {
+                const activeElement = document.activeElement;
+                if (activeElement && activeElement.tagName !== 'BUTTON' && activeElement.type !== 'submit') {
+                    e.preventDefault(); // Cancelar envío si no fue desde un botón
+                }
+            });
+        });
+    </script>
+
+
+{% endblock script %}

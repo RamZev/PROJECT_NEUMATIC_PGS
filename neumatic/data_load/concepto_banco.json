@@ -1,0 +1,102 @@
+[
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": 1,
+        "fcontrol": "2025-05-30 12:28:12",
+        "id_concepto_banco": 1,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "DEPOSITO",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:28:32",
+        "id_concepto_banco": 2,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "RETIRO",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:28:50",
+        "id_concepto_banco": 3,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "IMPUESTO DB/CR",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:29:04",
+        "id_concepto_banco": 4,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "TRANFERENCIAS REALIZADAS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": 1,
+        "fcontrol": "2025-05-30 12:29:17",
+        "id_concepto_banco": 5,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "TRANSFERENCIAS RECIBIDAS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": 1,
+        "fcontrol": "2025-06-12 15:04:28",
+        "id_concepto_banco": 6,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "ACREDITACION DE CUPONES",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:29:43",
+        "id_concepto_banco": 7,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "COMISION TARJETAS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:29:56",
+        "id_concepto_banco": 8,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "IVA SOBRE COMISION TARJETA",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:30:09",
+        "id_concepto_banco": 9,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "RETENCION GANANCIAS TARJETAS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_concepto_banco": 1,
+        "factor": -1,
+        "fcontrol": "2025-05-30 12:30:20",
+        "id_concepto_banco": 10,
+        "id_user_id": 1,
+        "nombre_concepto_banco": "CHEQUE EMITIDOS",
+        "usuario": "admin"
+    }
+]

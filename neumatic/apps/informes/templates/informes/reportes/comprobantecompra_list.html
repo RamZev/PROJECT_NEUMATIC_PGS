@@ -1,0 +1,76 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\comprobantecompra_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 90%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th>Estatus</th>
+				<th>Nombre Comprobante</th>
+				
+				<th class="numeric">M. Compra</th>
+				<th class="numeric">M. Saldo</th>
+				<th class="numeric">M. Stock</th>
+				<th class="numeric" style="padding-right: 15px;">M. Caja</th>
+				
+				<th>Libro IVA</th>
+				<th>Cód. ARCA A</th>
+				<th>Cód. ARCA B</th>
+				<th>Cód. ARCA C</th>
+				<th>Cód. ARCA M</th>
+				
+				<th>Remito</th>
+				<th>Retención</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.estatus_comprobante_compra|get_estatus }}</td>
+					<td>{{ obj.nombre_comprobante_compra }}</td>
+					
+					<td class="numeric">{{ obj.mult_compra }}</td>
+					<td class="numeric">{{ obj.mult_saldo }}</td>
+					<td class="numeric">{{ obj.mult_stock }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.mult_caja }}</td>
+					
+					<td>{{ obj.libro_iva|get_si_no }}</td>
+					<td>{{ obj.codigo_afip_a }}</td>
+					<td>{{ obj.codigo_afip_b }}</td>
+					<td>{{ obj.codigo_afip_c }}</td>
+					<td>{{ obj.codigo_afip_m }}</td>
+					
+					<td>{{ obj.remito|get_si_no }}</td>
+					<td>{{ obj.retencion|get_si_no }}</td>
+				</tr>
+			{% endfor %}
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

@@ -1,0 +1,50 @@
+[
+    {
+        "codigo_afip_responsable": 5,
+        "codigo_iva": "CF",
+        "discrimina_iva": 0,
+        "estacion": "Leoncio",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-08-21 16:40:33",
+        "id_tipo_iva": 1,
+        "id_user_id": 1,
+        "nombre_iva": "Consumidor Final",
+        "usuario": "admin"
+    },
+    {
+        "codigo_afip_responsable": 4,
+        "codigo_iva": "EXE",
+        "discrimina_iva": 0,
+        "estacion": "Leoncio",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-08-21 16:48:12",
+        "id_tipo_iva": 2,
+        "id_user_id": 1,
+        "nombre_iva": "IVA Sujeto Exento",
+        "usuario": "admin"
+    },
+    {
+        "codigo_afip_responsable": 6,
+        "codigo_iva": "RMT",
+        "discrimina_iva": 0,
+        "estacion": "Leoncio",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-08-21 16:48:40",
+        "id_tipo_iva": 3,
+        "id_user_id": 1,
+        "nombre_iva": "Responsable Monotributo",
+        "usuario": "admin"
+    },
+    {
+        "codigo_afip_responsable": 1,
+        "codigo_iva": "RI",
+        "discrimina_iva": 1,
+        "estacion": "Leoncio",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-08-21 16:47:46",
+        "id_tipo_iva": 4,
+        "id_user_id": 1,
+        "nombre_iva": "IVA Responsable Inscripto",
+        "usuario": "admin"
+    }
+]

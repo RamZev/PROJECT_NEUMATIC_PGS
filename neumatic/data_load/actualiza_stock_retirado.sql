@@ -1,0 +1,1 @@
+UPDATE stock_cliente SET retirado = 0.0 WHERE retirado is NULL;

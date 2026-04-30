@@ -1,0 +1,270 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+{% load datatools_tags %}
+{% load custom_tags %}
+
+{% block style %}
+    body {
+        background-color: rgb(0, 204, 255);
+    }
+    
+    /* ELIMINAR transform Y USAR SOLO REDUCCIÓN DE TAMAÑO */
+    .tbl-container {
+        /* QUITAR transform, scale, etc. */
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Reducir la tabla directamente */
+    .tbl-container table {
+        font-size: 0.85em;  /* 15% más pequeño */
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    
+    /* Reducir padding de celdas */
+    .tbl-container th,
+    .tbl-container td {
+        padding: 0.3rem 0.5rem !important;  /* Más compacto */
+    }
+    
+    /* Reducir botones dentro de tabla */
+    .tbl-container .btn-sm {
+        padding: 0.15rem 0.3rem;
+        font-size: 0.8em;
+        line-height: 1.1;
+    }
+    
+    /* Ajustar badge */
+    .tbl-container .badge {
+        font-size: 0.7em;
+        padding: 0.1rem 0.3rem;
+    }
+    
+    /* Scroll fijo */
+    .tbl-fixed {
+        overflow-x: auto;
+        overflow-y: auto;
+        height: fit-content;
+        max-height: 65vh;
+        margin-top: 5px;
+        margin-left: 0 !important;  /* Forzar sin margen izquierdo */
+        padding-left: 0 !important;
+    }
+    
+    /* Quitar min-width si causa problemas */
+    table {
+        /* min-width: max-content; */ /* Comentar esta línea temporalmente */
+        width: 100%;
+    }
+    
+    table th {
+        position: sticky;
+        top: 0;
+        background-color: #0d6efd;
+        color: white;
+        z-index: 10;
+    }
+    
+    .decimal {
+        text-align: right;
+        font-family: monospace;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .page-link {
+        padding: 0.4rem 0.75rem;
+        font-size: 0.9em;
+    }
+    
+    /* Mejorar separación entre tabla y paginación */
+    .table-responsive.tbl-container {
+        margin-bottom: 5px;  /* Reducir margen inferior del contenedor de tabla */
+    }
+    
+    /* Contenedor de paginación con buen espaciado */
+    .pagination-container {
+        padding-top: 15px;
+        border-top: 1px solid #dee2e6;
+        margin-top: 10px;
+    }
+
+{% endblock style %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+				<h4>Buscar Facturas por Cliente</h4>
+
+				<!-- === NUEVO: AÑADE ESTE BLOQUE PARA MOSTRAR MENSAJES === -->
+				{% if messages %}
+				<div class="messages mb-3">
+					{% for message in messages %}
+					<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+						<strong>
+							{% if message.tags == 'success' %}
+								<i class="bi bi-check-circle"></i> Éxito:
+							{% elif message.tags == 'warning' %}
+								<i class="bi bi-exclamation-triangle"></i> Advertencia:
+							{% elif message.tags == 'error' %}
+								<i class="bi bi-x-circle"></i> Error:
+							{% else %}
+								<i class="bi bi-info-circle"></i> Información:
+							{% endif %}
+						</strong>
+						{{ message }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>
+					{% endfor %}
+				</div>
+				{% endif %}
+                <!-- === FIN DEL BLOQUE DE MENSAJES === -->
+				
+				<!-- Formulario de búsqueda -->
+				<form method="get" class="row g-3 mb-4">
+					<div class="col-md-4">
+						<input type="text" name="buscar_por" class="form-control" placeholder="ID Cliente o RUC" value="{{ request.GET.buscar_por }}">
+					</div>
+					<div class="col-md-2">
+						<button type="submit" class="btn btn-primary">
+							<i class="bi bi-search"></i> Buscar
+						</button>
+					</div>
+				</form>
+
+				<!-- Tabla de facturas -->
+				<div class="table-responsive tbl-container">
+					<table class="table table-bordered table-striped">
+					<thead class="table-primary">
+						<tr>
+						<th>ID</th>
+						<th>Documento</th>
+						<th>Comp.</th>
+						<th>Letra</th>
+						<th>Número</th>
+						<th>Fecha</th>
+						<th>Cliente</th>
+						<th>Total</th>
+						<th>Detalles</th>
+						</tr>
+					</thead>
+					<tbody>
+						{% for factura in facturas %}
+						<tr>
+							<td>{{ factura.id_factura }}</td>
+							<td>{{ factura.id_comprobante_venta }}</td>
+							<td>{{ factura.compro }}</td>
+							<td>{{ factura.letra_comprobante }}</td>
+							<td>{{ factura.numero_comprobante }}</td>
+							<td>{{ factura.fecha_comprobante|date:"d/m/Y" }}</td>
+							<td>{{ factura.nombre_factura }}</td>
+							<td class="decimal"><strong>{{ factura.total|formato_es_ar }}</strong></td>
+							<td>
+								<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
+									<i class="bi bi-eye"></i> Ver
+								</button>
+								
+								<!-- Botón: Crear Stock Cliente -->
+								{% if not factura.tiene_stock_cliente %}
+									<form method="post" 
+										action="{% url 'crear_stock_cliente' factura.id_factura %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}"
+										style="display:inline;" class="ms-1">
+										{% csrf_token %}
+										<button type="submit" class="btn btn-sm btn-success" 
+												onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
+											<i class="bi bi-box-seam"></i> Crear Stock
+										</button>
+									</form>
+								{% else %}
+									<span class="badge bg-warning text-dark ms-1">Stock creado</span>
+								{% endif %}
+
+								<!-- Botón: Gestionar Stock Cliente (NUEVA VISTA) -->
+								<a href="{% url 'stock_cliente_detalle' factura.id_factura %}" 
+									class="btn btn-sm btn-info ms-1">
+									<i class="bi bi-box-seam"></i> Gestionar Stock
+								</a>
+								
+							</td>
+						</tr>
+						<tr class="collapse" id="detalles{{ factura.id_factura }}">
+							<td colspan="5">
+							<div class="table-responsive mt-2">
+								<table class="table table-sm table-bordered">
+								<thead class="table-primary">
+									<tr>
+									<th>Producto</th>
+									<th>Cantidad</th>
+									<th>Precio Unitario</th>
+									<th>Subtotal</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for detalle in detalles_factura|get_item:factura.id_factura %}
+										<tr>
+										<td>{{ detalle.producto_venta }}</td>
+										<td class="decimal">{{ detalle.cantidad|formato_es_ar }}</td>
+										<td class="decimal">{{ detalle.precio|formato_es_ar }}</td>
+										<td class="decimal"><strong>{{ detalle.total|formato_es_ar }}</strong></td>
+										</tr>
+									{% empty %}
+										<tr><td colspan="4">No hay detalles para esta factura.</td></tr>
+									{% endfor %}
+								</tbody>
+								</table>
+							</div>
+							</td>
+						</tr>
+						{% empty %}
+						<tr><td colspan="5">No se encontraron facturas para este cliente.</td></tr>
+						{% endfor %}
+					</tbody>
+					</table>
+				</div>
+
+				<div class="pagination-container mt-3 pt-3 border-top">
+					{% if page_obj.has_other_pages %}
+					<nav aria-label="Paginación">
+						<ul class="pagination justify-content-center">
+							{% if page_obj.has_previous %}
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page=1">&laquo; Primero</a>
+							</li>
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+							</li>
+							{% else %}
+							<li class="page-item disabled"><span class="page-link">Anterior</span></li>
+							{% endif %}
+
+							<li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+
+							{% if page_obj.has_next %}
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+							</li>
+							<li class="page-item">
+								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+							</li>
+							{% else %}
+							<li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+							{% endif %}
+						</ul>
+					</nav>
+					{% endif %}
+
+				</div>
+				
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}

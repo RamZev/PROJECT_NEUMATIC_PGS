@@ -1,0 +1,61 @@
+<!-- neumatic\apps\datatools\templates\datatools\resultado_productos.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Procesamiento Exitoso Completado{% endblock %}
+
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock %}
+
+{% block main %}
+	<div id="layoutSidenav">
+		<div id="layoutSidenav_nav">
+			{% include 'sidebar.html' %}
+		</div>
+		
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4">
+					<h2 class="mt-4">Procesamiento Exitoso Completado</h2>
+					<ol class="breadcrumb mb-4">
+						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
+						<li class="breadcrumb-item active">Resultados</li>
+					</ol>
+					
+					<div class="card mb-4">
+						
+						<div class="card-header bg-success text-white">
+							<i class="fas fa-check-circle me-1"></i>
+							Procesamiento Finalizado Exitosamente
+						</div>
+						<div class="card-body">
+							
+							<div class="alert alert-info">
+								<h5>Resumen del Procesamiento ({{proceso}}):</h5>
+								<ul>
+									<li>Total de registros procesados: {{ total_registros }}</li>
+									<li>Productos <b>{% if proceso == 'agregar' %} agregados {% else %} actualizados {% endif %}</b> correctamente: {{ actualizados }}</li>
+									<li>Errores encontrados: {{ errores|length }}</li>
+								</ul>
+							</div>
+							
+							<div class="text-center">
+								<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary">
+									<i class="fas fa-upload me-1"></i>
+									Cargar otro archivo
+								</a>
+								<a href="{% url 'home' %}" class="btn btn-secondary">
+									<i class="fas fa-home me-1"></i>
+									Volver al Panel
+								</a>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+[
+    {
+        "codigo_iva": "CF",
+        "discrimina_iva": 0,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-02-15 05:17:59",
+        "id_tipo_iva": 1,
+        "id_user_id": 1,
+        "nombre_iva": "Consumidor Final",
+        "usuario": "admin"
+    },
+    {
+        "codigo_iva": "EXE",
+        "discrimina_iva": 0,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-02-15 05:15:33",
+        "id_tipo_iva": 2,
+        "id_user_id": 1,
+        "nombre_iva": "Exento",
+        "usuario": "admin"
+    },
+    {
+        "codigo_iva": "RMT",
+        "discrimina_iva": 0,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-02-02 18:33:40",
+        "id_tipo_iva": 3,
+        "id_user_id": 1,
+        "nombre_iva": "Monotributo",
+        "usuario": "admin"
+    },
+    {
+        "codigo_iva": "RI",
+        "discrimina_iva": 1,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_iva": 1,
+        "fcontrol": "2025-02-15 05:17:54",
+        "id_tipo_iva": 4,
+        "id_user_id": 1,
+        "nombre_iva": "Resp. Inscripto.",
+        "usuario": "admin"
+    }
+]

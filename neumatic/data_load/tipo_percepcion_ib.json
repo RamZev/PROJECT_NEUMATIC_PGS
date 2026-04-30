@@ -1,0 +1,54 @@
+[
+    {
+        "alicuota": 10,
+        "descripcion_tipo_percepcion_ib": "Percepción 1",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_percepcion_ib": 1,
+        "fcontrol": "2025-02-02 22:21:02",
+        "id_tipo_percepcion_ib": 1,
+        "id_user_id": 1,
+        "minimo": 0,
+        "monto": 10,
+        "neto_total": 0,
+        "usuario": "admin"
+    },
+    {
+        "alicuota": 20,
+        "descripcion_tipo_percepcion_ib": "Percepción 2",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_percepcion_ib": 1,
+        "fcontrol": "2025-02-02 22:21:13",
+        "id_tipo_percepcion_ib": 2,
+        "id_user_id": 1,
+        "minimo": 0,
+        "monto": 20,
+        "neto_total": 0,
+        "usuario": "admin"
+    },
+    {
+        "alicuota": 30,
+        "descripcion_tipo_percepcion_ib": "Percepción 3",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_percepcion_ib": 1,
+        "fcontrol": "2025-02-02 22:21:23",
+        "id_tipo_percepcion_ib": 3,
+        "id_user_id": 1,
+        "minimo": 0,
+        "monto": 30,
+        "neto_total": 0,
+        "usuario": "admin"
+    },
+    {
+        "alicuota": 40,
+        "descripcion_tipo_percepcion_ib": "Percepción 4",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_tipo_percepcion_ib": 1,
+        "fcontrol": "2025-02-02 22:21:33",
+        "id_tipo_percepcion_ib": 4,
+        "id_user_id": 1,
+        "minimo": 0,
+        "monto": 40,
+        "neto_total": 0,
+        "usuario": "admin"
+    }
+]

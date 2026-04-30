@@ -1,0 +1,1156 @@
+<!-- neumatic\apps\ventas\templates\ventas\caja_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<!-- Alerta si la caja está cerrada -->
+							{% if form.instance.pk and form.instance.caja_cerrada %}
+							<div class="alert alert-warning alert-dismissible fade show" role="alert">
+								<i class="bi bi-lock-fill me-2"></i>
+								<strong>Caja Cerrada</strong> - No se pueden realizar modificaciones.
+								<ul class="mb-0 mt-1">
+									<li>Cerrada por: {{ form.instance.id_usercierre.get_full_name|default:form.instance.id_usercierre.username }}</li>
+									<li>Fecha y hora: {{ form.instance.hora_cierre|date:"d/m/Y H:i" }}</li>
+								</ul>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+							{% endif %}
+							
+							<!-- Mensaje de advertencia si hay caja abierta (solo para creación) -->
+							{% if not form.instance.pk and caja_abierta %}
+							<div class="alert alert-danger alert-dismissible fade show" role="alert">
+								<i class="bi bi-exclamation-triangle-fill me-2"></i>
+								<h5 class="alert-heading">¡No puede crear una nueva caja!</h5>
+								<p class="mb-1">
+									Existe una caja abierta en su sucursal <strong>{{ user.id_sucursal.nombre_sucursal }}</strong>.
+								</p>
+								<p class="mb-0">
+									<strong>Acción requerida:</strong> Debe cerrar la caja actual antes de poder crear una nueva.
+									<a href="{% url 'caja_list' %}" class="alert-link fw-bold">Ver lista de cajas</a>
+								</p>
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+							{% endif %}
+							
+							<!-- Información sobre la caja anterior (SOLO para creación) -->
+							{% if not form.instance.pk %}
+								{% if ultima_caja_cerrada %}
+								<div class="alert alert-success mb-3">
+									<div class="d-flex align-items-center">
+										<i class="bi bi-cash-coin fs-4 me-3"></i>
+										<div>
+											<h6 class="mb-1">Información de caja anterior encontrada</h6>
+											<p class="mb-0">
+												Se utilizará el saldo de la última caja cerrada como saldo inicial.
+												<br>
+												<strong>Caja anterior:</strong> #{{ ultima_caja_cerrada.numero_caja }} 
+												({{ ultima_caja_cerrada.fecha_caja|date:"d/m/Y" }}) - 
+												<strong>Saldo final:</strong> ${{ ultima_caja_cerrada.saldo|floatformat:2 }}
+											</p>
+										</div>
+									</div>
+								</div>
+								{% else %}
+								<div class="alert alert-info mb-3">
+									<div class="d-flex align-items-center">
+										<i class="bi bi-info-circle fs-4 me-3"></i>
+										<div>
+											<h6 class="mb-1">Primera caja de la sucursal</h6>
+											<p class="mb-0">
+												No se encontraron cajas cerradas anteriores en esta sucursal.
+												<br>
+												El saldo inicial será <strong>$0.00</strong>.
+											</p>
+										</div>
+									</div>
+								</div>
+								{% endif %}
+							{% endif %}
+							
+							<!-- Información del usuario -->
+							<div class="alert alert-info mb-3">
+								<div class="row">
+									<div class="col-md-6">
+										<i class="bi bi-person-badge me-2"></i>
+										<strong>Usuario:</strong> {{ user.get_full_name|default:user.username }}
+										{% if user.is_superuser %}
+										<span class="badge bg-warning ms-2">Superusuario</span>
+										{% endif %}
+									</div>
+									<div class="col-md-6">
+										<i class="bi bi-shop me-2"></i>
+										<strong>Sucursal asignada:</strong> {{ user.id_sucursal.nombre_sucursal }}
+										<span class="badge bg-secondary ms-2">ID: {{ user.id_sucursal.id_sucursal|stringformat:"02d" }}</span>
+									</div>
+								</div>
+							</div>
+							
+							<form method="post" enctype="multipart/form-data" novalidate id="cajaForm">
+								{% csrf_token %}
+								
+								<!-- Mostrar errores generales del formulario -->
+								{% if form.non_field_errors %}
+								<div class="alert alert-danger">
+									{% for error in form.non_field_errors %}
+									<p class="mb-0"><i class="bi bi-x-circle-fill me-1"></i> {{ error }}</p>
+									{% endfor %}
+								</div>
+								{% endif %}
+								
+								<!-- Campo oculto para id_sucursal -->
+								<div class="d-none">
+									{{ form.id_sucursal }}
+								</div>
+								
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Información de la Caja -->
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Informacion_Caja" 
+												aria-expanded="true" 
+												aria-controls="Informacion_Caja">
+												<strong>
+													{% if not form.instance.pk %}
+													Información de la Nueva Caja
+													{% else %}
+													Información de la Caja
+													{% endif %}
+												</strong>
+												{% if not form.instance.pk and ultima_caja_cerrada %}
+												<span class="badge bg-success ms-2">
+													Saldo anterior: ${{ saldo_anterior_calculado|floatformat:2 }}
+												</span>
+												{% endif %}
+												{% if form.instance.pk and form.instance.caja_cerrada %}
+												<span class="badge bg-danger ms-2">
+													<i class="bi bi-lock-fill"></i> Cerrada
+												</span>
+												{% endif %}
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Informacion_Caja">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<!-- Resumen de cálculo de saldo (solo para creación) -->
+												{% if not form.instance.pk %}
+												<div class="row mb-3 bg-light p-3 rounded">
+													<div class="col-md-12">
+														<h6 class="text-primary mb-2">
+															<i class="bi bi-calculator me-1"></i> Resumen de saldo inicial
+														</h6>
+														<div class="row">
+															<div class="col-md-6">
+																<small class="text-muted d-block">Última caja cerrada:</small>
+																{% if ultima_caja_cerrada %}
+																<strong>#{{ ultima_caja_cerrada.numero_caja }}</strong>
+																<span class="text-muted">
+																	({{ ultima_caja_cerrada.fecha_caja|date:"d/m/Y" }})
+																</span>
+																{% else %}
+																<span class="text-muted">No hay cajas anteriores</span>
+																{% endif %}
+															</div>
+															<div class="col-md-6">
+																<small class="text-muted d-block">Saldo final anterior:</small>
+																<strong class="fs-5">
+																	${{ saldo_anterior_calculado|floatformat:2 }}
+												</strong>
+											</div>
+										</div>
+									</div>
+								</div>
+								{% endif %}
+
+												<div class="row mb-3">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.estatus_caja.label }}
+														</label>
+														{{ form.estatus_caja }}
+													</div>
+								
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.numero_caja.label }}
+														</label>
+														{{ form.numero_caja }}
+														<small class="form-text text-muted d-block">
+															<i class="bi bi-arrow-repeat"></i> 
+															{% if not form.instance.pk %}
+															Se generará automáticamente
+															{% else %}
+															Número de caja
+															{% endif %}
+														</small>
+													</div>
+
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_caja.label }}
+														</label>
+														{{ form.fecha_caja }}
+														<small class="form-text text-muted">
+															{% if not form.instance.pk %}
+															Fecha de apertura de la caja
+															{% else %}
+															Fecha de la caja
+															{% endif %}
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															Sucursal
+														</label>
+														{{ form.nombre_sucursal }}
+														<small class="form-text text-muted">
+															Sucursal asignada a su usuario
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.caja_cerrada.label }}
+														</label>
+														<div class="mt-2 form-check form-switch">
+															{{ form.caja_cerrada }}
+															<small class="form-text text-muted d-block">
+																{% if not form.instance.pk %}
+																Las nuevas cajas se crean abiertas
+																{% elif form.instance.caja_cerrada %}
+																<i class="bi bi-lock-fill text-danger"></i> Caja cerrada
+																{% else %}
+																<i class="bi bi-unlock-fill text-success"></i> Caja abierta
+																{% endif %}
+															</small>
+														</div>
+													</div>
+												</div>
+
+												<!-- ========== SECCIÓN DE SALDOS ========== -->
+												<div class="row mb-3">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.saldoanterior.label }}
+														</label>
+														{{ form.saldoanterior }}
+														<small class="form-text text-muted">
+															Saldo inicial de la caja
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.ingresos.label }}
+															{% if form.instance.pk and not form.instance.caja_cerrada and total_detalles > 0 %}
+															<span class="badge bg-info ms-1" title="Calculado desde {{ total_detalles }} movimiento(s)">
+																<i class="bi bi-calculator"></i>
+															</span>
+															{% endif %}
+														</label>
+														{{ form.ingresos }}
+														<small class="form-text text-muted">
+															{% if form.instance.pk and not form.instance.caja_cerrada %}
+																{% if total_detalles > 0 %}
+																Calculado desde {{ total_detalles }} movimiento(s)
+																{% else %}
+																No hay movimientos registrados
+																{% endif %}
+															{% else %}
+																{% if form.instance.pk and form.instance.caja_cerrada %}
+																Ingresos registrados
+																{% else %}
+																Se calculará con los movimientos
+																{% endif %}
+															{% endif %}
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.egresos.label }}
+															{% if form.instance.pk and not form.instance.caja_cerrada and total_detalles > 0 %}
+															<span class="badge bg-info ms-1" title="Calculado desde {{ total_detalles }} movimiento(s)">
+																<i class="bi bi-calculator"></i>
+															</span>
+															{% endif %}
+														</label>
+														{{ form.egresos }}
+														<small class="form-text text-muted">
+															{% if form.instance.pk and not form.instance.caja_cerrada %}
+																{% if total_detalles > 0 %}
+																Calculado desde {{ total_detalles }} movimiento(s)
+																{% else %}
+																No hay movimientos registrados
+																{% endif %}
+															{% else %}
+																{% if form.instance.pk and form.instance.caja_cerrada %}
+																Egresos registrados
+																{% else %}
+																Se calculará con los movimientos
+																{% endif %}
+															{% endif %}
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.saldo.label }}
+															{% if form.instance.pk and not form.instance.caja_cerrada %}
+															<span class="badge bg-success ms-1" title="Calculado automáticamente">
+																<i class="bi bi-calculator"></i>
+															</span>
+															{% endif %}
+														</label>
+														{{ form.saldo }}
+														<small class="form-text text-muted">
+															{% if form.instance.pk and not form.instance.caja_cerrada %}
+															Se establecerá en 0 al cerrar la caja
+															{% else %}
+															Saldo = Anterior + Ingresos - Egresos
+															{% endif %}
+														</small>
+													</div>
+												</div>
+
+												<div class="row mb-3">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.recuento.label }}
+														</label>
+														<div class="input-group">
+															{{ form.recuento }}
+															{% if not form.instance.caja_cerrada %}
+															<button type="button" 
+																	class="btn btn-outline-primary" 
+																	id="btnAbrirRecuento"
+																	data-bs-toggle="modal" 
+																	data-bs-target="#recuentoModal"
+																	title="Abrir calculadora de recuento"
+																	style="height: 32px;">
+																	
+																<i class="bi bi-calculator"></i>
+															</button>
+															{% endif %}
+														</div>
+														<small class="form-text text-muted">
+															Recuento físico al cerrar la caja
+															{% if not form.instance.caja_cerrada %}
+															<br><i class="bi bi-info-circle"></i> Use el botón <i class="bi bi-calculator"></i> para contar efectivo
+															{% endif %}
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.diferencia.label }}
+														</label>
+														{{ form.diferencia }}
+														<small class="form-text text-muted">
+															Diferencia = Saldo Anterior + Ingresos - (Egresos + Recuento)
+														</small>
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{% if form.instance.pk and form.instance.caja_cerrada %}
+															Fecha y hora de cierre
+															{% else %}
+															{{ form.hora_cierre.label }}
+															{% endif %}
+														</label>
+														{{ form.hora_cierre }}
+														<small class="form-text text-muted">
+															{% if form.instance.pk and form.instance.caja_cerrada %}
+															<i class="bi bi-clock-history"></i> 
+															Cerró el {{ form.instance.hora_cierre|date:"d/m/Y H:i"|default:"-" }}
+															{% else %}
+															Se registrará al cerrar la caja
+															{% endif %}
+														</small>
+													</div>
+								
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{% if form.instance.pk and form.instance.caja_cerrada %}
+															Usuario que cerró
+															{% else %}
+															{{ form.id_usercierre.label }}
+															{% endif %}
+														</label>
+														{{ form.id_usercierre }}
+														<small class="form-text text-muted">
+															{% if not form.instance.pk %}
+															<i class="bi bi-info-circle"></i> Se asignará automáticamente al cerrar
+															{% elif form.instance.caja_cerrada %}
+															<i class="bi bi-clock-history"></i> 
+															Cerró el {{ form.instance.hora_cierre|date:"d/m/Y H:i"|default:"-" }}
+															{% endif %}
+														</small>
+													</div>
+												</div>
+
+												<div class="row">
+													<div class="col-md-12">
+														<label class="form-label text-primary mb-0">
+															{{ form.observacion_caja.label }}
+														</label>
+														{{ form.observacion_caja }}
+														<small class="form-text text-muted">
+															Observaciones adicionales sobre la caja
+														</small>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+			
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn" 
+										{% if caja_abierta or form.instance.caja_cerrada %}disabled{% endif %}>
+										<i class="bi bi-save me-1"></i> 
+										{% if form.instance.pk and form.instance.caja_cerrada %}
+											Caja Cerrada
+										{% elif not form.instance.pk %}
+											Crear Nueva Caja
+										{% else %}
+											Cerrar Caja
+										{% endif %}
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										<i class="bi bi-x-circle me-1"></i> 
+										{% if form.instance.pk and form.instance.caja_cerrada %}
+											Volver
+										{% else %}
+											Cancelar
+										{% endif %}
+									</a>
+									
+									{% if caja_abierta and not form.instance.pk %}
+									<div class="mt-3 alert alert-danger">
+										<div class="d-flex align-items-center">
+											<i class="bi bi-lock-fill fs-4 me-3"></i>
+											<div>
+												<h6 class="mb-1">Guardar deshabilitado</h6>
+												<p class="mb-0">
+													No puede crear una nueva caja mientras exista una caja abierta en su sucursal.
+													<a href="{% url 'caja_list' %}" class="fw-bold text-danger">
+														Ir a cajas para cerrar la actual
+													</a>
+												</p>
+											</div>
+										</div>
+									</div>
+									{% endif %}
+									
+									{% if form.instance.pk and form.instance.caja_cerrada %}
+									<div class="mt-3 alert alert-warning">
+										<div class="d-flex align-items-center">
+											<i class="bi bi-lock-fill fs-4 me-3"></i>
+											<div>
+												<h6 class="mb-1">Caja cerrada</h6>
+												<p class="mb-0">
+													Esta caja está cerrada y no se pueden realizar modificaciones.
+												</p>
+											</div>
+										</div>
+									</div>
+									{% endif %}
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+	
+	<!-- Modal de Recuento de Efectivo -->
+	<div class="modal fade" id="recuentoModal" tabindex="-1" aria-labelledby="recuentoModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title" id="recuentoModalLabel">
+						<i class="bi bi-calculator me-2"></i>Recuento Físico de Efectivo
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body p-0">
+					<div class="alert alert-info m-3 py-2">
+						<i class="bi bi-info-circle me-2"></i>
+						Ingrese la cantidad de cada denominación. El total se calculará automáticamente.
+					</div>
+					
+					<div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+						<table class="table table-bordered mb-0" id="tablaRecuento">
+							<thead class="table-primary sticky-top" style="top: 0; z-index: 1;">
+								<tr class="text-center">
+									<th width="25%">Cantidad</th>
+									<th width="25%">Valor</th>
+									<th width="25%">Detalle</th>
+									<th width="25%">Total</th>
+								</tr>
+							</thead>
+							<tbody id="cuerpoRecuento">
+								<!-- Fila 1: 20000.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-1" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="20000.00">
+									</td>
+									<td id="valor-1" class="text-end fw-bold">20000.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-1" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 2: 10000.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-2" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="10000.00">
+									</td>
+									<td id="valor-2" class="text-end fw-bold">10000.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-2" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 3: 2000.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-3" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="2000.00">
+									</td>
+									<td id="valor-3" class="text-end fw-bold">2000.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-3" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 4: 1000.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-4" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="1000.00">
+									</td>
+									<td id="valor-4" class="text-end fw-bold">1000.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-4" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 5: 500.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-5" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="500.00">
+									</td>
+									<td id="valor-5" class="text-end fw-bold">500.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-5" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 6: 200.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-6" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="200.00">
+									</td>
+									<td id="valor-6" class="text-end fw-bold">200.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-6" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 7: 100.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-7" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="100.00">
+									</td>
+									<td id="valor-7" class="text-end fw-bold">100.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-7" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 8: 50.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-8" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="50.00">
+									</td>
+									<td id="valor-8" class="text-end fw-bold">50.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-8" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 9: 20.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-9" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="20.00">
+									</td>
+									<td id="valor-9" class="text-end fw-bold">20.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-9" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 10: 10.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-10" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="10.00">
+									</td>
+									<td id="valor-10" class="text-end fw-bold">10.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-10" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 11: 5.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-11" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="5.00">
+									</td>
+									<td id="valor-11" class="text-end fw-bold">5.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-11" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 12: 2.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-12" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="2.00">
+									</td>
+									<td id="valor-12" class="text-end fw-bold">2.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-12" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 13: 1.00 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-13" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="1.00">
+									</td>
+									<td id="valor-13" class="text-end fw-bold">1.00</td>
+									<td class="text-center">pesos</td>
+									<td id="total-13" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 14: 0.50 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-14" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="0.50">
+									</td>
+									<td id="valor-14" class="text-end fw-bold">0.50</td>
+									<td class="text-center">pesos</td>
+									<td id="total-14" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+								<!-- Fila 15: 0.25 -->
+								<tr class="fila-recuento">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											   id="cantidad-15" 
+											   class="form-control form-control-sm text-center cantidad-input" 
+											   value="0" 
+											   data-valor="0.25">
+									</td>
+									<td id="valor-15" class="text-end fw-bold">0.25</td>
+									<td class="text-center">pesos</td>
+									<td id="total-15" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
+							</tbody>
+							<tfoot class="table-secondary sticky-bottom" style="bottom: 0; z-index: 1;">
+								<tr>
+									<td colspan="3" class="text-end fw-bold">TOTAL RECUENTO:</td>
+									<td class="text-end">
+										<span class="fs-5 fw-bold" id="totalRecuento">0.00</span>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+						<i class="bi bi-x-circle me-1"></i>Cerrar
+					</button>
+					<button type="button" class="btn btn-primary" id="aplicarRecuento">
+						<i class="bi bi-check-circle me-1"></i>Aplicar Recuento
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock modals %}
+
+{% block script %}
+{{ block.super }}
+<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		console.log('=== FORMULARIO DE CAJA INICIALIZADO ===');
+		
+		// ========== CÁLCULOS AUTOMÁTICOS ==========
+		const recuentoInput = document.querySelector('[name="recuento"]');
+		const diferenciaInput = document.querySelector('[name="diferencia"]');
+		const saldoInput = document.querySelector('[name="saldo"]');
+		const ingresosInput = document.querySelector('[name="ingresos"]');
+		const egresosInput = document.querySelector('[name="egresos"]');
+		const saldoAnteriorInput = document.querySelector('[name="saldoanterior"]');
+		
+		// Función para calcular diferencia según la nueva fórmula
+		// diferencia = saldoanterior + ingresos - (egresos + recuento)
+		function calcularDiferencia() {
+			if (saldoAnteriorInput && ingresosInput && egresosInput && 
+				recuentoInput && diferenciaInput && saldoInput) {
+				
+				const saldoAnterior = parseFloat(saldoAnteriorInput.value) || 0;
+				const ingresos = parseFloat(ingresosInput.value) || 0;
+				const egresos = parseFloat(egresosInput.value) || 0;
+				const recuento = parseFloat(recuentoInput.value) || 0;
+				
+				console.log('Valores para cálculo:', {
+					saldoAnterior, ingresos, egresos, recuento
+				});
+				
+				// Nueva fórmula: diferencia = saldoanterior + ingresos - (egresos + recuento)
+				const diferencia = saldoAnterior + ingresos - (egresos + recuento);
+				
+				console.log('Diferencia calculada:', diferencia);
+				
+				// Actualizar campo de diferencia
+				diferenciaInput.value = diferencia.toFixed(2);
+				
+				// El saldo siempre será 0 cuando se calcula la diferencia
+				saldoInput.value = '0.00';
+				
+				// Actualizar visualización de la diferencia
+				if (diferencia > 0) {
+					diferenciaInput.style.color = '#198754'; // Verde para sobrante
+					diferenciaInput.style.fontWeight = 'bold';
+				} else if (diferencia < 0) {
+					diferenciaInput.style.color = '#dc3545'; // Rojo para faltante
+					diferenciaInput.style.fontWeight = 'bold';
+				} else {
+					diferenciaInput.style.color = '#6c757d'; // Gris para cero
+					diferenciaInput.style.fontWeight = 'normal';
+				}
+				
+				return diferencia;
+			}
+			return 0;
+		}
+		
+		// Configurar eventos para calcular diferencia cuando cambien los valores
+		// Solo si los campos no son readonly
+		if (saldoAnteriorInput && !saldoAnteriorInput.readOnly) {
+			saldoAnteriorInput.addEventListener('change', calcularDiferencia);
+			saldoAnteriorInput.addEventListener('input', calcularDiferencia);
+		}
+		
+		if (ingresosInput && !ingresosInput.readOnly) {
+			ingresosInput.addEventListener('change', calcularDiferencia);
+			ingresosInput.addEventListener('input', calcularDiferencia);
+		}
+		
+		if (egresosInput && !egresosInput.readOnly) {
+			egresosInput.addEventListener('change', calcularDiferencia);
+			egresosInput.addEventListener('input', calcularDiferencia);
+		}
+		
+		if (recuentoInput && !recuentoInput.readOnly) {
+			recuentoInput.addEventListener('change', calcularDiferencia);
+			recuentoInput.addEventListener('input', calcularDiferencia);
+		}
+		
+		// Calcular diferencia inicial
+		calcularDiferencia();
+		
+		// ========== VALIDACIÓN DE FECHA ==========
+		const fechaInput = document.querySelector('[name="fecha_caja"]');
+		if (fechaInput) {
+			fechaInput.addEventListener('change', function() {
+				const fechaSeleccionada = new Date(this.value);
+				const hoy = new Date();
+				hoy.setHours(0, 0, 0, 0);
+				
+				if (fechaSeleccionada > hoy) {
+					alert('La fecha de la caja no puede ser futura.');
+					const fechaHoy = hoy.toISOString().split('T')[0];
+					this.value = fechaHoy;
+				}
+			});
+		}
+		
+		// ========== DESHABILITAR CAMPOS SI CORRESPONDE ==========
+		{% if caja_abierta and not form.instance.pk %}
+		const camposEditables = document.querySelectorAll('input:not([readonly]), select:not([readonly]), textarea:not([readonly])');
+		camposEditables.forEach(campo => {
+			campo.disabled = true;
+			campo.title = 'No se puede modificar mientras exista una caja abierta';
+		});
+		{% endif %}
+		
+		{% if form.instance.pk and form.instance.caja_cerrada %}
+		const todosCampos = document.querySelectorAll('input, select, textarea');
+		todosCampos.forEach(campo => {
+			if (!campo.classList.contains('btn-close')) {
+				campo.disabled = true;
+				campo.readOnly = true;
+			}
+		});
+		{% endif %}
+		
+		// ========== MODAL DE RECUENTO ==========
+		const btnAbrirRecuento = document.getElementById('btnAbrirRecuento');
+		
+		if (btnAbrirRecuento) {
+			console.log('=== INICIALIZANDO MODAL DE RECUENTO ===');
+			
+			// Función para calcular una fila específica
+			function calcularFila(numeroFila) {
+				const inputId = 'cantidad-' + numeroFila;
+				const totalId = 'total-' + numeroFila;
+				
+				const inputCantidad = document.getElementById(inputId);
+				const celdaTotal = document.getElementById(totalId);
+				
+				if (!inputCantidad || !celdaTotal) {
+					console.error('Elementos no encontrados para fila:', numeroFila);
+					return;
+				}
+				
+				const valor = parseFloat(inputCantidad.getAttribute('data-valor')) || 0;
+				const cantidad = parseInt(inputCantidad.value) || 0;
+				const totalFila = valor * cantidad;
+				
+				celdaTotal.textContent = totalFila.toFixed(2);
+				calcularTotalGeneral();
+			}
+			
+			// Función para calcular el total general
+			function calcularTotalGeneral() {
+				let totalGeneral = 0;
+				
+				for (let i = 1; i <= 15; i++) {
+					const celdaTotal = document.getElementById('total-' + i);
+					if (celdaTotal) {
+						totalGeneral += parseFloat(celdaTotal.textContent) || 0;
+					}
+				}
+				
+				const totalRecuentoSpan = document.getElementById('totalRecuento');
+				if (totalRecuentoSpan) {
+					totalRecuentoSpan.textContent = totalGeneral.toFixed(2);
+				}
+			}
+			
+			// Configurar eventos para TODOS los inputs de cantidad
+			for (let i = 1; i <= 15; i++) {
+				const inputId = 'cantidad-' + i;
+				const input = document.getElementById(inputId);
+				
+				if (input) {
+					input.addEventListener('input', function() {
+						calcularFila(i);
+					});
+					
+					input.addEventListener('change', function() {
+						calcularFila(i);
+					});
+					
+					input.addEventListener('blur', function() {
+						calcularFila(i);
+					});
+					
+					input.addEventListener('keypress', function(e) {
+						if (e.key === 'Enter') {
+							e.preventDefault();
+							calcularFila(i);
+							
+							const siguienteNumero = i + 1;
+							if (siguienteNumero <= 15) {
+								const siguienteInput = document.getElementById('cantidad-' + siguienteNumero);
+								if (siguienteInput) {
+									siguienteInput.focus();
+									siguienteInput.select();
+								}
+							}
+						}
+					});
+				}
+			}
+			
+			///////////
+			// Configurar el botón "Aplicar Recuento"
+			const aplicarRecuentoBtn = document.getElementById('aplicarRecuento');
+			if (aplicarRecuentoBtn) {
+				aplicarRecuentoBtn.addEventListener('click', function() {
+					const totalRecuentoSpan = document.getElementById('totalRecuento');
+					const total = parseFloat(totalRecuentoSpan?.textContent) || 0;
+					
+					if (recuentoInput) {
+						recuentoInput.value = total.toFixed(2);
+						
+						// Calcular diferencia automáticamente
+						calcularDiferencia();
+						
+						console.log('Recuento aplicado:', total.toFixed(2));
+						
+						// RECOLECTAR DATOS DEL RECUENTO PARA ENVIAR AL SERVIDOR
+						const datosRecuento = [];
+						
+						for (let i = 1; i <= 15; i++) {
+							const inputCantidad = document.getElementById('cantidad-' + i);
+							const celdaValor = document.getElementById('valor-' + i);
+							
+							if (inputCantidad && celdaValor) {
+								const cantidad = parseInt(inputCantidad.value) || 0;
+								if (cantidad > 0) {
+									const valor = parseFloat(celdaValor.textContent) || 0;
+									const totalFila = valor * cantidad;
+									
+									datosRecuento.push({
+										fila: i,
+										cantidad: cantidad,
+										valor: valor,
+										detalle: valor.toFixed(2) + ' pesos',
+										total: totalFila
+									});
+								}
+							}
+						}
+						
+						// Crear campo hidden en el formulario con los datos
+						let inputHidden = document.querySelector('input[name="recuento_data"]');
+						if (!inputHidden) {
+							inputHidden = document.createElement('input');
+							inputHidden.type = 'hidden';
+							inputHidden.name = 'recuento_data';
+							document.getElementById('cajaForm').appendChild(inputHidden);
+						}
+						inputHidden.value = JSON.stringify(datosRecuento);
+						
+						console.log('Datos recuento para guardar:', datosRecuento);
+					}
+					
+					// Cerrar el modal
+					const modalElement = document.getElementById('recuentoModal');
+					const modal = bootstrap.Modal.getInstance(modalElement);
+					if (modal) {
+						modal.hide();
+					}
+				});
+			}
+			///////////
+			
+			/*
+			if (aplicarRecuentoBtn) {
+				aplicarRecuentoBtn.addEventListener('click', function() {
+					const totalRecuentoSpan = document.getElementById('totalRecuento');
+					const total = parseFloat(totalRecuentoSpan?.textContent) || 0;
+					
+					if (recuentoInput) {
+						recuentoInput.value = total.toFixed(2);
+						
+						// Calcular diferencia automáticamente
+						calcularDiferencia();
+						
+						console.log('Recuento aplicado:', total.toFixed(2));
+					}
+					
+					const modalElement = document.getElementById('recuentoModal');
+					const modal = bootstrap.Modal.getInstance(modalElement);
+					if (modal) {
+						modal.hide();
+					}
+					
+					alert(`✓ Recuento aplicado: $${total.toFixed(2)}\nLa diferencia se ha recalculado automáticamente.`);
+				});
+			}
+			*/
+			
+			// Limpiar todos los inputs cuando se abre el modal
+			btnAbrirRecuento.addEventListener('click', function() {
+				for (let i = 1; i <= 15; i++) {
+					const inputId = 'cantidad-' + i;
+					const totalId = 'total-' + i;
+					
+					const input = document.getElementById(inputId);
+					const totalElement = document.getElementById(totalId);
+					
+					if (input) {
+						input.value = '0';
+					}
+					if (totalElement) {
+						totalElement.textContent = '0.00';
+					}
+				}
+				
+				calcularTotalGeneral();
+			});
+			
+			// Configurar eventos cuando se muestra el modal
+			const modalElement = document.getElementById('recuentoModal');
+			if (modalElement) {
+				modalElement.addEventListener('show.bs.modal', function() {
+					setTimeout(function() {
+						calcularTotalGeneral();
+						
+						const primerInput = document.getElementById('cantidad-1');
+						if (primerInput) {
+							primerInput.focus();
+							primerInput.select();
+						}
+					}, 100);
+				});
+			}
+		}
+		
+		// ========== VALIDACIÓN PARA CIERRE DE CAJA ==========
+		const form = document.getElementById('cajaForm');
+		const cajaCerradaCheckbox = document.querySelector('[name="caja_cerrada"]');
+		const guardarBtn = document.getElementById('guardarBtn');
+		
+		if (form && cajaCerradaCheckbox && guardarBtn) {
+			// Manejar cambio en el checkbox de cierre
+			cajaCerradaCheckbox.addEventListener('change', function() {
+				if (this.checked) {
+					// Cambiar texto del botón
+					guardarBtn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Confirmar Cierre de Caja';
+					
+					// Validar que haya recuento
+					const recuento = recuentoInput ? parseFloat(recuentoInput.value) || 0 : 0;
+					
+					if (recuento <= 0) {
+						alert('⚠️ Para cerrar la caja, debe ingresar el recuento físico primero.');
+						this.checked = false;
+						guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+						if (recuentoInput) {
+							recuentoInput.focus();
+						}
+						return;
+					}
+					
+					// Calcular diferencia actual
+					const diferencia = calcularDiferencia();
+					
+					// Mostrar confirmación basada en la diferencia
+					let mensaje = '';
+					if (diferencia > 0) {
+						mensaje = `⚠️ Hay un SOBRANTE de $${diferencia.toFixed(2)}. ¿Continuar con el cierre?`;
+					} else if (diferencia < 0) {
+						mensaje = `⚠️ Hay un FALTANTE de $${Math.abs(diferencia).toFixed(2)}. ¿Continuar con el cierre?`;
+					} else {
+						mensaje = '✅ La caja cuadra exactamente. ¿Continuar con el cierre?';
+					}
+					
+					if (!confirm(mensaje)) {
+						this.checked = false;
+						guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+					}
+				} else {
+					// Restaurar texto del botón
+					guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+				}
+			});
+			
+			// Validar al enviar el formulario
+			form.addEventListener('submit', function(event) {
+				if (cajaCerradaCheckbox.checked) {
+					const recuento = recuentoInput ? parseFloat(recuentoInput.value) || 0 : 0;
+					
+					if (recuento <= 0) {
+						event.preventDefault();
+						alert('❌ Error: Debe ingresar el recuento físico para cerrar la caja.');
+						if (recuentoInput) {
+							recuentoInput.focus();
+						}
+						return false;
+					}
+					
+					// Mostrar confirmación final
+					const confirmacion = confirm(
+						`⚠️ ¿Está seguro de que desea cerrar la caja #{{ form.instance.numero_caja|default:"NUEVA" }}?\n\n` +
+						`Una vez cerrada, no podrá realizar modificaciones.`
+					);
+					
+					if (!confirmacion) {
+						event.preventDefault();
+						return false;
+					}
+				}
+			});
+		}
+		
+		console.log('=== FORMULARIO COMPLETAMENTE INICIALIZADO ===');
+	});
+</script>
+{% endblock script %}

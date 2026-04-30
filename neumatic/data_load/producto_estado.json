@@ -1,0 +1,52 @@
+[
+    {
+        "estacion": "ESTACION03",
+        "estado_producto": "D",
+        "estatus_producto_estado": 1,
+        "fcontrol": "2025-07-27 23:43:41",
+        "id_producto_estado": 1,
+        "id_user_id": 1,
+        "nombre_producto_estado": "DISPONIBLES",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "ESTACION03",
+        "estado_producto": "E",
+        "estatus_producto_estado": 1,
+        "fcontrol": "2025-07-27 23:43:55",
+        "id_producto_estado": 2,
+        "id_user_id": 1,
+        "nombre_producto_estado": "ENTRANTES",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "ESTACION03",
+        "estado_producto": "F",
+        "estatus_producto_estado": 1,
+        "fcontrol": "2025-07-27 23:44:10",
+        "id_producto_estado": 3,
+        "id_user_id": 1,
+        "nombre_producto_estado": "FALTANTES",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "ESTACION03",
+        "estado_producto": "O",
+        "estatus_producto_estado": 1,
+        "fcontrol": "2025-07-27 23:44:20",
+        "id_producto_estado": 4,
+        "id_user_id": 1,
+        "nombre_producto_estado": "OFERTAS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "ESTACION03",
+        "estado_producto": "P",
+        "estatus_producto_estado": 1,
+        "fcontrol": "2025-07-27 23:44:32",
+        "id_producto_estado": 5,
+        "id_user_id": 1,
+        "nombre_producto_estado": "POCAS",
+        "usuario": "admin"
+    }
+]

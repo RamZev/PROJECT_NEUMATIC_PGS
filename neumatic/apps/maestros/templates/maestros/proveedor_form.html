@@ -1,0 +1,311 @@
+<!-- neumatic\apps\maestros\templates\maestros\proveedor_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Proveedor" 
+												aria-expanded="true" 
+												aria-controls="Información_Proveedor">
+												<strong>Información Proveedor</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Proveedor">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_proveedor.id_for_label }}">
+															{{ form.estatus_proveedor.label }}
+														</label>
+														{{ form.estatus_proveedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_proveedor.id_for_label }}">
+															{{ form.nombre_proveedor.label }}
+														</label>
+														{{ form.nombre_proveedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_proveedor.id_for_label }}">
+															{{ form.domicilio_proveedor.label }}
+														</label>
+														{{ form.domicilio_proveedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
+															{{ form.codigo_postal.label }}
+														</label>
+														{{ form.codigo_postal }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
+															{{ form.id_provincia.label }}
+														</label>
+														{{ form.id_provincia }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
+															{{ form.id_localidad.label }}
+														</label>
+														{{ form.id_localidad }}
+													</div>
+													
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_proveedor.id_for_label }}">
+															{{ form.telefono_proveedor.label }}
+														</label>
+														{{ form.telefono_proveedor }}
+													</div>
+						
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.movil_proveedor.id_for_label }}">
+															{{ form.movil_proveedor.label }}
+														</label>
+														{{ form.movil_proveedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.email_proveedor.id_for_label }}">
+															{{ form.email_proveedor.label }}
+														</label>
+														{{ form.email_proveedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ib_numero.id_for_label }}">
+															{{ form.ib_numero.label }}
+														</label>
+														{{ form.ib_numero }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cuit.id_for_label }}">
+															{{ form.cuit.label }}
+														</label>
+														{{ form.cuit }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_iva.id_for_label }}">
+															{{ form.id_tipo_iva.label }}
+														</label>
+														{{ form.id_tipo_iva }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_retencion_ib.id_for_label }}">
+															{{ form.id_tipo_retencion_ib.label }}
+														</label>
+														{{ form.id_tipo_retencion_ib }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.ib_alicuota.id_for_label }}">
+															{{ form.ib_alicuota.label }}
+														</label>
+														{{ form.ib_alicuota }}
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.ib_exento }}
+																{{ form.ib_exento.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-3 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.multilateral }}
+																{{ form.multilateral.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-10">
+														<label class="form-label text-primary mb-0" for="{{ form.observacion_proveedor.id_for_label }}">
+															{{ form.observacion_proveedor.label }}
+														</label>
+														{{ form.observacion_proveedor }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block Script -------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			const codigoPostalText = document.getElementById("id_codigo_postal");
+			const provinciaSelect = document.getElementById("id_id_provincia");
+			const localidadSelect = document.getElementById("id_id_localidad");
+			
+			// Validar si se obtuvieron correctamente los elementos
+			if (!codigoPostalText) {
+				console.log('El elemento con id "id_codigo_postal" no se encontró');
+				return;
+			}
+			
+			if (!provinciaSelect) {
+				console.log('El elemento con id "id_id_provincia" no se encontró');
+				return;
+			}
+			
+			if (!localidadSelect) {
+				console.log('El elemento con id "id_id_localidad" no se encontró');
+				return;
+			}
+			
+			// Función para resetear el select de localidad y el campo de código postal
+			function resetLocalidadSelect(defaultText) {
+				localidadSelect.innerHTML = `<option value="">${defaultText}</option>`;
+				localidadSelect.disabled = true;
+				codigoPostalText.value = "";  // Limpiar el código postal
+			}
+			
+			// Almacena el código postal de cada localidad
+			let localidadesData = {};
+			
+			// Función para cargar las localidades y seleccionar la correcta
+			function cargarLocalidades(provinciaId, localidadSeleccionadaId = null) {
+				const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
+				resetLocalidadSelect("Seleccione una localidad");
+				
+				if (provinciaId) {
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							localidadSelect.disabled = false;
+							localidadesData = {}; // Reiniciar datos de localidad
+							
+							// Insertar la opción inicial
+							localidadSelect.innerHTML = `<option value="">Seleccione una localidad</option>`;
+							
+							data.localidad.forEach(localidad => {
+								localidadesData[localidad.id_localidad] = localidad.codigo_postal;
+								const option = new Option(localidad.nombre_completo, localidad.id_localidad);
+								localidadSelect.add(option);
+							});
+							
+							// Si hay una localidad seleccionada (al editar o al volver de la modal)
+							if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
+								localidadSelect.value = localidadSeleccionadaId;
+								codigoPostalText.value = localidadesData[localidadSeleccionadaId];
+							}
+						});
+				}
+			}
+			
+			// Escucha el cambio en Provincia y carga las localidades correspondientes
+			provinciaSelect.addEventListener("change", function () {
+				const provinciaId = this.value;
+				cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
+			});
+			
+			// Escucha el cambio en Localidad y actualiza el código postal
+			localidadSelect.addEventListener("change", function () {
+				const localidadId = this.value;
+				
+				if (localidadId) {
+					codigoPostalText.value = localidadesData[localidadId] || "";
+				} else {
+					codigoPostalText.value = "";
+				}
+			});
+			
+			// Detectar valores iniciales (para el caso de actualizar o volver de la modal)
+			const provinciaSeleccionada = provinciaSelect.value;
+			const localidadSeleccionada = localidadSelect.value;
+			const codigoPostalSeleccionado = codigoPostalText.value;
+			
+			// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
+			if (provinciaSeleccionada) {
+				cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
+				codigoPostalText.value = codigoPostalSeleccionado;  // Setear el código postal guardado
+			}
+			else{
+				// Si no hay una provincia seleccionada, deshabilitar el combo de localidades
+				cargarLocalidades(provinciaSeleccionada);  // Llamar sin localidad seleccionada
+			}
+		});
+	</script>
+{% endblock script %}

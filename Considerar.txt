@@ -1,0 +1,39 @@
+===============================================
+Sanear la tabla producto
+===============================================
+*.- Hay registros cuyo campo "nombre_producto" contiene "PRODUCTO SIN DESCRIPCION...".
+	Decidir qué hacer con esos registros, eliminarlos?.
+	
+*.- Hay registros cuyo campo "medida" está vacío.
+	Decidir qué hacer con esos registros, eliminarlos?.
+	
+*.- Depurar los registros según "tipo_producto".
+	Hay registros con tipo_producto="P" y son servicios.
+	
+*.- Hay registros cuyo campo "cai" contienen información pero no cuentan con un "id_cai_id".
+	Registrar el cai en la tabla producto_cai y asignar el id de este al correspondiente registro en la tabla producto.
+	
+*.- Crear una rutina que por cada producto con tipo_producto="P" se cree un registro por cada depósito en producto_stock y si 
+	además tiene cai, se haga lo mismo en la tabla producto_minimo.
+	
+*.- Asignar el correspondiente id_alicuota_iva.
+	El campo alicuota_iva tiene la alícuota pero el campo id_alicuota_iva tiene el id 1 en todos los registros.
+	
+*.- Eliminar el campo "cai".
+	Este dato ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla producto_cai.
+
+*.- Eliminar el campo "alicuota_iva".
+	Este dato ya estaba en la tabla producto y se dejó para poder asignarle el id correspondiente de la tabla alicuota_iva.
+
+
+===============================================
+Tabla producto_stock
+===============================================
+0.- Para el Producto con Id. 48776 están triplicados los registros.
+
+
+
+===============================================
+Otros
+===============================================
+*- En las búsquedas (por medida u otros), considerar el campo estatus o búsquedas exactas (pendiente por confirmar Mario).

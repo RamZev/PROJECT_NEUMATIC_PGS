@@ -1,0 +1,34 @@
+Estructura del Proyecto neumatic
+
+carpeta del proyecto: neumatic
+
+archivo de configuracón del proyecto: neumatic\neumatic\settings.py
+archivo de vistas del proyecto: neumatic\neumatic\views.py
+archivo de rutas del proyecto: neumatic\neumatic\urls.py
+
+carpeta de archivos estáticos del proyecto: neumatic\static
+carpeta de plantillas del proyecto: neumatic\templates
+carpeta de constantes bootstrap del proyecto: neumatic\diseno_base
+carpeta de constantes del proyecto: neumatic\entorno
+
+archivo de la base de datos SQLite3 del Proyecto: neumatic\data\db_neumatic.db
+
+carpeta de aplicaciones del proyecto: neumatic\apps
+carpeta de la aplicación maestros: neumatic\apps\maestros
+carpeta de la aplicación usuarios: neumatic\apps\usuarios
+carpeta de la aplicación ventas: neumatic\apps\ventas
+carpeta de la aplicación informes: neumatic\apps\informes
+carpeta de la aplicación menu: neumatic\apps\menu
+
+carpeta de los modelos de la aplicación maestros: neumatic\apps\maestros\models
+carpeta de los formularios de la aplicación maestros: neumatic\apps\maestros\forms
+carpeta de los vistas de la aplicación maestros: neumatic\apps\maestros\views
+carpeta de los plantillas de la aplicación maestros: neumatic\apps\maestros\templates\maestros
+
+
+
+
+
+
+
+

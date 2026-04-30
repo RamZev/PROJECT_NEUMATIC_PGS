@@ -1,0 +1,423 @@
+<!-- apps\datatools\templates\datatools\errores_excel.html -->
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}
+{% load datatools_tags %}
+
+{% block title %}Errores en Procesamiento del Excel{% endblock %}
+
+{% block style %}
+	<style>
+		.table-responsive {
+			overflow-x: auto;
+			max-height: 70vh;
+		}
+		
+		.table-fit {
+			width: auto !important;
+			min-width: 100%;
+			border-collapse: separate;
+			border-spacing: 0;
+		}
+		
+		.table-fit th,
+		.table-fit td {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: 400px;
+			padding: 4px 8px;
+			font-size: 0.9rem;
+			border: 1px solid #dee2e6;
+			vertical-align: middle;
+		}
+		
+		.table-fit th {
+			background-color: #f8f9fa;
+			font-weight: 600;
+			position: sticky;
+			top: 0;
+			z-index: 10;
+		}
+		
+		.table-fit thead th {
+			background-color: #b6d4fe;
+			color: #000;
+		}
+		
+		.table-fit td {
+			position: relative;
+		}
+		
+		.table-fit td:hover::before {
+			content: attr(data-content);
+			position: absolute;
+			left: 0;
+			top: 100%;
+			background: #fff;
+			border: 1px solid #ccc;
+			padding: 8px;
+			z-index: 1000;
+			white-space: normal;
+			width: auto;
+			max-width: 400px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+			font-size: 0.85rem;
+			line-height: 1.4;
+		}
+		
+		.card-body {
+			padding: 1rem;
+		}
+		
+		/*--- Estilo para números alineados a la derecha ---*/
+		.number-cell {
+			text-align: right;
+			font-family: monospace;
+		}
+		
+		/*--- Estilos para celdas con error ---*/
+		.error-cell {
+			/*background-color: rgba(255, 0, 0, 0.1) !important;*/
+			/*border: 1px solid #dc3545 !important;*/
+			position: relative;
+		}
+		
+		.error-cell:hover::after {
+			content: attr(data-error);
+			position: absolute;
+			left: 0;
+			top: 100%;
+			background: #fff;
+			border: 1px solid #dc3545;
+			padding: 8px;
+			z-index: 1000;
+			white-space: normal;
+			width: auto;
+			max-width: 400px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+			font-size: 0.85rem;
+			line-height: 1.4;
+			color: #dc3545;
+		}
+		
+		.error-row {
+			/*background-color: rgba(255, 0, 0, 0.03);*/
+		}
+		.error-row:hover {
+			background-color: rgba(255, 0, 0, 0.08);
+		}
+		
+		/* Estilo especial para la celda de error/expand */
+		td.error-cell.expand-button {
+			background-color: rgba(255, 182, 193, 0.3); /* Rosa pálido */
+			cursor: pointer;
+			transition: all 0.2s;
+		}
+		td.error-cell.expand-button:hover {
+			background-color: rgba(255, 182, 193, 0.3); /* Rosa más intenso */
+			border: 1px solid #ffb6c1 !important; /* Borde rosa al hover */
+		}
+		
+		.alert-danger {
+			background-color: #f8d7da;
+			border-color: #f5c6cb;
+			color: #721c24;
+		}
+		
+		/*--- Estilos para la paginación ---*/
+		.pagination-container {
+			display: flex;
+			justify-content: left;
+			margin: 10px;
+		}
+		
+		.pagination {
+			margin: 10px 10px;
+		}
+		
+		.pagination .page-link {
+			border: 1px solid #757575ff !important;
+		}
+				
+		.page-info {
+			text-align: left;
+			/*margin: 10px;*/
+			font-size: 0.9rem;
+			color: #6c757d;
+			display: flex;
+			align-items: center;
+		}
+		
+		/* Estilos para detalles de errores */
+		.error-details {
+			display: none;
+			background-color: #f8f9fa;
+		}
+		
+		.error-row.expanded + .error-details {
+			display: table-row;
+		}
+		
+		.expand-button {
+			cursor: pointer;
+			color: #dc3545;
+			transition: background-color 0.2s;
+		}
+		
+		.expand-button:hover {
+			background-color: rgba(220, 53, 69, 0.1) !important;
+		}
+		
+		.error-details td {
+			border-top: none;
+			padding: 0 !important;
+		}
+		
+		.error-details .p-3 {
+			padding: 1rem !important;
+		}
+		
+		.error-details h6 {
+			color: #dc3545; /* Rojo Bootstrap para errores */
+			font-size: 0.9rem;
+			margin-bottom: 0.5rem;
+		}
+	</style>
+{% endblock %}
+
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock %}
+
+{% block main %}
+	<div id="layoutSidenav">
+		<div id="layoutSidenav_nav">
+			{% include 'sidebar.html' %}
+		</div>
+		
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4">
+					<h2 class="mt-4">Errores en Procesamiento del Excel ({{proceso}})</h2>
+					<ol class="breadcrumb mb-4">
+						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
+						<li class="breadcrumb-item"><a href="{% url 'cargar_excel' %}?proceso={{proceso}}">Cargar Excel</a></li>
+						<li class="breadcrumb-item active">Errores</li>
+					</ol>
+					
+					<!-- Mensajes -->
+					{% if messages %}
+						<div class="alert-messages">
+							{% for message in messages %}
+								<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+									{{ message }}
+									<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+								</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+					
+					<!-- Verificar que hay datos -->
+					{% if not filas_con_errores %}
+						<div class="alert alert-warning">
+							<h5><i class="fas fa-exclamation-triangle me-2"></i>No hay datos para mostrar</h5>
+							<p>No se encontraron filas con errores para mostrar.</p>
+						</div>
+					{% else %}
+						
+						<!-- Contenido principal (SOLO si hay datos) -->
+						<div class="alert alert-danger">
+							<h5><i class="fas fa-exclamation-triangle me-2"></i>Se encontraron errores durante el procesamiento</h5>
+							<p>El proceso se ha revertido debido a errores en los datos. Por favor, corrija los errores y vuelva a intentar.</p>
+						</div>
+						
+						<div class="card mb-4">
+							<div class="card-header bg-danger text-white">
+								<i class="fas fa-exclamation-circle me-1"></i>
+								Resumen de Errores
+							</div>
+							<div class="card-body">
+								<div class="row">
+									<div class="col-md-4">
+										<p><strong>Archivo:</strong> {{ nombre_archivo|default:"No especificado" }}</p>
+										<p><strong>Total de registros procesados:</strong> {{ total_registros }}</p>
+										<p><strong>Registros con errores:</strong> <span class="text-danger">{{ filas_con_errores|length }}</span></p>
+									</div>
+									<div class="col-md-8">
+										<p><strong>Campos seleccionados:</strong></p>
+										<p>
+											{% for campo in campos_seleccionados %}
+												<span class="badge bg-secondary me-1">{{ campo }}</span>
+											{% empty %}
+												<small class="text-muted">No se seleccionaron campos</small>
+											{% endfor %}
+										</p>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+						<!-- Tabla de filas con errores -->
+						<div class="card mb-4">
+							<div class="card-header d-flex align-items-center">
+								<div class="d-flex align-items-center">
+									<i class="fas fa-table me-2"></i>
+									<span>Filas con Errores</span>
+								</div>
+							</div>
+							
+							<!-- Información de paginación (SOLO si hay datos) -->
+							{% if datos %}
+								<div class="page-info">
+									{% include 'datatools/paginacion.html' %}
+									Mostrando página {{ pagina_actual|default:1 }} de {{ total_paginas|default:1 }} 
+									(registros {{ page_start|default:1 }} a {{ page_end|default:0 }} de {{ filas_con_errores|length }})
+								</div>
+							{% endif %}
+							
+							<div class="card-body p-0">
+								<div class="table-responsive">
+									<table class="table table-fit mb-0">
+										<thead>
+											<tr>
+												<th width="80"># Fila</th>
+												<th width="200">Error</th>
+												{% for columna in columnas %}
+													<th>{{ columna }}</th>
+												{% endfor %}
+											</tr>
+										</thead>
+										<tbody>
+											{% if datos %}
+												{% for fila in datos %}
+													<!-- Fila principal de error -->
+													<tr class="error-row">
+														<td class="error-cell fw-bold" 
+															data-error="Error en fila {{ fila.row_index }}">
+															{{ fila.row_index }}
+														</td>
+														
+														<td class="error-cell expand-button" onclick="toggleErrorDetails(this)" title="{{ fila.error_message }}">
+															<i class="fas fa-exclamation-circle text-danger me-1"></i>
+															<small>
+																{% if fila.error_list|length > 1 %}
+																	<span>{{ fila.error_list|length }}</span> errores - Click para expandir
+																{% else %}
+																	{{ fila.error_message|truncatewords:8 }}
+																{% endif %}
+															</small>
+															<i class="fas fa-chevron-down ms-1"></i>
+														</td>
+														
+														{% for columna in columnas %}
+															{% with valor=fila|get_dict_value:columna %}
+																{% with valor_tipo=valor|get_type %}
+																	<td class="error-cell {% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}number-cell{% endif %}" 
+																		data-content="{{ valor|default:'' }}" 
+																		title="{{ valor|default:'' }}"
+																		data-error="Error en {{ columna }}: {{ fila.error_message }}">
+																		{% if valor_tipo == 'float' or valor_tipo == 'Decimal' %}
+																			{{ valor|formato_es_ar }}
+																		{% else %}
+																			{{ valor|default:'' }}
+																		{% endif %}
+																	</td>
+																{% endwith %}
+															{% endwith %}
+														{% endfor %}
+													</tr>
+													
+													<!-- Fila de detalles (oculta inicialmente) -->
+													<tr class="error-details">
+														<td colspan="{{ columnas|length|add:2 }}">
+															<div class="p-3">
+																<h6>Errores detallados - Fila {{ fila.row_index }}:</h6>
+																<ul class="list-group">
+																	{% for error in fila.error_list %}
+																	<li class="list-group-item list-group-item-danger">{{ error }}</li>
+																	{% endfor %}
+																</ul>
+															</div>
+														</td>
+													</tr>
+
+												{% endfor %}
+											{% else %}
+												<tr>
+													<td colspan="{{ columnas|length|add:2 }}" class="text-center py-4">
+														No hay filas con errores para mostrar.
+													</td>
+												</tr>
+											{% endif %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+							
+							<!-- Paginación (SOLO si hay datos) -->
+							{% if datos and total_paginas > 1 %}
+								<div class="page-info">
+									{% include 'datatools/paginacion.html' %}
+									Mostrando página {{ pagina_actual|default:1 }} de {{ total_paginas|default:1 }} 
+									(registros {{ page_start|default:1 }} a {{ page_end|default:0 }} de {{ filas_con_errores|length }})
+								</div>
+							{% endif %}
+						</div>
+						
+					{% endif %} <!-- Cierre del if filas_con_errores -->
+					
+					<div class="text-center mt-4">
+						<a href="{% url 'cargar_excel' %}?proceso={{proceso}}" class="btn btn-primary me-2">
+							<i class="fas fa-upload me-1"></i>
+							Volver a Cargar Archivo
+						</a>
+						<a href="{% url 'home' %}" class="btn btn-secondary">
+							<i class="fas fa-home me-1"></i>
+							Volver al Panel
+						</a>
+					</div>
+				</div>
+			</main>
+		</div>
+	</div>
+{% endblock main %}
+
+{% block script %}
+	<script>
+		function toggleErrorDetails(element) {
+			const row = element.closest('.error-row');
+			const detailsRow = row.nextElementSibling;
+			
+			// Verificar que la siguiente fila es realmente la de detalles
+			if (detailsRow && detailsRow.classList.contains('error-details')) {
+				row.classList.toggle('expanded');
+				const icon = element.querySelector('.fa-chevron-down, .fa-chevron-up'); // ← CORRECCIÓN AQUÍ
+				
+				// Cambiar icono
+				if (row.classList.contains('expanded')) {
+					icon.classList.remove('fa-chevron-down');
+					icon.classList.add('fa-chevron-up');
+				} else {
+					icon.classList.remove('fa-chevron-up');
+					icon.classList.add('fa-chevron-down');
+				}
+			}
+		}
+		
+		// Opcional: Cerrar todos los detalles al hacer clic fuera
+		document.addEventListener('click', function(event) {
+			if (!event.target.closest('.expand-button')) {
+				const expandedRows = document.querySelectorAll('.error-row.expanded');
+				expandedRows.forEach(row => {
+					row.classList.remove('expanded');
+					const icon = row.querySelector('.fa-chevron-up, .fa-chevron-down'); // ← CORRECCIÓN AQUÍ TAMBIÉN
+					if (icon) {
+						icon.classList.remove('fa-chevron-up');
+						icon.classList.add('fa-chevron-down');
+					}
+				});
+			}
+		});
+	</script>
+{% endblock script %}

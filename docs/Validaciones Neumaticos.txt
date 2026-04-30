@@ -1,0 +1,54 @@
+Punto de Venta
+- Al dar de alta un punto de venta me deja duplicarlo
+
+Clientes
+- En clientes cuando Ingreso un CUIT debe verificar si existe y pedir si quiere modificar el existente o agregar uno nuevo 
+- En clientes si es nuevo ingreso el operador o usuario puede cargar todos los campos ahora si es una modificacion hay campos 
+  que no los puede modificar o el usuario debe tener un nivel < K (A - K)
+  Los campos protegidos son Vendedor, Telefonos, mail
+- En clientes cuando se ingresa la sub cuenta debe ser validado el cliente ingresado
+- En el buscardor agregar el ID para buscar 
+
+Proveedores
+- Si forzas varios errores por campos vacios o CUIT duplicados, te cambia la provincia y localidad, a veces que avisa que no tiene localidad 
+  pero a veces solo modifica la provincia y localidad por cualquier otra
+- En el buscardor agregar el ID para buscar 
+
+Depositos
+- Ordenar por Sucursal en el listado inicial
+
+Estados de Productos
+- Falta el campo Estatus y hay uno que dice estado, seguramente es el codigo de estado,  si es el codigo estado deberia permitir solo mayusculas
+- Me esta dejando duplicar el estado 
+
+Codigos de Ventas
+- Me deja diplicar el codigo de comprobante y tambien me deja modificar ese codigo, no se como grabaria en la tablas de ventas
+- quitar la columna ID
+
+Codigo de Compras
+- Igual a ventas
+- quitar la columna ID
+
+Provincias 
+- Te permite duplicar el codigo
+
+Tipo de Documento de Identidad
+- Permite duplicar (el tipo seria un codigo unico)
+- quitar la columna ID
+
+Tipo de IVA
+- Permite duplicar (el codigo de IVA seria un codigo unico)
+- quitar la columna ID
+
+Alicuotas de IVA
+- Permite duplicar (el codigo de Alicuota IVA y Alicuota de IVA son unicos)
+- quitar la columna ID
+
+Tipo de Percepcion IB
+- Validar de 0% a 100% 
+- Validar Montos y Minimos en 0 
+
+Tipo de Retencion IB
+- Validar de 0% a 100% 
+- Validar Montos y Minimos en 0 
+

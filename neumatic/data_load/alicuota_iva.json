@@ -1,0 +1,68 @@
+[
+    {
+        "alicuota_iva": 0,
+        "codigo_alicuota": "0003",
+        "descripcion_alicuota_iva": "Alícuota Cero (0.00%)",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_alicuota_iva": 1,
+        "fcontrol": "2025-02-02 19:45:11",
+        "id_alicuota_iva": 1,
+        "id_user_id": 1,
+        "usuario": "admin"
+    },
+    {
+        "alicuota_iva": 10.5,
+        "codigo_alicuota": "0004",
+        "descripcion_alicuota_iva": "Alícuota del 10.50%",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_alicuota_iva": 1,
+        "fcontrol": "2025-02-02 19:45:32",
+        "id_alicuota_iva": 2,
+        "id_user_id": 1,
+        "usuario": "admin"
+    },
+    {
+        "alicuota_iva": 21,
+        "codigo_alicuota": "0005",
+        "descripcion_alicuota_iva": "Alícuota del 21.00%",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_alicuota_iva": 1,
+        "fcontrol": "2025-02-02 19:45:47",
+        "id_alicuota_iva": 3,
+        "id_user_id": 1,
+        "usuario": "admin"
+    },
+    {
+        "alicuota_iva": 27,
+        "codigo_alicuota": "0006",
+        "descripcion_alicuota_iva": "Alícuota del 27.00%",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_alicuota_iva": 1,
+        "fcontrol": "2025-02-02 19:46:07",
+        "id_alicuota_iva": 4,
+        "id_user_id": 1,
+        "usuario": "admin"
+    },
+    {
+        "alicuota_iva": 5,
+        "codigo_alicuota": "0008",
+        "descripcion_alicuota_iva": "Alícuota del 5.00%",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_alicuota_iva": 1,
+        "fcontrol": "2025-02-02 19:46:40",
+        "id_alicuota_iva": 5,
+        "id_user_id": 1,
+        "usuario": "admin"
+    },
+    {
+        "alicuota_iva": 2.5,
+        "codigo_alicuota": "0009",
+        "descripcion_alicuota_iva": "Alícuota del 2.50%",
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_alicuota_iva": 1,
+        "fcontrol": "2025-02-02 19:46:56",
+        "id_alicuota_iva": 6,
+        "id_user_id": 1,
+        "usuario": "admin"
+    }
+]

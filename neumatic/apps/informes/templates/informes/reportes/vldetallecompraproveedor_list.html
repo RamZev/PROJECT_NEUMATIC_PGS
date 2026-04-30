@@ -1,0 +1,71 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vldetallecompraproveedor_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		
+		<thead>
+			<tr>
+				<th>Comprobante</th>
+				<th>Fecha</th>
+				<th>CAI</th>
+				<th>Código</th>
+				<th>Producto</th>
+				<th class="numeric">Cantidad</th>
+				<th class="numeric">Precio</th>
+				<th class="numeric">Total</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for data in objetos.values %}
+				{% for det in data.detalle %}
+					<tr>
+						<td>{{ det.comprobante }}</td>
+						<td>{{ det.fecha_comprobante|date:"d/m/Y" }}</td>
+						<td>{{ det.cai|default_if_none:"" }}</td>
+						<td>{{ det.codigo }}</td>
+						<td>{{ det.producto }}</td>
+						<td class="numeric">{{ det.cantidad|formato_es_ar_entero }}</td>
+						<td class="numeric">{{ det.precio|formato_es_ar }}</td>
+						<td class="numeric">{{ det.total|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				<tr class="subtotal">
+					<td colspan="5" style="text-align: right; padding-bottom: 20px;"><strong>Totales:</strong></td>
+					<td class="numeric" style="border-top: 1px solid;"><strong>{{ data.cantidad|formato_es_ar_entero }}</strong></td>
+					<td style="border-top: 1px solid;"></td>
+					<td class="numeric" style="border-top: 1px solid;"><strong>{{ data.total|formato_es_ar }}</strong></td>
+				</tr>
+				
+				<tr>
+					<td colspan="8"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			
+		</tbody>
+		
+	</table>
+{% endblock content %}

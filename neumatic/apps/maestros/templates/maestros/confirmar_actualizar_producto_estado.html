@@ -1,0 +1,241 @@
+<!-- neumatic\apps\maestros\templates\maestros\confirmar_actualizar_producto_estado.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+{% block title %}Actualizar Estados de Productos{% endblock %}
+
+{% block style %}
+	{{ block.super }}
+	<style>
+		/* Estilo base del checkbox */
+		.form-check-input {
+			width: 1.2em;
+			height: 1.2em;
+			margin-top: 0.15em;
+			transition: all 0.2s ease-in-out;
+		}
+		
+		/* Efecto hover - opción 1: Sombra suave */
+		.form-check-input:hover {
+			border-color: #0d6efd;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+			cursor: pointer;
+			transform: scale(1.05);
+		}
+		
+		/* Efecto cuando el checkbox está marcado y en hover */
+		.form-check-input:checked:hover {
+			background-color: #0b5ed7;
+			border-color: #0b5ed7;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.5);
+		}
+		
+		/* Efecto focus para accesibilidad */
+		.form-check-input:focus {
+			border-color: #86b7fe;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+		}
+		
+		/* Efecto para el label también */
+		.form-check-label:hover {
+			cursor: pointer;
+			color: #0d6efd;
+			transition: color 0.2s ease;
+		}
+	</style>
+{% endblock %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4 py-4">
+					
+					<h2>{{ master_title }}</h2>
+					<ol class="breadcrumb mb-4">
+						<li class="breadcrumb-item"><a href="{% url home_view_name %}">Panel</a></li>
+						<li class="breadcrumb-item active">Actualizar Estados de Productos</li>
+					</ol>
+					
+					<div class="card mb-4 col-8">
+						<div class="card-header">
+							<i class="bi bi-exclamation-octagon-fill"></i>
+							ATENCIÓN!
+						</div>
+						<div class="card-body">
+							<p>Esta acción actualizará los estados a: <strong>FALTANTES, DISPONIBLES o POCAS</strong> según el stock en depósitos.</p>
+							
+							<!-- CHECKBOX PARA CONTROLAR EL ALCANCE DE LA ACTUALIZACIÓN -->
+							<div class="form-check mb-3">
+								<input class="form-check-input" type="checkbox" name="actualizar_todos" id="actualizarTodos" role="switch" style="border-color: #0d6efd; accent-color: #0d6efd">
+								<label class="form-check-label" for="actualizarTodos">
+									<strong>Actualizar todos los estados</strong> (incluye estados asignados manualmente como OFERTAS, etc.)
+								</label>
+								<div class="form-text text-muted">
+									<i class="bi bi-info-circle"></i> 
+									Si no marca esta opción, solo se actualizarán los productos que actualmente tengan estado FALTANTES, DISPONIBLES o POCAS.
+								</div>
+							</div>
+							<!-- FIN DEL CHECKBOX -->
+							
+							<p>{{ mensaje }}</p>
+							
+							<!-- Mensaje de carga (inicialmente oculto) -->
+							<div id="mensaje-carga" class="alert alert-info" style="display: none;">
+								<div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+									<span class="visually-hidden">Cargando...</span>
+								</div>
+								<strong>Procesando actualización...</strong> Este proceso puede tomar varios segundos. Por favor, espere.
+							</div>
+							
+							<!-- Área para mostrar resultados -->
+							<div id="resultado"></div>
+							
+							<!-- Formulario normal como fallback -->
+							<form method="post" id="actualizarForm">
+								{% csrf_token %}
+								<!-- Importante: incluir el checkbox dentro del formulario -->
+								<div class="mb-3">
+									<!-- El checkbox se replicará aquí vía JavaScript para el envío AJAX -->
+								</div>
+								<button type="button" class="btn btn-primary" id="procesar-btn">
+									<i class="bi bi-check-lg"></i>
+									Sí, Actualizar Estados
+								</button>
+								<a href="{% url home_view_name %}" class="btn btn-secondary" id="cancelar-btn">
+									<i class="bi bi-x-lg"></i>
+									Cancelar
+								</a>
+							</form>
+						</div>
+					</div>
+					
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const procesarBtn = document.getElementById('procesar-btn');
+			const cancelarBtn = document.getElementById('cancelar-btn');
+			const mensajeCarga = document.getElementById('mensaje-carga');
+			const resultadoDiv = document.getElementById('resultado');
+			const formulario = document.getElementById('actualizarForm');
+			const checkbox = document.getElementById('actualizarTodos');
+			
+			if (procesarBtn) {
+				procesarBtn.addEventListener('click', function() {
+					//-- Mostrar mensaje de carga.
+					mensajeCarga.style.display = 'block';
+					resultadoDiv.innerHTML = '';
+					
+					//-- Deshabilitar botones.
+					procesarBtn.disabled = true;
+					procesarBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+					
+					if (cancelarBtn) {
+						cancelarBtn.style.pointerEvents = 'none';
+						cancelarBtn.style.opacity = '0.6';
+					}
+					
+					//-- Obtener el token CSRF.
+					const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+					
+					//-- Crear FormData y agregar el valor del checkbox
+					const formData = new FormData();
+					formData.append('csrfmiddlewaretoken', csrfToken);
+					formData.append('actualizar_todos', checkbox.checked ? 'on' : 'off');
+					
+					//-- Enviar solicitud AJAX.
+					fetch('', {  // URL vacía = misma URL actual
+						method: 'POST',
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest',
+							// No establecer 'X-CSRFToken' en headers cuando usamos FormData
+							// Django lo espera en el cuerpo del formulario
+						},
+						body: formData
+					})
+					.then(response => {
+						if (!response.ok) {
+							throw new Error('Error en la respuesta del servidor');
+						}
+						return response.json();
+					})
+					.then(data => {
+						//-- Ocultar mensaje de carga.
+						mensajeCarga.style.display = 'none';
+						
+						if (data.success) {
+							//-- Mostrar mensaje de éxito.
+							resultadoDiv.innerHTML = `
+								<div class="alert alert-success mt-3">
+									<i class="bi bi-check-circle-fill"></i>
+									<strong>¡Éxito!</strong> ${data.message}
+								</div>
+							`;
+							
+							//-- Cambiar el botón a estado "completado".
+							procesarBtn.disabled = true;
+							procesarBtn.innerHTML = '<i class="bi bi-check-circle"></i> Proceso Completado';
+							procesarBtn.classList.remove('btn-primary');
+							procesarBtn.classList.add('btn-success');
+							
+							//-- Re-habilitar el botón cancelar.
+							if (cancelarBtn) {
+								cancelarBtn.style.pointerEvents = 'auto';
+								cancelarBtn.style.opacity = '1';
+							}
+							
+						} else {
+							//-- Mostrar mensaje de error.
+							resultadoDiv.innerHTML = `
+								<div class="alert alert-danger mt-3">
+									<i class="bi bi-exclamation-triangle-fill"></i>
+									<strong>Error:</strong> ${data.message}
+								</div>
+							`;
+							
+							//-- Re-habilitar botón para reintentar.
+							procesarBtn.disabled = false;
+							procesarBtn.innerHTML = '<i class="bi bi-check-lg"></i> Reintentar Actualización';
+							
+							//-- Re-habilitar el botón cancelar.
+							if (cancelarBtn) {
+								cancelarBtn.style.pointerEvents = 'auto';
+								cancelarBtn.style.opacity = '1';
+							}
+						}
+					})
+					.catch(error => {
+						//-- Ocultar mensaje de carga.
+						mensajeCarga.style.display = 'none';
+						
+						//-- Mostrar error.
+						resultadoDiv.innerHTML = `
+							<div class="alert alert-danger mt-3">
+								<i class="bi bi-exclamation-triangle-fill"></i>
+								<strong>Error de conexión:</strong> ${error.message}
+							</div>
+						`;
+						
+						//-- Re-habilitar botón para reintentar.
+						procesarBtn.disabled = false;
+						procesarBtn.innerHTML = '<i class="bi bi-check-lg"></i> Reintentar Actualización';
+						
+						//-- Re-habilitar el botón cancelar.
+						if (cancelarBtn) {
+							cancelarBtn.style.pointerEvents = 'auto';
+							cancelarBtn.style.opacity = '1';
+						}
+					});
+				});
+			}
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,172 @@
+✅ producto_stock_migra.py completado exitosamente
+
+==================================================
+Ejecutando producto_minimo_migra.py...
+==================================================
+
+listamin.DBF: Total de registros a procesar: 83777
+Registro 1761: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Registro 3280: CAI (32040) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Registro 4568: CAI (23377) no encontrado. Omitiendo registro.
+Registro 5078: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5079: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5080: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5081: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5082: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5083: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5084: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5085: CAI (60414) no encontrado. Omitiendo registro.
+Registro 5086: CAI (60414) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Registro 10899: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 11749: CAI (32040) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Registro 13165: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13166: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13167: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13168: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13169: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13170: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13171: CAI (60414) no encontrado. Omitiendo registro.
+Registro 13172: CAI (60414) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Registro 35465: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35466: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35467: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35468: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35469: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35470: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35471: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35472: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35473: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35474: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35475: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35476: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35477: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35478: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Registro 35479: CAI (9.328.11831ÿÿÿÿ) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Registro 58787: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58788: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58789: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58790: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58791: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58792: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58793: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58794: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58795: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58796: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58797: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58798: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58799: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58800: CAI (32040) no encontrado. Omitiendo registro.
+Registro 58801: CAI (32040) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Registro 77342: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77343: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77344: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77345: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77346: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77347: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77348: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77349: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77350: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77351: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77352: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77353: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77354: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77355: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77356: CAI (23377) no encontrado. Omitiendo registro.
+Registro 77357: CAI (23377) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Se insertaron 2000 registros en la base de datos.
+Registro 81194: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81195: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81196: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81197: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81198: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81199: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81200: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81201: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81202: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81203: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81204: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81205: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81206: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81207: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81208: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81209: CAI (49986) no encontrado. Omitiendo registro.
+Registro 81210: CAI (49986) no encontrado. Omitiendo registro.
+Se insertaron 2000 registros en la base de datos.
+Registro 82452: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82453: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82454: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82455: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82456: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82457: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82458: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82459: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82460: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82461: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82462: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82463: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82464: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82465: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82466: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82467: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82468: CAI (1,0102E+12) no encontrado. Omitiendo registro.
+Registro 82656: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82657: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82658: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82659: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82660: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82661: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82662: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82663: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82664: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82665: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82666: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82667: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82668: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82669: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82670: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82671: CAI (6931) no encontrado. Omitiendo registro.
+Registro 82672: CAI (6931) no encontrado. Omitiendo registro.
+Se insertaron los últimos 1658 registros en la base de datos.
+Total de registros creados: 83658
+Total de errores: 119
+
+✅ producto_minimo_migra.py completado exitosamente

@@ -1,0 +1,32 @@
+[
+    {
+        "id_menu_heading": 1,
+        "name": "Archivos",
+        "order": 0
+    },
+    {
+        "id_menu_heading": 2,
+        "name": "Ventas",
+        "order": 1
+    },
+    {
+        "id_menu_heading": 3,
+        "name": "Compras",
+        "order": 2
+    },
+    {
+        "id_menu_heading": 4,
+        "name": "Informes",
+        "order": 3
+    },
+    {
+        "id_menu_heading": 5,
+        "name": "Opciones",
+        "order": 4
+    },
+    {
+        "id_menu_heading": 6,
+        "name": "Estadísticas Ventas",
+        "order": 5
+    }
+]

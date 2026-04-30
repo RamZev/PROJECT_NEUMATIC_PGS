@@ -1,0 +1,306 @@
+<!-- neumatic\apps\ventas\templates\ventas\caja_detalle_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button class="accordion-button py-2" type="button" 
+													data-bs-toggle="collapse" 
+													data-bs-target="#Informacion_Detalle" 
+													aria-expanded="true" 
+													aria-controls="Informacion_Detalle">
+												<strong>Información del Movimiento de Caja</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Informacion_Detalle">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<!-- Información de caja (solo para creación) -->
+												{% if not object.pk %}
+												<div class="row mb-3">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															Estado de Caja
+														</label>
+														{{ form.estado_caja_info }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															Sucursal
+														</label>
+														{{ form.sucursal_info }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															Número de Caja
+														</label>
+														{{ form.numero_caja_info }}
+													</div>
+												</div>
+												{% endif %}
+												
+												<!-- Campo oculto para id_caja -->
+												{{ form.id_caja }}
+												
+												<div class="row mb-3">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															Caja
+														</label>
+														{{ form.caja_info }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.tipo_movimiento.label }}
+														</label>
+														<div class="mt-2">
+															{% for radio in form.tipo_movimiento %}
+																<div class="form-check form-check-inline">
+																	{{ radio.tag }}
+																	<label class="form-check-label" for="{{ radio.id_for_label }}">
+																		{{ radio.choice_label }}
+																	</label>
+																</div>
+															{% endfor %}
+														</div>
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_forma_pago.label }}
+														</label>
+														{{ form.id_forma_pago }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.importe.label }}
+														</label>
+														{{ form.importe }}
+													</div>
+												</div>
+
+												<div class="row mb-3">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idventas.label|default:"ID Venta" }}
+														</label>
+														{{ form.idventas }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idcompras.label|default:"ID Compra" }}
+														</label>
+														{{ form.idcompras }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idbancos.label|default:"ID Banco" }}
+														</label>
+														{{ form.idbancos }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha.label|default:"Fecha" }}
+														</label>
+														{{ form.fecha }}
+													</div>
+												</div>
+
+												<div class="row">
+													<div class="col-md-12">
+														<label class="form-label text-primary mb-0">
+															{{ form.observacion.label }}
+														</label>
+														{{ form.observacion }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<!-- Mensajes de error del formulario -->
+								{% if form.errors %}
+								<div class="container mt-3">
+									<div class="alert alert-danger">
+										<strong>Errores en el formulario:</strong>
+										<ul class="mb-0">
+											{% for field, errors in form.errors.items %}
+												{% for error in errors %}
+													<li>
+														{% if field != '__all__' %}
+															<strong>{{ field }}:</strong> 
+														{% endif %}
+														{{ error }}
+													</li>
+												{% endfor %}
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+								{% endif %}
+								
+								<div class="container mt-3">
+									{% if not object.pk and puede_crear %}
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										<i class="bi bi-check-circle"></i> Guardar
+									</button>
+									{% elif object.pk %}
+									<button class="btn btn-secondary" type="button" disabled>
+										<i class="bi bi-lock-fill"></i> Modificación no permitida
+									</button>
+									{% else %}
+									<button class="btn btn-danger" type="button" disabled>
+										<i class="bi bi-x-circle-fill"></i> Caja Cerrada - No se puede crear movimiento
+									</button>
+									{% endif %}
+									
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										<i class="bi bi-arrow-left"></i> Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block Scripts ------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Si estamos en modo modificación (object.pk existe), deshabilitar todos los campos
+			{% if object.pk %}
+			const form = document.querySelector('form');
+			if (form) {
+				const inputs = form.querySelectorAll('input, select, textarea, button[type="submit"]');
+				inputs.forEach(input => {
+					if (input.type !== 'hidden' && !input.disabled) {
+						input.disabled = true;
+						if (input.tagName === 'INPUT' || input.tagName === 'TEXTAREA') {
+							input.readOnly = true;
+						}
+					}
+				});
+				
+				// Deshabilitar específicamente los radio buttons
+				const radios = form.querySelectorAll('input[type="radio"]');
+				radios.forEach(radio => {
+					radio.disabled = true;
+				});
+				
+				// Deshabilitar el botón de guardar si aún no está deshabilitado
+				const guardarBtn = document.getElementById('guardarBtn');
+				if (guardarBtn) {
+					guardarBtn.disabled = true;
+				}
+			}
+			{% endif %}
+			
+			// Para creación: validaciones básicas
+			{% if not object.pk and puede_crear %}
+			const form = document.querySelector('form');
+			if (form) {
+				form.addEventListener('submit', function(event) {
+					// Validar que el importe sea mayor a 0
+					const importeInput = document.querySelector('[name="importe"]');
+					const importe = importeInput ? importeInput.value.trim() : '';
+					
+					if (!importe || parseFloat(importe) <= 0) {
+						event.preventDefault();
+						alert('Error: El importe debe ser mayor a 0');
+						importeInput.focus();
+						return false;
+					}
+					
+					// Validar que se haya seleccionado una forma de pago
+					const formaPagoSelect = document.querySelector('[name="id_forma_pago"]');
+					const formaPago = formaPagoSelect ? formaPagoSelect.value : '';
+					
+					if (!formaPago) {
+						event.preventDefault();
+						alert('Error: Debe seleccionar una forma de pago');
+						formaPagoSelect.focus();
+						return false;
+					}
+					
+					// Validar que se haya seleccionado un tipo de movimiento
+					const tipoMovimientoRadio = document.querySelector('[name="tipo_movimiento"]:checked');
+					if (!tipoMovimientoRadio) {
+						event.preventDefault();
+						alert('Error: Debe seleccionar un tipo de movimiento (Ingreso o Egreso)');
+						return false;
+					}
+					
+					// Los campos idventas, idcompras e idbancos son OPCIONALES
+					// No hay validación para ellos
+				});
+			}
+			{% endif %}
+			
+			// Asegurar que los campos informativos sean siempre de solo lectura
+			const camposInfo = document.querySelectorAll('[id$="_info"]');
+			camposInfo.forEach(campo => {
+				if (campo.tagName === 'INPUT') {
+					campo.readOnly = true;
+				}
+			});
+			
+			// Añadir clase de solo lectura a los campos deshabilitados
+			const camposDeshabilitados = document.querySelectorAll('input:disabled, select:disabled, textarea:disabled');
+			camposDeshabilitados.forEach(campo => {
+				if (!campo.classList.contains('form-control-plaintext')) {
+					campo.classList.add('form-control-plaintext');
+					campo.classList.add('bg-light');
+				}
+			});
+		});
+	</script>
+{% endblock script %}

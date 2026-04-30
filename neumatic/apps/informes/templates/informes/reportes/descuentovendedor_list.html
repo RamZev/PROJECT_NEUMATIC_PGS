@@ -1,0 +1,100 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\descuentovendedor_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<div class="table-container">
+		<table>
+			
+			<thead>
+				<tr>
+					<th>Estatus</th>
+					<th>Marca</th>
+					<th class="pl-15">Familia</th>
+					<th class="numeric pl-15">Col1</th>
+					<th class="numeric pl-15">Col2</th>
+					<th class="numeric pl-15">Col3</th>
+					<th class="numeric pl-15">Col4</th>
+					<th class="numeric pl-15">Col5</th>
+					<th class="numeric pl-15">Col6</th>
+					<th class="numeric pl-15">Col7</th>
+					<th class="numeric pl-15">Col8</th>
+					<th class="numeric pl-15">Col9</th>
+					<th class="numeric pl-15">Col10</th>
+					<th class="numeric pl-15">Col11</th>
+					<th class="numeric pl-15">Col12</th>
+					<th class="numeric pl-15">Col13</th>
+					<th class="numeric pl-15">Col14</th>
+					<th class="numeric pl-15">Col15</th>
+					<th class="numeric pl-15">Col16</th>
+					<th class="numeric pl-15">Col17</th>
+					<th class="numeric pl-15">Col18</th>
+					<th class="numeric pl-15">Col19</th>
+					<th class="numeric pl-15">Col20</th>
+					<th class="numeric pl-15">Col21</th>
+					<th class="numeric pl-15">Col22</th>
+					<th class="numeric pl-15">Col23</th>
+					<th class="numeric pl-15">Col24</th>
+					<th class="numeric pl-15">Col25</th>
+				</tr>
+			</thead>
+			
+			<tbody>
+				
+				{% for obj in objetos %}
+					<tr>
+						<td>{{ obj.estatus_descuento_vendedor|get_estatus }}</td>
+						<td>{{ obj.id_marca__nombre_producto_marca }}</td>
+						<td class="pl-15">{{ obj.id_familia__nombre_producto_familia }}</td>
+						<td class="numeric pl-15">{{ obj.desc1|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc2|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc3|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc4|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc5|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc6|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc7|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc8|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc9|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc10|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc11|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc12|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc13|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc14|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc15|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc16|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc17|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc18|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc19|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc20|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc21|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc22|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc23|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc24|formato_es_ar }}</td>
+						<td class="numeric pl-15">{{ obj.desc25|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				
+			</tbody>
+		</table>
+	</div>
+{% endblock content %}

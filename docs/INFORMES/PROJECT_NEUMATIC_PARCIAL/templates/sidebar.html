@@ -1,0 +1,150 @@
+<div id="layoutSidenav_nav">
+	{% comment %} <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion"> {% endcomment %}
+	<nav class="sb-sidenav accordion sb-sidenav-blue" id="sidenavAccordion">
+		<div class="sb-sidenav-menu">
+			<div class="nav">
+				<div class="sb-sidenav-menu-heading">Core</div>
+				
+				<a class="nav-link" href="{% url 'home' %}">
+					<div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+					Panel
+				</a>
+				
+				<div class="sb-sidenav-menu-heading">Ventas</div>
+				
+				<!-- Opciones del Módulo Ventas Start -->
+				
+				<!-- Archivos Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseFiles" aria-expanded="false" aria-controls="collapseFiles">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Archivos
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				
+				<div class="collapse" id="collapseFiles" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+					<nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+							Catálogos
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="#">Clientes</a>
+								<a class="nav-link" href="#">Proveedores</a>
+								<a class="nav-link" href="{% url 'producto_list' %}">Productos</a>
+								<a class="nav-link" href="{% url 'listado_producto_list' %}">Listado De Productos</a>
+								<a class="nav-link" href="{% url 'vendedor_list' %}">Vendedores</a>
+								<a class="nav-link" href="{% url 'empresa_list' %}">Empresa</a>
+								<a class="nav-link" href="{% url 'sucursal_list' %}">Sucursales</a>
+								<a class="nav-link" href="#">Parámetros</a>
+								<a class="nav-link" href="#">Números</a>
+
+							</nav>
+						</div>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseError" aria-expanded="false" aria-controls="pagesCollapseError">
+							Tablas
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseError" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="{% url 'actividad_list' %}">Actividad</a>
+								<a class="nav-link" href="#">Prod. Depósito</a>
+								<a class="nav-link" href="#">Prod. Familia</a>
+								<a class="nav-link" href="#">Prod. Marca</a>
+								<a class="nav-link" href="#">Prod. Modelo</a>
+								<a class="nav-link" href="#">Prod. Mínimo</a>
+								<a class="nav-link" href="#">Prod. Stock</a>
+								<a class="nav-link" href="#">Prod. Estado</a>
+								<a class="nav-link" href="#">Comp. Venta</a>
+								<a class="nav-link" href="#">Comp. Compra</a>
+								<a class="nav-link" href="#">Moneda</a>
+								<a class="nav-link" href="#">Provincia</a>
+								<a class="nav-link" href="#">Localidad</a>
+								<a class="nav-link" href="#">Tipo Documento</a>
+								<a class="nav-link" href="#">Tipo Iva</a>
+								<a class="nav-link" href="#">Tipo Percepción</a>
+								<a class="nav-link" href="#">Tipo Retención</a>
+								<a class="nav-link" href="#">Operario</a>
+							</nav>
+						</div>
+					</nav>
+				</div>
+				<!-- Archivos End -->
+				
+				<!-- Procesos Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseProcesses" aria-expanded="false" aria-controls="collapseProcesses">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Procesos
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				
+				<div class="collapse" id="collapseProcesses" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+					<nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+							Ventas
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="#">Doc. Venta</a>
+								<a class="nav-link" href="#">Anular DV</a>
+							</nav>
+						</div>
+						
+						<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+							Compras
+							<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+						</a>
+						<div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+							<nav class="sb-sidenav-menu-nested nav">
+								<a class="nav-link" href="#">Doc. Compra</a>
+								<a class="nav-link" href="#">Anular DC</a>
+							</nav>
+						</div>
+						
+					</nav>
+				</div>
+				<!-- Procesos End -->
+				
+				
+				<!-- Informes Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseReports" aria-expanded="false" aria-controls="collapseReports">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Informes
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				<!-- Informes End -->
+				
+				<!-- Opciones Start -->
+				<a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseOptions" aria-expanded="false" aria-controls="collapseOptions">
+					<div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+					Opciones
+					<div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+				</a>
+				<!-- Opciones End -->
+				
+				<!-- Opciones del Módulo Ventas Start -->
+				
+				<!-- Opciones de Estadísticas Start -->
+				<div class="sb-sidenav-menu-heading">Estadísticas</div>
+				
+				<a class="nav-link" href="charts.html">
+					<div class="sb-nav-link-icon"><i class="fas fa-chart-area"></i></div>
+					Gráficos
+				</a>
+				<a class="nav-link" href="tables.html">
+					<div class="sb-nav-link-icon"><i class="fas fa-table"></i></div>
+					Tablas
+				</a>
+				<!-- Opciones de Estadísticas End -->
+			</div>
+		</div>
+		<div class="sb-sidenav-footer">
+			<div class="small">Logged in as:</div>
+			Start Bootstrap
+		</div>
+	</nav>
+</div>

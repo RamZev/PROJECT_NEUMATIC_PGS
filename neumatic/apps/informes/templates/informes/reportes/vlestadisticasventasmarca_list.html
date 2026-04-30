@@ -1,0 +1,131 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlestadisticasventasmarca_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Blque Header -------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th style="width: 20px;"></th>
+				<th>Comprobante</th>
+				<th>Fecha</th>
+				<th class="numeric" style="padding-right: 10px;">Cliente</th>
+				<th class="numeric" style="padding-right: 10px;">Código</th>
+				<th>Descripción</th>
+				<th>Medida</th>
+				<th class="numeric">Cantidad</th>
+				<th class="numeric">Precio</th>
+				<th class="numeric">Desc.</th>
+				<th class="numeric">Total</th>
+				<th class="numeric">Compra</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{% for familia_data in objetos.values %}
+				<!-- Fila con los datos de la Familia -->
+				<tr>
+					<td colspan="12" style="padding-top: 5px;">
+						<strong>Familia: {{ familia_data.familia }}</strong>
+						<!--
+						<strong>Artículo: {{ familia_data.familia }}</strong>
+						<strong>{{ familia_data.familia }}</strong>
+						-->
+					</td>
+				</tr>
+				
+				{% for modelo_data in familia_data.modelos.values %}
+					<!-- Fila con los datos del Modelo -->
+					<tr>
+						<td></td>
+						<td colspan="11">
+							<strong>Modelo: {{ modelo_data.modelo }}</strong>
+							<!-- <strong>{{ modelo_data.modelo }}</strong> -->
+						</td>
+					</tr>
+					
+					<!-- Filas con el detalle del Modelo -->
+					{% for det in modelo_data.detalle %}
+						<tr>
+							<td></td>
+							<td>{{ det.comprobante }}</td>
+							<td>{{ det.fecha_comprobante|date:'d/m/Y' }}</td>
+							<td class="numeric" style="padding-right: 10px;">{{ det.id_cliente_id }}</td>
+							<td class="numeric" style="padding-right: 10px;">{{ det.id_producto_id }}</td>
+							<td>{{ det.nombre_producto }}</td>
+							<td>{{ det.medida }}</td>
+							<td class="numeric">{{ det.cantidad|formato_es_ar }}</td>
+							<td class="numeric">{{ det.precio|formato_es_ar }}</td>
+							{% if det.descuento != 0 %}
+								<td class="numeric">{{ det.descuento|formato_es_ar }}%</td>
+							{% else %}
+								<td></td>
+							{% endif %}
+							<td class="numeric">{{ det.total|formato_es_ar }}</td>
+							<td class="numeric">{{ det.compra|formato_es_ar }}</td>
+						</tr>
+					{% endfor %}
+					
+					<!-- Sub-Totales por Modelo -->
+					<tr>
+						<td class="numeric" colspan="7"><strong>Total por Modelo:</strong></td>
+						<td class="numeric"><strong>{{ modelo_data.stm_cantidad|formato_es_ar }}</strong></td>
+						<td></td>
+						<td></td>
+						<td class="numeric"><strong>{{ modelo_data.stm_total|formato_es_ar }}</strong></td>
+						<td class="numeric"><strong>{{ modelo_data.stm_compra|formato_es_ar }}</strong></td>
+					</tr>
+				
+				{% endfor %}
+					
+				<!-- Sub-Totales por Familia -->
+				<tr>
+					<td class="numeric" colspan="7"><strong>Total por Familia:</strong></td>
+					<td class="numeric"><strong>{{ familia_data.stf_cantidad|formato_es_ar }}</strong></td>
+					<td></td>
+					<td></td>
+					<td class="numeric"><strong>{{ familia_data.stf_total|formato_es_ar }}</strong></td>
+					<td class="numeric"><strong>{{ familia_data.stf_compra|formato_es_ar }}</strong></td>
+				</tr>
+				
+				<tr>
+					<td colspan="12"><hr></td>
+				</tr>
+			
+			{% endfor %}
+			
+			<!-- Totales Generales (Marca) -->
+			{% comment %} <tr style="border-top: 1px solid #000;"> {% endcomment %}
+			<tr>
+				<td class="numeric" colspan="7"><strong>Total por Marca:</strong></td>
+				<td class="numeric"><strong>{{ tg_cantidad|formato_es_ar }}</strong></td>
+				<td></td>
+				<td></td>
+				<td class="numeric"><strong>{{ tg_total|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ tg_compra|formato_es_ar }}</strong></td>
+			</tr>
+			
+		</tbody>
+		
+	</table>
+{% endblock content %}

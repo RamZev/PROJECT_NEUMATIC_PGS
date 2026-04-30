@@ -1,0 +1,3837 @@
+{% extends 'proceso_form.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block style %}
+	body {
+		background-color: rgb(0, 204, 255);
+	}
+
+	.tbl-container {
+		width: 100%;
+		overflow-x: auto;
+	}
+		
+	.tbl-fixed {
+		overflow-x: scroll;
+		overflow-y: scroll;
+		height: fit-content;
+		max-height: 60vh;
+		margin-top: 0px;
+		font-size: 80%;
+	}
+	table {
+		width: 100%; /* Forzar la tabla a ocupar el 100% del contenedor */
+		table-layout: fixed; /* Fijar el ancho de las columnas */
+	}
+
+	table th, table td {
+		overflow: hidden; /* Prevenir que el contenido haga que la tabla se expanda */
+		text-overflow: ellipsis; /* Mostrar puntos suspensivos si el contenido es demasiado largo */
+		white-space: nowrap; /* Prevenir que el texto se divida en varias líneas */
+	}
+
+	table th {
+		position: sticky;
+		top: 0px;
+	}
+
+	/* Additional styling for inputs */
+	.table .form-control {
+		width: 100%; /* Ensure input fields take full width of their columns */
+	}
+
+	.small-font {
+		transform: scale(1); /* Escala todo al 80% */
+		transform-origin: top left; /* Mantiene la esquina superior izquierda como punto de origen */
+	}
+
+	.detalle-form {
+		width: 100%;
+		table-layout: fixed; /* Asegura que las columnas se distribuyan uniformemente */
+	}
+	
+	.detalle-form thead,
+	.detalle-form tbody {
+		width: 100%;
+	}
+	
+	.detalle-form th,
+	.detalle-form td {
+		width: 100%;
+		box-sizing: border-box; /* Para incluir padding y borders en el ancho total */
+	}
+
+	
+	.readonly-select {
+		background-color: #f0f0f0;
+		border-color: #ccc;
+		color: #555;
+		cursor: not-allowed;
+	}
+
+	/* Oculta inputs pero mantiene funcionalidad (versión robusta) */
+	tfoot input[type="number"],
+	tfoot input[type="text"] {
+		position: absolute !important;
+		opacity: 0 !important;
+		width: 1px !important;  /* Cambiado de 0 a 1px para compatibilidad */
+		height: 1px !important; /* Cambiado de 0 a 1px para compatibilidad */
+		margin: -1px !important;
+		padding: 0 !important;
+		border: 0 !important;
+		overflow: hidden !important;
+		clip: rect(0, 0, 0, 0) !important; /* Soporte para navegadores antiguos */
+		pointer-events: none !important; /* Opcional: evita interacciones accidentales */
+	}
+
+	/* Estilo para números formateados (versión mejorada) */
+	.formatted-number {
+		display: block; /* Cambiado de inline-block para mejor alineación */
+		width: 100%;
+		padding: 0.375rem 0.15rem; /* Tamaño estándar de inputs Bootstrap */
+		text-align: right;
+		background-color: #e7f5ff; /* Azul claro similar a acordeones */
+		border: 1px solid #0d6efd; /* Borde azul Bootstrap primary */
+		border-radius: 0.25rem; /* Esquinas redondeadas */
+		font-family: monospace; /* Alineación perfecta de dígitos */
+		margin: 2px 0; /* Pequeño margen para separación visual */
+		font-size: 1.1rem;
+	}
+
+	.decimal {
+		text-align: right;
+		font-familily: monospace;
+	}
+	
+{% endblock style %}
+
+<!-- Block Title  -------------------------------------------------------- -->
+{% block title %}
+	{{ titulo }}
+{% endblock title %}
+
+{% block maincomponent %}
+
+	{% block principalcomponent %}
+	<div id="layoutSidenav_content">
+		<main>
+			<!-- Elemento HTML para almacenar el valor de tipo_comprobante -->
+			<div id="tipo-comprobante-vista" data-tipo-comprobante-vista="{{ tipo_comprobante }}"></div>
+						
+			<!-- Elemento HTML para almacenar el valor de is_edit -->
+			<div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
+
+			<!-- Div oculto con el diccionario libro_iva para cada comprobante -->
+			<div id="libroiva-data" data-libroiva='{{ libro_iva_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario libro_iva para cada comprobante -->
+			<div id="multventa-data" data-multventa='{{ mult_venta_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario electronica para cada comprobante -->
+			<div id="electronica-data" data-electronica='{{ electronica_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario manual para cada comprobante -->
+			<div id="manual-data" data-manual='{{ manual_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario tipo_comprobante para cada comprobante -->
+			<div id="tipocomprobante-data" data-tipocomprobante='{{ tipo_comprobante_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario de mipyme -->
+			<div id="mipyme-data" data-mipyme='{{ mipyme_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario de ncr_ndb -->
+			<div id="ncr-ndb-data" data-ncr-ndb='{{ ncr_ndb_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario de interno -->
+			<div id="interno-data" data-interno='{{ interno_dict|safe }}'></div>
+
+			<!-- Div oculto con el id del cliente_empresa -->
+			<div id="cliente-empresa-data" data-cliente-empresa="{{ cliente_empresa_id }}"></div>
+
+			<!-- Div oculto con el diccionario de remito -->
+			<div id="remito-data" data-remito='{{ remito_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario de compro_asociado -->
+			<div id="compro-asociado-data" data-compro-asociado='{{ compro_asociado_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario de operarios -->
+			<div id="operario-data" data-operario='{{ operario_dict|safe }}'></div>
+
+			<!-- Div oculto con los descuentos de revendedor -->
+			<div id="descuento-revendedor-data" data-descuento-revendedor='{{ descuento_revendedor_dict|safe }}'></div>
+
+			<div class="container-fluid tbl-container">
+				<!-- Formulario Encabezado Detalle - Inicio -->
+				<form method="post" id="factura-form" enctype="multipart/form-data">
+					{% csrf_token %}
+
+					<div class="accordion mt-2" id="accordionPanelsStayOpenExample">
+						<div class="accordion-item">
+							<h2 class="accordion-header">
+							<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
+								Comprobante - {{ tipo_comprobante }}
+							</button>
+							</h2>
+							<div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
+							<div class="accordion-body">
+								<!--  Encabezado de Factura- Inicio -->
+								<div class="row">
+									<!-- sector izquierdo del encabezado start -->
+									<div class="col-md-6">
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.estatus_comprobante.id_for_label }}">Estatus</label>
+											</div>
+
+											<div class="col-md-3">
+												{{ form.id_valida }}
+												{{ form.estatus_comprobante }}
+											</div>
+
+											<div class="col-md-2">
+												<label for="{{ form.id_marketing_origen.id_for_label }}">Marketing</label>
+											</div>
+
+											<div class="col-md-4">
+												{{ form.id_marketing_origen }}
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												{% comment %} <label for="{{ form.id_sucursal.id_for_label }}">Sucursal</label> {% endcomment %}
+												<label for="{{ form.nombre_sucursal.id_for_label }}">Sucursal</label>
+											</div>
+											
+											<div class="col-md-5">
+												{{ form.nombre_sucursal }}
+												{{ form.id_sucursal }}
+											</div>
+
+											<div class="col-md-4">
+												{{ form.punto_venta }}
+												{{ form.id_punto_venta }}
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.id_deposito.id_for_label }}">Depósito</label>
+											</div>
+
+											<div class="col-md-9">
+												{{ form.id_deposito }}
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.id_comprobante_venta.id_for_label }}">Comprobante</label>
+											</div>                                            
+											
+											<div class="col-md-9">
+												{{ form.id_comprobante_venta }}
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<!-- Campo de Autocompletado para Buscar Cliente -->
+											<div class="col-md-3">
+												<label for="{{ form.buscar_cliente.id_for_label }}">Buscar Cliente</label>
+											</div>
+										
+											<div class="col-md-6">
+												{{ form.buscar_cliente }}
+											</div>
+
+											<div class="col-md-3 d-flex justify-content-end">
+												<button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Validar" id="validarBtn" disabled>
+													<i class="bi bi-card-checklist"></i>
+												</button>
+
+												<button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Listar" data-bs-toggle="modal" data-bs-target="#agendaModal" id="listar_agenda" disabled>
+													<i class="bi bi-card-list"></i>
+												</button>
+												{% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" id="listarBtn">Listar</button> {% endcomment %}
+												
+												<a id="crearClienteBtn" href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
+													class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
+													<i class="bi bi-building-add"></i>
+												</a>
+												
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.id_cliente.id_for_label }}">ID Cliente</label>
+											</div>
+
+											<div class="col-md-3">
+												{{ form.id_cliente }}
+											</div>
+
+											<div class="col-md-2">
+												<label for="{{ form.cuit.id_for_label }}">CUIT</label>
+											</div>
+
+											<div class="col-md-4">
+												{{ form.cuit }}
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.nombre_factura.id_for_label }}">Nombre</label>
+											</div>
+										
+											<div class="col-md-9">
+												{{ form.nombre_factura }}
+											</div>
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.domicilio_factura.id_for_label }}">Domicilio</label>
+											</div>
+										
+											<div class="col-md-9">
+												{{ form.domicilio_factura }}
+												
+											</div>
+										</div>
+										
+									</div>
+									<!-- sector izquierdo del encabezado end -->
+									
+
+									<!-- sector derecho del encabezado start -->
+									<div class="col-md-6">
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.fecha_comprobante.id_for_label }}">Fecha</label>
+											</div>
+											
+											<div class="col-md-4">
+												{{ form.fecha_comprobante }}
+											</div>
+
+											<div class="col-md-5">
+												{{ form.cliente_vip }}
+											</div>
+
+										</div>
+										
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.compro.id_for_label }}">Comprobante</label>
+											</div>
+											
+											<div class="col-md-2">
+												{{ form.compro }}
+
+											</div>
+											
+											<div class="col-md-2">
+												{{ form.letra_comprobante }}
+
+											</div>
+
+											<div class="col-md-5">
+												{{ form.numero_comprobante }}
+
+											</div>
+
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.remito.id_for_label }}">Remito</label>
+											</div>
+
+											<div class="col-md-2">
+												{{ form.comprobante_remito }}
+											</div>
+
+											<div class="col-md-4">
+												{{ form.remito }}
+											</div>
+
+											<div class="col-md-3">
+												{{ form.es_remito }}
+												<label class="form-check-label" for="{{ form.es_remito.id_for_label }}">
+													Remito
+												</label>
+											</div>
+											
+										</div>
+										
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="id_vendedor_factura">Vendedor</label>
+											</div>
+											
+											<div class="col-md-7">
+												{{ form.vendedor_factura }}
+												{{ form.id_vendedor }}
+											</div>
+
+											<div class="col-md-2">
+												{{ form.tipo_venta }}
+											</div>
+										</div>
+										
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.condicion_comprobante.id_for_label }}">Condición</label>
+											</div>
+
+											<div class="col-md-4">
+												{{ form.condicion_comprobante }}
+											</div>
+
+											<div class="col-md-4">
+												{{ form.no_estadist }}
+												<label class="form-check-label" for="{{ form.no_estadist.id_for_label }}">
+													No Estadísticas
+												</label>
+											</div>
+
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.numero_asociado.id_for_label }}">Comp. Asoc.</label>
+											</div>
+
+											<div class="col-md-2">
+												{{ form.id_comprobante_asociado}}
+												{{ form.comprobante_asociado }}
+											</div>
+
+											<div class="col-md-4">
+												{{ form.numero_asociado }}
+											</div>
+
+											<div class="col-md-3">
+												{{ form.stock_clie }}
+												<label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
+													StockCli
+												</label>
+											</div>
+
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.email_factura.id_for_label }}">Email/Móvil</label>
+											</div>
+
+											<div class="col-md-6">
+												{{ form.email_factura }}
+											</div>
+
+											<div class="col-md-3">
+												{{ form.movil_factura }}
+											</div>
+
+										</div>
+
+										<div class="row my-1">
+											<div class="col-md-3">
+												<label for="{{ form.es_pendiente.id_for_label }}">Otros</label>
+											</div>
+											
+											<div class="col-md-2">
+												{{ form.discrimina_iva }}
+												<label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
+													DIVA
+												</label>
+											</div>
+											
+											<div class="col-md-3">
+												{{ form.es_pendiente }}
+												<label class="form-check-label" for="{{ form.es_pendiente.id_for_label }}">
+													Pendiente
+												</label>
+											</div>
+
+											<div class="col-md-3">
+												{{ form.es_presupuesto }}
+												<label class="form-check-label" for="{{ form.es_presupuesto.id_for_label }}">
+													Presupuesto
+												</label>
+											</div>
+
+											<div class="col-md-1">
+												<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#observacionesModal">
+													<i class="bi bi-pencil-square"></i>
+												</button>
+											</div>
+											
+										</div>
+									</div>
+									<!-- sector derecho del encabezado end -->
+								</div>
+								<!--  Encabezado de Factura- Fin -->
+							</div>
+							</div>
+						</div>
+
+						<div class="container my-3">
+							<div class="d-flex justify-content-end align-items-center">
+								<!-- Nuevo botón para agregar serial -->
+								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
+									Agregar Seriales
+									<i class="bi bi-upc-scan"></i>
+								</button>
+
+								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
+									Agregar Detalle
+									<i class="bi bi-file-earmark-plus"></i>
+								</button>
+							</div>
+						</div>
+						
+						<div class="accordion-item">
+							<h2 class="accordion-header">
+								<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
+									Detalle del Comprobante de Venta
+								</button>
+							</h2>
+							
+							<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
+								<div class="accordion-body">
+									
+									
+									<div class="row tbl-fixed my-2 mx-1" id="formset-container">
+										{{ formset_detalle.management_form }}
+										
+										<table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">
+											<thead class="table-primary small-font">
+												<tr>
+													<th style="width: 10%;">Medida</th>
+													<th style="width: 25%;">Nombre Producto</th>
+													<th style="width: 8%;">Cantidad</th>
+													<th style="width: 8%;">Reventa</th>
+													<th style="width: 10%;">Precio</th>
+													<th style="width: 8%;">Descuento</th>
+													<th style="width: 10%;">Operario</th> <!-- Nueva columna -->
+													<th style="width: 15%;">Total</th>
+													<th style="width: 6%;">Elim</th>
+												</tr>
+											</thead>
+											<tbody>
+												{# Inicialmente no hay filas en el formulario #}
+												{% for formdet in formset_detalle %}
+													<tr data-form-index="{{ forloop.counter0 }}">
+														<td>
+															{% if formdet.instance.pk %}
+																{{ formdet.id_detalle_factura }}
+																{{ formdet.id_factura }}
+																{{ formdet.id_producto }}     
+															{% endif %}
+															
+															{{ formdet.medida }}
+														</td>
+														
+														<td>{{ formdet.producto_venta }}</td>
+														<td>{{ formdet.cantidad }}</td>
+														<td>{{ formdet.reventa }}</td>
+														<td>{{ formdet.precio }}</td>
+														<td>{{ formdet.descuento }}</td>
+														<td>{{ formdet.id_operario }}</td> <!-- Nuevo campo -->
+														<td>
+															{{ formdet.gravado }}
+															{{ formdet.no_gravado }}
+															{{ formdet.alic_iva }}
+															{{ formdet.iva }}
+															{{ formdet.total }}</td>
+														<td>
+															<button type="button" class="btn btn-danger btn-sm btn-delete" 
+																data-form-index="{{ forloop.counter0 }}" data-toggle="tooltip" title="Eliminar">
+																<i class="bi bi-trash"></i>
+															</button>
+															<input type="checkbox" name="detallefactura_set-{{ forloop.counter0 }}-DELETE" id="id_detallefactura_set-{{ forloop.counter0 }}-DELETE" style="display: none;">
+														</td>
+													</tr>
+												{% endfor %}
+
+											</tbody>
+											
+											<tfoot>
+												<tr>
+													<td colspan="100%">
+														<!-- Fila de Totales - Mismo estilo que el encabezado -->
+														<div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
+														<!-- Botones (3 columnas) -->
+														<div class="col-md-2">
+															<div class="d-flex flex-column gap-2">
+																<button type="submit" class="btn btn-outline-success btn-sm" 
+																	{% if is_edit %}disabled{% endif %}>
+																	{% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+																	<i class="bi bi-floppy"></i>
+																</button>
+																{% comment %} <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm"> {% endcomment %}
+																<a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">  <!-- Retorna a la lista de origen -->
+																	Cancelar
+																	<i class="bi bi-x-circle"></i>
+																</a>
+															</div>
+														</div>
+															
+															<!-- Gravado (2 columnas) -->
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary" for="{{ form.gravado.id_for_label }}">
+																		<strong>Gravado</strong>
+																	</label>
+																	<div>
+																		{{ form.gravado }}
+																		<span class="formatted-number">{{ form.gravado.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															
+															<!-- Exento (2 columnas) -->
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.exento.id_for_label }}">
+																		<strong>Exento</strong>
+																	</label>
+																	<div>
+																		{{ form.exento }}
+																		<span class="formatted-number">{{ form.exento.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															
+															<!-- IVA (2 columnas) -->
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.iva.id_for_label }}">
+																		<strong>I.V.A.</strong>
+																	</label>
+																	<div>
+																		{{ form.iva }}
+																		<span class="formatted-number">{{ form.iva.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															
+															<!-- IIBB (2 columnas) -->
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.percep_ib.id_for_label }}">
+																		<strong>IIBB PERCEPCION</strong>
+																	</label>
+																	<div>
+																		{{ form.percep_ib }}
+																		<span class="formatted-number">{{ form.percep_ib.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+															
+															<!-- Total (3 columnas) -->
+															<div class="col-md-2">
+																<div class="text-center">
+																	<label class="form-label mb-0 text-primary" for ="{{ form.total.id_for_label }}">
+																		<strong>TOTAL</strong>
+																	</label>
+																	<div>
+																		{{ form.total }}
+																		<!-- <span class="formatted-number">{{ form.total.value|formato_es_ar }}</span> -->
+																		<span class="formatted-number">{{ form.total.value|default:"0.00" }}</span>
+																	</div>
+																</div>
+															</div>
+														</div>
+													</td>
+												</tr>
+											</tfoot>
+											
+										</table>
+									</div>
+									
+								</div>
+							</div>
+						</div>
+						
+						<!-- Acordeon de Seriales (y observaciones por confirmar)-->
+						<div class="accordion-item">
+							<h2 class="accordion-header">
+								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
+									Seriales de Productos
+								</button>
+							</h2>
+							<div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
+								<div class="accordion-body">
+									<div class="table-responsive tbl-fixed" style="max-height: 300px;">
+										{{ formset_serial.management_form }}
+										<table class="table table-striped table-hover">
+											<thead class="table-primary">
+												<tr>
+													<th>Serial</th>
+													<th>Acciones</th>
+												</tr>
+											</thead>
+											<tbody id="serialTableBody">
+												{% for formser in formset_serial %}
+												<tr>
+													<td>
+														{{ formser.id_serial_factura }}
+														{{ formser.id_factura }}
+														{{ formser.producto_serial }}
+													</td>
+													<td>
+														<button 
+															type="button" 
+															class="btn btn-danger btn-sm btn-delete-serial"
+															data-serial-index="{{ forloop.counter0 }}" 
+															data-bs-toggle="tooltip" 
+															title="Eliminar"
+														>
+															<i class="bi bi-trash"></i>
+														</button>
+														<input 
+															type="checkbox" 
+															name="serialfactura_set-{{ forloop.counter0 }}-DELETE" 
+															class="d-none"
+														>
+													</td>
+													
+												</tr>
+												{% endfor %}
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+						
+					</div>
+					
+					<!-- Modal de Observaciones-->
+					<div class="modal fade" id="observacionesModal" tabindex="-1" aria-labelledby="observacionesModalLabel" aria-hidden="true">
+						<div class="modal-dialog modal-lg">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="observacionesModalLabel">Observaciones del Comprobante</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+								</div>
+								<div class="modal-body">
+									<!-- Renderizamos el campo aquí -->
+									{{ form.observa_comprobante }}
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+				</form>
+				<!-- Formulario Encabezado Detalle - Fin -->
+			</div>
+		</main>
+	</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+{% block modals %}
+	{% comment %} Ventana Modal Buscar Producto Start {% endcomment %}
+	<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl" style="max-width: 90%;">
+			<div class="modal-content">
+				<div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
+					<h5 class="modal-title fs-6" id="detalleModalLabel">Productos</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- Formulario modal -->
+					<form method="post" id="detalleForm">
+						{% csrf_token %}
+						
+						<!-- **************************************************************************************************************************** -->
+						<!-- Opciones de filtro adicionales -->
+						{% comment %} Estructura original Ricardo.
+						<div class="row mb-3">
+							<div class="col-md-12 d-flex justify-content-start align-items-center flex-wrap">
+								<label class="me-3 fw-bold">Filtrar por:</label>
+								
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_primeras" value="primeras" checked>
+									<label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+								</div>
+								
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_otras" value="otras">
+									<label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+								</div>
+								
+								<div class="form-check form-check-inline">
+									<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_stock" value="stock">
+									<label class="form-check-label" for="filtro_stock">Solo en Stock</label>
+								</div>
+							</div>
+						</div>
+						{% endcomment %}
+						{% comment %} Opción con sieldset (más semantico)
+						<div class="row mb-3">
+							<div class="col-md-12">
+								<fieldset class="d-flex justify-content-start align-items-center flex-wrap border-0 p-0 m-0">
+									<legend class="me-3 fw-bold float-none w-auto mb-0 fs-6">Filtrar por (grok):</legend>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_primeras" value="primeras" checked>
+										<label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_otras" value="otras">
+										<label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_stock" value="stock">
+										<label class="form-check-label" for="filtro_stock">Solo en Stock</label>
+									</div>
+								</fieldset>
+							</div>
+						</div>
+						{% endcomment %}
+						<div class="row mb-3">
+							<div class="col-md-12">
+								<div class="d-flex align-items-center flex-wrap">
+									<span class="me-3 fw-bold">Filtrar por:</span>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_primeras" value="primeras" checked>
+										<label class="form-check-label" for="filtro_primeras">Primeras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_otras" value="otras">
+										<label class="form-check-label" for="filtro_otras">Otras Marcas</label>
+									</div>
+									
+									<div class="form-check form-check-inline">
+										<input class="form-check-input" type="radio" name="filtro_marca" id="filtro_stock" value="stock">
+										<label class="form-check-label" for="filtro_stock">Solo en Stock</label>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- **************************************************************************************************************************** -->
+						
+						<div class="row mb-3">
+							<div class="col-md-3">
+								<input type="text" class="form-control form-control-sm border border-primary" id="medida_producto" placeholder="Medida Producto">
+							</div>
+							<div class="col-md-4">
+								<input type="text" class="form-control form-control-sm border border-primary" id="nombre_producto" placeholder="Nombre Producto">
+							</div>
+							<div class="col-md-3">
+								<input type="text" class="form-control form-control-sm border border-primary" id="cai_producto" placeholder="CAI Producto">
+							</div>
+							<div class="col-md-2">
+								<button type="submit" class="btn btn-outline-primary btn-sm me-2">
+									Buscar
+									<i class="bi bi-search"></i>
+								</button>
+							</div>
+						</div>
+						
+						<div class="table-responsive tbl-fixed" style="max-height: 30vh; overflow-y: auto;">
+							<table class="table table-striped small-text" id="tabla-resultados">
+								<thead class="table-primary fs-7">
+									<th style="width: 8%;">ID</th>  <!-- NUEVA COLUMNA -->
+									<th style="width: 10%;">Marca</th>
+									<th style="width: 10%;">Medida</th>
+									<th style="width: 8%;">CAI</th>
+									<th style="width: 20%;">Nombre</th>
+									<th style="width: 8%;">Precio</th>
+									<th style="width: 8%;">Stock</th>
+									<th style="width: 8%;">Mínimo</th>
+									<th style="width: 8%;">Detalle</th>
+									<th style="width: 8%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
+								</thead>
+								
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+						
+						<div class="d-flex align-items-center mt-3">
+							<!-- Título -->
+							<h6 id="titulo-producto" class="mb-0 me-auto" style="line-height: 1.5;">Título del Producto</h6>
+						
+							<!-- Botones -->
+							<div class="d-flex gap-2">
+								<button type="button" class="btn btn-outline-primary btn-sm" id="agregarDetalle">Insertar</button>
+								<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" id="cancelarDetalle">Cancelar</button>
+							</div>
+						</div>
+						
+						<!-- Sección de tablas de Stock y Mínimos -->
+						<div id="detalles-container" class="row mt-1">
+							<div class="col-md-6">
+								<h6>Stock por Depósito</h6>
+								<table id="tabla-stock" class="table table-striped small-text">
+									<thead class="table-primary fs-7">
+										<tr>
+											<th>Depósito</th>
+											<th>Stock</th>
+										</tr>
+									</thead>
+									<tbody id="tabla-stock">
+									</tbody>
+								</table>
+							</div>
+							
+						</div>
+						
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% comment %} Ventana Modal Buscar Producto End {% endcomment %}
+	
+	
+	<!-- Modal para Listar Agenda-->
+	<div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 90%;">
+			<div class="modal-content">
+				<div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
+					<h5 class="modal-title fs-6" id="agendaModalLabel">Buscar en Agenda</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- Formulario modal -->
+					<form method="post" id="buscarAgendaForm">
+						{% csrf_token %}
+						<div class="row mb-3">
+							<div class="col-md-6">
+								<input type="text" class="form-control form-control-sm border border-primary" id="busquedaGeneral" placeholder="Buscar por id, cuit o nombre">
+							</div>
+							<div class="col-md-2">
+								<button type="submit" class="btn btn-outline-primary btn-sm me-2">
+									Buscar
+									<i class="bi bi-search"></i>
+								</button>
+							</div>
+						</div>
+						
+						<div class="table-responsive tbl-fixed">
+							<table class="table table-striped small-text" id="tablaResultadosAgenda">
+								<thead class="table-primary fs-7">
+									<tr>
+										<th scope="col" style="width: 10%;">ID Cliente</th>
+										<th scope="col" style="width: 12%;">CUIT</th>
+										<th scope="col" style="width: 25%;">Nombre</th>
+										<th scope="col" style="width: 15%;">Móvil</th> <!-- Agregado -->
+										<th scope="col" style="width: 20%;">Email</th> <!-- Agregado -->
+										<th scope="col" style="width: 20%;">Dirección</th>
+										<th scope="col" style="width: 8%;">Código Postal</th>
+										<th scope="col" style="width: 5%;">Seleccionar</th>
+									</tr>
+								</thead>
+								<tbody>
+								</tbody>
+							</table>
+						</div>
+						<!-- Botones del formulario -->
+						<div class="modal-footer">
+							<button type="button" class="btn btn-outline-primary btn-sm me-2" id="seleccionarAgenda">
+								Seleccionar
+								<i class="bi bi-check2-circle"></i>
+							</button>
+							<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" id="cancelarAgenda">
+								Cancelar
+								<i class="bi bi-x-circle"></i>
+							</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal para seriales -->
+	<div class="modal fade" id="serialModal" tabindex="-1" aria-labelledby="serialModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
+					<h5 class="modal-title fs-6" id="serialModalLabel">Ingresar Serial</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="serialForm">
+						{% csrf_token %}
+						<div class="mb-3">
+							<label for="serialInput" class="form-label">Número de Serial</label>
+							<input type="text" class="form-control" id="serialInput" required>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary btn-sm" id="btnGuardarSerial">Insertar</button>
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancelar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal de Autorización -->
+	<div class="modal fade" id="autorizacionModal" tabindex="-1" aria-labelledby="autorizacionModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header text-white bg-danger py-2">
+					<h5 class="modal-title fs-6" id="autorizacionModalLabel">
+						<i class="bi bi-exclamation-triangle-fill me-2"></i>
+						<span id="modalTitulo">Autorización Requerida</span>
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<form id="autorizacionForm">
+						{% csrf_token %}
+						<!-- CAMPO ESTANDAR NO SE UTILIZA -->
+						<input type="text" name="username" autocomplete="username" style="display: none;">
+						
+						<!-- AGREGAR ESTOS CAMPOS OCULTOS -->
+						<input type="hidden" id="validaClienteId" name="cliente_id">
+						<input type="hidden" id="validaSucursalId" name="sucursal_id">
+						<input type="hidden" id="validaFecha" name="fecha_comprobante">
+						
+						<div id="mensajePrincipal" class="mb-3 p-2 bg-light rounded">
+							<!-- Mensaje dinámico se insertará aquí -->
+						</div>
+						
+						<div class="alert alert-warning mb-3">
+							<h6 class="alert-heading">
+								<i class="bi bi-file-earmark-text-fill me-2"></i>Documento con vencimiento pendiente
+							</h6>
+							<div class="row small mt-2">
+								<div class="col-md-6">
+									<ul class="list-unstyled">
+										<li class="mb-2 pb-2 border-bottom">
+											<strong><i class="bi bi-receipt me-2"></i>Comprobante:</strong> 
+											<span id="modalComprobante">-</span>
+										</li>
+										<li class="mb-2 pb-2 border-bottom">
+											<strong><i class="bi bi-hash me-2"></i>Número:</strong> 
+											<span id="modalNumero">-</span>
+										</li>
+										<li class="mb-2 pb-2 border-bottom">
+											<strong><i class="bi bi-calendar-event me-2"></i>Fecha Emisión:</strong> 
+											<span id="modalFecha">-</span>
+										</li>
+									</ul>
+								</div>
+								<div class="col-md-6">
+									<ul class="list-unstyled">
+										<li class="mb-2 pb-2 border-bottom">
+											<strong><i class="bi bi-clock-history me-2"></i>Días Crédito:</strong> 
+											<span id="modalDiasCredito">-</span>
+										</li>
+										<li class="mb-2 pb-2 border-bottom">
+											<strong><i class="bi bi-calendar-x me-2"></i>Fecha Vencimiento:</strong> 
+											<span id="modalVencimiento">-</span>
+										</li>
+										<li class="mb-2 pb-2 border-bottom">
+											<strong><i class="bi bi-exclamation-octagon me-2"></i>Días Vencidos:</strong> 
+											<span id="modalDiasVencidos" class="fw-bold text-danger">-</span>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div class="row mt-2 small">
+								<div class="col-md-6">
+									<p class="mb-1">
+										<strong><i class="bi bi-cash-stack me-2"></i>Monto Pendiente:</strong> 
+										<span id="modalMonto" class="fw-bold">$-</span>
+									</p>
+								</div>
+								<div class="col-md-6">
+									<p class="mb-1">
+										<strong><i class="bi bi-person-badge me-2"></i>Vendedor:</strong> 
+										<span id="modalVendedor">-</span>
+									</p>
+								</div>
+							</div>
+						</div>
+						
+						<div class="mb-3">
+							<label for="codigoAutorizacion" class="form-label">
+								<i class="bi bi-shield-lock me-2"></i>Código de Autorización:
+							</label>
+							<input type="password" class="form-control border border-danger" 
+								id="codigoAutorizacion" name="codigo" autocomplete="new-password" required placeholder="Ingrese el código de autorización">
+							<div id="mensajeErrorAutorizacion" class="invalid-feedback mt-2"></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="submit" class="btn btn-danger btn-sm" id="btnConfirmarAutorizacion">
+						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
+					</button>
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+						<i class="bi bi-x-circle-fill me-2"></i>Cancelar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+{% endblock modals %}
+
+{% block script %}
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const formsetContainer = document.getElementById('formset-container');
+			
+			function actualizarVisualizacionTotales() {
+				const campos = ['id_gravado', 'id_exento', 'id_iva', 'id_percep_ib', 'id_total'];
+				// alert("actualizarVisualizacionTotales");
+				
+				//alert("🔍 INICIANDO VERIFICACIÓN DE FORMATEO 🔍");
+				
+				campos.forEach(id => {
+					// Verificar si el input existe
+					const input = document.getElementById(id);
+					if (!input) {
+						//alert(`❌ ERROR: No se encontró el input con ID: ${id}`);
+						return;
+					}
+					
+					// Verificar si el span de visualización existe
+					const span = input.nextElementSibling;
+					if (!span || !span.classList.contains('formatted-number')) {
+						//alert(`❌ ERROR: No se encontró el span de visualización para: ${id}`);
+						return;
+					}
+					
+					// Alerta 1: Mostrar valor crudo del input
+					// alert(`📥 INPUT ${id}:\nValor original: ${input.value}\nTipo de dato: ${typeof input.value}`);
+					
+					// Alerta 2: Mostrar valor después de parsear
+					const valorParseado = parseNumber(input.value);
+					// alert(`🔢 ${id} PARSEADO:\nValor: ${valorParseado}\nTipo: ${typeof valorParseado}`);
+					
+					// Alerta 3: Mostrar valor después de formatear
+					const valorFormateado = formatNumber(input.value);
+					// alert(`🎨 ${id} FORMATEADO:\nResultado: ${valorFormateado}`);
+					
+					// Aplicar el valor al span
+					span.textContent = valorFormateado;
+					// alert(`✅ ${id} ACTUALIZADO:\nSe mostró: ${span.textContent}`);
+				});
+				
+				// alert("🏁 VERIFICACIÓN COMPLETADA");
+			}
+			
+			// Función para parsear valores (CRÍTICA)
+			function parseNumber(value) {
+				// Si es número, retornar directamente
+				if (typeof value === 'number') return value;
+				
+				// Si es string con formato "184.802,20"
+				if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
+					return parseFloat(
+						value.replace(/\./g, '')  // Quita puntos de miles
+							 .replace(',', '.')   // Convierte coma decimal a punto
+					);
+				}
+				
+				// Para strings numéricos simples "184802.20"
+				return parseFloat(value) || 0;
+			}
+			
+			// Función para formatear visualización
+			function formatNumber(value) {
+				const num = parseNumber(value);
+				return num.toLocaleString('es-AR', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				});
+			}
+			
+			function actualizarTotalFactura() {
+				let totalGravado = 0;
+				let totalExento = 0;
+				let totalIva = 0;
+				let totalPercepIb = 0;
+				let totalFactura = 0;
+				
+				// 1. Calcular con valores correctamente parseados
+				document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').forEach(row => {
+					const total = parseNumber(row.querySelector('[name*="-total"]').value);
+					const gravado = parseNumber(row.querySelector('[name*="-gravado"]').value);
+					const no_gravado = parseNumber(row.querySelector('[name*="-no_gravado"]').value);
+					const iva = parseNumber(row.querySelector('[name*="-iva"]').value);
+					
+					totalFactura += total;
+					totalGravado += gravado;
+					totalExento += no_gravado;
+					totalIva += iva;
+				});
+				
+				// 2. Guardar valores numéricos puros
+				document.getElementById('id_gravado').value = totalGravado.toFixed(2);
+				document.getElementById('id_exento').value = totalExento.toFixed(2);
+				document.getElementById('id_iva').value = totalIva.toFixed(2);
+				document.getElementById('id_percep_ib').value = totalPercepIb.toFixed(2);
+				document.getElementById('id_total').value = totalFactura.toFixed(2);
+				
+				// 3. Formatear solo para visualización
+				actualizarVisualizacionTotales();
+			}
+			//
+			
+			// Recalcular total general dinámicamente
+			formsetContainer.addEventListener('input', function (event) {
+				// alert("LISTENER 1 - INPUT: " + event.target.name);  // ← PONER AQUÍ
+				//if (['cantidad', 'precio', 'descuento'].some(field => event.target.name.includes(field))) {
+				if (['cantidad', 'precio'].some(field => event.target.name.includes(field))) {
+					const row = event.target.closest('tr');
+					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
+					const precio = parseFloat(row.querySelector('[name*="-precio"]').value) || 0;
+					const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
+					const totalField = row.querySelector('[name*="-total"]');
+					
+					const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
+					
+					// Recalcular total por fila
+					const total = (cantidad * precio) - descuento;
+					totalField.value = total.toFixed(2);
+					
+					// Calcular base imponible (gravado) y IVA
+					const gravado = total / (1 + (alicIva / 100));
+					const iva = total - gravado;
+					
+					// Actualizar campos ocultos - asegúrate de que estos selectores son correctos
+					const gravadoField = row.querySelector('[name*="-gravado"]');
+					const ivaField = row.querySelector('[name*="-iva"]');
+					
+					if (gravadoField) gravadoField.value = gravado.toFixed(2);
+					if (ivaField) ivaField.value = iva.toFixed(2);
+					
+					// Actualizar el total general
+					actualizarTotalFactura();
+				}
+			});
+
+			// Capturar eventos blur en la fase de captura (funciona con elementos dinámicos)
+			formsetContainer.addEventListener('blur', function(event) {
+				// Verificar si el elemento que perdió el foco es un input de descuento
+				if (event.target.matches && event.target.matches('input[name*="descuento"]')) {
+					
+					// alert("✅ Blur detectado en descuento (fase de captura)");
+					
+					const descuentoInput = event.target;
+					const row = descuentoInput.closest('tr');
+					//const precioInput = row.querySelector('input[name*="precio"]');
+					const precioInput = row.querySelector('input[name*="-precio"][type="number"]');
+					const descuentoManual = parseFloat(descuentoInput.value) || 0;
+					
+					// Validar el descuento
+					if (descuentoManual < 0 || descuentoManual > 99) {
+						alert("❌ El descuento manual debe estar entre 0 y 99.");
+						descuentoInput.value = "0";
+						descuentoInput.focus();
+						return;
+					}
+					
+					// Solo proceder si hay un descuento válido mayor a 0
+					if (descuentoManual > 0) {
+						const precioActual = parseFloat(precioInput.value) || 0;
+						
+						// 1. Modificar el PRECIO (aplica el descuento UNA VEZ)
+						const nuevoPrecio = precioActual * (1 - descuentoManual/100);
+						precioInput.value = nuevoPrecio.toFixed(2);
+						
+						// 2. Poner el DESCUENTO EN CERO
+						descuentoInput.value = "0";
+						
+						// 3. Forzar RECÁLCULO de la fila
+						const inputEvent = new Event('input', { bubbles: true });
+						precioInput.dispatchEvent(inputEvent);
+						
+						// 4. Mostrar confirmación
+						alert(`✅ Descuento del ${descuentoManual}% aplicado correctamente`);
+					}
+				}
+			}, true); // ← El TRUE es crucial para capturar en fase de captura
+			
+			////////////
+			// Manejo de eliminación de Detalle de Factura
+			document.addEventListener('click', function (event) {
+				if (event.target.closest('.btn-delete')) {
+					const row = event.target.closest('tr');
+					const deleteInput = row.querySelector('input[name$="-DELETE"]');
+					
+					if (confirm('¿Está seguro de eliminar este item de la factura???')) {
+						if (deleteInput) {
+							deleteInput.checked = true; // Marca para eliminación en backend
+							row.style.display = 'none';  // Oculta la fila visualmente
+							
+							// Actualiza los totales y el contador de formsets
+							actualizarTotalFactura();
+							actualizarContadorFormsets();
+						} else {
+							console.error('Error: No se encontró el campo DELETE');
+						}
+					}
+				}
+			});
+			
+			// Función para actualizar el contador de formsets (NUEVA)
+			function actualizarContadorFormsets() {
+				const allRows = document.querySelectorAll('.detalle-form tbody tr').length;
+				document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = allRows;
+			}
+			////////////
+			
+			// ✅ Si hay filas en la tabla, recalcular el total al cargar la página
+			if (formsetContainer.querySelectorAll('.detalle-form tbody tr').length > 0) {
+				actualizarTotalFactura();
+			}
+			////////////
+			
+			const buscarProductoForm = document.getElementById('detalleForm');
+			const tablaResultados = document.querySelector('#tabla-resultados tbody');
+			const detalleModal = document.getElementById('detalleModal');
+			const insertarBtn = document.getElementById('agregarDetalle');
+			const cambia_precio_descripcion = {{ cambia_precio_descripcion|yesno:"true,false" }};
+			
+			// inicio del bloque
+			// Función para recalcular una fila específica
+			const recalcularFilaCompleta = (row) => {
+				const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
+				const precio = parseFloat(row.querySelector('[name$="-precio"]').value) || 0;
+				const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
+				const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
+				
+				// Calcular total con descuento porcentual
+				const subtotal = cantidad * precio;
+				const totalConDescuento = subtotal * (1 - (descuento/100));
+				
+				// Actualizar campos
+				row.querySelector('[name*="-total"]').value = totalConDescuento.toFixed(2);
+				
+				// Calcular impuestos
+				// const gravado = totalConDescuento / (1 + (alicIva / 100));
+				// row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+				// row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
+				let gravado = 0;
+				let no_gravado = 0;
+				if (alicIva > 0) {
+					gravado = totalConDescuento / (1 + (alicIva / 100));
+				} else {
+					no_gravado = totalConDescuento;
+				}
+				row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+				row.querySelector('[name*="-no_gravado"]').value = no_gravado.toFixed(2);
+				row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);                
+				
+				return totalConDescuento;
+			};
+			
+			// Listener principal para cambios en los inputs
+			formsetContainer.addEventListener('input', function(event) {
+				// alert("LISTENER 2 - INPUT: " + event.target.name);  // ← PONER AQUÍ
+				const target = event.target;
+				const row = target.closest('tr');
+				
+				if (!row) return;
+				
+				// Validaciones específicas
+				if (target.matches('[name*="-precio"]') && parseFloat(target.value) <= 0) {
+					alert("El precio debe ser mayor a 0.");
+					target.value = "";
+					target.focus();
+					return;
+				}
+				
+				if (target.matches('[name*="-descuento"]')) {
+					const descuento = parseFloat(target.value);
+					if (descuento < 0 || descuento > 99) {
+						alert("El descuento debe estar entre 0 y 99.");
+						target.value = "0";
+						target.focus();
+						return;
+					}
+				}
+				
+				// Recalcular solo si es un campo relevante
+				if (target.matches('[name*="-cantidad"], [name*="-precio"]')) {
+					recalcularFilaCompleta(row);
+					actualizarTotalFactura();
+				}
+			});
+			
+			formsetContainer.addEventListener('change', function(event) {
+				// alert("LISTENER 3 - CHANGE: " + event.target.name);  // ← PONER AQUÍ
+				if (event.target.name.includes('reventa')) {
+					const oldValue = event.target.getAttribute('data-prev-value') || 'M';
+					const newValue = event.target.value;
+					
+					if (!confirm(`Cambiar de ${oldValue} a ${newValue}?`)) {
+						event.target.value = oldValue;
+						return;
+					}
+					
+					// Guardar nuevo valor como anterior para próximos cambios
+					event.target.setAttribute('data-prev-value', newValue);
+					
+					// Actualizar la fila
+					const row = event.target.closest('tr');
+					recalcularFilaCompleta(row);
+					actualizarTotalFactura();
+				}
+			});
+			
+			// Inicializar valores previos al cargar
+			document.querySelectorAll('select[name*="reventa"]').forEach(select => {
+				select.setAttribute('data-prev-value', select.value);
+			});
+			
+			// Manejar el botón de insertar detalle de factura (versión optimizada)
+			insertarBtn.addEventListener('click', function() {
+				// Obtener todos los checkboxes marcados
+				const checkboxes = document.querySelectorAll('#tabla-resultados .seleccionar-producto:checked');
+				
+				if (checkboxes.length === 0) {
+					alert('Por favor seleccione al menos un producto');
+					return;
+				}
+				
+				// Crear array temporal para los productos seleccionados
+				const productosSeleccionados = [];
+				
+				checkboxes.forEach(checkbox => {
+					// alert("ID del producto: " + checkbox.dataset.id); // Mostrar el ID
+					// alert("TIPO_PRODUCTO del producto: " + checkbox.dataset.tipoProducto); // Mostrar el TIPO_PRODUCTO
+					
+					productosSeleccionados.push({
+						id: checkbox.dataset.id,
+						medida: checkbox.dataset.medida,
+						nombre: checkbox.dataset.nombre,
+						precio: parseFloat(checkbox.dataset.precio),
+						descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
+						alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2),
+						tipo_producto: checkbox.dataset.tipoProducto,
+						obliga_operario: checkbox.dataset.obligaOperario === 'true',
+						descuento_revendedor: parseFloat(checkbox.dataset.descuentoRevendedor || 0)
+					});
+				});
+				
+				// Obtener el diccionario de operarios desde el div oculto
+				const operarioData = document.getElementById('operario-data');
+				const operarioDict = operarioData ? JSON.parse(operarioData.dataset.operario) : {};
+				
+				// Insertar productos en la tabla detalle factura
+				productosSeleccionados.forEach(producto => {
+					const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+					
+					// ===== OBTENER TIPO DE COMPROBANTE =====
+					const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+					const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+					const tipoComprobante = tipoComprobanteDict[comprobanteId] || '';
+					// alert("comprobanteId: " + comprobanteId + "\ntipoComprobante: " + tipoComprobante);
+					
+					// Detectar si es FACTURA
+					const esFactura = (tipoComprobante === "FACTURA");
+					const precioEditable = esFactura ? '' : 'readonly';
+					// ========================================
+					
+					// Cálculos iniciales
+					const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
+					//alert(`Precio Lista Original: ${precioListaOriginal}`)
+					const descVendedor = parseFloat(producto.descuento_vendedor);
+					let precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
+
+					// alert(descVendedor);
+					// alert(precioConDescuento);
+					
+					// 👇 NUEVO: aplicar descuento de revendedor si existe
+					const descRevendedor = parseFloat(producto.descuento_revendedor || 0);
+					alert(descRevendedor);
+					if (descRevendedor > 0) {
+						precioConDescuento = precioConDescuento * (1 - (descRevendedor / 100));
+					}
+					
+					const precioFinal = parseFloat(precioConDescuento.toFixed(2));
+					
+					const cantidad = 1.00;
+					const montoTotal = precioConDescuento * cantidad;
+					const alicuotaIva = parseFloat(producto.alicuota_iva || 0);
+					
+					// const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+					// const iva = (montoTotal - gravado).toFixed(2);
+					
+					// Cálculo de gravado, no_gravado e iva según alicuota_iva
+					let gravado = 0;
+					let no_gravado = 0;
+					let iva = 0;
+					if (alicuotaIva > 0) {
+						gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+						iva = (montoTotal - gravado).toFixed(2);
+					} else {
+						no_gravado = montoTotal.toFixed(2);
+					}
+					
+					const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
+					const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
+					
+					let campoOperarioHTML;
+					if (producto.tipo_producto === "S" && producto.obliga_operario === true) {
+						// Caso para servicios (mostrar select de operarios)
+						campoOperarioHTML = `
+							<select name="detallefactura_set-${currentIndex}-id_operario" 
+									class="form-control form-control-sm border border-primary small-font" 
+									style="font-size: 0.8rem; padding: 0.25rem;" 
+									required>
+								<option value="">Seleccione un operario</option>
+								${Object.entries(operarioDict).map(([id, nombre]) => 
+									`<option value="${id}">${nombre}</option>`
+								).join('')}
+							</select>
+						`;
+					} else {
+						// Caso para productos (mostrar select deshabilitado)
+						campoOperarioHTML = `
+							<select disabled
+									class="form-control form-control-sm border border-secondary small-font" 
+									style="font-size: 0.8rem; padding: 0.25rem;">
+								<option value="">No aplica</option>
+							</select>
+						`;
+					}
+					
+					// Clase reutilizable
+					const formControlClass = 'form-control form-control-sm border border-primary small-font';
+
+					// Crear y insertar la fila de detalle de factura
+					const newFormHTML = `
+					<tr data-form-index="${currentIndex}" class="small-font">
+						
+						<!-- Inputs ocultos para manejar relaciones -->
+						<input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura" 
+							id="id_detallefactura_set-${currentIndex}-id_detalle_factura">
+						<input type="hidden" name="detallefactura_set-${currentIndex}-id_factura" 
+							id="id_detallefactura_set-${currentIndex}-id_factura">
+						<input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
+							id="id_detallefactura_set-${currentIndex}-id_producto" value="${producto.id}">
+						<input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
+							id="id_detallefactura_set-${currentIndex}-precio_lista" 
+							value="${precioListaOriginal}"
+							data-original="${precioListaOriginal}" 
+							oninput="this.value=this.dataset.original">
+						<input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
+							id="id_detallefactura_set-${currentIndex}-desc_vendedor" value="${producto.descuento_vendedor}">
+						<td>${producto.medida}</td> <!-- Mostrar medida -->
+						
+						<td>
+							<input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+								class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}>
+						</td>
+						<td>
+							<input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
+								class="${formControlClass} text-end" value="${cantidad}" min="1" step="1" required>
+						</td>
+						<td>
+							<select name="detallefactura_set-${currentIndex}-reventa" class="${formControlClass}" required>
+								<option value="M" ${valorPorDefecto === "M" ? "selected" : ""}>M</option>
+								<option value="R" ${valorPorDefecto === "R" ? "selected" : ""}>R</option>
+								<option value="E" ${valorPorDefecto === "E" ? "selected" : ""}>E</option>
+							</select>
+						</td>
+						<td>
+							<input type="number" name="detallefactura_set-${currentIndex}-precio" 
+								class="${formControlClass} text-end" value="${precioFinal}" ${precioEditable}
+								min="0" step="0.01">
+						</td>
+						<td>
+							<input type="number" name="detallefactura_set-${currentIndex}-descuento" 
+								class="${formControlClass} text-end" value="0" step="0.1" min="0">
+						</td>
+						<td>
+							<input type="hidden" name="detallefactura_set-${currentIndex}-id_operario" value="">
+							${campoOperarioHTML}
+						</td>
+						
+						<!-- Campos OCULTOS para IVA -->
+						<input type="hidden" name="detallefactura_set-${currentIndex}-gravado" 
+						value="${gravado}">
+						<input type="hidden" name="detallefactura_set-${currentIndex}-no_gravado" 
+						value="${no_gravado}">
+						<input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" 
+						value="${parseFloat(producto.alicuota_iva || 0).toFixed(2)}">
+						<input type="hidden" 
+						name="detallefactura_set-${currentIndex}-iva" 
+						value="${iva}">
+						
+						<td>
+							<input type="number" name="detallefactura_set-${currentIndex}-total" 
+								class="${formControlClass} text-end" value="${montoTotal}" readonly>
+						</td>
+						
+						<td>
+							<button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" 
+								data-toggle="tooltip" title="Eliminar">
+								<i class="bi bi-trash"></i>
+							</button>
+							<input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" class="delete-checkbox" style="display: none;">
+						</td>
+					</tr>
+					`;
+					
+					formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
+					
+					// Obtener la fila recién insertada
+					const newRow = formsetContainer.querySelector('.detalle-form tbody tr:last-child');
+					
+					// Bloqueo mediante JavaScript de precio_lista
+					const precioListaInput = newRow.querySelector('[name*="-precio_lista"]');
+					precioListaInput._originalValue = precioListaOriginal;  // Backup interno
+					Object.defineProperty(precioListaInput, 'value', {
+						get() { return this._originalValue; },
+						set(v) { 
+							console.warn('Bloqueado: precio_lista no debe modificarse');
+							return this._originalValue; 
+						}
+					});
+					
+					// Establecer valores directamente
+					newRow.querySelector('[name*="-precio"]').value = precioConDescuento.toFixed(2);
+					newRow.querySelector('[name*="-total"]').value = montoTotal.toFixed(2);
+					
+					// alert(`Precio de Lista post inserción: ${newRow.querySelector('[name*="-precio_lista"]').value}`);
+					
+					// Configurar el precio real como dato en el input
+					newRow.querySelector('[name*="-precio"]').dataset.precioReal = precioConDescuento;
+					
+					// Actualizar totales generales
+					actualizarTotalFactura();
+					
+					// Actualizar el contador de formsets detalle_factura
+					// document.querySelector('[name$="TOTAL_FORMS"]').value = 
+					//    formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+					actualizarContadorFormsets();
+				});
+				
+				// Cerrar modal y limpiar selecciones
+				checkboxes.forEach(checkbox => checkbox.checked = false);
+				detalleModal.querySelector('.btn-close').click();
+				
+				// Función para manejar acordeones
+				const manageAccordions = () => {
+					const accordionEncabezado = document.getElementById('panelsStayOpen-collapseOne');
+					const accordionDetalle = document.getElementById('panelsStayOpen-collapseTwo');
+					const btnEncabezado = document.querySelector('[data-bs-target="#panelsStayOpen-collapseOne"]');
+					const btnDetalle = document.querySelector('[data-bs-target="#panelsStayOpen-collapseTwo"]');
+					
+					if (!accordionEncabezado || !accordionDetalle) return;
+					
+					// 1. Determinar estados iniciales
+					const encabezadoAbierto = accordionEncabezado.classList.contains('show');
+					const detalleAbierto = accordionDetalle.classList.contains('show');
+					
+					// 2. Si ambos están cerrados, solo abrir el detalle
+					if (!encabezadoAbierto && !detalleAbierto) {
+						new bootstrap.Collapse(accordionDetalle, { show: true });
+						btnDetalle.classList.remove('collapsed');
+						return;
+					}
+					
+					// 3. Si el encabezado está abierto, cerrarlo primero
+					if (encabezadoAbierto) {
+						const collapseEncabezado = new bootstrap.Collapse(accordionEncabezado, { hide: true });
+						
+						accordionEncabezado.addEventListener('hidden.bs.collapse', () => {
+							new bootstrap.Collapse(accordionDetalle, { show: true });
+							btnDetalle.classList.remove('collapsed');
+						}, { once: true });
+						
+						btnEncabezado.classList.add('collapsed');
+					}
+				};
+				
+				// Ejecutar con pequeño retraso
+				// setTimeout(manageAccordions, 10);
+				
+				//
+			});
+			
+			// Función para actualizar totales generales (optimizada) 
+			// La función fue eliminada de aqui por estar duplicada
+			
+			// Mantener el evento de clic derecho para análisis de precios
+			formsetContainer.addEventListener('contextmenu', function(event) {
+				if (event.target.matches('input[name*="-precio"]')) {
+					event.preventDefault();
+					const row = event.target.closest('tr');
+
+					// 1. Obtener valores base
+					const precioLista = parseFloat(row.querySelector('[name*="-precio_lista"]').value);
+					const descVendedor = parseFloat(row.querySelector('[name*="-desc_vendedor"]').value);
+					// ===== NUEVO: Obtener descuento de revendedor ===== INICIO
+					const descRevendedor = parseFloat(row.querySelector('[name*="-desc_revendedor"]')?.value || 0);
+					// ===== NUEVO: Obtener descuento de revendedor ===== FIN
+					const precioFinal = parseFloat(event.target.value);
+					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 1;
+					
+					// 2. Calcular precios intermedios
+					const precioConDescuentoVendedor = precioLista * (1 - descVendedor/100);
+					// ===== NUEVO: Calcular precio con ambos descuentos ===== INICIO
+					const precioConAmbosDescuentos = precioConDescuentoVendedor * (1 - (descRevendedor / 100));
+					// ===== NUEVO: Calcular precio con ambos descuentos ===== FIN
+					
+					// 3. Calcular total fila
+					const totalFila = cantidad * precioFinal;
+					
+					// 4. Calcular descuento total
+					const montoDescuentoTotal = (precioLista - precioFinal) * cantidad;
+					const porcentajeDescuentoTotal = ((precioLista - precioFinal) / precioLista) * 100;
+					
+					// 5. Formateador
+					const formatNumber = (num) => num.toLocaleString('es-AR', {
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2
+					});
+					
+					// 6. Construir mensaje (AHORA CON DESCUENTO REVENDEDOR)
+					let mensaje = `📊 Diferencias Reales de Precio\n\n`;
+					mensaje += `Precio Lista: $ ${formatNumber(precioLista)}\n`;
+					mensaje += `Descuento Vendedor: ${descVendedor}%\n`;
+					mensaje += `Precio c/desc. vendedor: $ ${formatNumber(precioConDescuentoVendedor)}\n`;
+					// ===== NUEVO: Mostrar descuento de revendedor si existe ===== INICIO
+					if (descRevendedor > 0) {
+						mensaje += `Descuento Revendedor: ${descRevendedor}%\n`;
+						mensaje += `Precio c/ambos descuentos: $ ${formatNumber(precioConAmbosDescuentos)}\n`;
+					}
+					// ===== NUEVO: Mostrar descuento de revendedor si existe ===== FIN
+					mensaje += `Precio Actual: $ ${formatNumber(precioFinal)}\n`;
+					mensaje += `Cantidad: ${cantidad}\n`;
+					mensaje += `Total Fila: $ ${formatNumber(totalFila)}\n\n`;
+					mensaje += `━━━━━━━━━━━━━━━━━━━━━\n`;
+					mensaje += `💰 DESCUENTO TOTAL\n`;
+					mensaje += `Monto Descuento: $ ${formatNumber(montoDescuentoTotal)}\n`;
+					mensaje += `% Descuento Total: ${porcentajeDescuentoTotal.toFixed(2)}%`;
+					
+					// 7. Actualizar el total de la fila (por si hubo cambios)
+					row.querySelector('[name*="-total"]').value = totalFila.toFixed(2);
+					
+					// 8. Actualizar campos relacionados (IVA, gravado)
+					const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
+					const gravado = totalFila / (1 + (alicIva / 100));
+					row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+					row.querySelector('[name*="-iva"]').value = (totalFila - gravado).toFixed(2);
+					
+					// 9. Actualizar total general de la factura
+					actualizarTotalFactura();
+					
+					// 10. Mostrar alerta
+					alert(mensaje);
+					
+				}
+			});
+			
+			// Mantener el evento de cambio para reventa si es necesario
+			formsetContainer.addEventListener('change', function(event) {
+				// alert("LISTENER 5 - CHANGE: " + event.target.name);  // ← PONER AQUÍ
+				if (event.target.matches('[name*="-reventa"]')) {
+					const row = event.target.closest('tr');
+					const nombreProducto = row.querySelector('[name*="-nombre"]').value;
+					alert(`Producto seleccionado: ${nombreProducto}`);
+				}
+			});
+			// final del bloque
+			
+			// Limpiar filtros y resultados cuando se cierra la ventana modal
+			detalleModal.addEventListener('hidden.bs.modal', function () {
+				buscarProductoForm.reset(); // Restablecer el formulario
+				tablaResultados.innerHTML = ''; // Limpiar la tabla de resultados
+				productosSeleccionados = []; // Limpiar la lista de productos seleccionados
+			});
+			
+			// Manejar el submit del formulario de búsqueda de producto
+			buscarProductoForm.addEventListener('submit', function (event) {
+				event.preventDefault();
+				
+				// Obtiene los valores de los filtros generales
+				const medidaProducto = document.getElementById('medida_producto').value;
+				const nombreProducto = document.getElementById('nombre_producto').value;
+				const caiProducto = document.getElementById('cai_producto').value;
+				
+				// Obtener el valor del ID del cliente
+				const idCliente = document.getElementById('id_id_cliente').value; 
+				
+				// Obtener el valor seleccionado del filtro de marcas
+				const filtroMarcaElement = document.querySelector('input[name="filtro_marca"]:checked');
+				const filtroMarca = filtroMarcaElement ? filtroMarcaElement.value : '';
+				
+				// Buscar Producto
+				// new URL(path, base) es un constructor que crea un objeto URL válido
+				const url = new URL('/ventas/buscar/producto/', window.location.origin);
+				url.searchParams.append('medida', medidaProducto);
+				url.searchParams.append('nombre', nombreProducto);
+				url.searchParams.append('cai', caiProducto);
+				url.searchParams.append('filtro_marca', filtroMarca);
+				url.searchParams.append('id_cliente', idCliente);  // 🔥 ¡Aquí está el cambio clave!
+				
+				// Realiza una solicitud GET a la URL especificada para obtener datos en formato JSON.
+				// La respuesta se procesa de forma asincrónica y, cuando los datos son recibidos, 
+				// se actualiza la tabla de resultados con la información obtenida.
+				fetch(url, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+				.then(response => response.json())
+				.then(data => {
+					tablaResultados.innerHTML = ''; // Limpiar tabla de resultados
+
+					const formateadorPrecio = new Intl.NumberFormat('es-ES', {
+						style: 'decimal',
+						minimumFractionDigits: 2,
+						maximumFractionDigits: 2,
+					});
+					
+					data.forEach(producto => {
+						const precioNumerico = parseFloat(producto.precio);
+						const precioFormateado = formateadorPrecio.format(producto.precio);
+						const descuentoVendedor = parseFloat(producto.descuento_vendedor);
+						
+						const fila = `
+							<tr>
+								<td class="text-center">${producto.id}</td>  <!-- NUEVA COLUMNA: ID -->
+								<td>${producto.marca}</td>
+								<td>${producto.medida}</td>
+								<td>${producto.cai || 'N/A'}</td>
+								<td>${producto.nombre}</td>
+								<td class="text-end"><strong>${precioFormateado}</strong></td>
+								<td class="text-end">${producto.stock}</td>
+								<td class="text-end">${producto.minimo}</td>
+								
+								<td class="text-center">
+									<button type="button" class="btn btn-info btn-sm actualizar-detalle" 
+										data-id="${producto.id}" 
+										data-nombre="${producto.nombre}"
+										data-cai="${producto.cai || 'N/A'}">
+										<i class="bi bi-eye"></i>
+									</button>
+								</td>
+						
+								<td class="text-center">
+									<input type="checkbox" class="seleccionar-producto"
+											data-id="${producto.id}" 
+											data-codigo="${producto.codigo}" 
+											data-medida="${producto.medida}"
+											data-nombre="${producto.nombre}"
+											data-precio="${precioNumerico}"
+											data-id-marca="${producto.id_marca}" 
+											data-id-familia="${producto.id_familia}"
+											data-descuento-vendedor="${producto.descuento_vendedor}"
+											data-id-alicuota-iva="${producto.id_alicuota_iva}"
+											data-alicuota-iva="${producto.alicuota_iva}"
+											data-tipo-producto="${producto.tipo_producto}"
+											data-obliga-operario="${producto.obliga_operario}"
+											data-descuento-revendedor="${producto.descuento_revendedor || 0}">
+								</td>
+							</tr>
+						`;
+						tablaResultados.insertAdjacentHTML('beforeend', fila);
+					});					
+					
+					// Agregar eventos a los nuevos botones de actualización
+					document.querySelectorAll('.actualizar-detalle').forEach(button => {
+						button.addEventListener('click', function () {
+							const idProducto = this.getAttribute('data-id');
+							const nombreProducto = this.getAttribute('data-nombre');
+							const nombreCAI = this.getAttribute('data-cai');
+							
+							///
+							// Cambiar el color del botón clicado y resetear los demás
+							document.querySelectorAll('.actualizar-detalle').forEach(btn => {
+								btn.classList.remove('btn-success'); // Remover clase de todos los botones
+								btn.classList.add('btn-info'); // Restaurar clase predeterminada
+							});
+							this.classList.remove('btn-info'); // Remover clase predeterminada del botón clicado
+							this.classList.add('btn-success'); // Agregar clase de éxito
+							///
+							
+							actualizarDetallesProducto(idProducto, nombreProducto, nombreCAI);
+						});
+					});
+					
+				})
+				.catch(error => {
+					console.error('Error al buscar productos:', error);
+				});
+			});
+			
+			// Función para actualizar las tablas de stock y mínimos
+			function actualizarDetallesProducto(idProducto, nombreProducto, nombreCAI) {
+				
+				// Mostrar el nombre del producto arriba de las tablas
+				document.getElementById('titulo-producto').innerText = `Producto: ${idProducto} - ${nombreProducto} - CAI: ${nombreCAI}`;
+				
+				// Obtener referencias a las tablas de stock y mínimos
+				const tablaStock = document.getElementById("tabla-stock").querySelector("tbody");
+				
+				
+				// Limpiar las tablas antes de insertar los nuevos datos
+				tablaStock.innerHTML = "";
+				
+				
+				// Realizar la solicitud para obtener los detalles del producto
+				fetch(`/ventas/detalle_producto/${idProducto}/`)
+					.then(response => {
+						if (!response.ok) {
+							throw new Error(`Error en la solicitud: ${response.statusText}`);
+						}
+						return response.json();
+					})
+					.then(data => {
+						// Verificar y agregar datos de stock
+						if (data.stock && data.stock.length > 0) {
+							//
+							let tieneStock = false; // Bandera para verificar si hay stock mayor a cero
+							data.stock.forEach(stock => {
+								if (parseFloat(stock.stock) !== 0) { // Solo mostrar si el stock es distinto a cero
+									//const row = `<tr><td>${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+									const row = `<tr><td style="color: ${parseFloat(stock.deposito) < 0 ? 'red' : 'inherit'}">${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+									
+									tablaStock.insertAdjacentHTML("beforeend", row);
+									tieneStock = true;
+								}
+							});
+							if (!tieneStock) {
+								const row = `<tr><td colspan="2">No hay stock disponible mayor a cero.</td></tr>`;
+								tablaStock.insertAdjacentHTML("beforeend", row);
+							}
+							//
+						} else {
+							const row = `<tr><td colspan="2">No hay información de stock disponible.</td></tr>`;
+							tablaStock.insertAdjacentHTML("beforeend", row);
+						}
+						
+						// Verificar y agregar datos de mínimos
+						
+					})
+					.catch(error => {
+						console.error('Error al obtener detalles del producto:', error);
+						const errorRow = `<tr><td colspan="2">Error al cargar los datos.</td></tr>`;
+						tablaStock.insertAdjacentHTML("beforeend", errorRow);
+						
+					});
+					
+			}
+			
+			// Aquí puede ir?
+			// Funcionalidad del Remito
+			
+			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+			
+			if (comprobanteSelect) {
+				// Asignar el event listener
+				comprobanteSelect.addEventListener('change', function() {
+					actualizarDatosComprobante(this);
+				});
+				
+				// Ejecutar al cargar si ya hay un valor seleccionado
+				if (comprobanteSelect.value) {
+					actualizarDatosComprobante(comprobanteSelect);
+				}
+			}
+			
+			function actualizarDatosComprobante(selectElement) {
+				const comprobanteId = selectElement.value;
+				
+				if (!comprobanteId) {
+					// Limpiar campos si no hay comprobante seleccionado
+					document.getElementById('id_compro').value = '';
+					document.getElementById('id_letra_comprobante').value = '';
+					return;
+				}
+				
+				
+				// Verficar si es comprobante interno
+				const internoDict = JSON.parse(document.getElementById('interno-data').dataset.interno);
+				const interno = internoDict[comprobanteId] ?? false;
+				
+				if (interno){
+					// Obtener el id del cliente de cliente-empresa-data
+					const el = document.getElementById('cliente-empresa-data');
+					const clienteEmpresaId = el?.dataset?.clienteEmpresa || '';
+					
+					if (clienteEmpresaId){
+						// Si el cliente-empresa está definido, asignarlo al campo id_cliente
+						const clienteInput = document.getElementById('buscar_cliente');
+						if (clienteInput) {
+							clienteInput.value = clienteEmpresaId;
+							// Disparar evento de cambio si es necesario
+							const event = new Event('blur');
+							clienteInput.dispatchEvent(event);
+						}
+					} else {
+						alert("⚠️ El Comprobante Interno requiere que el Cliente sea una Empresa. Por favor, seleccione un Cliente válido.");
+					}
+				} else {
+					// Si no es interno, restaurar el título original
+					console.log("Comprobante Interno NO Seleccionado");
+				}
+				
+				//////
+				// 1. Campo de búsqueda de cliente
+				const buscarCliente = document.getElementById('buscar_cliente');
+				if (buscarCliente) {
+					buscarCliente.removeAttribute('readonly');
+				}
+				
+				// 2. Botón de validar
+				const validarBtn = document.getElementById('validarBtn');
+				if (validarBtn) {
+					validarBtn.removeAttribute('disabled');
+				}
+				
+				// 3. Botón de listar agenda
+				const listarAgenda = document.getElementById('listar_agenda');
+				if (listarAgenda) {
+					listarAgenda.removeAttribute('disabled');
+				}
+				
+				// 4. habilitar o inhabilitar el input Factura Asociada
+				const numeroAsociadoInput = document.getElementById('id_numero_asociado');
+				//////
+				
+				// Analiza si el comprobante es mipyme
+				const mipymeDict = JSON.parse(document.getElementById('mipyme-data').dataset.mipyme);
+				const mipyme = mipymeDict[comprobanteId] ?? false;
+				
+				// Analiza si el comprobante es NCR o NDB
+				const ncrNdbDict = JSON.parse(document.getElementById('ncr-ndb-data').dataset.ncrNdb);
+				const ncrNdb = ncrNdbDict[comprobanteId] ?? false;
+
+				if (ncrNdb){
+					numeroAsociadoInput.readOnly = false;
+					numeroAsociadoInput.setAttribute('required', 'required');
+					numeroAsociadoInput.value = '';
+
+					// Llenar el select id_comprobante_asociado id="compro-asociado-data"
+					const comproAsociadoDict = JSON.parse(document.getElementById('compro-asociado-data').dataset.comproAsociado);
+					const comproAsociado = comproAsociadoDict[comprobanteId] ?? "";
+					
+					/////
+					const selectElement = document.getElementById('id_comprobante_asociado');
+
+					// Limpiar opciones existentes
+					selectElement.innerHTML = '';
+
+					if (comproAsociado) {
+						// Dividir el string por comas y crear las opciones
+						const opciones = comproAsociado.split(',').map(item => item.trim());
+						
+						opciones.forEach(opcion => {
+							const optionElement = document.createElement('option');
+							optionElement.value = opcion;
+							optionElement.textContent = opcion;
+							selectElement.appendChild(optionElement);
+						});
+					}
+					/////
+
+				} else {
+					document.getElementById('id_numero_asociado').value = '';
+					document.getElementById('id_numero_asociado').readOnly = true;
+					numeroAsociadoInput.required = false;  // Quitar requerimiento
+				}
+				
+				// Analiza si es Nota de Débito
+				// const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+				// const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
+
+				// if (tipoComprobante == "NOTA DE DÉBITO"){
+				//     alert(tipoComprobante);
+				//     document.getElementById('id_numero_asociado').readOnly = false;
+				//     numeroAsociadoInput.setAttribute('required', 'required');
+				// } else {
+				//     document.getElementById('id_numero_asociado').value = '';
+				//     document.getElementById('id_numero_asociado').readOnly = true;
+				//     numeroAsociadoInput.required = false;  // Quitar requerimiento
+				// }
+
+				// 5. Habilitar la fecha si es un documento manual
+				const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+				const manual = manualDict[comprobanteId] ?? false;
+				
+				if (manual){
+					document.getElementById('id_fecha_comprobante').readOnly = false;
+				} else {
+					document.getElementById('id_fecha_comprobante').readOnly = true;
+				}
+				
+				// const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+				// const electronica = electronicaDict[comprobanteId] ?? false;
+				
+				// if (electronica){
+				//     document.getElementById('id_fecha_comprobante').readOnly = true;
+				// } else {
+				//     document.getElementById('id_fecha_comprobante').readOnly = false;
+				// }
+				
+				// Habilitar el número de comprobante y asignarle valor en blanco
+				// if (tipoComprobante == "FACTURA" && !electronica){
+				//     alert("Factura Manual");
+				//     document.getElementById('id_numero_comprobante').readOnly = false;
+				//     document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
+				// } else {
+				//     document.getElementById('id_numero_comprobante').readOnly = true;
+				// }
+				
+				// Obtener solo los datos básicos del comprobante
+				fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
+					.then(response => {
+						if (!response.ok) throw new Error('Error en la respuesta');
+						return response.json();
+					})
+					.then(data => {
+						document.getElementById('id_compro').value = data.codigo || '';
+						
+						// Mapear los botones
+						const addSerialBtn = document.getElementById('btnAgregarSerial');
+						const addDetailBtn = document.getElementById('btnAgregarDetalle');
+						
+						// Actualizar el checkbox es_remito basado en la respuesta
+						const esRemitoCheckbox = document.getElementById('id_es_remito');
+						if (esRemitoCheckbox) {
+							esRemitoCheckbox.checked = data.es_remito || false;
+							
+							// Si necesitas cambiar el estado visual (aunque esté disabled)
+							if (data.es_remito) {
+								esRemitoCheckbox.parentElement.classList.add('checked');
+							} else {
+								esRemitoCheckbox.parentElement.classList.remove('checked');
+							}
+						}
+						
+						// Actualizar el checkbox es_pendiente basado en la respuesta
+						const esPendienteCheckbox = document.getElementById('id_es_pendiente');
+						if (esPendienteCheckbox) {
+							esPendienteCheckbox.checked = data.es_pendiente || false;
+							
+							// Si necesitas cambiar el estado visual (aunque esté disabled)
+							if (data.es_pendiente) {
+								esPendienteCheckbox.parentElement.classList.add('checked');
+								addSerialBtn.disabled = true;
+								addDetailBtn.disabled = true;
+							} else {
+								esPendienteCheckbox.parentElement.classList.remove('checked');
+							}
+						}
+						
+						
+						////
+						// ---- Nuevo: Llenar el select comprobante_remito ----
+						const selectRemito = document.getElementById('id_comprobante_remito');
+						const selectIdRemito = document.getElementById('id_remito');
+						if (!ncrNdb && data.compro_asociado) {
+							selectIdRemito.removeAttribute('readonly');
+							
+							// Limpiar opciones existentes
+							selectRemito.innerHTML = '';
+							
+							// Agregar opción vacía (opcional)
+							const defaultOption = document.createElement('option');
+							defaultOption.value = '';
+							defaultOption.textContent = 'Seleccione...';
+							selectRemito.appendChild(defaultOption);
+							
+							// Procesar el string (ej: "FA, FX, TY" -> ["FA", "FX", "TY"])
+							const opciones = data.compro_asociado.split(',').map(item => item.trim());
+							
+							// Agregar cada opción al select
+							opciones.forEach(opcion => {
+								const option = document.createElement('option');
+								option.value = opcion;  // Ej: "FA"
+								option.textContent = opcion; // Mismo valor que el texto
+								selectRemito.appendChild(option);
+							});
+						}    
+						////
+						
+					})
+					.catch(error => {
+						console.error('Error al obtener código:', error);
+						document.getElementById('id_compro').value = '';
+					});
+					
+			}
+			
+			// Verificar Remito
+			const remitoInput = document.getElementById('id_remito');
+			const comprobanteRemitoSelect = document.getElementById('id_comprobante_remito');
+			document.getElementById('id_remito').addEventListener('blur', function() {
+				const valor = this.value.trim();
+				const formsetContainer = document.getElementById('formset-container');
+				
+				if (!formsetContainer) {
+					console.error('Error crítico: No se encontró el contenedor del formset');
+					alert('Error en la configuración del formulario');
+					return;
+				}
+				
+				// Si está vacío, no hacer nada
+				if (!valor) return;
+				
+				// Verificar que tenga exactamente 10 dígitos
+				if (!/^\d{10}$/.test(valor)) {
+					alert("Error: Debe ingresar exactamente 10 dígitos numéricos (ej: 3400000001).");
+					this.value = '';
+					this.focus();
+					return;
+				}
+				
+				if (!comprobanteRemitoSelect.value) {
+					alert("Debe seleccionar un tipo de comprobante remito primero");
+					comprobanteRemitoSelect.focus();
+					return;
+				}
+				
+				// Implementación estandarizada con .then()/.catch()
+				fetch(`/ventas/verificar/remito/?comprobante_remito=${encodeURIComponent(comprobanteRemitoSelect.value)}&remito=${encodeURIComponent(valor)}`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`Error en la solicitud: ${response.statusText}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (!data.existe) {
+						alert("El remito indicado no existe");
+						remitoInput.value = '';
+						remitoInput.focus();
+						return;
+					}
+					
+					// Si existe, procesar los detalles del remito
+					//
+					if (data.detalles && data.detalles.length > 0) {
+						// Confirmar con el usuario antes de cargar los detalles
+						if (!confirm(`¿Desea cargar los ${data.detalles.length} ítems del remito ${valor}?`)) {
+							return;
+						}
+						
+						// Limpiar detalles existentes si los hay
+						const filasExistentes = formsetContainer.querySelectorAll('.detalle-form tbody tr');
+						if (filasExistentes.length > 0) {
+							if (!confirm('⚠️ Ya existen ítems en la factura. ¿Desea reemplazarlos?')) {
+								return;
+							}
+							
+							// Marcar todas las filas existentes para eliminación
+							filasExistentes.forEach(row => {
+								const deleteInput = row.querySelector('[name$="-DELETE"]');
+								if (deleteInput) {
+									deleteInput.checked = true;
+									row.style.display = 'none';
+								}
+							});
+						}
+						
+						// Obtener diccionario de operarios
+						const operarioData = document.getElementById('operario-data');
+						const operarioDict = operarioData ? JSON.parse(operarioData.dataset.operario) : {};
+						
+						// Procesar cada detalle del remito
+						data.detalles.forEach(detalle => {
+							const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+							
+							// Determinar campo de operario
+							let campoOperarioHTML;
+							if (detalle.tipo_producto === "S" && detalle.obliga_operario === true) {
+								campoOperarioHTML = `
+									<select name="detallefactura_set-${currentIndex}-id_operario" 
+											class="form-control form-control-sm border border-primary small-font" 
+											style="font-size: 0.8rem; padding: 0.25rem;" 
+											required>
+										<option value="">Seleccione un operario</option>
+										${Object.entries(operarioDict).map(([id, nombre]) => 
+											`<option value="${id}">${nombre}</option>`
+										).join('')}
+									</select>
+								`;
+							} else {
+								campoOperarioHTML = `
+									<select disabled
+											class="form-control form-control-sm border border-secondary small-font" 
+											style="font-size: 0.8rem; padding: 0.25rem;">
+										<option value="">No aplica</option>
+									</select>
+								`;
+							}
+							
+							/// insertar fila relacionada a remito
+							const newFormHTML = `
+							<tr data-form-index="${currentIndex}" class="small-font">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-id_factura">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
+									value="${detalle.id_producto}">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
+									value="${detalle.precio_lista}"
+									data-original="${detalle.precio_lista}" 
+									oninput="this.value=this.dataset.original">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
+									value="${detalle.desc_vendedor}">
+								<td>
+									<input type="text" name="detallefactura_set-${currentIndex}-medida" 
+										class="form-control form-control-sm border border-primary" 
+										value="${detalle.medida}" readonly>
+								</td>
+								<td>
+									<input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+										class="form-control form-control-sm border border-primary" 
+										value="${detalle.nombre}" readonly>
+								</td>
+								<td>
+									<input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
+										class="form-control form-control-sm border border-primary text-end" 
+										value="${detalle.cantidad}" min="1" step="1" required readonly>
+								</td>
+								<td>
+									<select name="detallefactura_set-${currentIndex}-reventa" class="form-control form-control-sm border border-primary" required>
+										<option value="M" selected>M</option>
+										<option value="R">R</option>
+										<option value="E">E</option>
+									</select>
+								</td>
+								<td>
+									<input type="number" name="detallefactura_set-${currentIndex}-precio" 
+										class="form-control form-control-sm border border-primary text-end" 
+										value="${detalle.precio}" min="0" step="0.01">
+								</td>
+								<td>
+									<input type="number" name="detallefactura_set-${currentIndex}-descuento" 
+										class="form-control form-control-sm border border-primary text-end" 
+										value="${detalle.descuento}" step="0.1" min="0" readonly>
+								</td>
+								<td>
+									<input type="hidden" name="detallefactura_set-${currentIndex}-id_operario" value="">
+									${campoOperarioHTML}
+								</td>
+								<input type="hidden" name="detallefactura_set-${currentIndex}-gravado" value="${detalle.gravado}">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-no_gravado" value="${detalle.no_gravado}">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" value="${detalle.alic_iva}">
+								<input type="hidden" name="detallefactura_set-${currentIndex}-iva" value="${detalle.iva}">
+								<td>
+									<input type="number" name="detallefactura_set-${currentIndex}-total" 
+										class="form-control form-control-sm border border-primary text-end" 
+										value="${detalle.total}" readonly>
+								</td>
+								<td>
+									<button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" disabled>
+										<i class="bi bi-trash"></i>
+									</button>
+									<input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" style="display: none;">
+								</td>
+							</tr>`;
+							///
+							
+														
+							formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
+							
+							// Actualizar totales generales
+							actualizarTotalFactura();
+							// alert("actualizarTotalFactura!");
+						});
+						
+						// Actualizar el contador de formsets
+						document.querySelector('[name$="TOTAL_FORMS"]').value = 
+							formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+						
+						alert(`Se cargaron ${data.detalles.length} ítems del remito ${valor}`);
+					} else {
+						alert("El remito existe pero no tiene detalles asociados");
+					}
+					//
+				})
+				.catch(error => {
+					console.error('Error al verificar remito:', error);
+					alert("Error al conectar con el servidor");
+				});
+				
+			});
+			
+			// Buscar documentos asociados a NCR y NDB
+			document.getElementById('id_numero_asociado').addEventListener('blur', function() {
+				// 1. Obtener valores del formulario
+				const inputElement = this; // Guardar referencia al input
+				const idCliente = document.getElementById('id_id_cliente').value;
+				const idComprobanteAsociado = document.getElementById('id_comprobante_asociado').value;
+				const numeroComprobante = inputElement.value.trim();
+				
+				// 2. Validación temprana - Si el número está vacío, salir sin hacer nada
+				if (numeroComprobante === '') {
+					return;
+				}
+				
+				// 3. Validar que existe un cliente seleccionado
+				if (!idCliente) {
+					alert("Debe seleccionar un cliente primero");
+					return;
+				}
+				
+				// 4. Configurar la URL de búsqueda
+				const url = new URL('/ventas/buscar/factura/', window.location.origin);
+				url.searchParams.append('id_cliente', idCliente);
+				url.searchParams.append('id_comprobante_asociado', idComprobanteAsociado);
+				url.searchParams.append('numero_comprobante', numeroComprobante);
+				
+				// 5. Cambiar estilo durante la carga
+				inputElement.readOnly = true;
+				const originalBgColor = inputElement.style.backgroundColor;
+				inputElement.style.backgroundColor = '#f5f5f5';
+				
+				// 6. Realizar la petición al servidor
+				fetch(url, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-Requested-With': 'XMLHttpRequest'
+					}
+				})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`Error HTTP: ${response.status}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (data.error) {
+						// Caso 1: Error del servidor
+						alert(`Error: ${data.error}`);
+					} else if (data.facturas.length === 0) {
+						// Caso 2: No se encontraron resultados - Nuevo comportamiento
+						alert(`No se encontró la factura número: ${numeroComprobante}`);
+						inputElement.value = ''; // Limpiar el input
+						inputElement.focus();    // Regresar el foco
+					} else {
+						// Caso 3: Éxito - Procesar resultados
+						const factura = data.facturas[0];
+						console.log("Factura encontrada:", factura);
+						
+						// Asignar el ID al elemento id_id_comprobante_asociado
+						document.getElementById('id_id_comprobante_asociado').value = factura.id
+						
+						// Mostrar datos importantes (opcional)
+						alert(`Factura válida encontrada:
+							\n- ID: ${factura.id}
+							\n- Número: ${factura.numero_comprobante}
+							\n- Fecha: ${factura.fecha}
+							\n- Total: $${factura.total}
+							\n- Comprobante: ${factura.comprobante_nombre}`);
+					}
+				})
+				.catch(error => {
+					// Caso 4: Error de red/JS
+					console.error("Error en la búsqueda:", error);
+					alert("Error al conectar con el servidor");
+				})
+				.finally(() => {
+					// 7. Restaurar el campo a su estado original (excepto cuando no se encontraron resultados)
+					if (inputElement.value !== '') {
+						inputElement.readOnly = false;
+						inputElement.style.backgroundColor = originalBgColor;
+					}
+				});
+			});
+			//
+			
+			///
+			// Controlar inputs de la ventana moodal Buscar Producto
+			const medidaInput = document.getElementById('medida_producto');
+			const nombreInput = document.getElementById('nombre_producto');
+			const caiInput = document.getElementById('cai_producto');
+			
+			// Array con todos los inputs para manejo general
+			const inputs = [medidaInput, nombreInput, caiInput];
+			
+			// Función para deshabilitar otros inputs cuando uno tiene valor
+			function manageInputs() {
+				// Verificar cuál input tiene valor
+				const inputWithValue = inputs.find(input => input.value.trim() !== '');
+				
+				if (inputWithValue) {
+					// Deshabilitar los otros inputs
+					inputs.forEach(input => {
+						if (input !== inputWithValue) {
+							input.disabled = true;
+							input.value = ''; // Limpiar el valor por si acaso
+						}
+					});
+				} else {
+					// Si no hay input con valor, habilitar todos
+					inputs.forEach(input => {
+						input.disabled = false;
+					});
+				}
+			}
+			
+			// Añadir event listeners a cada input
+			inputs.forEach(input => {
+				// Evento cuando cambia el valor (input o pegado)
+				input.addEventListener('input', manageInputs);
+				
+				// Evento cuando pierde el foco (por si acaso)
+				input.addEventListener('blur', manageInputs);
+				
+				// Evento para tecla de borrado (Backspace, Delete)
+				input.addEventListener('keydown', function(e) {
+					if ((e.key === 'Backspace' || e.key === 'Delete') && this.value === '') {
+						// Si se presiona borrar y ya está vacío, habilitar todos
+						inputs.forEach(i => i.disabled = false);
+					}
+				});
+			});
+			
+			// Ejecutar al cargar por si hay valores iniciales
+			manageInputs();
+			///
+			
+			///
+			const facturaForm = document.getElementById('factura-form');
+			
+			// Captura del submit de todo el formulario
+			facturaForm.addEventListener('submit', function(e) {
+				 // ===== VALIDACIÓN PRIORITARIA: Verificar si hay detalles =====
+				const filasDetalle = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
+				
+				if (filasDetalle.length === 0) {
+					e.preventDefault(); // Detener el envío del formulario
+					alert('❌ No se puede guardar el comprobante\n\nDebe agregar al menos un detalle al comprobante antes de guardar.');
+					return false; // Salir del evento inmediatamente
+				}
+				// ===== FIN VALIDACIÓN PRIORITARIA =====
+				
+				const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
+				
+				// No se ejecuta porque numeroComprobante tiene required
+				if (!numeroComprobante) {
+					e.preventDefault(); // Detiene el envío del formulario
+					alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
+					return false;
+				}
+				
+				/////////////////////////--->
+				// Evitar envío hasta obtener estados
+				// e.preventDefault();
+				
+				e.preventDefault(); // IMPORTANTE: Prevenir envío inmediato
+				
+				const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+				const comprobanteId = comprobanteSelect.value;
+				const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+				const electronica = electronicaDict[comprobanteId] ?? false;
+				
+				if (electronica) {
+					fetch('/ventas/obtener/estado-servidores/')
+						.then(response => response.json())
+						.then(data => {
+							const puedenEmitir = data.AppServer === 'OK' && data.DbServer === 'OK' && data.AuthServer === 'OK';
+							
+							if (puedenEmitir) {
+								alert(`✅ SISTEMAS AFIP OPERATIVOS\nApp: OK | DB: OK | Auth: OK\n\nEMITIENDO DOCUMENTO...`);
+								facturaForm.submit();
+							} else {
+								alert(`❌ ERROR SISTEMAS AFIP\nApp: ${data.AppServer} | DB: ${data.DbServer} | Auth: ${data.AuthServer}\n\nNO SE PUEDE EMITIR`);
+							}
+						})
+						.catch(error => {
+							alert('❌ ERROR: No se pudo conectar con AFIP');
+						});
+				} else {
+					// No es electrónico, enviar directamente
+					facturaForm.submit();
+				}
+				/////////////////////////--->
+			});
+			///
+			
+		});
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const detalleModal = document.getElementById('detalleModal');
+			
+			detalleModal.addEventListener('show.bs.modal', function () {
+				// Limpiar el título del producto
+				document.getElementById('titulo-producto').innerText = "Producto";
+				
+				// Limpiar las tablas antes de abrir la ventana modal
+				document.querySelector("#tabla-stock tbody").innerHTML = "";
+				// document.querySelector("#tabla-minimos tbody").innerHTML = "";
+			});
+		});
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			document.getElementById('validarBtn').addEventListener('click', function() {
+				const nroDocIdentidad = document.getElementById('id_cuit').value;
+
+				console.log("Entró al script");
+				//alert(nroDocIdentidad);
+				console.log(nroDocIdentidad);
+			
+				fetch('/ventas/validar/documento/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': getCookie('csrftoken')  // Asegúrate de incluir el token CSRF si es necesario
+					},
+					body: JSON.stringify({ nro_doc_identidad: nroDocIdentidad })
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.exists) {
+						// Asignar los valores a los inputs correspondientes
+						alert("Encontrado ojo!!!")
+						document.getElementById('id_nombre_factura').value = data.nombre_receptor || '';
+						document.getElementById('id_domicilio_factura').value = data.domicilio_receptor || '';
+					} else {
+						alert('El documento no existe.');
+					}
+				})
+				.catch(error => console.error('Error:', error));
+			});
+			
+			// Función para obtener el token CSRF del cookie
+			function getCookie(name) {
+				let cookieValue = null;
+				if (document.cookie && document.cookie !== '') {
+					const cookies = document.cookie.split(';');
+					for (let i = 0; i < cookies.length; i++) {
+						const cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) === (name + '=')) {
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			}
+		});
+		
+	</script>
+	{% comment %} SCRIPTS JS End {% endcomment %}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const buscarAgendaForm = document.getElementById('buscarAgendaForm');
+			const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
+			
+			// alert("capturando el submit de buscarAgendaForm")
+			
+			buscarAgendaForm.addEventListener('submit', function (event) {
+				event.preventDefault();
+				
+				const busquedaGeneral = document.getElementById('busquedaGeneral').value;
+				
+				// Validar que la búsqueda tenga al menos 4 caracteres
+				if (busquedaGeneral.length < 4) {
+					alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
+					return;
+				}
+				
+				// const url = `/ventas/buscar/agenda/?busqueda_general=${busquedaGeneral}`;
+				const url = new URL('/ventas/buscar/agenda/', window.location.origin);
+				url.searchParams.append('busqueda_general', busquedaGeneral);
+				
+				fetch(url, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+				.then(response => response.json())
+				.then(data => {
+					tablaResultadosAgenda.innerHTML = ''; // Limpiar tabla de resultados
+					
+					data.forEach(agenda => {
+						
+						const fila = `
+							<tr>
+								<td>${agenda.id_cliente}</td>
+								<td>${agenda.cuit}</td>
+								<td>${agenda.nombre_cliente}</td>
+								<td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
+								<td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
+								<td>${agenda.domicilio_cliente}</td>
+								<td>${agenda.codigo_postal}</td>
+								<td>
+									<input type="radio" name="seleccionar-agenda" 
+										class="seleccionar-agenda" 
+										data-id="${agenda.id_cliente}" 
+										data-cuit="${agenda.cuit}" 
+										data-nombre="${agenda.nombre_cliente}" 
+										data-direccion="${agenda.domicilio_cliente}" 
+										data-movil="${agenda.movil_cliente}"  
+										data-email="${agenda.email_cliente}"
+										data-id_vendedor="${agenda.id_vendedor}"
+										data-nombre_vendedor="${agenda.id_vendedor__nombre_vendedor}"
+										data-tipo_venta="${agenda.id_vendedor__tipo_venta}"
+										data-nombre_iva="${agenda.id_tipo_iva__nombre_iva}"
+										data-discrimina_iva="${agenda.id_tipo_iva__discrimina_iva}"
+										data-condicion_venta="${agenda.condicion_venta}"
+										data-id_sucursal="${agenda.id_sucursal}" 
+										data-vip="${agenda.vip}"  
+										data-mayorista="${agenda.mayorista}"  
+										data-sub_cuenta="${agenda.sub_cuenta}"  
+										data-observaciones="${agenda.observaciones_cliente}"  
+										data-black_list="${agenda.black_list}"  
+										data-black_list_motivo="${agenda.black_list_motivo}">
+								</td>
+							</tr>
+						`;
+						
+						// console.log("Fila insertada:", fila);  // 📌 Verifica si data-email está en el HTML
+						tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+					});
+					
+				})
+				.catch(error => {
+					console.error('Error al buscar en agenda:', error);
+				});
+			});
+			
+			//**-->>
+			document.getElementById('seleccionarAgenda').addEventListener('click', function() {
+				const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
+				
+				if (!seleccion) {
+					alert('Por favor seleccione un cliente');
+					return;
+				}
+				
+				const clienteId = seleccion.getAttribute('data-id');
+				const nombreCliente = seleccion.getAttribute('data-nombre');
+				
+				fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+					.then(response => {
+						if (!response.ok) throw new Error('Error en la respuesta del servidor');
+						return response.json();
+					})
+					.then(data => {
+						if (data.error) {
+							throw new Error(data.error);
+						}
+						
+						if (data.requiere_autorizacion) {
+							const autorizacionModal = new bootstrap.Modal(document.getElementById('autorizacionModal'));
+							
+							// Asegurarnos de que tenemos los datos del comprobante
+							const comprobante = data.datos_comprobante || data.debug || {};
+							
+							// Llenar datos en el modal con valores por defecto seguros
+							document.getElementById('modalTitulo').textContent = `Autorización requerida para ${nombreCliente}`;
+							document.getElementById('modalComprobante').textContent = 
+								`${comprobante.tipo_comprobante || comprobante.id_comprobante_venta?.nombre_comprobante_venta || 'N/A'}-${comprobante.letra_comprobante || 'N/A'}`;
+							document.getElementById('modalNumero').textContent = comprobante.numero_comprobante || data.numero_comprobante || 'N/A';
+							document.getElementById('modalFecha').textContent = comprobante.fecha_comprobante || (data.debug?.fecha_comprobante || 'N/A');
+							document.getElementById('modalDiasCredito').textContent = 
+								`${comprobante.dias_credito || data.dias_credito || '0'} días`;
+							document.getElementById('modalVencimiento').textContent = comprobante.fecha_vencimiento || data.fecha_vencimiento || 'N/A';
+							
+							// Mostrar días vencidos correctamente
+							const diasVencidos = comprobante.dias_vencidos || data.dias_vencidos || 0;
+							const diasVencidosElement = document.getElementById('modalDiasVencidos');
+							diasVencidosElement.textContent = `${diasVencidos} días`;
+							if (diasVencidos > 0) {
+								diasVencidosElement.classList.add('text-danger', 'fw-bold');
+							}
+							
+							document.getElementById('modalMonto').textContent = 
+								`$${(comprobante.monto_pendiente || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+							document.getElementById('modalVendedor').textContent = 
+								comprobante.vendedor || (data.id_vendedor?.nombre_vendedor || 'No asignado');
+							
+							autorizacionModal.show();
+							
+							// Limpiar y configurar el botón de confirmación
+							const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
+							btnConfirmar.onclick = function() {
+								const codigo = document.getElementById('codigoAutorizacion').value.trim();
+								
+								if (!codigo) {
+									alert('Ingrese el código de autorización');
+									return;
+								}
+								
+								// Captura los valores de los campos del formulario
+								const sucursal_id = document.getElementById('id_id_sucursal').value;
+								const fecha_comprobante = document.getElementById('id_fecha_comprobante').value;
+								
+								// Verifica en consola (opcional)
+								// alert(`Sucursal: ${sucursal_id} | Fecha: ${fecha_comprobante}`);
+								
+								fetch('/ventas/clientes/validar-autorizacion/', {
+									method: 'POST',
+									headers: {
+										'Content-Type': 'application/json',
+										'X-CSRFToken': getCookie('csrftoken') 
+									},
+									body: JSON.stringify({
+										codigo: codigo,
+										cliente_id: clienteId,
+										sucursal_id: sucursal_id,
+										fecha_comprobante: fecha_comprobante
+									})
+								})
+								.then(response => response.json())
+								.then(authData => {
+									if (authData.valido) {
+										// 1. Asignar el ID de autorización al campo oculto
+										// document.getElementById('id_id_valida').value = authData.id_autorizacion;
+										document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
+										
+										autorizacionModal.hide();
+										completarSeleccionCliente(seleccion);
+									} else {
+										alert(authData.mensaje || 'Código incorrecto');
+									}
+								})
+								.catch(error => {
+									console.error('Error:', error);
+									alert('Error al validar autorización');
+								});
+							};
+						} else {
+							completarSeleccionCliente(seleccion);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						const autorizacionModal = new bootstrap.Modal(document.getElementById('autorizacionModal'));
+						document.getElementById('modalTitulo').textContent = 'Error en validación';
+						document.getElementById('mensajePrincipal').innerHTML = `
+							<i class="bi bi-exclamation-triangle-fill me-2"></i>
+							${error.message || 'Error al verificar documentos pendientes'}
+						`;
+						autorizacionModal.show();
+					});
+			});
+			
+			// Mantener las funciones completarSeleccionCliente y getCookie exactamente igual que en tu versión original
+			function calcularNumeroComprobante() {
+				// alert('obtener-numero-comprobante3');
+				// Obtener datos necesarios para numeración
+				const id_sucursal = document.getElementById('id_id_sucursal').value;
+				const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+				const compro = document.getElementById('id_compro').value;
+				// const id_discrimina_iva = document.getElementById('id_discrimina_iva').value;
+				const id_discrimina_iva = document.getElementById('id_discrimina_iva').checked;
+				// alert('id_discrimina_iva');
+				// alert(id_discrimina_iva);
+				
+				
+				// Habilitar el número de comprobante y asignarle valor en blanco
+				// const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+				const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+				
+				const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+				const tipoComprobante = tipoComprobanteDict[comprobanteId] ?? false;
+				
+				const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
+				const electronica = electronicaDict[comprobanteId] ?? false;
+				
+				const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+				const manual = manualDict[comprobanteId] ?? false;
+				
+				// Obtener el elemento
+				const tipoComprobanteElement = document.getElementById('tipo-comprobante-vista');
+				// Acceder al valor
+				const tipoComprobanteVista = tipoComprobanteElement.dataset.tipoComprobanteVista;
+				// alert("Tipo de comprobante vista: " + tipoComprobanteVista);
+				
+				if (manual){
+					// alert("Factura Manual");
+					document.getElementById('id_numero_comprobante').readOnly = false;
+					// document.getElementById('id_numero_comprobante').setAttribute('autocomplete', 'new-password');
+					
+					if (document.getElementById('id_discrimina_iva').checked) {
+						// El checkbox está marcado (true)
+						document.getElementById('id_letra_comprobante').value = "A";
+					} else {
+						// El checkbox no está marcado (false)
+						document.getElementById('id_letra_comprobante').value = "B";
+					}
+					return;
+					
+				} else {
+					document.getElementById('id_numero_comprobante').readOnly = true;
+				}
+				
+				if (id_sucursal && id_punto_venta && compro) {
+					///
+					// alert('obtener-numero-comprobante3***');
+					
+					const url = new URL('/ventas/obtener-numero-comprobante3/', window.location.origin);
+					url.searchParams.append('id_sucursal', id_sucursal);
+					url.searchParams.append('id_punto_venta', id_punto_venta);
+					url.searchParams.append('comprobante', compro);
+					url.searchParams.append('id_discrimina_iva', id_discrimina_iva);
+					
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+								const inputDefinitivo = document.getElementById('id_numero_definitivo');
+								if (inputDefinitivo) {
+									inputDefinitivo.value = data.numero_definitivo;
+								}
+								document.getElementById('id_letra_comprobante').value = data.letra;
+							} else {
+								alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+							}
+						})
+						.catch(error => {
+							console.error("Error en la solicitud:", error);
+							alert("Error al conectar con el servidor.");
+						});
+					///
+				} else {
+					
+				}
+			}
+			
+			// Función original calcularNumeroComprobante
+			function calcularNumeroComprobante_ini() {
+				// Obtener datos necesarios para numeración
+				// alert("calcularNumeroComprobante")
+				const libroIvaDict = JSON.parse(document.getElementById('libroiva-data').dataset.libroiva);
+				const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+				const libroIva = libroIvaDict[comprobanteId] ?? false;
+				
+				const id_sucursal = document.getElementById('id_id_sucursal').value;
+				const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+				const compro = document.getElementById('id_compro').value;
+				
+				// Numeración según si va al libro IVA o no
+				if (libroIva) {
+					const isRemito = document.getElementById('id_es_remito').checked;
+					const isChecked = document.getElementById('id_discrimina_iva').checked;
+					
+					const letra = isRemito ? 'R' : (isChecked ? 'A' : 'B');
+					document.getElementById('id_letra_comprobante').value = letra;
+					
+					if (id_sucursal && id_punto_venta && compro && letra) {
+						const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
+						url.searchParams.append('id_sucursal', id_sucursal);
+						url.searchParams.append('id_punto_venta', id_punto_venta);
+						url.searchParams.append('comprobante', compro);
+						url.searchParams.append('letra', letra);
+						
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								if (data.success) {
+									document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+									const inputDefinitivo = document.getElementById('id_numero_definitivo');
+									if (inputDefinitivo) {
+										inputDefinitivo.value = data.numero_definitivo;
+									}
+								} else {
+									alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+								}
+							})
+							.catch(error => {
+								console.error("Error en la solicitud:", error);
+								alert("Error al conectar con el servidor.");
+							});
+					}
+				} else {
+					// No va al libro IVA, letra y número vienen desde backend
+					document.getElementById('id_letra_comprobante').value = "";
+					
+					if (id_sucursal && id_punto_venta && compro) {
+						const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
+						url.searchParams.append('id_sucursal', id_sucursal);
+						url.searchParams.append('id_punto_venta', id_punto_venta);
+						url.searchParams.append('comprobante', compro);
+						
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								if (data.success) {
+									document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+									const inputDefinitivo = document.getElementById('id_numero_definitivo');
+									if (inputDefinitivo) {
+										inputDefinitivo.value = data.numero_definitivo;
+									}
+									document.getElementById('id_letra_comprobante').value = data.letra;
+								} else {
+									alert(data.message || "Ocurrió un error al obtener el número de comprobante.");
+								}
+							})
+							.catch(error => {
+								console.error("Error en la solicitud:", error);
+								alert("Error al conectar con el servidor.");
+							});
+					}
+				}
+			}
+			
+			// Función para completar la selección del cliente (extraída del código original)
+			function completarSeleccionCliente(seleccion) {
+				const id_cliente = seleccion.getAttribute('data-id');
+				const cuit = seleccion.getAttribute('data-cuit');
+				const nombre = seleccion.getAttribute('data-nombre');
+				const direccion = seleccion.getAttribute('data-direccion');
+				const movil = seleccion.getAttribute('data-movil');
+				const email = seleccion.getAttribute('data-email');
+				const id_vendedor = seleccion.getAttribute('data-id_vendedor');
+				const nombre_vendedor = seleccion.getAttribute('data-nombre_vendedor');
+				const tipo_venta = seleccion.getAttribute('data-tipo_venta');
+				const discrimina_iva = seleccion.getAttribute('data-discrimina_iva');
+				const isChecked = discrimina_iva === "true";
+				const condicion_comprobante = seleccion.getAttribute('data-condicion_venta');
+				const id_sucursal_cliente = seleccion.getAttribute('data-id_sucursal');
+				const vip = seleccion.getAttribute('data-vip') === 'true';
+				
+				document.getElementById('id_id_cliente').value = id_cliente || '';
+				document.getElementById('id_nombre_factura').value = nombre || '';
+				document.getElementById('id_domicilio_factura').value = direccion || '';
+				document.getElementById('id_cuit').value = cuit || '';
+				document.getElementById('id_movil_factura').value = movil || '';
+				document.getElementById('id_email_factura').value = email || '';
+				document.getElementById('id_id_vendedor').value = id_vendedor || '';
+				document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+				document.getElementById('id_tipo_venta').value = tipo_venta || '';
+				document.getElementById('id_condicion_comprobante').value = condicion_comprobante || '';
+				document.getElementById('id_discrimina_iva').checked = isChecked;
+				
+				const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+				
+				const condicionComprobanteSelect = document.getElementById('id_condicion_comprobante');
+				if (condicionComprobanteSelect) {
+					condicionComprobanteSelect.value = condicion_comprobante || '';
+					if (condicion_comprobante === "1") {
+						Array.from(condicionComprobanteSelect.options).forEach(function(option) {
+							if (option.value !== condicion_comprobante) {
+								option.disabled = true;
+							}
+						});
+						condicionComprobanteSelect.classList.add('readonly-select');
+					}
+				}
+				
+				if (id_sucursal_cliente !== id_sucursal_factura) {
+					alert('Atención: El cliente pertenece a otra sucursal.');
+				}
+				
+				if (vip) {
+					alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+					document.getElementById('id_cliente_vip').value = "Cliente VIP" 
+				}
+				
+				calcularNumeroComprobante();
+				
+				// Cerrar el modal de agenda
+				const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+				modal.hide();
+			}
+			
+			// Selección del Cliente desde buscar_cliente
+			const buscarClienteInput = document.getElementById('buscar_cliente');
+			buscarClienteInput.addEventListener('blur', function () {
+				let busqueda = buscarClienteInput.value.trim();
+				
+				// alert("Aquí es");
+				
+				// Si está vacío, no hacer nada
+				if (!busqueda) return;
+				
+				// Verificar que solo contenga números
+				if (!/^\d+$/.test(busqueda)) {
+					alert("Solo se permiten valores numéricos enteros.");
+					buscarClienteInput.value = '';
+					buscarClienteInput.focus();
+					return;
+				}
+				
+				// Construir la URL para la búsqueda
+				const url = new URL('/ventas/buscar/cliente/', window.location.origin);
+				url.searchParams.append('busqueda', busqueda);
+				
+				fetch(url, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.error) {
+						alert(data.error);
+						buscarClienteInput.value = '';
+						buscarClienteInput.focus();
+					} else {
+						// Verificar primero si el cliente está en blacklist
+						if (data.black_list) {
+							alert(`🚨 CLIENTE EN LISTA NEGRA 🚨\nMotivo: ${data.black_list_motivo || 'No especificado'}`);
+							buscarClienteInput.value = '';
+							buscarClienteInput.focus();
+							return;
+						}
+						
+						// Validar vencimientos de documentos
+						const clienteId = data.id_cliente;
+						if (clienteId) {
+							fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+							.then(response => response.json())
+							.then(vencimientoData => {
+								if (vencimientoData.requiere_autorizacion) {
+									// Mostrar alerta con los detalles del vencimiento
+									const comprobante = vencimientoData.datos_comprobante || {};
+									let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
+									mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
+									mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
+									mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
+									mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
+									mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
+									mensaje += `Contacte a un supervisor para autorización.`;
+									
+									alert(mensaje);
+									buscarClienteInput.value = '';
+									buscarClienteInput.focus();
+									return;
+								} else {
+									// Continuar con el flujo normal si no hay vencimientos
+									completarDatosCliente(data);
+								}
+							})
+							.catch(error => {
+								console.error('Error validando vencimientos:', error);
+								// Continuar con el flujo normal si hay error en la validación
+								completarDatosCliente(data);
+							});
+						} else {
+							completarDatosCliente(data);
+						}
+					}
+				})
+				.catch(error => {
+					console.error('Error en la búsqueda:', error);
+					alert("Hubo un error en la búsqueda.");
+				});
+				
+				///
+				// buscar_cliente
+				///
+				
+				// Función para completar los datos del cliente (extraída para reutilización)
+				function completarDatosCliente(data) {
+					document.getElementById('id_id_cliente').value = data.id_cliente || '';
+					document.getElementById('id_nombre_factura').value = data.nombre || '';
+					document.getElementById('id_domicilio_factura').value = data.direccion || '';
+					document.getElementById('id_cuit').value = data.cuit || '';
+					document.getElementById('id_movil_factura').value = data.movil || '';
+					document.getElementById('id_email_factura').value = data.email || '';
+					document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
+					document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
+					document.getElementById('id_tipo_venta').value = data.tipo_venta || '';
+					document.getElementById('id_condicion_comprobante').value = data.condicion_venta || '';
+					document.getElementById('id_discrimina_iva').checked = data.discrimina_iva;
+					
+					// Verificación de sucursal
+					const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+					if (data.id_sucursal !== id_sucursal_factura) {
+						alert('Atención: El cliente pertenece a otra sucursal.');
+					}
+					
+					// Verificación VIP
+					if (data.vip) {
+						alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+						document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
+					}
+					
+					// Deshabilitar botones
+					document.getElementById('listar_agenda').disabled = true;
+					document.getElementById('buscar_cliente').disabled = true;
+					
+					///
+					calcularNumeroComprobante();
+					///
+				}
+			});
+			
+			// Función auxiliar para obtener el token CSRF
+			function getCookie(name) {
+				let cookieValue = null;
+				if (document.cookie && document.cookie !== '') {
+					const cookies = document.cookie.split(';');
+					for (let i = 0; i < cookies.length; i++) {
+						const cookie = cookies[i].trim();
+						if (cookie.substring(0, name.length + 1) === (name + '=')) {
+							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+							break;
+						}
+					}
+				}
+				return cookieValue;
+			}
+			//**-->>
+			
+			document.getElementById('tablaResultadosAgenda').addEventListener('click', function(e) {
+				const radio = e.target.closest('input[name="seleccionar-agenda"]');
+				if (radio && radio.getAttribute('data-black_list') === 'true') {
+					radio.checked = false;
+					const motivo = radio.getAttribute('data-black_list_motivo') || 'Sin motivo especificado';
+					alert(`⛔ Cliente en lista negra\nMotivo: ${motivo}`);
+					e.stopPropagation();
+				}
+			});
+			
+			const autorizacionForm = document.getElementById('autorizacionForm');
+			const codigoInput = document.getElementById('codigoAutorizacion');
+			const mensajeError = document.getElementById('mensajeErrorAutorizacion');
+			
+			// Configurar datos ocultos al mostrar el modal
+			document.getElementById('autorizacionModal').addEventListener('show.bs.modal', function() {
+				document.getElementById('validaClienteId').value = document.getElementById('id_id_cliente').value;
+				document.getElementById('validaSucursalId').value = document.getElementById('id_id_sucursal').value;
+				document.getElementById('validaFecha').value = document.getElementById('id_fecha_comprobante').value;
+			});
+			
+			// Manejar el envío del formulario
+			autorizacionForm.addEventListener('submit', function(e) {
+				e.preventDefault();
+				
+				// Validación básica
+				const codigo = codigoInput.value.trim();
+				if (!/^[1-9]\d*$/.test(codigo)) {
+					mensajeError.textContent = 'Ingrese un número entero positivo';
+					mensajeError.style.display = 'block';
+					return;
+				}
+				
+				// Deshabilitar botón durante la validación
+				const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
+				const btnOriginalHTML = btnConfirmar.innerHTML;
+				btnConfirmar.disabled = true;
+				btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
+				
+				fetch('/ventas/valida-autorizacion/', {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': getCookie('csrftoken'),
+						'X-Requested-With': 'XMLHttpRequest'
+					},
+					body: new FormData(autorizacionForm)
+				})
+				.then(response => {
+					if (!response.ok) throw new Error('Error en la respuesta del servidor');
+					return response.json();
+				})
+				.then(data => {
+					if (data.valido) {
+						bootstrap.Modal.getInstance(document.getElementById('autorizacionModal')).hide();
+						// Continuar con el flujo después de validar
+					} else {
+						mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>${data.mensaje || 'Error en la validación'}`;
+						mensajeError.style.display = 'block';
+					}
+				})
+				.catch(error => {
+					mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Error de conexión`;
+					mensajeError.style.display = 'block';
+				})
+				.finally(() => {
+					btnConfirmar.disabled = false;
+					btnConfirmar.innerHTML = btnOriginalHTML;
+				});
+			});
+			
+			// Resetear al cerrar el modal
+			document.getElementById('autorizacionModal').addEventListener('hidden.bs.modal', function() {
+				autorizacionForm.reset();
+				mensajeError.style.display = 'none';
+			});
+			
+		});
+		
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Función para aplicar la lógica de solo lectura a un campo select
+			function makeSelectReadOnly(selectElement) {
+				// Guarda el valor inicial seleccionado
+				var initialValue = selectElement.value;
+				
+				// Deshabilita la interacción después de la primera selección
+				selectElement.addEventListener('change', function() {
+					// Deshabilita todas las opciones excepto la seleccionada
+					Array.from(selectElement.options).forEach(function(option) {
+						if (option.value !== selectElement.value) {
+							option.disabled = true;
+						}
+					});
+					
+					// Aplica un estilo visual para indicar que es de solo lectura
+					selectElement.classList.add('readonly-select');
+				});
+				
+				// Si ya hay un valor seleccionado al cargar la página, deshabilita las otras opciones
+				if (selectElement.value) {
+					Array.from(selectElement.options).forEach(function(option) {
+						if (option.value !== selectElement.value) {
+							option.disabled = true;
+						}
+					});
+					selectElement.classList.add('readonly-select');
+				}
+			}
+			
+			// Aplicar la lógica a id_deposito
+			var selectDeposito = document.getElementById('id_id_deposito');
+			if (selectDeposito) {
+				makeSelectReadOnly(selectDeposito);
+			}
+			
+			// Aplicar la lógica a id_comprobante_venta
+			var selectComprobante = document.getElementById('id_id_comprobante_venta');
+			if (selectComprobante) {
+				makeSelectReadOnly(selectComprobante);
+			}
+			
+		});
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Función para aplicar la lógica de solo lectura a un campo select
+			function makeSelectReadOnly(selectElement) {
+				// Guarda el valor inicial seleccionado
+				var initialValue = selectElement.value;
+				
+				// Deshabilita la interacción después de la primera selección
+				selectElement.addEventListener('change', function() {
+					// Deshabilita todas las opciones excepto la seleccionada
+					Array.from(selectElement.options).forEach(function(option) {
+						if (option.value !== selectElement.value) {
+							option.disabled = true;
+						}
+					});
+					
+					// Aplica un estilo visual para indicar que es de solo lectura
+					selectElement.classList.add('readonly-select');
+				});
+				
+				// Si ya hay un valor seleccionado al cargar la página, pero no es el valor por defecto, deshabilita las otras opciones
+				if (selectElement.value && selectElement.value !== selectElement.options[0].value) {
+					Array.from(selectElement.options).forEach(function(option) {
+						if (option.value !== selectElement.value) {
+							option.disabled = true;
+						}
+					});
+					selectElement.classList.add('readonly-select');
+				}
+			}
+			
+			// Aplicar la lógica a condicion_comprobante
+			var selectCondicionComprobante = document.getElementById('id_condicion_comprobante');
+			if (selectCondicionComprobante) {
+				makeSelectReadOnly(selectCondicionComprobante);
+			}
+		});
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// Botón de "Listar" que abre la ventana modal
+			const listarBtn = document.querySelector('[data-bs-target="#agendaModal"]');
+			
+			// Evento cuando se hace clic en "Seleccionar" en la ventana modal de agenda
+			document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+				const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
+				if (seleccion) {
+					// Deshabilitar el botón "Listar"
+					listarBtn.disabled = true;
+				}
+			});
+		});
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			document.getElementById('btnAgregarDetalle').addEventListener('click', function (event) {
+				// Lista de IDs de los campos obligatorios
+				const requiredFields = [
+					'id_id_deposito', 'id_id_comprobante_venta', 'id_id_cliente', 
+					'id_fecha_comprobante', 'id_condicion_comprobante', 
+					'id_movil_factura', 'id_email_factura'
+				];
+				
+				let isValid = true;
+				let missingFields = [];
+				
+				// Validar cada campo obligatorio
+				requiredFields.forEach(fieldId => {
+					const field = document.getElementById(fieldId);
+					if (!field || !field.value.trim()) {
+						isValid = false;
+						missingFields.push(fieldId);
+					}
+				});
+				
+				// Si hay campos faltantes, mostrar alerta y evitar abrir el modal
+				if (!isValid) {
+					event.preventDefault();  // Evita cualquier acción por defecto
+					event.stopPropagation(); // Detiene la propagación del evento
+					
+					alert("⚠️ Debes completar todos los datos obligatorios antes de agregar un detalle.\n\nFaltan los siguientes campos:\n- " + missingFields.join("\n- "));
+					return false; // Detiene la ejecución del código
+				}
+				
+				// Si pasa la validación, abrir el modal manualmente
+				const detalleModal = new bootstrap.Modal(document.getElementById('detalleModal'));
+				detalleModal.show();
+			});
+		});
+	</script>
+	
+	<script>
+		/*
+		document.addEventListener('DOMContentLoaded', function () {
+			const buscarClienteInput = document.getElementById('buscar_cliente');
+	
+			buscarClienteInput.addEventListener('blur', function () {
+				let busqueda = buscarClienteInput.value.trim();
+		
+				// Si está vacío, no hacer nada
+				if (!busqueda) return;
+		
+				// Verificar que solo contenga números
+				if (!/^\d+$/.test(busqueda)) {
+					alert("Solo se permiten valores numéricos enteros.");
+					buscarClienteInput.value = '';
+					buscarClienteInput.focus();
+					return;
+				}
+		
+				// Construir la URL para la búsqueda
+				const url = new URL('/ventas/buscar/cliente/', window.location.origin);
+				url.searchParams.append('busqueda', busqueda);
+		
+				fetch(url, {
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.error) {
+						alert(data.error);
+						buscarClienteInput.value = '';
+						buscarClienteInput.focus();
+					} else {
+						// Verificar primero si el cliente está en blacklist
+						if (data.black_list) {
+							alert(`🚨 CLIENTE EN LISTA NEGRA 🚨\nMotivo: ${data.black_list_motivo || 'No especificado'}`);
+							buscarClienteInput.value = '';
+							buscarClienteInput.focus();
+							return;
+						}
+						
+						// Validar vencimientos de documentos
+						const clienteId = data.id_cliente;
+						if (clienteId) {
+							fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
+							.then(response => response.json())
+							.then(vencimientoData => {
+								if (vencimientoData.requiere_autorizacion) {
+									// Mostrar alerta con los detalles del vencimiento
+									const comprobante = vencimientoData.datos_comprobante || {};
+									let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
+									mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
+									mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
+									mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
+									mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
+									mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
+									mensaje += `Contacte a un supervisor para autorización.`;
+									
+									alert(mensaje);
+									buscarClienteInput.value = '';
+									buscarClienteInput.focus();
+									return;
+								} else {
+									// Continuar con el flujo normal si no hay vencimientos
+									completarDatosCliente(data);
+								}
+							})
+							.catch(error => {
+								console.error('Error validando vencimientos:', error);
+								// Continuar con el flujo normal si hay error en la validación
+								completarDatosCliente(data);
+							});
+						} else {
+							completarDatosCliente(data);
+						}
+					}
+				})
+				.catch(error => {
+					console.error('Error en la búsqueda:', error);
+					alert("Hubo un error en la búsqueda.");
+				});
+	
+				// Función para completar los datos del cliente (extraída para reutilización)
+				function completarDatosCliente(data) {
+					document.getElementById('id_id_cliente').value = data.id_cliente || '';
+					document.getElementById('id_nombre_factura').value = data.nombre || '';
+					document.getElementById('id_domicilio_factura').value = data.direccion || '';
+					document.getElementById('id_cuit').value = data.cuit || '';
+					document.getElementById('id_movil_factura').value = data.movil || '';
+					document.getElementById('id_email_factura').value = data.email || '';
+					document.getElementById('id_id_vendedor').value = data.id_vendedor || '';
+					document.getElementById('id_vendedor_factura').value = data.nombre_vendedor || '';
+	
+					// Verificación de sucursal
+					const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+					if (data.id_sucursal !== id_sucursal_factura) {
+						alert('Atención: El cliente pertenece a otra sucursal.');
+					}
+	
+					// Verificación VIP
+					if (data.vip) {
+						alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+						document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
+					}
+	
+					// Deshabilitar botones
+					document.getElementById('listar_agenda').disabled = true;
+					document.getElementById('buscar_cliente').disabled = true;
+				}
+			});
+		});
+		*/
+	</script>
+	
+	<script>
+		// Script que maneja is_edit en caso de actualización
+		document.addEventListener('DOMContentLoaded', function () {
+			// Obtener el elemento HTML que contiene el valor de is_edit
+			const modoEdicion = document.getElementById('modo-edicion');
+			
+			// Obtener el valor de data-is-edit y convertirlo a booleano
+			const isEdit = modoEdicion.dataset.isEdit === 'true';
+			
+			// Si estamos en modo de edición, deshabilitar los campos y el botón
+			if (isEdit) {
+				// Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
+				const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
+				
+				const validarBtn =  document.getElementById('validarBtn');
+				const listar_agenda =  document.getElementById('listar_agenda');
+				const crearClienteBtn =  document.getElementById('crearClienteBtn');
+				
+				const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
+				const btnAgregarSerial = document.getElementById('btnAgregarSerial');
+				
+				inputs.forEach(input => {
+					input.disabled = true;  
+					input.classList.add('readonly-select');  
+				});
+				
+				if (validarBtn) {
+					validarBtn.disabled = true;
+				}
+				
+				if (listar_agenda) {
+					listar_agenda.disabled = true;
+				}
+				
+				if (crearClienteBtn) {
+					// Guardamos el href original por si luego queremos habilitarlo de nuevo
+					crearClienteBtn.setAttribute('data-original-href', crearClienteBtn.getAttribute('href'));
+					crearClienteBtn.removeAttribute('href'); // Eliminamos el href para que no sea clickeable
+					crearClienteBtn.classList.add('disabled'); // Añadimos clase visual
+				}
+				
+				if (btnAgregarDetalle) {
+					btnAgregarDetalle.disabled = true;
+				}
+				
+				if (btnAgregarSerial) {
+					btnAgregarSerial.disabled = true;
+				}
+				
+				// Manejar el campo del modal de forma especial
+				const textareaObservaciones = document.getElementById('id_observa_comprobante');
+				if (textareaObservaciones) {
+					textareaObservaciones.readOnly = true;
+					textareaObservaciones.classList.add('readonly-textarea');
+				}
+				
+				const deleteButtons = document.querySelectorAll('button[data-form-index]');
+				if (deleteButtons.length > 0) {
+					deleteButtons.forEach(button => {
+						button.disabled = true;
+						// button.classList.add('disabled'); // Estilo visual (opcional)
+					});
+				}
+				
+				const deleteButtonsSerial = document.querySelectorAll('button[data-serial-index]');
+				if (deleteButtonsSerial.length > 0) {
+					deleteButtonsSerial.forEach(button => {
+						button.disabled = true;
+						// button.classList.add('disabled'); // Estilo visual (opcional)
+					});
+				}
+				
+				//alert("El formulario está en modo de solo lectura");
+			} else {
+				//alert("El formulario está en modo de creación");
+			}
+		});   
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// ==================== SERIALES ====================
+			const serialModal = new bootstrap.Modal('#serialModal');
+			const serialTableBody = document.getElementById('serialTableBody');
+			
+			// 1. Validación al agregar serial (como en detalles)
+			document.getElementById('btnAgregarSerial').addEventListener('click', function(e) {
+				if (!document.getElementById('id_id_cliente')?.value) {
+					e.preventDefault();
+					alert('Primero seleccione un cliente');
+					return;
+				}
+			});
+			
+			// Función para actualizar el contador de formsets de seriales
+			function actualizarSerialContadorFormsets() {
+				const allSerialRows = document.querySelectorAll('#serialTableBody tr').length;
+				document.getElementById('id_serialfactura_set-TOTAL_FORMS').value = allSerialRows;
+			}
+			
+			// 2. Insertar serial (mismo patrón que detalles)
+			document.getElementById('btnGuardarSerial').addEventListener('click', function() {
+				const serialInput = document.getElementById('serialInput');
+				const serialValue = serialInput.value.trim();
+				
+				if (!serialValue) {
+					alert('Ingrese un serial válido');
+					return;
+				}
+				
+				// const totalForms = document.getElementById('id_serialfactura_set-TOTAL_FORMS');
+				// const formCount = parseInt(totalForms.value);
+				const formCount = document.querySelectorAll('#serialTableBody tr').length;
+				
+				const newRow = `
+				<tr>
+					<td>
+						<input type="hidden" name="serialfactura_set-${formCount}-id_serial_factura">
+						<input type="hidden" name="serialfactura_set-${formCount}-id_factura">
+						<input type="text" name="serialfactura_set-${formCount}-producto_serial"
+							class="form-control form-control-sm border border-secondary"
+							value="${serialValue}" required>
+					</td>
+					<td>
+						<button type="button" class="btn btn-danger btn-sm btn-delete-serial">
+							<i class="bi bi-trash"></i>
+						</button>
+						<input type="checkbox" name="serialfactura_set-${formCount}-DELETE" hidden>
+					</td>
+				</tr>`;
+				
+				// Insertar nueva fila
+				serialTableBody.insertAdjacentHTML('beforeend', newRow);
+				
+				// Cerrar modal y limpiar
+				serialModal.hide();
+				serialInput.value = '';
+				
+				actualizarSerialContadorFormsets();
+			});
+			
+			// Manejo de eliminación de Detalle de Seriales
+			document.addEventListener('click', function(event) {
+				if (event.target.closest('.btn-delete-serial')) {
+					const row = event.target.closest('tr');
+					const deleteInput = row.querySelector('input[name$="-DELETE"]');
+					
+					if (confirm('¿Está seguro de eliminar este serial?')) {
+						if (deleteInput) {
+							// Marcar para eliminación en backend
+							deleteInput.checked = true;
+							
+							// Ocultar la fila visualmente
+							row.style.display = 'none';
+							
+							// Actualizar el contador de formsets
+							actualizarSerialContadorFormsets();
+						} else {
+							console.error('Error: No se encontró el campo DELETE para serial');
+						}
+					}
+				}
+			});
+		});
+	</script>
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			// Seleccionar todos los inputs editables (excluyendo hidden, buttons y submits)
+			const inputs = document.querySelectorAll(`
+				#factura-form input:not([type="hidden"]):not([type="submit"]):not([type="button"]),
+				#factura-form select,
+				#factura-form textarea
+			`);
+			
+			// Agregar evento 'keydown' a cada campo
+			inputs.forEach((input, index) => {
+				input.addEventListener('keydown', function(e) {
+					if (e.key === 'Enter') {
+						e.preventDefault(); // Evitar envío del formulario
+						
+						// Encontrar el siguiente campo disponible
+						let nextIndex = index + 1;
+						while (nextIndex < inputs.length && 
+							  (inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
+							nextIndex++;
+						}
+						
+						// Si hay un siguiente campo, mover el foco
+						if (nextIndex < inputs.length) {
+							inputs[nextIndex].focus();
+							
+							// Si es un <select>, abrir el dropdown automáticamente
+							if (inputs[nextIndex].tagName === 'SELECT') {
+								setTimeout(() => {
+									inputs[nextIndex].click();
+								}, 50);
+							}
+						}
+					}
+				});
+			});
+			
+			// Bloqueo adicional para evitar envío por Enter en cualquier campo
+			const form = document.getElementById('factura-form');
+			form.addEventListener('submit', function(e) {
+				const activeElement = document.activeElement;
+				if (activeElement && activeElement.tagName !== 'BUTTON' && activeElement.type !== 'submit') {
+					e.preventDefault(); // Cancelar envío si no fue desde un botón
+				}
+			});
+			
+			//
+			document.getElementById('detalleModal').addEventListener('keydown', function(e) {
+				if (e.key === 'Enter') {
+					e.preventDefault(); // Prevenir el comportamiento por defecto
+					
+					// Definir el orden de los elementos enfocables
+					const focusableElements = [
+						// Filtros
+						document.getElementById('filtro_primeras'),
+						document.getElementById('filtro_otras'),
+						document.getElementById('filtro_stock'),
+						
+						// Campos de búsqueda
+						document.getElementById('medida_producto'),
+						document.getElementById('nombre_producto'),
+						document.getElementById('cai_producto'),
+						
+						// Botón Buscar
+						document.querySelector('#detalleForm button[type="submit"]'),
+						
+						// Tabla de resultados (si tiene elementos enfocables)
+						...Array.from(document.querySelectorAll('#tabla-resultados [tabindex="0"]')),
+						
+						// Botones finales
+						document.getElementById('agregarDetale'),
+						document.getElementById('cancelarDetale')
+					].filter(el => el && !el.disabled); // Filtra elementos nulos o deshabilitados
+					
+					// Encontrar el elemento actualmente enfocado
+					const currentIndex = focusableElements.indexOf(document.activeElement);
+					let nextIndex = currentIndex + 1;
+					
+					// Si está en el último elemento, volver al primero
+					if (nextIndex >= focusableElements.length) {
+						nextIndex = 0;
+					}
+					
+					// Enfocar el siguiente elemento
+					if (focusableElements[nextIndex]) {
+						focusableElements[nextIndex].focus();
+						
+						// Si es un radio button, seleccionarlo automáticamente
+						if (focusableElements[nextIndex].type === 'radio') {
+							focusableElements[nextIndex].checked = true;
+						}
+						
+						// Si es un botón de la tabla, simular clic
+						if (focusableElements[nextIndex].classList.contains('btn-select-row')) {
+							focusableElements[nextIndex].click();
+						}
+					}
+				}
+			});
+			
+			// Enfoque automático al abrir el modal
+			document.getElementById('detalleModal').addEventListener('shown.bs.modal', function() {
+				document.getElementById('medida_producto').focus();
+			});
+			//
+			
+			//
+			document.getElementById('serialModal').addEventListener('keydown', function(e) {
+				if (e.key === 'Enter') {
+					e.preventDefault(); // Prevenir el comportamiento por defecto
+					
+					const focusableElements = Array.from(serialModal.querySelectorAll(
+						'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+					)).filter(el => !el.disabled && el.offsetParent !== null);
+					
+					const currentIndex = focusableElements.indexOf(document.activeElement);
+					let nextIndex = currentIndex + 1;
+					
+					// Si está en el último elemento, volver al primero
+					if (nextIndex >= focusableElements.length) {
+						nextIndex = 0;
+					}
+					
+					if (focusableElements[nextIndex]) {
+						focusableElements[nextIndex].focus();
+						
+						// Si es un select, abrir el dropdown
+						if (focusableElements[nextIndex].tagName === 'SELECT') {
+							setTimeout(() => {
+								focusableElements[nextIndex].click();
+							}, 50);
+						}
+					}
+				}
+			});
+			//
+		});
+		
+	</script>
+	
+{% endblock script %}

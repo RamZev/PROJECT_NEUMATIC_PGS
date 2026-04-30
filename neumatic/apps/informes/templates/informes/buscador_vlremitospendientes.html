@@ -1,0 +1,34 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlremitospendientes.html -->
+ 
+<div class="row" data-user-vendedor="{{ user.id_vendedor|default:'' }}">
+	
+	<div class="col-md-3">
+		{{ form.filtrar_por.label }}
+		{{ form.filtrar_por }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-3">
+		{{ form.vendedor.label }}
+		{{ form.vendedor }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_cli_desde.label }}
+		{{ form.id_cli_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_cli_hasta.label }}
+		{{ form.id_cli_hasta }}
+	</div>
+	
+	<div class="col-md-3">
+		{{ form.sucursal.label }}
+		{{ form.sucursal }}
+	</div>
+	
+</div>

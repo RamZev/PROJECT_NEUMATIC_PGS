@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <soap:Header>
+        <FEHeaderInfo xmlns="http://ar.gov.afip.dif.FEV1/">
+            <ambiente>HomologacionExterno - sr2</ambiente>
+            <fecha>2026-02-26T13:29:33.9828333-03:00</fecha>
+            <id>7.0.0.0</id>
+        </FEHeaderInfo>
+    </soap:Header>
+    <soap:Body>
+        <FECAESolicitarResponse xmlns="http://ar.gov.afip.dif.FEV1/">
+            <FECAESolicitarResult>
+                <FeCabResp>
+                    <Cuit>30692402363</Cuit>
+                    <PtoVta>22</PtoVta>
+                    <CbteTipo>1</CbteTipo>
+                    <FchProceso>20260226132933</FchProceso>
+                    <CantReg>1</CantReg>
+                    <Resultado>A</Resultado>
+                    <Reproceso>N</Reproceso>
+                </FeCabResp>
+                <FeDetResp>
+                    <FECAEDetResponse>
+                        <Concepto>3</Concepto>
+                        <DocTipo>80</DocTipo>
+                        <DocNro>20207882950</DocNro>
+                        <CbteDesde>4</CbteDesde>
+                        <CbteHasta>4</CbteHasta>
+                        <CbteFch>20260216</CbteFch>
+                        <Resultado>A</Resultado>
+                        <Observaciones>
+                            <Obs>
+                                <Code>10217</Code>
+                                <Msg>El credito fiscal discriminado en el presente comprobante solo podra ser computado a efectos del Procedimiento permanente de transicion al Regimen General.</Msg>
+                            </Obs>
+                        </Observaciones>
+                        <CAE>86090012188208</CAE>
+                        <CAEFchVto>20260226</CAEFchVto>
+                    </FECAEDetResponse>
+                </FeDetResp>
+            </FECAESolicitarResult>
+        </FECAESolicitarResponse>
+    </soap:Body>
+</soap:Envelope>

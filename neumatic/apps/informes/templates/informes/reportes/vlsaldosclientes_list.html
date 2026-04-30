@@ -1,0 +1,66 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlsaldosclientes_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th>Cliente</th>
+				<th>Nombre</th>
+				<th>Domicilio</th>
+				<th>C.P.</th>
+				<th>Localidad</th>
+				<th>Teléfono</th>
+				<th class="numeric" style="padding-right: 10px;">Saldo</th>
+				<th>1er. Comp. Pend.</th>
+				<th>Último Pago</th>
+				<th>Sub Cuenta</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.id_cliente_id }}</td>
+					<td>{{ obj.nombre_cliente }}</td>
+					<td>{{ obj.domicilio_cliente }}</td>
+					<td>{{ obj.codigo_postal }}</td>
+					<td>{{ obj.nombre_localidad|default_if_none:"" }}</td>
+					<td>{{ obj.telefono_cliente }}</td>
+					<td class="numeric" style="padding-right: 10px;">{{ obj.saldo|formato_es_ar }}</td>
+					<td>{{ obj.primer_fact_impaga|date:"d/m/Y" }}</td>
+					<td>{{ obj.ultimo_pago|date:"d/m/Y" }}</td>
+					<td>{{ obj.sub_cuenta|default_if_none:"" }}</td>
+				</tr>
+			{% endfor %}
+			
+			<tr class="total-general" style="border-top: 1px solid #000;">
+				<td class="numeric" colspan="6"><strong>Total Pendiente:</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ saldo_total|formato_es_ar }}</strong></td>
+			</tr>
+			
+		</tbody>
+	</table>
+	<p><strong>Observaciones:</strong> {{ observaciones }}</p>
+{% endblock content %}

@@ -1,0 +1,54 @@
+[
+    {
+        "cotizacion_moneda": 1,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_moneda": 1,
+        "fcontrol": "2025-02-02 18:21:48",
+        "id_moneda": 1,
+        "id_user_id": 1,
+        "nombre_moneda": "PESOS",
+        "predeterminada": 1,
+        "simbolo_moneda": "$",
+        "usuario": "admin",
+        "ws_afip": "PES"
+    },
+    {
+        "cotizacion_moneda": 1,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_moneda": 1,
+        "fcontrol": "2025-02-02 18:22:07",
+        "id_moneda": 2,
+        "id_user_id": 1,
+        "nombre_moneda": "Dólar EEUU",
+        "predeterminada": 0,
+        "simbolo_moneda": "$",
+        "usuario": "admin",
+        "ws_afip": "DOL"
+    },
+    {
+        "cotizacion_moneda": 1,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_moneda": 1,
+        "fcontrol": "2025-02-02 18:22:24",
+        "id_moneda": 3,
+        "id_user_id": 1,
+        "nombre_moneda": "Dólar EEUU LIBRE",
+        "predeterminada": 0,
+        "simbolo_moneda": "$",
+        "usuario": "admin",
+        "ws_afip": "002"
+    },
+    {
+        "cotizacion_moneda": 1,
+        "estacion": "DESKTOP-GKTUDE5",
+        "estatus_moneda": 1,
+        "fcontrol": "2025-02-02 18:22:38",
+        "id_moneda": 4,
+        "id_user_id": 1,
+        "nombre_moneda": "OTRAS MONEDAS",
+        "predeterminada": 0,
+        "simbolo_moneda": "$",
+        "usuario": "admin",
+        "ws_afip": "000"
+    }
+]

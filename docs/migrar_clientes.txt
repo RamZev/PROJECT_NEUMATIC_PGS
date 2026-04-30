@@ -1,0 +1,47 @@
+id_cliente: Automático
+estatus_cliente: True
+codigo_cliente: CODIGO
+nombre_cliente: NOMBRE
+domicilio_cliente: DOMICILIO
+
+codigo_postal: CODPOSTAL (solo las cuatro primeras posiciones)
+En el modelo Localidad buscar por codigo_postal y obtener el valor de
+id_localidad y id_provincia: 
+
+tipo_persona: TIPOCLI
+
+id_tipo_iva: colocar valor 1
+
+id_tipo_documento_identidad: colocar valor 1
+
+cuit: CUIT
+
+condicion_venta: CONVTA
+telefono_cliente: TELEFONO
+fax_cliente: FAX
+movil_cliente: MOVIL
+email_cliente: MAIL
+email2_cliente: valor en blanco
+transporte_cliente: TRANSPORTE
+
+id_vendedor: colocar valor 1
+
+fecha_nacimiento: FECHANAC 
+fecha_alta: FECHAING
+sexo: SEXO
+
+id_actividad: colocar valor 1
+
+id_sucursal: colocar valor 1
+
+id_percepcion_ib: colocar valor 1
+
+numero_ib: valor en blanco
+
+mayorista: MAYORISTA
+sub_cuenta: SUBCUENTA
+observaciones_cliente: OBSERVACIO 
+black_list: False
+black_list_motivo: valor en blanco
+black_list_usuario: valor en blanco
+fecha_baja: null=True, valor en blanco

@@ -1,0 +1,32 @@
+<!-- neumatic\apps\datatools\templates\datatools\paginacion.html -->
+<nav>
+	<ul class="pagination">
+		<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
+			<a class="page-link" href="?pagina=1" aria-label="Primera">
+				<span aria-hidden="true">Primera</span>
+			</a>
+		</li>
+		<li class="page-item {% if pagina_actual == 1 %}disabled{% endif %}">
+			<a class="page-link" href="?pagina={{ pagina_actual|add:'-1' }}" aria-label="Anterior">
+				<span aria-hidden="true">Anterior</span>
+			</a>
+		</li>
+		
+		{% for page in page_range %}
+			<li class="page-item {% if page == pagina_actual %}active{% endif %}">
+				<a class="page-link" href="?pagina={{ page }}">{{ page }}</a>
+			</li>
+		{% endfor %}
+		
+		<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
+			<a class="page-link" href="?pagina={{ pagina_actual|add:'1' }}" aria-label="Siguiente">
+				<span aria-hidden="true">Siguiente</span>
+			</a>
+		</li>
+		<li class="page-item {% if pagina_actual == total_paginas %}disabled{% endif %}">
+			<a class="page-link" href="?pagina={{ total_paginas }}" aria-label="Última">
+				<span aria-hidden="true">Última</span>
+			</a>
+		</li>
+	</ul>
+</nav>

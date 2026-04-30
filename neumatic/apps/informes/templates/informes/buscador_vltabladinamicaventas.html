@@ -1,0 +1,26 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vltabladinamicaventas.html -->
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.fecha_desde.label }}
+		{{ form.fecha_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.fecha_hasta.label }}
+		{{ form.fecha_hasta }}
+	</div>
+	
+</div>
+
+<div class="row">
+	<div class="col-md-4 d-flex align-items-center">
+		<div class="form-check mt-lg-4">
+			<!-- <label class="form-check-label form-label text-primary"> -->
+			<label for="{{ form.comprobantes_impositivos.id_for_label }}">
+				{{ form.comprobantes_impositivos }}
+				{{ form.comprobantes_impositivos.label }}
+			</label>
+		</div>
+	</div>
+</div>

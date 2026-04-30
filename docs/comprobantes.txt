@@ -1,0 +1,11 @@
+SELECT
+	codigo_comprobante_venta,
+	nombre_comprobante_venta,
+	tipo_comprobante,
+	compro_asociado,
+	electronica,
+	remito,
+	manual,
+	mipyme,
+	interno
+FROM comprobante_venta;

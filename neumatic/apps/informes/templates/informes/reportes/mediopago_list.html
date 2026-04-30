@@ -1,0 +1,53 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\mediopago_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 60%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th>Estatus</th>
+				<th>Nombre Medio Pago</th>
+				<th>Candición Pago</th>
+				<th class="numeric">Plazo Pago</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.estatus_medio_pago|get_estatus }}</td>
+					<td>{{ obj.nombre_medio_pago }}</td>
+					{% comment %} <td>{{ obj.condicion_medio_pago_display }}</td> {% endcomment %}
+					<td>{{ obj.condicion_display }}</td>
+					<td class="numeric">{{ obj.plazo_medio_pago|formato_es_ar_entero }}</td>
+				</tr>
+			{% endfor %}
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

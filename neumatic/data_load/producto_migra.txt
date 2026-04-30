@@ -1,0 +1,55 @@
+CAMBIOS EN LA TABLA VISUAL FOXPRO lista.DBF Antes de Migrar al modelo Producto
+
+1) En el campo TIPO se consiguieron valores "p" y "s" que se pasaron a mayúculas
+
+2) En el campo TIPO se consiguieron valores en blanco
+2.1) Los que empezaban por el nombre "REPARACION" se le asignó "S"
+2.2) Los otros casos se modificaron manualmente, aplicando criterio
+
+3) En el campo ARTICULO se eliminó el código  14380, por el valor 
+de ARTICULO estaba en blanco
+
+4) En el campo SEGMENTO se le asignó el valor "???" a los que estaban en blanco
+
+5) En el campo MODELO se consiguió el valor en blanco, pero en 3) ya se había eliminado
+
+6) En el campo UNIDAD se consiguieron valores en blanco, se les asignó valor 1
+
+7) El campo ORDEN no se utilza
+
+8) En el campo MARCA se consiguió el valor en blanco, pero en 3) ya se había eliminado
+
+9) En el campo NOMBRE se consiguió el valor en blanco, se eliminaron todos
+
+10) En el campo MEDIDA se consiguió un valor en blanco, se eliminó el CODIGO=102934
+
+11) En el campo FECHA se consiguieron valores en blanco, se eliminó el CODIGO=336540, 80495, 80496
+
+12) En el campo COSTO  se consiguieron valores en blanco, se les asignó valor cero
+
+13) El campo IMPINT no se usa 
+
+14) En el campo IVA se consiguieron 4 registros con valor cero y uno vacio pero marcado para borrar
+
+15) En el campo STOCK se consiguieron valores en blanco, se les asignó valor cero
+
+16) En el campo MINIMO se consiguieron valores en blanco, se les asignó valor cero
+
+17) En el campo PRECIO se consiguieron valores en blanco, se les asignó valor cero
+
+18) En el campo DESCUENTO se consiguieron valores en blanco, se les asignó valor cero
+
+19) El campo EXPORTADO no se usa
+
+20) El campo ESTADO no se usa
+
+21) En el campo DESCUENTO se consiguieron valores en blanco, se les asignó valor cero
+
+22) En el campo DESPACHO1 se consiguieron valores en blanco
+
+23) En el campo DESPACHO2 se consiguieron valores en blanco
+
+24) En el campo DETALLE se consiguieron valores en blanco
+
+25) En el campo CARRITO se consiguieron valores en blanco, se le asigno valor .F.
+

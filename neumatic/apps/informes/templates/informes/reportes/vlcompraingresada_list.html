@@ -1,0 +1,73 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlcompraingresada_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		
+		<thead>
+			<tr>
+				<th>Fecha</th>
+				<th>Comprobante</th>
+				<th>Proveedor</th>
+				<th>Nombre</th>
+				<th class="numeric" style="padding-right: 10px">Importe</th>
+				<th>Observaciones</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			{% for cod_compro, data in objetos.items %}
+				<!-- Fila con los datos del Tipo de Comprobante -->
+				<tr>
+					<td colspan="6" style="padding-top: 5px;">
+						<strong>Tipos de Comprobantes: [{{cod_compro}}] - {{ data.nombre_comprobante }}</strong>
+					</td>
+				</tr>
+				
+				{% for det in data.detalle %}
+					<tr>
+						<td>{{ det.fecha_comprobante|date:"d/m/Y" }}</td>
+						<td>{{ det.comprobante }}</td>
+						<td>{{ det.id_proveedor }}</td>
+						<td>{{ det.nombre_proveedor }}</td>
+						<td class="numeric" style="padding-right: 10px">{{ det.total|formato_es_ar }}</td>
+						<td>{{ det.observacion }}</td>
+					</tr>
+				{% endfor %}
+				<tr class="subtotal">
+					<td colspan="4" style="text-align: right;"><strong>Total:</strong></td>
+					<td class="numeric" style="border-top: 1px solid; padding-right: 10px;"><strong>{{ data.total|formato_es_ar }}</strong></td>
+					<td></td>
+				</tr>
+				
+				<tr>
+					<td colspan="6"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			
+		</tbody>
+		
+	</table>
+{% endblock content %}

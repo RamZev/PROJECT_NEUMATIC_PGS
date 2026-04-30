@@ -1,0 +1,79 @@
+# Carpeta del Proyecto
+neumatic
+
+# Carpeta de las aplicaciones
+neumatic\apps
+
+# Aplicación maestros
+neumatic\apps\maestros
+neumatic\apps\maestros\forms
+neumatic\apps\maestros\models
+neumatic\apps\maestros\signals
+neumatic\apps\maestros\templates
+neumatic\apps\maestros\templates\maestros
+neumatic\apps\maestros\templatetags
+neumatic\apps\maestros\views
+neumatic\apps\maestros\urls.py
+
+# Aplicación ventas
+neumatic\apps\ventas
+neumatic\apps\ventas\forms
+neumatic\apps\ventas\models
+neumatic\apps\ventas\signals
+neumatic\apps\ventas\templates
+neumatic\apps\ventas\templates\ventas
+neumatic\apps\ventas\templatetags
+neumatic\apps\ventas\views
+neumatic\apps\ventas\urls.py
+
+# Aplicación informes
+neumatic\apps\informes
+neumatic\apps\informes\forms
+neumatic\apps\informes\templates
+neumatic\apps\informes\templates\informes
+neumatic\apps\informes\views
+neumatic\apps\informes\models.py
+neumatic\apps\informes\urls.py
+
+# Aplicación usuarios
+neumatic\apps\usuarios
+neumatic\apps\usuarios\forms
+neumatic\apps\usuarios\templates
+neumatic\apps\usuarios\templates\usuarios
+neumatic\apps\usuarios\views
+neumatic\apps\informes\models.py
+neumatic\apps\informes\urls.py
+
+# Carpeta de archivos de diseños bootstrap
+neumatic\diseno_base
+neumatic\diseno_base\diseno_bootstrap.py
+
+# Carpeta de consfiguración del Proyecto
+neumatic\neumatic
+neumatic\neumatic\settings.py
+neumatic\neumatic\urls.py
+neumatic\neumatic\views.py
+
+# Carpeta de archivos estátcios del Proyecto
+neumatic\static
+neumatic\static\assets
+neumatic\static\css
+neumatic\static\img
+neumatic\static\js
+
+# Carpeta de plantillas del Proyecto
+neumatic\templates\
+neumatic\templates\base.html
+neumatic\templates\buscador_informes.html
+neumatic\templates\dashboard.html
+neumatic\templates\home.html
+neumatic\templates\maestro_form.html
+neumatic\templates\paginador.html
+neumatic\templates\proceso_form.html
+neumatic\templates\sidebar.html
+neumatic\templates\top_nav.html
+
+# Carpeta de utilidades del Proyecto
+neumatic\utils
+neumatic\utils\helpers
+neumatic\utils\validator

@@ -1,0 +1,348 @@
+<!-- neumatic\apps\maestros\templates\maestros\comprobante_venta_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Comprobante_Venta" 
+												aria-expanded="true" 
+												aria-controls="Información_Comprobante_Venta">
+												<strong>Información Comprobante Venta</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Comprobante_Venta">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_comprobante_venta.id_for_label }}">
+															{{ form.estatus_comprobante_venta.label }}
+														</label>
+														{{ form.estatus_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_comprobante_venta.id_for_label }}">
+															{{ form.codigo_comprobante_venta.label }}
+														</label>
+														{{ form.codigo_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_comprobante_venta.id_for_label }}">
+															{{ form.nombre_comprobante_venta.label }}
+														</label>
+														{{ form.nombre_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.tipo_comprobante.id_for_label }}">
+															{{ form.tipo_comprobante.label }}
+														</label>
+														{{ form.tipo_comprobante }}
+													</div>
+												</div>
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_venta.id_for_label }}">
+															{{ form.mult_venta.label }}
+														</label>
+														{{ form.mult_venta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_saldo.id_for_label }}">
+															{{ form.mult_saldo.label }}
+														</label>
+														{{ form.mult_saldo }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_stock.id_for_label }}">
+															{{ form.mult_stock.label }}
+														</label>
+														{{ form.mult_stock }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_comision.id_for_label }}">
+															{{ form.mult_comision.label }}
+														</label>
+														{{ form.mult_comision }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_caja.id_for_label }}">
+															{{ form.mult_caja.label }}
+														</label>
+														{{ form.mult_caja }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_estadistica.id_for_label }}">
+															{{ form.mult_estadistica.label }}
+														</label>
+														{{ form.mult_estadistica }}
+													</div>
+												</div>
+												
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.libro_iva }}
+																{{ form.libro_iva.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.estadistica }}
+																{{ form.estadistica.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.electronica }}
+																{{ form.electronica.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.presupuesto }}
+																{{ form.presupuesto.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.pendiente }}
+																{{ form.pendiente.label }}
+															</label>
+														</div>
+													</div>
+													
+												</div>
+												
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.remito }}
+																{{ form.remito.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.recibo }}
+																{{ form.recibo.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.manual }}
+																{{ form.manual.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.mipyme }}
+																{{ form.mipyme.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.ncr_ndb }}
+																{{ form.ncr_ndb.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.interno }}
+																{{ form.interno.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_afip_a.id_for_label }}">
+															{{ form.codigo_afip_a.label }}
+														</label>
+														{{ form.codigo_afip_a }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_afip_b.id_for_label }}">
+															{{ form.codigo_afip_b.label }}
+														</label>
+														{{ form.codigo_afip_b }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.compro_asociado.id_for_label }}">
+															{{ form.compro_asociado.label }}
+														</label>
+														{{ form.compro_asociado }}
+													</div>
+													
+												</div>
+												
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_michelin_auto }}
+																{{ form.info_michelin_auto.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_michelin_camion }}
+																{{ form.info_michelin_camion.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block script -------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// --- CÓDIGO ESPECÍFICO PARA COMPROBANTE VENTA ---
+			const libroIvaCheckbox = document.getElementById('{{ form.libro_iva.id_for_label }}');
+			const codigoAfipA = document.getElementById('{{ form.codigo_afip_a.id_for_label }}');
+			const codigoAfipB = document.getElementById('{{ form.codigo_afip_b.id_for_label }}');
+			
+			// Función para actualizar el estado de los campos AFIP.
+			function actualizarCamposAFIP() {
+				if (libroIvaCheckbox.checked) {
+					// Si libro_iva está marcado, habilitar ambos campos.
+					codigoAfipA.removeAttribute('readonly');
+					codigoAfipB.removeAttribute('readonly');
+					codigoAfipB.classList.remove('bg-light');
+				} else {
+					// Si libro_iva NO está marcado, hacer codigo_afip_b readonly.
+					// y copiar el valor de codigo_afip_a a codigo_afip_b.
+					codigoAfipB.setAttribute('readonly', 'readonly');
+					codigoAfipB.classList.add('bg-light');
+					codigoAfipB.value = codigoAfipA.value;
+				}
+			}
+			
+			// Ejecutar la función al cargar la página.
+			actualizarCamposAFIP();
+			
+			// Agregar event listeners para cambios
+			libroIvaCheckbox.addEventListener('change', actualizarCamposAFIP);
+			
+			// También actualizar cuando cambie el valor de codigo_afip_a.
+			codigoAfipA.addEventListener('input', function() {
+				if (!libroIvaCheckbox.checked) {
+					codigoAfipB.value = codigoAfipA.value;
+				}
+			});
+			
+		});
+	</script>
+{% endblock script %}
+<!-- -------------------------------------------------------------------- -->

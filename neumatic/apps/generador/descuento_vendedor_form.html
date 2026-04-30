@@ -1,0 +1,289 @@
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Descuento_Vendedor" 
+												aria-expanded="true" 
+												aria-controls="Información_Descuento_Vendedor">
+												<strong>Información Descuento Vendedor</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Descuento_Vendedor">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_descuento_vendedor.id_for_label }}">
+															{{ form.estatus_descuento_vendedor.label }}
+														</label>
+														{{ form.estatus_descuento_vendedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_marca.id_for_label }}">
+															{{ form.id_marca.label }}
+														</label>
+														{{ form.id_marca }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_familia.id_for_label }}">
+															{{ form.id_familia.label }}
+														</label>
+														{{ form.id_familia }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc1.id_for_label }}">
+															{{ form.desc1.label }}
+														</label>
+														{{ form.desc1 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc2.id_for_label }}">
+															{{ form.desc2.label }}
+														</label>
+														{{ form.desc2 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc3.id_for_label }}">
+															{{ form.desc3.label }}
+														</label>
+														{{ form.desc3 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc4.id_for_label }}">
+															{{ form.desc4.label }}
+														</label>
+														{{ form.desc4 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc5.id_for_label }}">
+															{{ form.desc5.label }}
+														</label>
+														{{ form.desc5 }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc6.id_for_label }}">
+															{{ form.desc6.label }}
+														</label>
+														{{ form.desc6 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc7.id_for_label }}">
+															{{ form.desc7.label }}
+														</label>
+														{{ form.desc7 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc8.id_for_label }}">
+															{{ form.desc8.label }}
+														</label>
+														{{ form.desc8 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc9.id_for_label }}">
+															{{ form.desc9.label }}
+														</label>
+														{{ form.desc9 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc10.id_for_label }}">
+															{{ form.desc10.label }}
+														</label>
+														{{ form.desc10 }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc11.id_for_label }}">
+															{{ form.desc11.label }}
+														</label>
+														{{ form.desc11 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc12.id_for_label }}">
+															{{ form.desc12.label }}
+														</label>
+														{{ form.desc12 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc13.id_for_label }}">
+															{{ form.desc13.label }}
+														</label>
+														{{ form.desc13 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc14.id_for_label }}">
+															{{ form.desc14.label }}
+														</label>
+														{{ form.desc14 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc15.id_for_label }}">
+															{{ form.desc15.label }}
+														</label>
+														{{ form.desc15 }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc16.id_for_label }}">
+															{{ form.desc16.label }}
+														</label>
+														{{ form.desc16 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc17.id_for_label }}">
+															{{ form.desc17.label }}
+														</label>
+														{{ form.desc17 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc18.id_for_label }}">
+															{{ form.desc18.label }}
+														</label>
+														{{ form.desc18 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc19.id_for_label }}">
+															{{ form.desc19.label }}
+														</label>
+														{{ form.desc19 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc20.id_for_label }}">
+															{{ form.desc20.label }}
+														</label>
+														{{ form.desc20 }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc21.id_for_label }}">
+															{{ form.desc21.label }}
+														</label>
+														{{ form.desc21 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc22.id_for_label }}">
+															{{ form.desc22.label }}
+														</label>
+														{{ form.desc22 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc23.id_for_label }}">
+															{{ form.desc23.label }}
+														</label>
+														{{ form.desc23 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc24.id_for_label }}">
+															{{ form.desc24.label }}
+														</label>
+														{{ form.desc24 }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.desc25.id_for_label }}">
+															{{ form.desc25.label }}
+														</label>
+														{{ form.desc25 }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+<!-- -------------------------------------------------------------------- -->
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'modal_errors.html' %}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+<!-- -------------------------------------------------------------------- -->

@@ -1,0 +1,275 @@
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+    <div id="layoutSidenav_content">
+		<main>
+            <div class="container-fluid">
+                <div class="card border-light mb-3 mt-2">
+                    <div class="card-header text-white bg-primary opacity-75 d-flex 
+							justify-content-between">
+						{{ accion }}
+						<button type="button" class="btn-close btn-close-white" 
+							aria-label="Close"
+							onclick="window.location.href='{% url list_view_name %}'">
+						</button>
+					</div>
+                    
+                    <div class="card-body bg-body-secondary">
+                        <form class="needs-validation" method="post" enctype="multipart/form-data" novalidate>
+                            {% csrf_token %}
+                            <div class="accordion" id="accordionPanelsStayOpenExample">
+                                <!-- Estructura generada -->
+                                
+                                <!-- Información Personal Inicio -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button aria-controls="Información_Personal" aria-expanded="true" class="accordion-button" data-bs-target="#Información_Personal" data-bs-toggle="collapse" type="button">
+                                            <strong>
+                                                Información Producto
+                                            </strong>
+                                        </button>
+                                    </h2>
+                                    <div class="accordion-collapse collapse show" id="Información_Personal">
+                                        <div class="accordion-body bg-secondary-subtle">
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.estatus_producto.id_for_label }}">
+                                                        {{ form.estatus_producto.label_tag }}
+                                                    </label>
+                                                    {{ form.estatus_producto}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.estatus_producto.errors }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.codigo_producto.id_for_label }}">
+                                                        {{ form.codigo_producto.label_tag }}
+                                                    </label>
+                                                    {{ form.codigo_producto}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.codigo_producto.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.tipo_producto.id_for_label }}">
+                                                        {{ form.tipo_producto.label_tag }}
+                                                    </label>
+                                                    {{ form.tipo_producto}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.tipo_producto.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.id_familia.id_for_label }}">
+                                                        {{ form.id_familia.label_tag }}
+                                                    </label>
+                                                    {{ form.id_familia}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.id_familia.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.id_marca.id_for_label }}">
+                                                        {{ form.id_marca.label_tag }}
+                                                    </label>
+                                                    {{ form.id_marca}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.id_marca.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.id_modelo.id_for_label}}">
+                                                        {{ form.id_modelo.label_tag }}
+                                                    </label>
+                                                    {{ form.id_modelo}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.id_modelo.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.cai.id_for_label}}">
+                                                        {{ form.cai.label_tag }}
+                                                    </label>
+                                                    {{ form.cai}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.cai.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.medida.id_for_label}}">
+                                                        {{ form.medida.label_tag }}
+                                                    </label>
+                                                    {{ form.medida}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.medida.errors }}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.segmento.id_for_label}}">
+                                                        {{ form.segmento.label_tag }}
+                                                    </label>
+                                                    {{ form.segmento}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.segmento.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.nombre_producto.id_for_label}}">
+                                                        {{ form.nombre_producto.label_tag }}
+                                                    </label>
+                                                    {{ form.nombre_producto}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.nombre_producto.errors }}
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.unidad.id_for_label}}">
+                                                        {{ form.unidad.label_tag }}
+                                                    </label>
+                                                    {{ form.unidad}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.unidad.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.fecha_fabricacion.id_for_label}}">
+                                                        {{ form.fecha_fabricacion.label_tag }}
+                                                    </label>
+                                                    {{ form.fecha_fabricacion}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.fecha_fabricacion.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.costo.id_for_label}}">
+                                                        {{ form.costo.label_tag }}
+                                                    </label>
+                                                    {{ form.costo}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.costo.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.alicuota_iva.id_for_label}}">
+                                                        {{ form.alicuota_iva.label_tag }}
+                                                    </label>
+                                                    {{ form.alicuota_iva}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.alicuota_iva.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.precio.id_for_label}}">
+                                                        {{ form.precio.label_tag }}
+                                                    </label>
+                                                    {{ form.precio}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.precio.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.stock.id_for_label}}">
+                                                        {{ form.stock.label_tag }}
+                                                    </label>
+                                                    {{ form.stock}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.stock.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.minimo.id_for_label}}">
+                                                        {{ form.minimo.label_tag }}
+                                                    </label>
+                                                    {{ form.minimo}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.minimo.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.descuento.id_for_label}}">
+                                                        {{ form.descuento.label_tag }}
+                                                    </label>
+                                                    {{ form.descuento}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.descuento.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.despacho_1.id_for_label}}">
+                                                        {{ form.despacho_1.label_tag }}
+                                                    </label>
+                                                    {{ form.despacho_1}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.despacho_1.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.despacho_2.id_for_label}}">
+                                                        {{ form.despacho_2.label_tag }}
+                                                    </label>
+                                                    {{ form.despacho_2}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.despacho_2.errors }}
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4">
+                                                    <label class="form-label text-primary mb-0" for="{{ form.descripcion_producto.id_for_label}}">
+                                                        {{ form.descripcion_producto.label_tag }}
+                                                    </label>
+                                                    {{ form.descripcion_producto}}
+                                                    <div class="invalid-feedback">
+                                                        {{ form.descripcion_producto.errors }}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+                            <div class="container mt-3">
+                                <button class="btn btn-primary" type="submit" id="guardarBtn">
+                                    Guardar
+                                </button>
+                                <a class="btn btn-secondary" href="{% url list_view_name %}">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% endblock principalcomponent %}
+{% endblock maincomponent %}

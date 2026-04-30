@@ -1,0 +1,134 @@
+01/10/2024
+	He cambiado el modelo Parametro por la definición que está en "proyecto_DBN.sql" (08/09/2024) en el Drive.
+	Aplicar migraciones.
+----------------------------------------------------------------------------------------------------------------------
+03/10/2024:
+	* Modelo Operario: 
+		- Cambio logitud campo telefono_operario de 50 a 15 caracteres.
+	* Modelo Vendedor: 
+		- Cambio tipo campo tipo_venta de BooleanField a CharField.
+	* Modelo Empresa: 
+		- Se cambia el campo iva de CharField a ForeignKey relacionado con TipoIva.
+		- Se cambia el atributo on_delete de campo id_localidad a PROTECT.
+		- Se cambia el atributo on_delete de campo id_provincia a PROTECT.
+----------------------------------------------------------------------------------------------------------------------
+08/10/2024:
+	* Modelo Cliente:
+		- He cambiado el atributo on_delete de unos foreinKey de CASCADE a PROTECT.
+		- He quitado los imports de los modelos relacionados y encerrado entre comillas los modelos de referencia en los foreinKey (lazy reference).
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+	* Modelo Proveedor:
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+	* Modelo Empresa:
+		- Se estandariza el campo CUIT a IntegerField (Cliente, Proveedor, Empresa)
+----------------------------------------------------------------------------------------------------------------------
+09/10/2024:
+	* Modelo Empresa:
+		- Se cambia el tipo de dato del campo cbu de BigInteger(máx.19chr) a CharField.
+		- Se cambia a opcional el campo id_iva (null=True, blank=True).
+	* Modelo Actividad:
+		- Se quita el campo fecha_registro_actividad.
+----------------------------------------------------------------------------------------------------------------------
+10/10/2024:
+	* Modelo Vendedor:
+		- Se ajusta la longitud de los campos pje_auto y pje_camion para que solo acepten 2 dígitos enteros y 2 decimales: 
+		  DecimalField max_digits=4, decimal_places=2.
+	* Módulo constantes_base.py:
+		- Se modifica la constante base TIPO_VENTA para que el display muestre "Mostrador" y "Revendedor".
+	* Modelo ProductoMarca:
+		- Se agregan los campos: info_michelin_auto y info_michelin_camion que faltaban.
+	* Modelo ComprobanteVenta:
+		- El campo compro_asociado (Comprobante Asociado) se establece como opcional (null=True, blank=True).
+		- El campo impresion (Impresora) se estable como opcional (null=True, blank=True).
+----------------------------------------------------------------------------------------------------------------------
+11/10/2024 - 16/10/2024:
+	* Modelo Empresa:
+		- Los campos: ws_token, ws_sign y ws_expiracion se estabecen como opcionales (null=True, blank=True).
+		- Campo ws_modo: se cambia el tipo de dato de DecimalField a IntegerField.
+		- Campo web_empresa: Se establece como opcional (null=True, blank=True).
+	
+	* Cambio longitud campos porcentajes: DecimalField(max_digits=4, decimal_places=2) en los modelos:
+		- ProductoFamilia
+		- Moneda
+		- TipoPercepcionIb
+		- TipoRetencionIb
+		- Producto
+	
+	* Cambio longitud campos DecimalField cuya longitud es de 18 dígitos a 15 en los modelos:
+		- Moneda
+		- TipoPercepcionIb
+		- TipoRetencionIb
+		- Producto
+	
+	* Modelo Cliente:
+		- He colocado como opcionales (null=True, blank=True) los siguientes campos:
+		  - id_vendedor, numero_ib, fax_cliente, email2_cliente, transporte_cliente, fecha_nacimiento, sub_cuenta,
+		    black_list_motivo, black_list_usuario, fecha_baja
+	
+	* Modelo Producto:
+		- Establecidos como opcionales (null=True, blank=True) los siguientes campos:
+		  - cai, stock, minimo, despacho_1, despacho_2.
+		- Ajustados los campos DecimalField(max_digits=15, decimal_places=2): costo y precio.
+		
+	* Modelo Proveedor:
+		- Se cambia atributo on_delete.CASCADE a on_delete.PROTECT en los ForeignKey Localidad, TipoIva y TipoRetencionIb.
+	
+	* Modelo Sucursal:
+		- Se cambia atributo on_delete.CASCADE a on_delete.PROTECT en los ForeignKey Localidad y Provincia.
+	
+	* Modelo Vendedor:
+		- Establecidos como opcionales (null=True, blank=True) los siguientes campos:
+		  - pje_auto, pje_camion, vence_factura, vence_remito, col_descuento.
+----------------------------------------------------------------------------------------------------------------------
+21/10/2024 - 22/10/2024
+	* Modelo Cliente:
+		- Se establece que el campo fecha_alta tenga un valor por defecto (default=date.today).
+	
+	* Modelo Proveedor:
+		- Se establece que el campo ib_alicuota tengo un valor por defecto (default=0.00), acepte números positivos: 2 enteros y 2 decimales o ceros.
+	
+	* Modelo Producto:
+		- Se establece el campo codigo_producto como CharField max_length=7 y se modifica el método save() para que le asigne el ID del nuevo registro.
+		- El campo unidad se le establece un valor por defecto: default=0
+	
+	* Modelo Vendedor:
+		- Los campos pje_auto y pje_camion se estabecen que no admitan nulos. Solo números positivos: 2 enteros, 2 decimales o cero: 0 a 99.99
+		- Los campos vence_factura, vence_remito y col_descuento se estabecen que no admitan nulos. Solo enteros positivos o cero: 0 a 999
+	
+	* Modelo Vendedor:
+		- Los campos interes, interes_dolar y descuento_maximo se estabecen que no admitan nulos.
+		  Solo números positivos o negativos: 2 enteros, 2 decimales o cero: -99.99 a 99.99
+		- El campo cotizacion_dolar se estabece que no admita nulos. Solo positivos hasta 13 enteros y 2 decimales o cero: 0 a 9999999999999.99
+		- El campo dias_vencimiento se estabece que no admita nulos. Solo enteros positivos o cero: 0 a 999
+	
+	* Modelo TipoDocumentoIdentidad:
+		- Se amplía el campo nombre_documento_identidad a 20 caracteres.
+
+	* Modelo ComprobanteVenta:
+		- Se elimina el campo impresion.
+----------------------------------------------------------------------------------------------------------------------
+24/10/2024
+	* Modelo Producto:
+		- Se cambia atributo on_delete.CASCADE a on_delete.PROTECT en los ForeignKey id_familia, id_marca e id_modelo.
+		- El campo minimo se establece editable y que acepte números enteros positivos desde 0 hasta 99999.
+
+	* Modelo Proveedor:
+		- Al campo CUIT se le establece el atributo unique=True.
+
+	* Modelo ProductoMinimo:
+		- Se agrega el campo id_producto.
+----------------------------------------------------------------------------------------------------------------------
+29/10/2024
+	* Modelo ProductoMinimo:
+		- Se elimina el campo id_producto (no es necesario).
+
+30/10/2024
+	* Modelo ProductoCai:
+		- Se crea el modelo ProductoCai.
+	
+	* Modelo ProductoMinimo:
+		- Se cambia el campo cai por id_cai.
+
+01/11/2024
+	* Modelo User:
+		- Se agregan los campos personalizados: iniciales, jerarquia, id_vendedor, id_sucursal, punto_venta.

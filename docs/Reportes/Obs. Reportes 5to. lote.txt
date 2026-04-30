@@ -1,0 +1,12 @@
+Stock General por Sucursal.
+---------------------------
+1.- En el modelo Sucursal se debería mantener el nombre de la sucursal original en el campo
+	nombre_sucursal y crear un campo siglas o sucursal_abreviada tipo CharField de entre 5 y 8
+	para las Siglas o Abreviatura de la Sucursal y emplear este en el reporte.
+2.- En el formulario mostrar la lista de las sucursales registradas para seleccionar las que 
+	se quieren que aparezcan detallas por columnas en el reporte con un máximo de selecciones y las
+	que no estén seleccionadas se sumen los stocks en una columna "Otras" y así no dejar limitado
+	el reporte si se crean más sucursales.
+3.- El reporte debería incuir solamente los productos (tipo_producto = "P") y excluir los servicios
+	(Así no se mostraría los conceptos contables ni "productos" que no menajan stock).
+

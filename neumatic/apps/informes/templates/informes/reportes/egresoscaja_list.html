@@ -1,0 +1,77 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\egresoscaja_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th>Caja</th>
+				<th>Fecha Caja</th>
+				<th>Detalle</th>
+				<th class="numeric">Importe</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for caja, datos in objetos.items %}
+				{% for egreso in datos.egresos %}
+					{% ifchanged egreso.numero_caja_formateado %}
+						<tr>
+							<td>{{ egreso.numero_caja_formateado }}</td>
+							<td>{{ egreso.id_caja__fecha_caja|date:"d/m/Y" }}</td>
+							<td>{{ egreso.observacion }}</td>
+							<td class="numeric">{{ egreso.importe|formato_es_ar }}</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td></td>
+							<td></td>
+							<td>{{ egreso.observacion }}</td>
+							<td class="numeric">{{ egreso.importe|formato_es_ar }}</td>
+						</tr>
+					{% endifchanged %}
+				{% endfor %}
+				<!-- Total por Caja -->
+				<tr>
+					<td colspan="3" style="text-align: right;"><strong>Total a la Fecha:</strong></td>
+					<td class="numeric"><strong>{{ datos.subtotal|formato_es_ar }}</strong></td>
+				</tr>
+				<tr>
+					<td colspan="4"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="3" style="text-align: right;"><strong>Total de Egresos:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

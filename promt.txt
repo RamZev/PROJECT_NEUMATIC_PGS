@@ -1,0 +1,219 @@
+ok, necesito obtener los datos del modelo según los parámetros de filtro pero estructurados de tal forma que:
+
+1.- El reporte debe tener los siguientes datos (columnas):
+	Comprobante	Fecha				Condición	Cliente			Nombre			Contado			Cta. Cte.
+	------------------------------------------------------------------------------------------------------
+	nombre_comprobante_venta1
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+															----------------------------------------------
+																Sub Total:	SUM(total)		SUM(total)
+																Gravado:	SUM(gravado)	SUM(gravado)
+																I.V.A.:		SUM(iva)		SUM(iva)
+																Pecep. IB:	SUM(percep_ib)	SUM(percep_ib)
+	nombre_comprobante_venta2
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+	comprobante	fecha_comprobante	condicion	id_cliente_id	nombre_cliente	total			total
+															----------------------------------------------
+																Sub Total:	SUM(total)		SUM(total)
+																Gravado:	SUM(gravado)	SUM(gravado)
+																I.V.A.:		SUM(iva)		SUM(iva)
+																Pecep. IB:	SUM(percep_ib)	SUM(percep_ib)
+															----------------------------------------------
+															Total General:	total_contado	total_cta_cte
+															----------------------------------------------
+
+2.- Estén ordenados por nombre_comprobante_venta, y se debe calcular por cada tipo de comprobante de venta los totales de los sus columnas: gravado, iva, percep_ib y total.
+3.- Los totales por tipo de comprobante es sumar las respectivas columnas.
+4.- El totla general es la sumatoria de todos los sub totales del campo total según la condición (Contado|Cta Cte).
+4.- los mosntos debe ir en la columna respectiva, si condicion es "Contado" deben reflejarse en la columna Contado de lo contrario en la columna Cta. Cte.
+
+Espero haberme explicado correctamente.
+
+
+Estos sería los datos de ejemplo del queryset:
+
+id_factura|nombre_comprobante_venta|letra_comprobante|numero_comprobante|comprobante	   |fecha_comprobante|condicion_comprobante|condicion|id_cliente_id|nombre_cliente					|gravado	|IVA		|percep_ib	|total		|id_sucursal_id
+10		  |FACTURA ELECTRONICA     |A				 |	2600022788		|FF A 0026-00022788|2024-08-14		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|233057.85	|48942.15	|0.0		|282000		|11
+11		  |FACTURA ELECTRONICA     |A				 |	2600022887		|FF A 0026-00022887|2024-08-22		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|19958.68	|4191.32	|0.0		|24150		|11
+12		  |FACTURA ELECTRONICA     |A				 |	2600022888		|FF A 0026-00022888|2024-08-22		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|28527.28	|5990.72	|0.0		|34518		|11
+6		  |FACTURA ELECTRONICA     |A				 |	4300004729		|FF A 0043-00004729|2025-01-09		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|4000		|11
+1		  |FACTURA ELECTRONICA     |B				 |	2100014151		|FF B 0021-00014151|2024-12-01		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|1000		|11
+5		  |FACTURA ELECTRONICA     |B				 |	2200037268		|FF B 0022-00037268|2025-01-08		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|3000		|11
+9		  |NOTA DE CREDITO ELEC    |A				 |	2600001647		|CF A 0026-00001647|2024-08-24		 |2					   |Cta. Cte.|2			   |Cliente nuevo					|-233057.85	|-48942.15	|-5826.45	|-287826.45	|11
+8		  |NOTA DE CREDITO ELEC    |A				 |	2600991647		|CF A 0026-00991647|2025-01-08		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|-100		|11
+2		  |NOTA DE DEBITO ELECT    |A				 |	2100002355		|DF A 0021-00002355|2024-12-05		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|2000		|11
+4		  |RECIBO				   |R				 |	100136062		|RB R 0001-00136062|2025-01-06		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|200		|11
+7		  |RECIBO				   |R				 |	200147031		|RB R 0002-00147031|2025-01-09		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|1200		|11
+3		  |RECIBO				   |R				 |	800024559		|RB R 0008-00024559|2024-12-01		 |2					   |Cta. Cte.|1			   |CLIENTE DE PRUEBA 1				|0.0		|0.0		|0.0		|500		|11
+13		  |REMITO				   |R				 |	3300007993		|RF R 0033-00007993|2024-06-24		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|0.0		|11
+15		  |REMITO				   |R				 |	3300008602		|RF R 0033-00008602|2024-08-12		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|0.0		|11
+14		  |REMITO				   |R				 |	4200003037		|RF R 0042-00003037|2024-07-12		 |2					   |Cta. Cte.|9			   |AdmiraPlus Cargo Logistics, SAC	|0.0		|0.0		|0.0		|0.0		|12
+
+
+El reporte debería salir así:
+
+Comprobante			Fecha		Condición	Cliente	Nombre								  Contado		 Cta. Cte.
+-------------------------------------------------------------------------------------------------------------------
+FACTURA ELECTRONICA
+FF A 0026-00022788	14/08/2024	Cta. Cte.	2		Cliente nuevo					   		 0,00		282.000,00
+FF A 0026-00022887	22/08/2024	Cta. Cte.	2		Cliente nuevo							 0,00	     24.150,00
+FF A 0026-00022888	22/08/2024	Cta. Cte.	2		Cliente nuevo							 0,00		 34.518,00
+FF A 0043-00004729	09/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		  4.000,00
+FF B 0021-00014151	01/12/2024	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00		  1.000,00
+FF B 0022-00037268	08/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		  3.000,00
+																					-------------------------------
+																		Sub Total:  		 0,00		348.668,00
+																		  Gravado:			 0,00		281.543,81
+																		   I.V.A.:			 0,00		 59.124.19
+																   Percepción IB.:			 0,00			  0,00
+
+NOTA DE CREDITO ELEC
+CF A 0026-00001647	24/08/2024	Cta. Cte.	2		Cliente nuevo				  	  		 0,00	   -287.826,45
+CF A 0026-00991647	08/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		   -100,00
+																					-------------------------------
+																		Sub Total:  		 0,00	   -287.926,45
+																		  Gravado:			 0,00	   -233.057,85
+																		   I.V.A.:			 0,00		-48.942,15
+																   Percepción IB.:			 0,00		 -5.826,45
+
+NOTA DE DEBITO ELECT
+DF A 0021-00002355	05/12/2024	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00		  2.000,00
+																					-------------------------------
+																		Sub Total:  		 0,00		  2.000,00
+																		  Gravado:			 0,00			  0,00
+																		   I.V.A.:			 0,00			  0,00
+																   Percepción IB.:			 0,00			  0,00
+
+RECIBO
+RB R 0001-00136062	06/01/2025	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00			200,00
+RB R 0002-00147031	09/01/2025	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00		  1.200,00
+RB R 0008-00024559	01/12/2024	Cta. Cte.	1		CLIENTE DE PRUEBA 1						 0,00			500,00
+																					-------------------------------
+																		Sub Total:  		 0,00		  1.900,00
+																		  Gravado:			 0,00			  0,00
+																		   I.V.A.:			 0,00			  0,00
+																   Percepción IB.:			 0,00			  0,00
+
+REMITO
+RF R 0033-00007993	24/06/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00			  0,00
+RF R 0033-00008602	12/08/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00			  0,00
+RF R 0042-00003037	12/07/2024	Cta. Cte.	9		AdmiraPlus Cargo Logistics, SAC			 0,00			  0,00
+																					-------------------------------
+																		Sub Total:  		 0,00			  0,00
+																		  Gravado:			 0,00			  0,00
+																		   I.V.A.:			 0,00			  0,00
+																   Percepción IB.:			 0,00			  0,00
+																					-------------------------------
+																	Total General:  		 0,00		 64.641,55
+																					-------------------------------
+
+
+
+
+
+
+====================================================
+
+
+
+Columna 1			Columna 2			Columna 3
+--------------------------------------------------
+					xcz xzczxcxc zx
+					dfsd sdfsd fdsf 
+Fila 1				sdfsdfd				Dato 3
+Fila 2				sdfsdfd sdfsd		Dato 3
+					gfg hghg hhh ghh
+					dfd df ffddffdd
+Fila 3				fddf dfdf			Dato3
+
+
+
+
+Columna 1			Columna 2			Columna 3
+--------------------------------------------------
+Fila 1				xcz xzczxcxc zx		Dato 3
+					dfsd sdfsd fdsf 
+					sdfsdfd				
+Fila 2				sdfsdfd sdfsd		Dato 3
+Fila 3				gfg hghg hhh ghh	Dato3
+					dfd df ffddffdd
+					fddf dfdf			
+
+####################################################################################
+Remitos Pendientes
+####################################################################################
+
+Estos sería los datos de ejemplo del queryset:
+
+id_factura	|id_cliente_id	|nombre_cliente					|nombre_comprobante_venta	|fecha_comprobante	|letra_comprobante	|numero_comprobante	|comprobante	|id_producto|nombre_producto								|medida		|cantidad	|precio		|descuento		|total		|id_vendedor_id	|id_sucursal_fac|id_sucursal_cli
+1600342		|55439			|DEBONA MARCELO  Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002701			|R 0044-00002701|29454		|D255/45 R 19 (21) P SPORT 4 SUV 100V MICHELIN	|255/45R19	|2			|722709.95	|0				|1445419.9	|148			|10				|1
+1600320		|65962			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002700			|R 0044-00002700|35720		|D265/70 R 16 (23) TRAIL TERRAIN T/A ORWL		|265/70R16	|4			|413415.2	|0				|1653660.8	|148			|10				|1
+1600320		|65962			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002700			|R 0044-00002700|36900		|DLT285/70 R17 (24) ALL TERRAIN T/A KO2 GOODRICH|285/70R17	|4			|645025.04	|0				|2580100.16	|148			|10				|1
+1600320		|65962			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002700			|R 0044-00002700|6055		|D215/60 R 17 (24) PRIMACY 4 96H MICHELIN		|215/60R17	|4			|456000		|0				|1824000.0	|148			|10				|1
+1600296		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002698			|R 0044-00002698|152040		|PROTECTOR 17-5-25 DONG AH (5)					|P25		|15			|29725.2	|0				|445878.0	|148			|10				|1
+1600293		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002697			|R 0044-00002697|151180		|CAMARA 16.9 - 30 TR218A DONG AH (3)			|16-9-30	|15			|55059.3	|0				|825889.5	|148			|10				|1
+1600293		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002697			|R 0044-00002697|150681		|CAMARA 650-20 TR15 DONG AH (17) 22				|650-20		|102		|12459.6	|0				|1270879.2	|148			|10				|1
+1600293		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002697			|R 0044-00002697|151340		|CAMARA 12.4 - 36 TR218A DONG AH (6)			|12-4-36	|24			|40493.7	|0				|971848.8	|148			|10				|1
+1600293		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002697			|R 0044-00002697|151223		|CAMARA 23.1 - 30 TR218A DONG AH (2) 24			|23-1-30	|20			|97600		|0				|1952000.0	|148			|10				|1
+1600293		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002697			|R 0044-00002697|150061		|CAMARA GR14 TR13 DONG AH (25) 22				|G-14		|125		|6793.2		|0				|849150.0	|148			|10				|1
+1600293		|64313			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002697			|R 0044-00002697|150921		|CAMARA 14.9 - 24 TR218A DONG AH (5) 22			|14-9-24	|20			|33522.3	|0				|670446.0	|148			|10				|1
+1600121		|65962			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002692			|R 0044-00002692|8956		|D225/55 R 18  (23) PRIMACY 4 + 102V MICHELIN	|225/55R18	|4			|503301		|0				|2013204.0	|148			|10				|1
+1600121		|65962			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002692			|R 0044-00002692|4449		|225/55 R16  PRIMACY 4+ 99W  MICHELIN			|225/55R16	|4			|516044		|0				|2064176.0	|148			|10				|1
+1600117		|30007			|DEBONA MARCELO Y VICTOR HUGO	|REMITO INTERNO				|2025-01-29			|R					|4400002690			|R 0044-00002690|213490		|195/55 R 15 85H M-2 OUTR MOMO					|195/55R15	|8			|141084		|0				|1128672.0	|148			|10				|1
+1599643		|37214			|BERRA HEBER					|REMITO						|2025-01-28			|R					|4400002679			|R 0044-00002679|81041		|6.00 - 9  (21) 10 PR ED RODACO + FULLSET		|600-9		|1			|119510.19	|-6				|119510.19	|59				|10				|2
+1599643		|37214			|BERRA HEBER					|REMITO						|2025-01-28			|R					|4400002679			|R 0044-00002679|81042		|6.00 - 9 (23) 10 PR ED RODACO + FULLSET		|600-9		|1			|119510.19	|-6				|119510.19	|59				|10				|2
+
+
+El reporte debería salir así:
+
+Fecha		Comprobante		Descripción										Medida		Cantidad	Precio		Total
+--------------------------------------------------------------------------------------------------------------------------
+Cliente: 55439 DEBONA MARCELO  Y VICTOR HUGO
+29/01/2025	R 0044-00002701	D255/45 R 19 (21) P SPORT 4 SUV 100V MICHELIN	255/45R19	2			722709.95	1445419.90
+																						Total Comprobante:		1445419.90
+																						Total Cliente	 :		1445419.90
+
+Cliente: 65962 DEBONA MARCELO Y VICTOR HUGO
+29/01/2025	R 0044-00002700	D265/70 R 16 (23) TRAIL TERRAIN T/A ORWL		265/70R16	4			413415.20	1653660.80
+29/01/2025	R 0044-00002700	DLT285/70 R17 (24) ALL TERRAIN T/A KO2 GOODRICH	285/70R17	4			645025.04	2580100.16
+29/01/2025	R 0044-00002700	D215/60 R 17 (24) PRIMACY 4 96H MICHELIN		215/60R17	4			456000.00	1824000.00
+																						Total Comprobante:		6057760.96
+																						Total Cliente	 :		6057760.96
+
+Cliente: 64313 DEBONA MARCELO Y VICTOR HUGO
+29/01/2025	R 0044-00002698	PROTECTOR 17-5-25 DONG AH (5)					P25			15			 29725.00	 445878.00
+																						Total Comprobante:		 445878.00
+																						
+29/01/2025	R 0044-00002697	CAMARA 16.9 - 30 TR218A DONG AH (3)				16-9-30		15			 55059.30	 825889.50
+29/01/2025	R 0044-00002697	CAMARA 650-20 TR15 DONG AH (17) 22				650-20		102			 12459.60	1270879.20
+29/01/2025	R 0044-00002697	CAMARA 12.4 - 36 TR218A DONG AH (6)				12-4-36		24			 40493.70	 971848.80
+29/01/2025	R 0044-00002697	CAMARA 23.1 - 30 TR218A DONG AH (2) 24			23-1-30		20			 97600.00	1952000.00
+29/01/2025	R 0044-00002697	CAMARA GR14 TR13 DONG AH (25) 22				G-14		125			  6793.20	 849150.00
+29/01/2025	R 0044-00002697	CAMARA 14.9 - 24 TR218A DONG AH (5) 22			14-9-24		20			 33522.30	 670446.00
+																						Total Comprobante:		6540216.50
+																						Total Cliente	 :		6986094.50
+
+Cliente: 65962 DEBONA MARCELO Y VICTOR HUGO
+29/01/2025	R 0044-00002692	D225/55 R 18  (23) PRIMACY 4 + 102V MICHELIN	225/55R18	4			503301.00	2013204.00
+29/01/2025	R 0044-00002692	225/55 R16  PRIMACY 4+ 99W  MICHELIN			225/55R16	4			516044.00	2064176.00
+																						Total Comprobante:		4077380.00
+																						Total Cliente	 :		4077380.00
+
+Cliente: 30007 DEBONA MARCELO Y VICTOR HUGO
+29/01/2025	R 0044-00002690	195/55 R 15 85H M-2 OUTR MOMO					195/55R15	8			141084.00	1128672.00
+																						Total Comprobante:		1128672.00
+																						Total Cliente	 :		1128672.00
+
+Cliente: 37214 BERRA HEBER
+28/01/2025	R 0044-00002679	6.00 - 9  (21) 10 PR ED RODACO + FULLSET		600-9		1			119510.19	 119510.19
+28/01/2025	R 0044-00002679	6.00 - 9 (23) 10 PR ED RODACO + FULLSET			600-9		1			119510.19	 119510.19
+																						Total Comprobante:		 239020.38
+																						Total Cliente	 :		 239020.38
+																						----------------------------------
+																						Total General	 :	   19934347.74
+																						

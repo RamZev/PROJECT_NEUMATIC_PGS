@@ -1,0 +1,54 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\alicuotaiva_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th>Estatus</th>
+				<th class="numeric" style="padding-right: 15px;">ID</th>
+				<th>Cód. Alíc. IVA</th>
+				<th class="numeric" style="padding-right: 15px;">Alícuota IVA(%)</th>
+				<th>Descripción Alíc. IVA</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.estatus_alicuota_iva|get_estatus }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.id_alicuota_iva }}</td>
+					<td>{{ obj.codigo_alicuota }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.alicuota_iva }}</td>
+					<td>{{ obj.descripcion_alicuota_iva }}</td>
+				</tr>
+			{% endfor %}
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

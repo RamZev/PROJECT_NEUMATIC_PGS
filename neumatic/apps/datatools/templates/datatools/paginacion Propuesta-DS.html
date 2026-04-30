@@ -1,0 +1,151 @@
+<!-- neumatic\apps\datatools\templates\datatools\paginacion.html -->
+
+<!-- paginador_unificado.html -->
+<nav aria-label="Page navigation">
+	<div class="row align-items-center">
+		<!-- Navegación de páginas -->
+		<div class="col-md-8 col-12">
+			<ul class="pagination mb-0">
+				<!-- Primera página -->
+				<li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+					<a class="page-link" href="?page=1&{{ query_params }}" aria-label="Primera" title="Primera página">
+						<span aria-hidden="true">&laquo;&laquo;</span>
+					</a>
+				</li>
+				
+				<!-- Anterior -->
+				<li class="page-item {% if not page_obj.has_previous %}disabled{% endif %}">
+					<a class="page-link" href="?page={% if page_obj.has_previous %}{{ page_obj.previous_page_number }}{% else %}#{% endif %}&{{ query_params }}" 
+					aria-label="Anterior" title="Página anterior">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+				
+				<!-- Lógica de números de página -->
+				{% with total_pages=page_obj.paginator.num_pages current_page=page_obj.number %}
+					{% if total_pages <= 7 %}
+						<!-- Mostrar todas las páginas si son pocas -->
+						{% for i in page_obj.paginator.page_range %}
+							<li class="page-item {% if current_page == i %}active{% endif %}">
+								<a class="page-link" href="?page={{ i }}&{{ query_params }}">{{ i }}</a>
+							</li>
+						{% endfor %}
+					{% else %}
+						<!-- Lógica para muchas páginas -->
+						{% if current_page <= 4 %}
+							<!-- Primeras páginas -->
+							{% for i in page_obj.paginator.page_range %}
+								{% if i <= 5 %}
+									<li class="page-item {% if current_page == i %}active{% endif %}">
+										<a class="page-link" href="?page={{ i }}&{{ query_params }}">{{ i }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+							<li class="page-item disabled"><span class="page-link">...</span></li>
+							<li class="page-item">
+								<a class="page-link" href="?page={{ total_pages }}&{{ query_params }}">{{ total_pages }}</a>
+							</li>
+						{% elif current_page >= total_pages|add:"-3" %}
+							<!-- Últimas páginas -->
+							<li class="page-item">
+								<a class="page-link" href="?page=1&{{ query_params }}">1</a>
+							</li>
+							<li class="page-item disabled"><span class="page-link">...</span></li>
+							{% for i in page_obj.paginator.page_range %}
+								{% if i >= total_pages|add:"-4" %}
+									<li class="page-item {% if current_page == i %}active{% endif %}">
+										<a class="page-link" href="?page={{ i }}&{{ query_params }}">{{ i }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+						{% else %}
+							<!-- Páginas intermedias -->
+							<li class="page-item">
+								<a class="page-link" href="?page=1&{{ query_params }}">1</a>
+							</li>
+							<li class="page-item disabled"><span class="page-link">...</span></li>
+							
+							<!-- Páginas alrededor de la actual -->
+							{% for i in page_obj.paginator.page_range %}
+								{% if i >= current_page|add:"-2" and i <= current_page|add:"2" %}
+									<li class="page-item {% if current_page == i %}active{% endif %}">
+										<a class="page-link" href="?page={{ i }}&{{ query_params }}">{{ i }}</a>
+									</li>
+								{% endif %}
+							{% endfor %}
+							
+							<li class="page-item disabled"><span class="page-link">...</span></li>
+							<li class="page-item">
+								<a class="page-link" href="?page={{ total_pages }}&{{ query_params }}">{{ total_pages }}</a>
+							</li>
+						{% endif %}
+					{% endif %}
+				{% endwith %}
+				
+				<!-- Siguiente -->
+				<li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+					<a class="page-link" href="?page={% if page_obj.has_next %}{{ page_obj.next_page_number }}{% else %}#{% endif %}&{{ query_params }}" 
+					aria-label="Siguiente" title="Página siguiente">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+				
+				<!-- Última página -->
+				<li class="page-item {% if not page_obj.has_next %}disabled{% endif %}">
+					<a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ query_params }}" 
+					aria-label="Última" title="Última página">
+						<span aria-hidden="true">&raquo;&raquo;</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		
+		<!-- Información de resultados -->
+		<div class="col-md-2 col-12 text-md-end text-center mt-md-0 mt-2">
+			<span class="text-muted small">
+				{{ page_obj.start_index }}-{{ page_obj.end_index }} de {{ page_obj.paginator.count }}
+			</span>
+		</div>
+		
+		<!-- Selector de registros por página -->
+		<div class="col-md-2 col-12 mt-md-0 mt-2">
+			<div class="d-flex align-items-center">
+				<label for="paginate_by" class="form-label small mb-0 me-2">Por página:</label>
+				<form method="get" class="w-100">
+					<select class="form-select form-select-sm" name="paginate_by" id="paginate_by" onchange="this.form.submit()">
+						{% comment %} Opciones por defecto si no se proporcionan {% endcomment %}
+						{% if pagination_options %}
+							{% for option in pagination_options %}
+								<option value="{{ option }}" 
+										{% if selected_pagination == option|stringformat:"s" %}selected{% endif %}>
+									{{ option }}
+								</option>
+							{% endfor %}
+						{% else %}
+							{% with default_options="10,25,50,100" %}
+								{% for option in default_options.split %}
+									<option value="{{ option|cut:',' }}" 
+											{% if selected_pagination == option|cut:','|stringformat:"s" or not selected_pagination and option|cut:',' == "25" %}selected{% endif %}>
+										{{ option|cut:',' }}
+									</option>
+								{% endfor %}
+							{% endwith %}
+						{% endif %}
+					</select>
+					
+					<!-- Mantener parámetros GET existentes -->
+					{% for key, value in request.GET.items %}
+						{% if key != 'paginate_by' and key != 'page' %}
+							<input type="hidden" name="{{ key }}" value="{{ value }}">
+						{% endif %}
+					{% endfor %}
+					
+					<!-- Mantener página actual si existe -->
+					{% if request.GET.page %}
+						<input type="hidden" name="page" value="{{ request.GET.page }}">
+					{% endif %}
+				</form>
+			</div>
+		</div>
+	</div>
+</nav>

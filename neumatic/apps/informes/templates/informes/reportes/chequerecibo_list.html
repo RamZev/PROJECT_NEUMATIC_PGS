@@ -1,0 +1,85 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\chequerecibo_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th></th>
+				<th>Comprobante</th>
+				<th class="numeric" style="padding-right: 15px">Cod.Bco.</th>
+				<th>Banco</th>
+				<th class="numeric">Suc.</th>
+				<th class="numeric" style="padding-right: 15px">C.P.</th>
+				<th>Fecha</th>
+				<th class="numeric">Número</th>
+				<th class="numeric">Importe</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for tipo, datos in objetos.items %}
+				<!-- Cheques Físicos -->
+				<tr>
+					<td colspan="9" style="padding-top: 5px;">
+						<strong>{% if tipo == "electrónico" %}Cheques Electrónicos{% else %}Cheques Físicos{% endif %}</strong>
+					</td>
+				</tr>
+				
+				{% for cheque in datos.cheques %}
+					<tr>
+						<td></td>
+						<td style="white-space: pre;">{{ cheque.comprobante_completo }}</td>
+						<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_banco|default_if_none:"" }}</td>
+						<td>{{ cheque.id_banco__nombre_banco|default_if_none:"" }}</td>
+						<td class="numeric">{{ cheque.sucursal|default_if_none:"" }}</td>
+						<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_postal|default_if_none:"" }}</td>
+						<td>{{ cheque.fecha_cheque1|date:"d/m/Y" }}</td>
+						<td class="numeric">{{ cheque.numero_cheque_recibo|default_if_none:"" }}</td>
+						<td class="numeric">{{ cheque.importe_cheque|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				<!-- Total por tipo de cheque -->
+				<tr>
+					<td colspan="8" style="text-align: right;"><strong>Total Cheques {% if tipo == "electrónico" %} Electrónicos {% else %} Físicos {% endif %}:</strong></td>
+					<td class="numeric"><strong>{{ datos.subtotal|formato_es_ar }}</strong></td>
+				</tr>
+				<tr>
+					<td colspan="9"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="8" style="text-align: right;"><strong>Total General:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>			
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

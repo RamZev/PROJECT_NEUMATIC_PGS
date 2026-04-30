@@ -1,0 +1,66 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vendedor_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th>Estatus</th>
+				<th class="numeric" style="padding-right: 15px;">Código</th>
+				<th>Nombre Vendedor</th>
+				<th>Domicilio</th>
+				<th>Teléfono</th>
+				<th class="numeric">% Auto</th>
+				<th class="numeric">% Camión</th>
+				<th class="numeric">Vto. Fact.</th>
+				<th class="numeric">Vto. Remito</th>
+				<th class="pl-15">Tipo V.</th>
+				<th class="numeric">Col Dcto.</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.estatus_vendedor|get_estatus }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.id_vendedor }}</td>
+					<td>{{ obj.nombre_vendedor }}</td>
+					<td>{{ obj.domicilio_vendedor|default_if_none:"" }}</td>
+					<td>{{ obj.telefono_vendedor|default_if_none:"" }}</td>
+					<td class="numeric">{{ obj.pje_auto|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.pje_camion|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.vence_factura|formato_es_ar_entero }}</td>
+					<td class="numeric">{{ obj.vence_remito|formato_es_ar_entero }}</td>
+					<td class="pl-15">{{ obj.tipo_venta|default_if_none:"" }}</td>
+					<td class="numeric">{{ obj.col_descuento|formato_es_ar_entero }}</td>
+				</tr>
+			{% endfor %}
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

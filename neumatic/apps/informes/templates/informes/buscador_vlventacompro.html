@@ -1,0 +1,30 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlventacompro.html -->
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.fecha_desde.label }}
+		{{ form.fecha_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.fecha_hasta.label }}
+		{{ form.fecha_hasta }}
+	</div>
+	
+	<div class="col-md-6">
+		{{ form.sucursal.label }}
+		{{ form.sucursal }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-12">
+		{{ form.solo_totales_comprobante }}
+		<label for="{{ form.solo_totales_comprobante.id_for_label }}">
+			{{ form.solo_totales_comprobante.label }}
+		</label>
+	</div>
+	
+</div>

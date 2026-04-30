@@ -1,0 +1,593 @@
+<!-- neumatic\apps\maestros\templates\maestros\cliente_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_General" 
+												aria-expanded="true" 
+												aria-controls="Información_General">
+												<strong>Información General</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show" id="Información_General">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_cliente.id_for_label }}">
+															{{ form.estatus_cliente.label }}
+														</label>
+														{{ form.estatus_cliente }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_cliente.id_for_label }}">
+															{{ form.nombre_cliente.label }}
+														</label>
+														{{ form.nombre_cliente }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_cliente.id_for_label }}">
+															{{ form.domicilio_cliente.label }}
+														</label>
+														{{ form.domicilio_cliente }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cliente_empresa.id_for_label }}">
+															{{ form.cliente_empresa.label }}
+														</label>
+														{{ form.cliente_empresa }}
+													</div>
+												</div>
+												
+												<!-- *********************************************************** -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
+															{{ form.codigo_postal.label }}
+														</label>
+														{{ form.codigo_postal }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_provincia.id_for_label }}">
+															{{ form.id_provincia.label }}
+														</label>
+														{{ form.id_provincia }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_localidad.id_for_label }}">
+															{{ form.id_localidad.label }}
+														</label>
+														{{ form.id_localidad }}
+													</div>
+												</div>
+												<!-- *********************************************************** -->
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.tipo_persona.id_for_label }}">
+															{{ form.tipo_persona.label }}
+														</label>
+														{{ form.tipo_persona }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_documento_identidad.id_for_label }}">
+															{{ form.id_tipo_documento_identidad.label }}
+														</label>
+														{{ form.id_tipo_documento_identidad }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cuit.id_for_label }}">
+															{{ form.cuit.label }}
+														</label>
+														{{ form.cuit }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_tipo_iva.id_for_label }}">
+															{{ form.id_tipo_iva.label }}
+														</label>
+														{{ form.id_tipo_iva }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.condicion_venta.id_for_label }}">
+															{{ form.condicion_venta.label }}
+														</label>
+														{{ form.condicion_venta }}
+													</div>
+												</div>
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_cliente.id_for_label }}">
+															{{ form.telefono_cliente.label }}
+														</label>
+														{{ form.telefono_cliente }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.fax_cliente.id_for_label }}">
+															{{ form.fax_cliente.label }}
+														</label>
+														{{ form.fax_cliente }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.movil_cliente.id_for_label }}">
+															{{ form.movil_cliente.label }}
+														</label>
+														{{ form.movil_cliente }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.email_cliente.id_for_label }}">
+															{{ form.email_cliente.label }}
+														</label>
+														{{ form.email_cliente }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.email2_cliente.id_for_label }}">
+															{{ form.email2_cliente.label }}
+														</label>
+														{{ form.email2_cliente }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.transporte_cliente.id_for_label }}">
+															{{ form.transporte_cliente.label }}
+														</label>
+														{{ form.transporte_cliente }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_vendedor.id_for_label }}">
+															{{ form.id_vendedor.label }}
+														</label>
+														{{ form.id_vendedor }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_nacimiento.id_for_label }}">
+															{{ form.fecha_nacimiento.label }}
+														</label>
+														{{ form.fecha_nacimiento }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_alta.id_for_label }}">
+															{{ form.fecha_alta.label }}
+														</label>
+														{{ form.fecha_alta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.sexo.id_for_label }}">
+															{{ form.sexo.label }}
+														</label>
+														{{ form.sexo }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_actividad.id_for_label }}">
+															{{ form.id_actividad.label }}
+														</label>
+														{{ form.id_actividad }}
+													</div>
+													
+													<!--  -->
+													{% if form.instance.pk %}
+														<div class="col-md-3">
+															<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
+																{{ form.id_sucursal.label }}
+															</label>
+															<input type="text" name="tp" id="{{ form.id_sucursal.id_for_label }}" value="{{ form.instance.id_sucursal }}" class="form-control form-control-sm border border-primary mb-2" disabled>
+														</div>
+													{% else %}
+														<div class="col-md-3">
+															<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
+																{{ form.id_sucursal.label }}
+															</label>
+															{{ form.id_sucursal }}
+															<input type="hidden" name="id_sucursal" id="{{ form.id_sucursal.id_for_label }}" value="{{ form.id_sucursal.value }}">
+														</div>
+													{% endif %}
+													
+													<!--  -->
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.id_percepcion_ib.id_for_label }}">
+															{{ form.id_percepcion_ib.label }}
+														</label>
+														{{ form.id_percepcion_ib }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.numero_ib.id_for_label }}">
+															{{ form.numero_ib.label }}
+														</label>
+														{{ form.numero_ib }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.vip.id_for_label }}">
+															{{ form.vip.label }}
+														</label>
+														{{ form.vip }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mayorista.id_for_label }}">
+															{{ form.mayorista.label }}
+														</label>
+														{{ form.mayorista }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.sub_cuenta.id_for_label }}">
+															{{ form.sub_cuenta.label }}
+														</label>
+														{{ form.sub_cuenta }}
+													</div>
+													
+													<div class="col-md-6">
+														<label class="form-label text-primary mb-0" for="{{ form.observaciones_cliente.id_for_label }}">
+															{{ form.observaciones_cliente.label }}
+														</label>
+														{{ form.observaciones_cliente }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 collapsed" 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Black_List" 
+												aria-expanded="false" 
+												aria-controls="Black_List">
+												<strong>Black List</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse "
+											id="Black_List">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.black_list.id_for_label }}">
+															{{ form.black_list.label }}
+														</label>
+														{{ form.black_list }}
+													</div>
+													
+													<div class="col-md-5">
+														<label class="form-label text-primary mb-0" for="{{ form.black_list_motivo.id_for_label }}">
+															{{ form.black_list_motivo.label }}
+														</label>
+														{{ form.black_list_motivo }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.black_list_usuario.id_for_label }}">
+															{{ form.black_list_usuario.label }}
+														</label>
+														{{ form.black_list_usuario }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.fecha_baja.id_for_label }}">
+															{{ form.fecha_baja.label }}
+														</label>
+														{{ form.fecha_baja }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+	
+	<!-- Modal que muestra aviso de CUIT encontrado -->
+	<div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header text-bg-warning">
+					<h5 class="modal-title" id="alertModalLabel">Atención!</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="modalContent">
+					<!-- Contenido generado dinámicamente -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock modals %}
+
+<!-- Block script -------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			// *******************************************************
+			// Funcionalidad para Provincia-Localidad.
+			// *******************************************************
+			
+			const codigoPostalText = document.getElementById("id_codigo_postal");
+			const provinciaSelect = document.getElementById("id_id_provincia");
+			const localidadSelect = document.getElementById("id_id_localidad");
+			
+			// Validar si se obtuvieron correctamente los elementos
+			if (!codigoPostalText) {
+				console.log('El elemento con id "id_codigo_postal" no se encontró');
+				return;
+			}
+			
+			if (!provinciaSelect) {
+				console.log('El elemento con id "id_id_provincia" no se encontró');
+				return;
+			}
+			
+			if (!localidadSelect) {
+				console.log('El elemento con id "id_id_localidad" no se encontró');
+				return;
+			}
+			
+			// Función para resetear el select de localidad y el campo de código postal
+			function resetLocalidadSelect(defaultText) {
+				localidadSelect.innerHTML = `<option value="">${defaultText}</option>`;
+				localidadSelect.disabled = true;
+				codigoPostalText.value = "";  // Limpiar el código postal
+			}
+			
+			// Almacena el código postal de cada localidad
+			let localidadesData = {};
+			
+			// Función para cargar las localidades y seleccionar la correcta
+			function cargarLocalidades(provinciaId, localidadSeleccionadaId = null) {
+				const url = "{% url 'filtrar_localidad' %}?id_provincia=" + provinciaId;
+				resetLocalidadSelect("Seleccione una localidad");
+				
+				if (provinciaId) {
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							localidadSelect.disabled = false;
+							localidadesData = {}; // Reiniciar datos de localidad
+							
+							// Insertar la opción inicial
+							localidadSelect.innerHTML = `<option value="">Seleccione una localidad</option>`;
+							
+							data.localidad.forEach(localidad => {
+								localidadesData[localidad.id_localidad] = localidad.codigo_postal;
+								const option = new Option(localidad.nombre_completo, localidad.id_localidad);
+								localidadSelect.add(option);
+							});
+							
+							// Si hay una localidad seleccionada (al editar o al volver de la modal)
+							if (localidadSeleccionadaId && localidadesData[localidadSeleccionadaId]) {
+								localidadSelect.value = localidadSeleccionadaId;
+								codigoPostalText.value = localidadesData[localidadSeleccionadaId];
+							}
+						});
+				}
+			}
+			
+			// Escucha el cambio en Provincia y carga las localidades correspondientes
+			provinciaSelect.addEventListener("change", function () {
+				const provinciaId = this.value;
+				cargarLocalidades(provinciaId);  // Llamar sin localidad seleccionada
+			});
+			
+			// Escucha el cambio en Localidad y actualiza el código postal
+			localidadSelect.addEventListener("change", function () {
+				const localidadId = this.value;
+				
+				if (localidadId) {
+					codigoPostalText.value = localidadesData[localidadId] || "";
+				} else {
+					codigoPostalText.value = "";
+				}
+			});
+			
+			// Detectar valores iniciales (para el caso de actualizar o volver de la modal)
+			const provinciaSeleccionada = provinciaSelect.value;
+			const localidadSeleccionada = localidadSelect.value;
+			const codigoPostalSeleccionado = codigoPostalText.value;
+			
+			// Cargar localidades y seleccionar automáticamente la localidad al cargar la página
+			if (provinciaSeleccionada) {
+				cargarLocalidades(provinciaSeleccionada, localidadSeleccionada);
+				codigoPostalText.value = codigoPostalSeleccionado;  // Setear el código postal guardado
+			}
+			else{
+				// Si no hay una provincia seleccionada, deshabilitar el combo de localidades
+				cargarLocalidades(provinciaSeleccionada);  // Llamar sin localidad seleccionada
+			}
+			
+			// *******************************************************
+			// Funcionalidad para Black List.
+			// *******************************************************
+			
+			// Nueva funcionalidad para el combobox black_list
+			const blackListSelect = document.getElementById("id_black_list");
+			const blackListMotivoInput = document.getElementById("id_black_list_motivo");
+			const blackListUsuarioInput = document.getElementById("id_black_list_usuario");
+			const fechaBajaInput = document.getElementById("id_fecha_baja");
+			
+			// Obtener el usuario autenticado desde el contexto de Django
+			const usuarioAutenticado = "{{ request.user.username }}";
+			
+			// Función para manejar el cambio en el combobox de black_list
+			function manejarCambioBlackList() {
+				if (blackListSelect.value === "True") {
+					// Llenar los campos si el valor es True
+					blackListUsuarioInput.value = usuarioAutenticado;  // Llenar con el usuario autenticado
+					fechaBajaInput.value = new Date().toISOString().slice(0, 10); // Llenar con la fecha actual en formato YYYY-MM-DD
+				} else {
+					// Limpiar los campos si el valor es False
+					blackListMotivoInput.value = "";
+					blackListUsuarioInput.value = "";
+					fechaBajaInput.value = "";
+				}
+			}
+			
+			// Agregar un listener al cambio del select de black_list
+			blackListSelect.addEventListener("change", manejarCambioBlackList);		
+			
+			// *******************************************************
+			// Funcionalidad para Buscar CUIT.
+			// *******************************************************
+			
+			const cuitInput = document.getElementById("id_cuit");
+			
+			if (cuitInput) {
+				// cuitInput.addEventListener("change", function () {
+				cuitInput.addEventListener("blur", function () {
+					const cuit = cuitInput.value.trim();
+					if (cuit) {
+						const url = "{% url 'buscar_cuit' %}?cuit=" + encodeURIComponent(cuit);
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								let mens;
+								if (data.existe) {
+									mens = `
+										<p>Ya existe(n) cliente(s) con el CUIT ingresado:</p>
+										<ul>
+											${data.clientes.map(cliente => `<li>${cliente.nombre_cliente} (ID: ${cliente.id_cliente})</li>`).join("")}
+										</ul>
+									`;
+									mostrarModalMensajes(mens);
+								}
+							})
+							.catch(error => {
+								console.error("Error al verificar el CUIT:", error);
+							});
+					}
+				});
+			}
+			
+			function mostrarModalMensajes(mens) {
+				const modalContent = document.getElementById("modalContent");
+				modalContent.innerHTML = mens;
+				const modal = new bootstrap.Modal(document.getElementById("alertModal"));
+				modal.show();
+			}
+			
+			// *******************************************************
+			// Funcionalidad para Buscar un cliente por el Id.
+			// *******************************************************
+			
+			const idClienteSubCuenta = document.getElementById("id_sub_cuenta");
+			
+			if (idClienteSubCuenta) {
+				// idClienteSubCuenta.addEventListener("change", function () {
+					idClienteSubCuenta.addEventListener("blur", function () {
+					const idSubCuenta = idClienteSubCuenta.value.trim();
+					if (idSubCuenta) {
+						const url = "{% url 'buscar_cliente_id' %}?id_cliente=" + encodeURIComponent(idSubCuenta);
+						fetch(url)
+							.then(response => response.json())
+							.then(data => {
+								let mens;
+								if (data.existe) {
+									mens = `<p>La Sub Cuenta pertenece al cliente :</p>`;
+									mens += `<p><b>${data.cliente}</b></p>`;
+									
+								}else{
+									if (data.error){
+										mens = `<p>${data.error}</p>`;
+									}else{
+										mens = `<p>No existe un cliente con la Sub Cuenta indicada</p>`;
+									}
+								}
+								mostrarModalMensajes(mens);
+							})
+							.catch(error => {
+								console.error("Error al verificar el Id del cliente (Sub Cuenta):", error);
+							});
+					}
+				});
+			}
+			
+		});
+	</script>
+{% endblock script %}

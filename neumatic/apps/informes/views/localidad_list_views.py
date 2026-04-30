@@ -1,0 +1,377 @@
+# neumatic\apps\informes\views\localidad_list_views.py
+
+from django.shortcuts import render
+from django.http import HttpResponse
+from datetime import datetime
+from django.templatetags.static import static
+
+#-- ReportLab:
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4, landscape, portrait
+from reportlab.platypus import Paragraph
+
+from .report_views_generics import *
+from apps.maestros.models.base_models import Localidad
+from ..forms.buscador_localidad_forms import BuscadorLocalidadForm
+from utils.utils import deserializar_datos, normalizar
+from utils.helpers.export_helpers import ExportHelper, PDFGenerator, add_row_table
+
+
+class ConfigViews:
+	
+	#-- Título del reporte.
+	report_title = "Reporte de Localidades"
+	
+	#-- Modelo.
+	model = Localidad
+	
+	#-- Formulario asociado al modelo.
+	form_class = BuscadorLocalidadForm
+	
+	#-- Aplicación asociada al modelo.
+	app_label = "informes"
+	
+	#-- Nombre del modelo en minúsculas.
+	model_string = model.__name__.lower()
+	
+	#-- Plantilla base.
+	template_list = f'{app_label}/maestro_informe.html'
+	
+	#-- Vista del home del proyecto.
+	home_view_name = "home"
+	
+	#-- Archivo JavaScript específico.
+	js_file = None
+	
+	#-- URL de la vista que genera la salida a pantalla.
+	url_pantalla = f"{model_string}_vista_pantalla"
+	
+	#-- URL de la vista que genera el .pdf.
+	url_pdf = f"{model_string}_vista_pdf"
+	
+	#-- URL de la vista que genera el Excel.
+	url_excel = f"{model_string}_vista_excel"
+	
+	#-- URL de la vista que genera el CSV.
+	url_csv = f"{model_string}_vista_csv"
+	
+	#-- Plantilla Vista Preliminar Pantalla.
+	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
+	
+	#-- Establecer las columnas del reporte y sus atributos.
+	table_info = {
+		"estatus_localidad": {
+			"label": "Estatus",
+			"col_width_pdf": 40,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_localidad": {
+			"label": "Id. Localidad",
+			"col_width_pdf": 50,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_localidad": {
+			"label": "Nombre Localidad",
+			"col_width_pdf": 140,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"codigo_postal": {
+			"label": "Código Postal",
+			"col_width_pdf": 60,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_provincia_id": {
+			"label": "Id. Provincia",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_provincia__nombre_provincia": {
+			"label": "Provincia",
+			"col_width_pdf": 100,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+	}
+
+
+class LocalidadInformeView(InformeFormView):
+	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
+	form_class = ConfigViews.form_class
+	template_name = ConfigViews.template_list
+	
+	extra_context = {
+		"master_title": f'Informes - {ConfigViews.model._meta.verbose_name_plural}',
+		"home_view_name": ConfigViews.home_view_name,
+		"buscador_template": f"{ConfigViews.app_label}/buscador_{ConfigViews.model_string}.html",
+		"js_file": ConfigViews.js_file,
+		"url_pantalla": ConfigViews.url_pantalla,
+		"url_pdf": ConfigViews.url_pdf,
+	}
+	
+	def obtener_queryset(self, cleaned_data):
+		estatus = cleaned_data.get('estatus', 'activos')
+		orden = cleaned_data.get('orden', 'nombre')
+		provincia = cleaned_data.get('provincia')
+		
+		#-- Crear el queryset base con select_related.
+		queryset = ConfigViews.model.objects.select_related('id_provincia')
+		
+		#-- Aplicar filtros.
+		if estatus == "activos":
+			queryset = queryset.filter(estatus_localidad=True)
+		elif estatus == "inactivos":
+			queryset = queryset.filter(estatus_localidad=False)
+		
+		if provincia:
+			queryset = queryset.filter(id_provincia=provincia)
+		
+		#-- Ordenar los resultados.
+		if orden not in ['nombre', 'codigo']:
+			orden = 'nombre'
+		
+		orden = "nombre_localidad" if orden == "nombre" else "id_localidad"
+		
+		queryset = queryset.order_by(orden)
+		
+		#-- Usar values() para obtener directamente los datos necesarios.
+		queryset = queryset.values(
+			"estatus_localidad",
+			"id_localidad",
+			"nombre_localidad",
+			"codigo_postal",
+			"id_provincia_id",
+			"id_provincia__nombre_provincia"
+		)
+		
+		return queryset
+
+	def obtener_contexto_reporte(self, queryset, cleaned_data):
+		"""
+		Aquí se estructura el contexto para el reporte, agrupando los comprobantes,
+		calculando subtotales y totales generales, tal como se requiere para el listado.
+		"""
+		
+		#-- Parámetros del listado.
+		estatus = cleaned_data.get('estatus', 'activos')
+		orden = cleaned_data.get('orden', 'nombre')
+		provincia = cleaned_data.get('provincia')
+		
+		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+		
+		orden_dict = {
+			"nombre": "Nombre Localidad",
+			"codigo": "Código Localidad",
+		}
+		
+		param_left = {
+			"Provincia": f"[{provincia.id_provincia}] {provincia.nombre_provincia}" if provincia else "Todas",
+		}
+		param_right = {
+			"Estatus": estatus.capitalize(),
+			"Ordenado por": orden_dict.get(orden),
+		}
+		
+		# **************************************************
+		
+		#-- Convertir el queryset a lista de diccionarios.
+		queryset_list = list(queryset)
+		
+		# **************************************************
+		
+		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
+		return {
+			"objetos": queryset_list,
+			"parametros_i": param_left,
+			"parametros_d": param_right,
+			'fecha_hora_reporte': fecha_hora_reporte,
+			'titulo': ConfigViews.report_title,
+			'css_url': static('css/reportes.css'),
+		}
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		form = kwargs.get("form") or self.get_form()
+		
+		context["form"] = form
+		
+		return context
+
+
+def localidad_vista_pantalla(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el listado a pantalla.
+	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
+
+
+def localidad_vista_pdf(request):
+	#-- Obtener el token de la querystring.
+	token = request.GET.get("token")
+	
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Obtener el contexto(datos) previamente guardados en la sesión.
+	# contexto_reporte = deserializar_datos(request.session.pop(token, None))
+	contexto_reporte = deserializar_datos(request.session.get(token, None))
+	
+	if not contexto_reporte:
+		return HttpResponse("Contexto no encontrado o expirado", status=400)
+	
+	#-- Generar el PDF usando ReportLab
+	pdf_file = generar_pdf(contexto_reporte)
+	
+	#-- Preparar la respuesta HTTP.
+	response = HttpResponse(pdf_file, content_type="application/pdf")
+	response["Content-Disposition"] = f'inline; filename="{normalizar(ConfigViews.report_title)}.pdf"'
+	
+	return response
+
+
+class CustomPDFGenerator(PDFGenerator):
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_left(self, context):
+		"""Personalización del Header-bottom-left"""
+		
+		params = context.get("parametros_i", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+	
+	#-- Método que se puede sobreescribir/extender según requerimientos.
+	def _get_header_bottom_right(self, context):
+		"""Añadir información adicional específica para este reporte"""
+		
+		params = context.get("parametros_d", {})
+		return "<br/>".join([f"<b>{k}:</b> {v}" for k, v in params.items()])
+
+
+def generar_pdf(contexto_reporte):
+	#-- Crear instancia del generador personalizado.
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	
+	#-- Extraer los campos de las columnas de la tabla (headers).
+	table_info = ConfigViews.table_info
+	fields = [ field for field in table_info if table_info[field]['pdf']]
+	
+	#-- Extraer Títulos de las columnas de la tabla (headers).
+	headers_titles = [value['label'] for value in table_info.values() if value['pdf']]
+	
+	#-- Extraer Ancho de las columnas de la tabla.
+	col_widths = [value['col_width_pdf'] for value in table_info.values() if value['pdf']]
+	
+	table_data = [headers_titles]
+	
+	#-- Estilos específicos adicionales iniciales de la tabla.
+	table_style_config = [
+		('ALIGN', (1,0), (1,-1), 'RIGHT'),
+	]
+	
+	#-- Agregar los datos a la tabla.
+	objetos = contexto_reporte.get("objetos", [])
+	add_row_table(table_data, objetos, fields, table_info, generator)
+	
+	return generator.generate(table_data, col_widths, table_style_config)		
+
+
+def localidad_vista_excel(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	# ---------------------------------------------
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	# ---------------------------------------------
+	
+	#-- Instanciar la vista y obtener el queryset.
+	view_instance = LocalidadInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel']}
+	
+	helper = ExportHelper(
+		queryset=queryset,
+		table_info=headers_titles,
+		report_title=ConfigViews.report_title
+	)
+	excel_data = helper.export_to_excel()
+	
+	response = HttpResponse(
+		excel_data,
+		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+	)
+	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	
+	return response
+
+
+def localidad_vista_csv(request):
+	token = request.GET.get("token")
+	if not token:
+		return HttpResponse("Token no proporcionado", status=400)
+	
+	#-- Recuperar los parámetros de filtrado desde la cache.
+	data = cache.get(token)
+	if not data or "cleaned_data" not in data:
+		return HttpResponse("Datos no encontrados o expirados", status=400)
+	
+	cleaned_data = data["cleaned_data"]
+	
+	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
+	view_instance = LocalidadInformeView()
+	view_instance.request = request
+	queryset = view_instance.obtener_queryset(cleaned_data)
+	
+	#-- Filtrar los headers de las columnas.
+	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
+	
+	#-- Usar el helper para exportar a CSV.
+	helper = ExportHelper(
+		queryset=queryset,
+		table_info=headers_titles,
+		report_title=ConfigViews.report_title
+	)
+	csv_data = helper.export_to_csv()
+	
+	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
+	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
+	
+	return response

@@ -1,0 +1,128 @@
+
+            // Botón seleccionar de Lista de Clientes
+            document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+                const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
+
+                if (seleccion) {
+                    // const clienteId = seleccion.getAttribute('data-id');
+                    const id_cliente = seleccion.getAttribute('data-id');
+                    const cuit = seleccion.getAttribute('data-cuit');
+                    const nombre = seleccion.getAttribute('data-nombre');
+                    const direccion = seleccion.getAttribute('data-direccion');
+                    const movil = seleccion.getAttribute('data-movil');
+                    const email = seleccion.getAttribute('data-email');
+                    const id_vendedor = seleccion.getAttribute('data-id_vendedor');
+                    const nombre_vendedor = seleccion.getAttribute('data-nombre_vendedor');
+                    const tipo_venta = seleccion.getAttribute('data-tipo_venta');
+                    const discrimina_iva = seleccion.getAttribute('data-discrimina_iva');
+                    const isChecked = discrimina_iva === "true";
+                    const condicion_comprobante = seleccion.getAttribute('data-condicion_venta');
+                    const id_sucursal_cliente = seleccion.getAttribute('data-id_sucursal');
+                    // Genera un booleano sin es string
+                    const vip = seleccion.getAttribute('data-vip') === 'true';
+
+                    // document.getElementById('id_letra_comprobante').value = isChecked ? 'A' : 'B';
+                    const esRemito = document.getElementById('id_es_remito').checked;
+                    document.getElementById('id_letra_comprobante').value = esRemito ? 'R' : (isChecked ? 'A' : 'B');
+                    //alert(discrimina_iva);
+                    
+                    document.getElementById('id_id_cliente').value = id_cliente || '';
+                    document.getElementById('id_nombre_factura').value = nombre || '';
+                    document.getElementById('id_domicilio_factura').value = direccion || '';
+                    document.getElementById('id_cuit').value = cuit || '';
+                    document.getElementById('id_movil_factura').value = movil || '';
+                    document.getElementById('id_email_factura').value = email || '';
+                    document.getElementById('id_id_vendedor').value = id_vendedor || '';
+                    document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+                    document.getElementById('id_tipo_venta').value = tipo_venta || '';
+                    document.getElementById('id_condicion_comprobante').value = condicion_comprobante || '';
+                    document.getElementById('id_discrimina_iva').checked = isChecked;
+                    
+                    const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+                    //alert(`id_sucursal_factura ${id_sucursal_factura}`);
+                    //alert(`id_sucursal_cliente ${id_sucursal_cliente}`);
+
+                    // Asignar el valor de condicion_comprobante
+                    const condicionComprobanteSelect = document.getElementById('id_condicion_comprobante');
+                    if (condicionComprobanteSelect) {
+                        condicionComprobanteSelect.value = condicion_comprobante || '';
+
+                        // Aplicar la lógica de solo lectura si el valor es "1"
+                        if (condicion_comprobante === "1") {
+                            // Deshabilitar todas las opciones excepto la seleccionada
+                            Array.from(condicionComprobanteSelect.options).forEach(function(option) {
+                                if (option.value !== condicion_comprobante) {
+                                    option.disabled = true;
+                                }
+                            });
+
+                            // Aplicar estilo visual para indicar que es de solo lectura
+                            condicionComprobanteSelect.classList.add('readonly-select');
+                        }
+                    }
+
+                    // Comparar sucursales
+                    if (id_sucursal_cliente !== id_sucursal_factura) {
+                        alert('Atención: El cliente pertenece a otra sucursal.');
+                    }
+
+                    if (vip) {
+                        alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
+                        document.getElementById('id_cliente_vip').value = "Cliente VIP" 
+                    }
+
+                    // Inicio Número de Comprobante
+                    // Obtener valores para el número de comprobante
+                    const id_sucursal = document.getElementById('id_id_sucursal').value;
+                    const id_punto_venta = document.getElementById('id_id_punto_venta').value;
+                    const compro = document.getElementById('id_compro').value;
+                    const letra_comprobante = document.getElementById('id_letra_comprobante').value;
+
+                    // Solo hacer la solicitud si tenemos todos los valores necesarios
+                    if (id_sucursal && id_punto_venta && compro && letra_comprobante) {
+                        const url = new URL('/ventas/obtener-numero-comprobante/', window.location.origin);
+                        url.searchParams.append('id_sucursal', id_sucursal);
+                        url.searchParams.append('id_punto_venta', id_punto_venta);
+                        url.searchParams.append('comprobante', compro);
+                        url.searchParams.append('letra', letra_comprobante);
+
+                        fetch(url, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Asignar el número referencial al campo del formulario
+                                document.getElementById('id_numero_comprobante').value = data.numero_referencial;
+                                
+                                // Opcional: Guardar el número definitivo en un campo oculto
+                                const inputDefinitivo = document.getElementById('id_numero_definitivo');
+                                if (inputDefinitivo) {
+                                    inputDefinitivo.value = data.numero_definitivo;
+                                }
+                            } else {
+                                console.error('Error al obtener número:', data.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error en la solicitud:', error);
+                        });
+                    } else {
+                        console.log('Faltan datos para obtener el número de comprobante');
+                    }
+                    // Final Número de Comprobante
+
+                    // Cerrar el modal
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+                    modal.hide();
+                }
+            });
+
+            // Limpiar filtros y resultados cuando se cierra la ventana modal
+            agendaModal.addEventListener('hidden.bs.modal', function () {
+                buscarAgendaForm.reset(); // Restablecer el formulario
+                tablaResultadosAgenda.innerHTML = ''; // Limpiar la tabla de resultados
+            });

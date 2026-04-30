@@ -1,0 +1,128 @@
+<!-- neumatic\apps\informes\templates\informes\modal_buscar_cliente.html -->
+<!-- Modal para buscar y seleccionar cliente -->
+
+{% comment %} 
+<div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 98%;">
+		<div class="modal-content">
+			
+			<div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
+				<h5 class="modal-title fs-6" id="agendaModalLabel">Buscar en Agenda</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			
+			<div class="modal-body">
+				<!-- Formulario modal -->
+				<form method="post" id="buscarAgendaForm">
+					{% csrf_token %}
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<input type="text" class="form-control form-control-sm border border-primary" id="busquedaGeneral" placeholder="Buscar por id o nombre">
+						</div>
+						<div class="col-md-2">
+							<button type="submit" class="btn btn-outline-primary btn-sm me-2">
+								Buscar
+								<i class="bi bi-search"></i>
+							</button>
+						</div>
+					</div>
+					
+					<div class="table-responsive tbl-fixed">
+						<table class="table table-striped small-text" id="tablaResultadosAgenda">
+							<thead class="table-primary fs-7">
+								<tr>
+									<th scope="col" style="width: 5%;">Cód. Cliente</th>
+									<th scope="col" style="width: 5%;">CUIT</th>
+									<th scope="col" style="width: 20%;">Nombre</th>
+									<th scope="col" style="width: 10%;">Móvil</th> <!-- Agregado -->
+									<th scope="col" style="width: 15%;">Email</th> <!-- Agregado -->
+									<th scope="col" style="width: 15%;">Dirección</th>
+									<th scope="col" style="width: 5%;">Código Postal</th>
+									<th scope="col" style="width: 5%;">Seleccionar</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+					<!-- Botones del formulario -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-primary btn-sm me-2" id="seleccionarAgenda">
+							Seleccionar
+							<i class="bi bi-check2-circle"></i>
+						</button>
+						<button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal" id="cancelarAgenda">
+							Cancelar
+							<i class="bi bi-x-circle"></i>
+						</button>
+					</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+</div>
+ {% endcomment %}
+
+ 
+<div class="modal fade" id="agendaModal" tabindex="-1" aria-labelledby="agendaModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" style="max-width: 90%;">
+		<div class="modal-content">
+
+			<div class="modal-header text-dark bg-primary bg-opacity-25 py-2">
+				<h5 class="modal-title fs-6" id="agendaModalLabel">Buscar en Agenda</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+
+			<div class="modal-body">
+				<!-- Formulario modal -->
+				{% comment %} <form id="buscarAgendaForm"> {% endcomment %}
+				<form method="post" id="buscarAgendaForm">
+					{% csrf_token %}
+					<div class="row mb-3">
+						<div class="col-md-6">
+							<input type="text" class="form-control form-control-sm border border-primary p-1"
+								id="busquedaGeneral" placeholder="Buscar por id o nombre">
+						</div>
+						<div class="col-md-2">
+							<button type="submit" class="btn btn-outline-primary btn-sm p-1">
+								Buscar <i class="bi bi-search"></i>
+							</button>
+						</div>
+					</div>
+
+					<div class="table-responsive tbl-fixed" style="max-height: 400px; overflow-y: auto;">
+						<table class="table table-striped small-text" id="tablaResultadosAgenda">
+							<thead class="table-primary fs-7">
+								<tr>
+									<th scope="col" style="width: 5%;">Cód. Cliente</th>
+									<th scope="col" style="width: 5%;">CUIT</th>
+									<th scope="col" style="width: 20%;">Nombre</th>
+									<th scope="col" style="width: 10%;">Móvil</th>
+									<th scope="col" style="width: 20%;">Email</th>
+									<th scope="col" style="width: 20%;">Dirección</th>
+									<th scope="col" style="width: 10%;">Código Postal</th>
+									<th scope="col" style="width: 10%;">Seleccionar</th>
+								</tr>
+							</thead>
+							<tbody>
+							</tbody>
+						</table>
+					</div>
+
+					<!-- Botones del formulario -->
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-primary btn-sm p-1" id="seleccionarAgenda">
+							Seleccionar <i class="bi bi-check2-circle"></i>
+						</button>
+						<button type="button" class="btn btn-outline-secondary btn-sm p-1" data-bs-dismiss="modal"
+							id="cancelarAgenda">
+							Cancelar <i class="bi bi-x-circle"></i>
+						</button>
+					</div>
+				</form>
+			</div>
+
+		</div>
+	</div>
+</div>

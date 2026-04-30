@@ -1,0 +1,87 @@
+<!-- apps\informes\templates\informes\reportes\vlreposicionstock_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Blque Header -------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th style="width: 20px;"></th>
+				<th>CAI</th>
+				<th>Medida</th>
+				<th>Descripción</th>
+				<th>Marca</th>
+				<th class="numeric">Mínimo</th>
+				<th class="numeric">Stock</th>
+				<th class="numeric">Faltante</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{% for familia_data in objetos.values %}
+				<!-- Fila con los datos de la Familia -->
+				<tr>
+					<td colspan="8">
+						<strong>Familia: {{ familia_data.familia }}</strong>
+					</td>
+				</tr>
+				
+				{% for modelo_data in familia_data.modelos.values %}
+					<!-- Fila con los datos del Modelo -->
+					<tr>
+						<td></td>
+						<td colspan="7" style="color">
+							<strong>Modelo: {{ modelo_data.modelo }}</strong>
+						</td>
+					</tr>
+					
+					<!-- Filas con el detalle del Modelo -->
+					{% for det in modelo_data.detalle %}
+						<tr>
+							<td></td>
+							<td>{{ det.cai|default_if_none:"" }}</td>
+							<td>{{ det.medida }}</td>
+							<td>{{ det.nombre_producto }}</td>
+							<td>{{ det.nombre_producto_marca }}</td>
+							<td class="numeric">{{ det.minimo|formato_es_ar_entero }}</td>
+							<td class="numeric">{{ det.stock|formato_es_ar_entero }}</td>
+							<td class="numeric">{{ det.faltante|formato_es_ar_entero }}</td>
+						</tr>
+					{% endfor %}
+					<!-- Fila separadora -->
+					<tr>
+						<td colspan="7" style="height: 5px; border: none;"></td>
+					</tr>					
+					
+				{% endfor %}
+				
+				<tr>
+					<td colspan="8"><hr></td>
+				</tr>
+			
+			{% endfor %}
+			
+		</tbody>
+		
+	</table>
+{% endblock content %}

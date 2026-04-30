@@ -1,0 +1,267 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block principalcomponent %}
+<div id="layoutSidenav_content">
+  <main>
+    <div class="container-fluid">
+      <h4>Stock del Cliente — Factura {{ factura.id_factura }}</h4>
+      <p><strong>Cliente:</strong> {{ cliente_nombre }}</p>
+      
+      <!-- Formulario para retiros -->
+      <form method="post" id="entrega-form">
+        {% csrf_token %}
+        
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5>Gestión de Retiros</h5>
+          <button type="button" class="btn btn-success btn-sm" id="btn-generar-entrega">
+            <i class="bi bi-truck"></i> Generar Entrega
+          </button>
+        </div>
+      
+      {% if stock_items %}
+        <div class="table-responsive mt-3">
+          <table class="table table-bordered table-striped">
+            <thead class="table-primary">
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad Asignada</th>
+                <th>Retirado</th>
+                <th>Saldo</th>
+                <th>Retirar Ahora</th>
+                <th>Fecha Retiro</th>
+                <th>Comentario</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in stock_items %}
+                {% if item.tiene_saldo %}
+                <tr>
+                  <td>{{ item.id_producto.nombre_producto }}</td>
+                  <td class="decimal">{{ item.cantidad|formato_es_ar }}</td>
+                  <td class="decimal">{{ item.retirado|formato_es_ar }}</td>
+                  <td class="decimal"><strong class="text-success">{{ item.saldo|floatformat:2 }}</strong></td>
+                  <td style="width: 120px;">
+                    <input type="number" 
+                           name="retirar_{{ item.id_stock_cliente }}" 
+                           class="form-control form-control-sm retirar-input"
+                           value="0" 
+                           min="0" 
+                           max="{{ item.saldo }}"
+                           step="1"
+                           data-item-id="{{ item.id_stock_cliente }}"
+                           data-producto="{{ item.id_producto.nombre_producto }}"
+                           data-saldo="{{ item.saldo }}"
+                           style="text-align: right;">
+                  </td>
+                  <td>
+                    {% if item.fecha_retiro %}
+                      <span class="badge bg-info">{{ item.fecha_retiro|date:"d/m/Y" }}</span>
+                    {% else %}
+                      <span class="badge bg-secondary">-</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ item.comentario|default:"-" }}</td>
+                </tr>
+                {% else %}
+                <tr class="table-secondary">
+                  <td>{{ item.id_producto.nombre_producto }}</td>
+                  <td class="decimal">{{ item.cantidad|formato_es_ar }}</td>
+                  <td class="decimal">{{ item.retirado|formato_es_ar }}</td>
+                  <td class="decimal"><strong class="text-danger">0.00</strong></td>
+                  <td>-</td>
+                  <td>
+                    {% if item.fecha_retiro %}
+                      <span class="badge bg-success">{{ item.fecha_retiro|date:"d/m/Y" }}</span>
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>{{ item.comentario|default:"-" }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        </form>
+        
+        <div class="d-flex justify-content-between mt-3">
+          <a href="{% url 'consulta_facturas_cliente' %}?buscar_por={{ factura.id_cliente.id_cliente }}" class="btn btn-outline-secondary">
+            ← Volver a facturas
+          </a>
+          <button type="button" class="btn btn-success" id="btn-generar-entrega-bottom">
+            <i class="bi bi-truck"></i> Generar Entrega
+          </button>
+        </div>
+        
+      {% else %}
+        <div class="alert alert-info">
+          No se ha asociado stock al cliente en esta factura.
+        </div>
+        <a href="{% url 'consulta_facturas_cliente' %}?buscar_por={{ factura.id_cliente.id_cliente }}" class="btn btn-outline-secondary">
+          ← Volver
+        </a>
+      {% endif %}
+    </div>
+  </main>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmar Entrega</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Está seguro de generar la entrega con los siguientes productos?</p>
+        <div class="table-responsive">
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th class="text-end">Saldo Disponible</th>
+                <th class="text-end">Cantidad a Retirar</th>
+              </tr>
+            </thead>
+            <tbody id="resumen-entrega">
+            </tbody>
+            <tfoot class="table-primary" id="resumen-total">
+            </tfoot>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success" id="btn-confirmar-entrega">
+          <i class="bi bi-check-lg"></i> Generar Entrega
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const btnGenerarTop = document.getElementById('btn-generar-entrega');
+    const btnGenerarBottom = document.getElementById('btn-generar-entrega-bottom');
+    const btnConfirmar = document.getElementById('btn-confirmar-entrega');
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    
+    function prepararEntrega() {
+        const productosRetirar = [];
+        let totalItems = 0;
+        let hayRetiros = false;
+        
+        document.querySelectorAll('.retirar-input').forEach(input => {
+            const cantidad = parseFloat(input.value) || 0;
+            if (cantidad > 0) {
+                hayRetiros = true;
+                productosRetirar.push({
+                    id: input.dataset.itemId,
+                    producto: input.dataset.producto,
+                    saldo: parseFloat(input.dataset.saldo),
+                    cantidad: cantidad
+                });
+                totalItems += cantidad;
+            }
+        });
+        
+        if (!hayRetiros) {
+            alert('Debe especificar cantidades a retirar en al menos un producto');
+            return;
+        }
+        
+        const resumenHtml = productosRetirar.map(item => 
+            `<tr>
+                <td>${item.producto}</td>
+                <td class="text-end">${item.saldo.toFixed(2)}</td>
+                <td class="text-end fw-bold text-success">${item.cantidad.toFixed(2)}</td>
+            </tr>`
+        ).join('');
+        
+        const totalHtml = `
+            <tr>
+                <td class="text-end fw-bold" colspan="2">TOTAL A RETIRAR:</td>
+                <td class="text-end fw-bold fs-6 text-success">${totalItems.toFixed(2)} unidades</td>
+            </tr>
+        `;
+        
+        document.getElementById('resumen-entrega').innerHTML = resumenHtml;
+        document.getElementById('resumen-total').innerHTML = totalHtml;
+        confirmModal.show();
+    }
+    
+    if (btnGenerarTop) btnGenerarTop.addEventListener('click', prepararEntrega);
+    if (btnGenerarBottom) btnGenerarBottom.addEventListener('click', prepararEntrega);
+    
+    document.querySelectorAll('.retirar-input').forEach(input => {
+        input.addEventListener('change', function() {
+            const max = parseFloat(this.dataset.saldo);
+            const value = parseFloat(this.value) || 0;
+            
+            if (value > max) {
+                this.value = max;
+                alert(`No puede retirar más de ${max.toFixed(2)} unidades de "${this.dataset.producto}"`);
+            }
+            
+            if (value < 0) {
+                this.value = 0;
+            }
+        });
+    });
+    
+    btnConfirmar.addEventListener('click', function() {
+        const formData = new FormData(document.getElementById('entrega-form'));
+        
+        btnConfirmar.disabled = true;
+        btnConfirmar.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
+        
+        // USAR LA NUEVA RUTA
+        const url = "{% url 'generar_entrega_cliente' factura.id_factura %}";
+        
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                confirmModal.hide();
+                alert('✅ ' + data.message);
+                
+                if (data.pdf_url) {
+                    setTimeout(() => {
+                        // Descargar PDF automáticamente
+                        window.open("{% url 'descargar_pdf_entrega' factura.id_factura %}", '_blank');
+                    }, 500);
+                }
+                
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                alert('❌ Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('❌ Error al conectar con el servidor');
+        })
+        .finally(() => {
+            btnConfirmar.disabled = false;
+            btnConfirmar.innerHTML = '<i class="bi bi-check-lg"></i> Generar Entrega';
+        });
+    });
+});
+</script>
+{% endblock %}

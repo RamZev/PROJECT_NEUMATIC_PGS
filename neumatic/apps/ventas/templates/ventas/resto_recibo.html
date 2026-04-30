@@ -1,0 +1,874 @@
+            ////////////////////////////////////////////////////////////
+            // Manejo mejorado de eliminación
+            document.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-delete')) {
+                    const row = event.target.closest('tr');
+                    const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                    
+                    if (confirm('¿Está seguro de eliminar este item de la factura???')) {
+                        if (deleteInput) {
+                            deleteInput.checked = true; // Marca para eliminación en backend
+                            row.style.display = 'none';  // Oculta la fila visualmente
+                            
+                            // Actualiza los totales y el contador de formsets
+                            actualizarTotalFactura();
+                            actualizarContadorFormsets();
+                        } else {
+                            console.error('Error: No se encontró el campo DELETE');
+                        }
+                    }
+                }
+            });
+
+            // Función para actualizar el contador de formsets (NUEVA)
+            function actualizarContadorFormsets() {
+                const visibleRows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+                document.getElementById('id_detallefactura_set-TOTAL_FORMS').value = visibleRows;
+            }
+            ////////////
+
+            // ✅ Si hay filas en la tabla, recalcular el total al cargar la página
+            if (formsetContainer.querySelectorAll('.detalle-form tbody tr').length > 0) {
+                actualizarTotalFactura();
+            }
+            ////////////*
+            
+            const buscarProductoForm = document.getElementById('detalleForm');
+            const tablaResultados = document.querySelector('#tabla-resultados tbody');
+            const detalleModal = document.getElementById('detalleModal');
+            const insertarBtn = document.getElementById('agregarDetalle');
+            const cambia_precio_descripcion = {{ cambia_precio_descripcion|yesno:"true,false" }};
+            //alert(cambia_precio_descripcion);
+
+            // inicio del bloque
+            // Función para recalcular una fila específica
+            const recalcularFilaCompleta = (row) => {
+                const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
+                const precio = parseFloat(row.querySelector('[name$="-precio"]').value) || 0;
+                const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
+                const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
+                
+                // Calcular total con descuento porcentual
+                const subtotal = cantidad * precio;
+                const totalConDescuento = subtotal * (1 - (descuento/100));
+                
+                // Actualizar campos
+                row.querySelector('[name*="-total"]').value = totalConDescuento.toFixed(2);
+                
+                // Calcular impuestos
+                const gravado = totalConDescuento / (1 + (alicIva / 100));
+                row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+                row.querySelector('[name*="-iva"]').value = (totalConDescuento - gravado).toFixed(2);
+                
+                return totalConDescuento;
+            };
+
+            // Listener principal para cambios en los inputs
+            formsetContainer.addEventListener('input', function(event) {
+                const target = event.target;
+                const row = target.closest('tr');
+                
+                if (!row) return;
+                
+                // Validaciones específicas
+                if (target.matches('[name*="-precio"]') && parseFloat(target.value) <= 0) {
+                    alert("El precio debe ser mayor a 0.");
+                    target.value = "";
+                    target.focus();
+                    return;
+                }
+                
+                if (target.matches('[name*="-descuento"]')) {
+                    const descuento = parseFloat(target.value);
+                    if (descuento < 0 || descuento > 99) {
+                        alert("El descuento debe estar entre 0 y 99.");
+                        target.value = "0";
+                        target.focus();
+                        return;
+                    }
+                }
+                
+                // Recalcular solo si es un campo relevante
+                if (target.matches('[name*="-cantidad"], [name*="-precio"], [name*="-descuento"]')) {
+                    recalcularFilaCompleta(row);
+                    actualizarTotalFactura();
+                }
+            });
+
+            // Agregar listener específico para el cambio en el select de reventa
+            /*
+            formsetContainer.addEventListener('change', function(event) {
+                if (event.target.name.includes('reventa')) {
+                    const row = event.target.closest('tr');
+                    
+                    alert("change");
+                }
+            });
+            */
+            formsetContainer.addEventListener('change', function(event) {
+                if (event.target.name.includes('reventa')) {
+                    const oldValue = event.target.getAttribute('data-prev-value') || 'M';
+                    const newValue = event.target.value;
+                    
+                    if (!confirm(`Cambiar de ${oldValue} a ${newValue}?`)) {
+                        event.target.value = oldValue;
+                        return;
+                    }
+                    
+                    // Guardar nuevo valor como anterior para próximos cambios
+                    event.target.setAttribute('data-prev-value', newValue);
+                    
+                    // Actualizar la fila
+                    const row = event.target.closest('tr');
+                    recalcularFilaCompleta(row);
+                    actualizarTotalFactura();
+                }
+            });
+            
+            // Inicializar valores previos al cargar
+            document.querySelectorAll('select[name*="reventa"]').forEach(select => {
+                select.setAttribute('data-prev-value', select.value);
+            });
+
+
+            // Manejar el botón de insertar detalle de factura (versión optimizada)
+            insertarBtn.addEventListener('click', function() {
+                // Obtener todos los checkboxes marcados
+                const checkboxes = document.querySelectorAll('#tabla-resultados .seleccionar-producto:checked');
+
+                if (checkboxes.length === 0) {
+                    alert('Por favor seleccione al menos un producto');
+                    return;
+                }
+                
+                // Crear array temporal para los productos seleccionados
+                const productosSeleccionados = [];
+                
+                checkboxes.forEach(checkbox => {
+                    productosSeleccionados.push({
+                        id: checkbox.dataset.id,
+                        medida: checkbox.dataset.medida,
+                        nombre: checkbox.dataset.nombre,
+                        precio: parseFloat(checkbox.dataset.precio),
+                        descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
+                        alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2)
+                    });
+                });
+                
+                // Insertar productos en la tabla detalle factura
+                productosSeleccionados.forEach(producto => {
+                    const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+
+                    // Cálculos iniciales
+                    const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
+                    //alert(`Precio Lista Original: ${precioListaOriginal}`)
+                    const descVendedor = parseFloat(producto.descuento_vendedor);
+                    const precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
+
+                    const precioFinal = parseFloat(precioConDescuento.toFixed(2));
+                    
+                    const cantidad = 1.00;
+                    const montoTotal = precioConDescuento * cantidad;
+                    const alicuotaIva = parseFloat(producto.alicuota_iva || 0);
+                    const gravado = (montoTotal / (1 + (alicuotaIva / 100))).toFixed(2);
+                    const iva = (montoTotal - gravado).toFixed(2);
+                    const nombreInputAttributes = cambia_precio_descripcion ? 'required' : 'readonly';
+                    const valorPorDefecto = document.getElementById('id_tipo_venta')?.value || "M";
+
+                    // Clase reutilizable
+                    const formControlClass = 'form-control form-control-sm border border-primary small-font';
+
+                    // Crear y insertar la fila
+                    const newFormHTML = `
+                    <tr data-form-index="${currentIndex}" class="small-font">
+
+                        <!-- Inputs ocultos para manejar relaciones -->
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura" 
+                            id="id_detallefactura_set-${currentIndex}-id_detalle_factura">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-id_factura" 
+                            id="id_detallefactura_set-${currentIndex}-id_factura">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
+                            id="id_detallefactura_set-${currentIndex}-id_producto" value="${producto.id}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
+                            id="id_detallefactura_set-${currentIndex}-precio_lista" 
+                            value="${precioListaOriginal}"
+                            data-original="${precioListaOriginal}" 
+                            oninput="this.value=this.dataset.original">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
+                            id="id_detallefactura_set-${currentIndex}-desc_vendedor" value="${producto.descuento_vendedor}">
+                        <td>${producto.medida}</td> <!-- Mostrar medida -->
+
+                        <td>
+                            <input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+                                class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}>
+                        </td>
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
+                                class="${formControlClass} text-end" value="${cantidad}" min="1" step="1" required>
+                        </td>
+                        <td>
+                            <select name="detallefactura_set-${currentIndex}-reventa" class="${formControlClass}" required>
+                                <option value="M" ${valorPorDefecto === "M" ? "selected" : ""}>M</option>
+                                <option value="R" ${valorPorDefecto === "R" ? "selected" : ""}>R</option>
+                                <option value="E" ${valorPorDefecto === "E" ? "selected" : ""}>E</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-precio" 
+                                class="${formControlClass} text-end" value="${precioFinal}" ${nombreInputAttributes}
+                                min="0" step="0.01">
+                        </td>
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
+                                class="${formControlClass} text-end" value="0" step="0.1" min="0">
+                        </td>
+
+                        <!-- Campos OCULTOS para IVA -->
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" 
+                        value="${gravado}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" 
+                        value="${parseFloat(producto.alicuota_iva || 0).toFixed(2)}">
+                        <input type="hidden" 
+                        name="detallefactura_set-${currentIndex}-iva" 
+                        value="${iva}">
+                        
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-total" 
+                                class="${formControlClass} text-end" value="${montoTotal}" readonly>
+                        </td>
+                        
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" 
+                                data-toggle="tooltip" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" class="delete-checkbox" style="display: none;">
+                        </td>
+                    </tr>
+                    `;
+                    
+                    formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                    
+                    // Obtener la fila recién insertada
+                    const newRow = formsetContainer.querySelector('.detalle-form tbody tr:last-child');
+
+                    // Bloqueo mediante JavaScript de precio_lista
+                    const precioListaInput = newRow.querySelector('[name*="-precio_lista"]');
+                    precioListaInput._originalValue = precioListaOriginal;  // Backup interno
+                    Object.defineProperty(precioListaInput, 'value', {
+                        get() { return this._originalValue; },
+                        set(v) { 
+                            console.warn('Bloqueado: precio_lista no debe modificarse');
+                            return this._originalValue; 
+                        }
+                    });
+                    
+                    // Establecer valores directamente
+                    newRow.querySelector('[name*="-precio"]').value = precioConDescuento.toFixed(2);
+                    newRow.querySelector('[name*="-total"]').value = montoTotal.toFixed(2);
+
+                    // alert(`Precio de Lista post inserción: ${newRow.querySelector('[name*="-precio_lista"]').value}`);
+                    
+                    // Configurar el precio real como dato en el input
+                    newRow.querySelector('[name*="-precio"]').dataset.precioReal = precioConDescuento;
+                    
+                    // Actualizar totales generales
+                    actualizarTotalFactura();
+                    
+                    // Actualizar el contador de formsets
+                    document.querySelector('[name$="TOTAL_FORMS"]').value = 
+                        formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
+                });
+                
+                // Cerrar modal y limpiar selecciones
+                checkboxes.forEach(checkbox => checkbox.checked = false);
+                detalleModal.querySelector('.btn-close').click();
+
+                // Función para manejar acordeones
+                const manageAccordions = () => {
+                    const accordionEncabezado = document.getElementById('panelsStayOpen-collapseOne');
+                    const accordionDetalle = document.getElementById('panelsStayOpen-collapseTwo');
+                    const btnEncabezado = document.querySelector('[data-bs-target="#panelsStayOpen-collapseOne"]');
+                    const btnDetalle = document.querySelector('[data-bs-target="#panelsStayOpen-collapseTwo"]');
+
+                    if (!accordionEncabezado || !accordionDetalle) return;
+
+                    // 1. Determinar estados iniciales
+                    const encabezadoAbierto = accordionEncabezado.classList.contains('show');
+                    const detalleAbierto = accordionDetalle.classList.contains('show');
+
+                    // 2. Si ambos están cerrados, solo abrir el detalle
+                    if (!encabezadoAbierto && !detalleAbierto) {
+                        new bootstrap.Collapse(accordionDetalle, { show: true });
+                        btnDetalle.classList.remove('collapsed');
+                        return;
+                    }
+
+                    // 3. Si el encabezado está abierto, cerrarlo primero
+                    if (encabezadoAbierto) {
+                        const collapseEncabezado = new bootstrap.Collapse(accordionEncabezado, { hide: true });
+                        
+                        accordionEncabezado.addEventListener('hidden.bs.collapse', () => {
+                            new bootstrap.Collapse(accordionDetalle, { show: true });
+                            btnDetalle.classList.remove('collapsed');
+                        }, { once: true });
+                        
+                        btnEncabezado.classList.add('collapsed');
+                    }
+                };
+
+                // Ejecutar con pequeño retraso
+                setTimeout(manageAccordions, 10);
+
+                //
+            });
+
+            // Función para actualizar totales generales (optimizada) 
+            // La función fue eliminada de aqui por estar duplicada
+
+            // Mantener el evento de clic derecho para análisis de precios
+            formsetContainer.addEventListener('contextmenu', function(event) {
+                if (event.target.matches('input[name*="-precio"]')) {
+                    event.preventDefault();
+                    const row = event.target.closest('tr');
+                    
+                    // 1. Obtener valores base
+                    const precioLista = parseFloat(row.querySelector('[name*="-precio_lista"]').value);
+                    const descVendedor = parseFloat(row.querySelector('[name*="-desc_vendedor"]').value);
+                    const precioFinal = parseFloat(event.target.value);
+                    const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 1;
+                    
+                    // 2. Calcular precios intermedios
+                    const precioConDescuentoVendedor = precioLista * (1 - descVendedor/100);
+                    
+                    // 3. Calcular diferencias REALES (pueden ser + o -)
+                    const difLista = precioFinal - precioLista;
+                    const difVendedor = precioFinal - precioConDescuentoVendedor;
+                    
+                    // 4. Calcular porcentajes
+                    const pctLista = (difLista / precioLista) * 100;
+                    const pctVendedor = (difVendedor / precioConDescuentoVendedor) * 100;
+                    
+                    // 5. Formateador
+                    const formatNumber = (num) => num.toLocaleString('es-AR', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                    });
+                    
+                    // 6. Construir mensaje
+                    let mensaje = `📊 Diferencias Reales de Precio\n\n`;
+                    mensaje += `Precio Lista: $ ${formatNumber(precioLista)}\n`;
+                    mensaje += `Descuento Vendedor: ${descVendedor}%\n`;
+                    mensaje += `Precio c/desc. vendedor: $ ${formatNumber(precioConDescuentoVendedor)}\n`;
+                    mensaje += `Precio Actual: $ ${formatNumber(precioFinal)}\n`;
+                    mensaje += `Cantidad: ${cantidad}\n`;
+                    mensaje += `Total Fila: $ ${formatNumber(cantidad * precioFinal)}\n\n`;
+                    
+                    mensaje += `🔷 Comparación con Precio Lista:\n`;
+                    mensaje += `• Diferencia: $ ${difLista >= 0 ? '+' : ''}${formatNumber(difLista)}\n`;
+                    mensaje += `• Porcentaje: ${pctLista >= 0 ? '+' : ''}${pctLista.toFixed(2)}%\n\n`;
+                    
+                    mensaje += `🔶 Comparación con Precio Vendedor:\n`;
+                    mensaje += `• Diferencia: $ ${difVendedor >= 0 ? '+' : ''}${formatNumber(difVendedor)}\n`;
+                    mensaje += `• Porcentaje: ${pctVendedor >= 0 ? '+' : ''}${pctVendedor.toFixed(2)}%`;
+                    
+                    // 7. Actualizar el total de la fila (por si hubo cambios)
+                    const total = cantidad * precioFinal;
+                    row.querySelector('[name*="-total"]').value = total.toFixed(2);
+                    
+                    // 8. Actualizar campos relacionados (IVA, gravado)
+                    const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
+                    const gravado = total / (1 + (alicIva / 100));
+                    row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
+                    row.querySelector('[name*="-iva"]').value = (total - gravado).toFixed(2);
+                    
+                    // 9. Actualizar total general de la factura
+                    actualizarTotalFactura();
+                    
+                    // 10. Mostrar alerta con toda la información
+                    alert(mensaje);
+                }
+            });
+
+            // Mantener el evento de cambio para reventa si es necesario
+            formsetContainer.addEventListener('change', function(event) {
+                if (event.target.matches('[name*="-reventa"]')) {
+                    const row = event.target.closest('tr');
+                    const nombreProducto = row.querySelector('[name*="-nombre"]').value;
+                    alert(`Producto seleccionado: ${nombreProducto}`);
+                }
+            });
+            // final del bloque
+
+            // Limpiar filtros y resultados cuando se cierra la ventana modal
+            detalleModal.addEventListener('hidden.bs.modal', function () {
+                buscarProductoForm.reset(); // Restablecer el formulario
+                tablaResultados.innerHTML = ''; // Limpiar la tabla de resultados
+                productosSeleccionados = []; // Limpiar la lista de productos seleccionados
+            });
+
+            // Manejar el submit del formulario de búsqueda de producto
+            buscarProductoForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                // Obtiene los valores de los filtros generales
+                const medidaProducto = document.getElementById('medida_producto').value;
+                const nombreProducto = document.getElementById('nombre_producto').value;
+                const caiProducto = document.getElementById('cai_producto').value;
+
+                // Obtener el valor del ID del cliente
+                const idCliente = document.getElementById('id_id_cliente').value; 
+
+                // Obtener el valor seleccionado del filtro de marcas
+                const filtroMarcaElement = document.querySelector('input[name="filtro_marca"]:checked');
+                const filtroMarca = filtroMarcaElement ? filtroMarcaElement.value : '';
+
+                // Buscar Producto
+                // new URL(path, base) es un constructor que crea un objeto URL válido
+                const url = new URL('/ventas/buscar/producto/', window.location.origin);
+                url.searchParams.append('medida', medidaProducto);
+                url.searchParams.append('nombre', nombreProducto);
+                url.searchParams.append('cai', caiProducto);
+                url.searchParams.append('filtro_marca', filtroMarca);
+                url.searchParams.append('id_cliente', idCliente);  // 🔥 ¡Aquí está el cambio clave!
+
+                // Realiza una solicitud GET a la URL especificada para obtener datos en formato JSON.
+                // La respuesta se procesa de forma asincrónica y, cuando los datos son recibidos, 
+                // se actualiza la tabla de resultados con la información obtenida.
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    tablaResultados.innerHTML = ''; // Limpiar tabla de resultados
+
+                    const formateadorPrecio = new Intl.NumberFormat('es-ES', {
+                        style: 'decimal',
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                    
+                    data.forEach(producto => {
+                        const precioNumerico = parseFloat(producto.precio); // Asegura que sea número
+                        const precioFormateado = formateadorPrecio.format(producto.precio);
+                        const descuentoVendedor = parseFloat(producto.descuento_vendedor);
+
+                        // alert(`Precio numérico: ${precioNumerico}`);
+                        // alert(`Descuento: ${descuentoVendedor}`);
+                        
+                        const fila = `
+                            <tr>
+                                <td>${producto.marca}</td>
+                                <td>${producto.medida}</td>
+                                <td>${producto.cai || 'N/A'}</td>
+                                <td>${producto.nombre}</td>
+                                <td class="text-end"><strong>${precioFormateado}</strong></td>
+                                <td class="text-end">${producto.stock}</td>
+                                <td class="text-end">${producto.minimo}</td>
+                                
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-info btn-sm actualizar-detalle" 
+                                        data-id="${producto.id}" 
+                                        data-nombre="${producto.nombre}"
+                                        data-cai="${producto.cai || 'N/A'}">
+                                        
+                                        <i class="bi bi-eye"></i> <!-- Icono de Bootstrap -->
+                                    </button>
+                                </td>
+
+                                <td>
+                                    <input type="checkbox" class="seleccionar-producto"
+                                            data-id="${producto.id}" 
+                                            data-codigo="${producto.codigo}" 
+                                            data-medida="${producto.medida}"
+                                            data-nombre="${producto.nombre}"
+                                            data-precio="${precioNumerico}"
+                                            data-id-marca="${producto.id_marca}" 
+                                            data-id-familia="${producto.id_familia}"
+                                            data-descuento-vendedor="${producto.descuento_vendedor}"
+                                            data-id-alicuota-iva="${producto.id_alicuota_iva}"
+                                            data-alicuota-iva="${producto.alicuota_iva}">
+                                            
+                                </td>
+                            </tr>
+                        `;
+                        tablaResultados.insertAdjacentHTML('beforeend', fila);
+                    });
+
+                    // Agregar eventos a los nuevos botones de actualización
+                    document.querySelectorAll('.actualizar-detalle').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const idProducto = this.getAttribute('data-id');
+                            const nombreProducto = this.getAttribute('data-nombre');
+                            const nombreCAI = this.getAttribute('data-cai');
+
+                            ///
+                            // Cambiar el color del botón clicado y resetear los demás
+                            document.querySelectorAll('.actualizar-detalle').forEach(btn => {
+                                btn.classList.remove('btn-success'); // Remover clase de todos los botones
+                                btn.classList.add('btn-info'); // Restaurar clase predeterminada
+                            });
+                            this.classList.remove('btn-info'); // Remover clase predeterminada del botón clicado
+                            this.classList.add('btn-success'); // Agregar clase de éxito
+                            ///
+                            
+                            actualizarDetallesProducto(idProducto, nombreProducto, nombreCAI);
+                        });
+                    });
+
+                })
+                .catch(error => {
+                    console.error('Error al buscar productos:', error);
+                });
+            });
+
+            // Función para actualizar las tablas de stock y mínimos
+            function actualizarDetallesProducto(idProducto, nombreProducto, nombreCAI) {
+                
+                // Mostrar el nombre del producto arriba de las tablas
+                document.getElementById('titulo-producto').innerText = `Producto: ${idProducto} - ${nombreProducto} - CAI: ${nombreCAI}`;
+            
+                // Obtener referencias a las tablas de stock y mínimos
+                const tablaStock = document.getElementById("tabla-stock").querySelector("tbody");
+                
+
+                // Limpiar las tablas antes de insertar los nuevos datos
+                tablaStock.innerHTML = "";
+                
+
+                // Realizar la solicitud para obtener los detalles del producto
+                fetch(`/ventas/detalle_producto/${idProducto}/`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Error en la solicitud: ${response.statusText}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Verificar y agregar datos de stock
+                        if (data.stock && data.stock.length > 0) {
+                            //
+                            let tieneStock = false; // Bandera para verificar si hay stock mayor a cero
+                            data.stock.forEach(stock => {
+                                if (parseFloat(stock.stock) !== 0) { // Solo mostrar si el stock es distinto a cero
+                                    //const row = `<tr><td>${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+                                    const row = `<tr><td style="color: ${parseFloat(stock.deposito) < 0 ? 'red' : 'inherit'}">${stock.deposito}</td><td>${stock.stock}</td></tr>`;
+
+                                    tablaStock.insertAdjacentHTML("beforeend", row);
+                                    tieneStock = true;
+                                }
+                            });
+                            if (!tieneStock) {
+                                const row = `<tr><td colspan="2">No hay stock disponible mayor a cero.</td></tr>`;
+                                tablaStock.insertAdjacentHTML("beforeend", row);
+                            }
+                            //
+                        } else {
+                            const row = `<tr><td colspan="2">No hay información de stock disponible.</td></tr>`;
+                            tablaStock.insertAdjacentHTML("beforeend", row);
+                        }
+
+                        // Verificar y agregar datos de mínimos
+                        
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener detalles del producto:', error);
+                        const errorRow = `<tr><td colspan="2">Error al cargar los datos.</td></tr>`;
+                        tablaStock.insertAdjacentHTML("beforeend", errorRow);
+                        
+                    });
+
+            }
+
+            // Aquí puede ir?
+            // Funcionalidad del Remito
+            /////
+            const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+            
+            if (comprobanteSelect) {
+                // Asignar el event listener
+                comprobanteSelect.addEventListener('change', function() {
+                    actualizarDatosComprobante(this);
+                });
+                
+                // Ejecutar al cargar si ya hay un valor seleccionado
+                if (comprobanteSelect.value) {
+                    actualizarDatosComprobante(comprobanteSelect);
+                }
+            }
+            
+            function actualizarDatosComprobante(selectElement) {
+                const comprobanteId = selectElement.value;
+                
+                if (!comprobanteId) {
+                    // Limpiar campos si no hay comprobante seleccionado
+                    document.getElementById('id_compro').value = '';
+                    document.getElementById('id_letra_comprobante').value = '';
+                    return;
+                }
+
+                // 1. Campo de búsqueda de cliente
+                const buscarCliente = document.getElementById('buscar_cliente');
+                if (buscarCliente) {
+                    buscarCliente.removeAttribute('readonly');
+                }
+                
+                // 2. Botón de validar
+                const validarBtn = document.getElementById('validarBtn');
+                if (validarBtn) {
+                    validarBtn.removeAttribute('disabled');
+                }
+                
+                // 3. Botón de listar agenda
+                const listarAgenda = document.getElementById('listar_agenda');
+                if (listarAgenda) {
+                    listarAgenda.removeAttribute('disabled');
+                }
+        
+                // Obtener solo los datos básicos del comprobante
+                fetch(`/ventas/comprobante/${comprobanteId}/codigo/`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error en la respuesta');
+                        return response.json();
+                    })
+                    .then(data => {
+                        document.getElementById('id_compro').value = data.codigo || '';
+
+                        // Mapear los botones
+                        const addSerialBtn = document.getElementById('btnAgregarSerial');
+                        const addDetailBtn = document.getElementById('btnAgregarDetalle');
+
+                        // Actualizar el checkbox es_remito basado en la respuesta
+                        const esRemitoCheckbox = document.getElementById('id_es_remito');
+                        if (esRemitoCheckbox) {
+                            esRemitoCheckbox.checked = data.es_remito || false;
+                            
+                            // Si necesitas cambiar el estado visual (aunque esté disabled)
+                            if (data.es_remito) {
+                                esRemitoCheckbox.parentElement.classList.add('checked');
+                            } else {
+                                esRemitoCheckbox.parentElement.classList.remove('checked');
+                            }
+                        }
+
+                        // Actualizar el checkbox es_pendiente basado en la respuesta
+                        const esPendienteCheckbox = document.getElementById('id_es_pendiente');
+                        if (esPendienteCheckbox) {
+                            esPendienteCheckbox.checked = data.es_pendiente || false;
+
+                            // Si necesitas cambiar el estado visual (aunque esté disabled)
+                            if (data.es_pendiente) {
+                                esPendienteCheckbox.parentElement.classList.add('checked');
+                                addSerialBtn.disabled = true;
+                                addDetailBtn.disabled = true;
+                            } else {
+                                esPendienteCheckbox.parentElement.classList.remove('checked');
+                            }
+                        }
+
+                        // Revisar si existe un comprobante asociado
+                        if (data.compro_asociado) {
+                            // alert(data.compro_asociado);
+                        }
+
+                        ////
+                        // ---- Nuevo: Llenar el select comprobante_remito ----
+                        const selectRemito = document.getElementById('id_comprobante_remito');
+                        const selectIdRemito = document.getElementById('id_remito');
+                        if (selectRemito && data.compro_asociado) {
+                            selectIdRemito.removeAttribute('readonly');
+                            
+                            // Limpiar opciones existentes
+                            selectRemito.innerHTML = '';
+                            
+                            // Agregar opción vacía (opcional)
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = 'Seleccione...';
+                            selectRemito.appendChild(defaultOption);
+
+                            // Procesar el string (ej: "FA, FX, TY" -> ["FA", "FX", "TY"])
+                            const opciones = data.compro_asociado.split(',').map(item => item.trim());
+                            
+                            // Agregar cada opción al select
+                            opciones.forEach(opcion => {
+                                const option = document.createElement('option');
+                                option.value = opcion;  // Ej: "FA"
+                                option.textContent = opcion; // Mismo valor que el texto
+                                selectRemito.appendChild(option);
+                            });
+                        }    
+                        ////
+
+                    })
+                    .catch(error => {
+                        console.error('Error al obtener código:', error);
+                        document.getElementById('id_compro').value = '';
+                    });
+
+            }
+
+            // Verificar Remito
+            const remitoInput = document.getElementById('id_remito');
+            const comprobanteRemitoSelect = document.getElementById('id_comprobante_remito');
+            document.getElementById('id_remito').addEventListener('blur', function() {
+                const valor = this.value.trim();
+                const formsetContainer = document.getElementById('formset-container');
+                
+                if (!formsetContainer) {
+                    console.error('Error crítico: No se encontró el contenedor del formset');
+                    alert('Error en la configuración del formulario');
+                    return;
+                }
+            
+                // Si está vacío, no hacer nada
+                if (!valor) return;
+            
+                // Verificar que tenga exactamente 10 dígitos
+                if (!/^\d{10}$/.test(valor)) {
+                    alert("Error: Debe ingresar exactamente 10 dígitos numéricos (ej: 3400000001).");
+                    this.value = '';
+                    this.focus();
+                    return;
+                }
+
+                if (!comprobanteRemitoSelect.value) {
+                    alert("Debe seleccionar un tipo de comprobante remito primero");
+                    comprobanteRemitoSelect.focus();
+                    return;
+                }
+
+                // Implementación estandarizada con .then()/.catch()
+                fetch(`/ventas/verificar/remito/?comprobante_remito=${encodeURIComponent(comprobanteRemitoSelect.value)}&remito=${encodeURIComponent(valor)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Error en la solicitud: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data.existe) {
+                        alert("El remito indicado no existe");
+                        remitoInput.value = '';
+                        remitoInput.focus();
+                        return;
+                    }
+
+                    // Si existe, procesar los detalles del remito
+                    //
+                    if (data.detalles && data.detalles.length > 0) {
+                        // Confirmar con el usuario antes de cargar los detalles
+                        if (!confirm(`¿Desea cargar los ${data.detalles.length} ítems del remito ${valor}?`)) {
+                            return;
+                        }
+            
+                        // Limpiar detalles existentes si los hay
+                        const filasExistentes = formsetContainer.querySelectorAll('.detalle-form tbody tr');
+                        if (filasExistentes.length > 0) {
+                            if (!confirm('⚠️ Ya existen ítems en la factura. ¿Desea reemplazarlos?')) {
+                                return;
+                            }
+                            
+                            // Marcar todas las filas existentes para eliminación
+                            filasExistentes.forEach(row => {
+                                const deleteInput = row.querySelector('[name$="-DELETE"]');
+                                if (deleteInput) {
+                                    deleteInput.checked = true;
+                                    row.style.display = 'none';
+                                }
+                            });
+                        }
+            
+                        // Procesar cada detalle del remito
+                        data.detalles.forEach(detalle => {
+                            const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+
+                            ///
+                            const newFormHTML = `
+                            <tr data-form-index="${currentIndex}" class="small-font">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_factura">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
+                                    value="${detalle.id_producto}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
+                                    value="${detalle.precio_lista}"
+                                    data-original="${detalle.precio_lista}" 
+                                    oninput="this.value=this.dataset.original">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
+                                    value="${detalle.desc_vendedor}">
+                                <td>
+                                    <input type="text" name="detallefactura_set-${currentIndex}-medida" 
+                                        class="form-control form-control-sm border border-primary" 
+                                        value="${detalle.medida}" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+                                        class="form-control form-control-sm border border-primary" 
+                                        value="${detalle.nombre}" readonly>
+                                </td>
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.cantidad}" min="1" step="1" required readonly>
+                                </td>
+                                <td>
+                                    <select name="detallefactura_set-${currentIndex}-reventa" class="form-control form-control-sm border border-primary" required>
+                                        <option value="M" selected>M</option>
+                                        <option value="R">R</option>
+                                        <option value="E">E</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-precio" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.precio}" min="0" step="0.01">
+                                </td>
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.descuento}" step="0.1" min="0" readonly>
+                                </td>
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" value="${detalle.gravado}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" value="${detalle.alic_iva}">
+                                <input type="hidden" name="detallefactura_set-${currentIndex}-iva" value="${detalle.iva}">
+                                <td>
+                                    <input type="number" name="detallefactura_set-${currentIndex}-total" 
+                                        class="form-control form-control-sm border border-primary text-end" 
+                                        value="${detalle.total}" readonly>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" disabled>
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" style="display: none;">
+                                </td>
+                            </tr>`;
+                            ///
+            
+                            formsetContainer.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newFormHTML);
+                            
+                            // Actualizar totales generales
+                            actualizarTotalFactura();
+                        });
+            
+                        // Actualizar el contador de formsets
+                        document.querySelector('[name$="TOTAL_FORMS"]').value = 
+                            formsetContainer.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
+            
+                        alert(`Se cargaron ${data.detalles.length} ítems del remito ${valor}`);
+                    } else {
+                        alert("El remito existe pero no tiene detalles asociados");
+                    }
+                    //
+                })
+                .catch(error => {
+                    console.error('Error al verificar remito:', error);
+                    alert("Error al conectar con el servidor");
+                });
+
+            });
+            /////
+            ////////////////////////////////////////////////////////////

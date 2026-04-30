@@ -1,0 +1,65 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlcomprobantesvencidos_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table>
+		<thead>
+			<tr>
+				<th>Fecha</th>
+				<th class="numeric" style="padding-right: 10px;">Días</th>
+				<th>Comprobante</th>
+				<th class="numeric" style="padding-right: 10px;">Cliente</th>
+				<th>Nombre</th>
+				<th class="numeric">Total Comprobante</th>
+				<th class="numeric">Entrega a Cuenta</th>
+				<th class="numeric">Saldo Pendiente</th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.fecha_comprobante|date:'d/m/Y' }}</td>
+					<td class="numeric" style="padding-right: 10px;">{{ obj.dias_vencidos }}</td>
+					<td>{{ obj.comprobante }}</td>
+					<td class="numeric" style="padding-right: 10px;">{{ obj.id_cliente_id }}</td>
+					<td>{{ obj.nombre_cliente }}</td>
+					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.entrega|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.saldo|formato_es_ar }}</td>
+				</tr>
+			{% endfor %}
+			
+			{% comment %} <tr class="total-general" style="border-top: 1px solid #000;"> {% endcomment %}
+			<tr style="border-top: 1px solid #000;">
+				<td class="numeric" colspan="5"><strong>Totales:</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ total_sum|formato_es_ar }}</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ entrega_sum|formato_es_ar }}</strong></td>
+				<td class="numeric" style="padding-right: 10px;"><strong>{{ saldo_sum|formato_es_ar }}</strong></td>
+			</tr>
+			
+		</tbody>
+	</table>
+{% endblock content %}

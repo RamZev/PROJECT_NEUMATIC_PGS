@@ -1,0 +1,68 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlfacturas_pendientes_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		<thead>
+			<tr>
+				<th>Comprobante</th>
+				<th>Número</th>
+				<th>Fecha</th>
+				<th>Remito</th>
+				<th class="numeric">Total Comp.</th>
+				<th class="numeric">Entrega</th>
+				<th class="numeric">Saldo</th>
+				<th class="numeric">Intereses</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.nombre_comprobante_venta }}</td>
+					<td>{{ obj.numero }}</td>
+					<td>{{ obj.fecha_comprobante|date:"d/m/Y" }}</td>
+					<td>{{ obj.remito }}</td>
+					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.entrega|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.saldo_acumulado|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.intereses|formato_es_ar }}</td>
+					<td>{{ obj.marca }}</td>
+				</tr>
+			{% endfor %}
+			<tr style="border-top: 1px solid #000;">
+				<td class="numeric" colspan="7"><strong>Total Intereses:</strong></td>
+				<td class="numeric"><strong>{{ intereses_total|formato_es_ar }}</strong></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="numeric" colspan="7"><strong>Total General:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+	<p><strong>Observaciones:</strong> {{ observaciones }}</p>
+{% endblock content %}

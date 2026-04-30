@@ -1,0 +1,52 @@
+[
+    {
+        "estacion": "Leoncio",
+        "estatus_cod_retencion": 1,
+        "fcontrol": "2025-05-30 12:35:00",
+        "id_codigo_retencion": 1,
+        "id_user_id": 1,
+        "imputacion": 1034,
+        "nombre_codigo_retencion": "RET. GANANCIAS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_cod_retencion": 1,
+        "fcontrol": "2025-05-30 12:35:23",
+        "id_codigo_retencion": 2,
+        "id_user_id": 1,
+        "imputacion": 1573,
+        "nombre_codigo_retencion": "RET. ING. BRUTOS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_cod_retencion": 1,
+        "fcontrol": "2025-05-30 12:35:36",
+        "id_codigo_retencion": 3,
+        "id_user_id": 1,
+        "imputacion": 1033,
+        "nombre_codigo_retencion": "RET. I.V.A.",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_cod_retencion": 1,
+        "fcontrol": "2025-05-30 12:35:51",
+        "id_codigo_retencion": 4,
+        "id_user_id": 1,
+        "imputacion": 1575,
+        "nombre_codigo_retencion": "RET. SUSS",
+        "usuario": "admin"
+    },
+    {
+        "estacion": "Leoncio",
+        "estatus_cod_retencion": 1,
+        "fcontrol": "2025-05-30 12:35:59",
+        "id_codigo_retencion": 5,
+        "id_user_id": 1,
+        "imputacion": 0,
+        "nombre_codigo_retencion": "RET. SELLOS",
+        "usuario": "admin"
+    }
+]

@@ -1,0 +1,131 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\chequesfecha_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th></th>
+				<th>Comprobante</th>
+				<th class="numeric" style="padding-right: 15px">Cod.Bco.</th>
+				<th>Banco</th>
+				<th class="numeric">Suc.</th>
+				<th class="numeric" style="padding-right: 15px">C.P.</th>
+				<th>Fecha</th>
+				<th class="numeric">Número</th>
+				<th class="numeric">Importe</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for caja, datos_caja in objetos.items %}
+				<!-- Caja -->
+				<tr>
+					<td colspan="9" style="padding-top: 5px;">
+						<strong>CAJA: {{ caja|formatear_caja }} [{{ datos_caja.fecha_caja|date:"d/m/Y" }}] [{{ datos_caja.operador_caja }}]</strong>
+					</td>
+				</tr>
+				
+				<!-- Cheques Físicos -->
+				{% if datos_caja.fisico.cheques %}
+					<tr>
+						<td></td>
+						<td colspan="8" style="padding-top: 5px;">
+							<strong>Cheques Físicos</strong>
+						</td>
+					</tr>
+					
+					{% for cheque in datos_caja.fisico.cheques %}
+						<tr>
+							<td></td>
+							<td style="white-space: pre;">{{ cheque.comprobante_completo }}</td>
+							<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_banco|default_if_none:"" }}</td>
+							<td>{{ cheque.id_banco__nombre_banco|default_if_none:"" }}</td>
+							<td class="numeric">{{ cheque.sucursal|default_if_none:"" }}</td>
+							<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_postal|default_if_none:"" }}</td>
+							<td>{{ cheque.fecha_cheque1|date:"d/m/Y" }}</td>
+							<td class="numeric">{{ cheque.numero_cheque_recibo|default_if_none:"" }}</td>
+							<td class="numeric">{{ cheque.importe_cheque|formato_es_ar }}</td>
+						</tr>
+					{% endfor %}
+					<!-- Total Cheques Físicos -->
+					<tr>
+						<td colspan="8" style="text-align: right;"><strong>Total Cheques Físicos:</strong></td>
+						<td class="numeric"><strong>{{ datos_caja.fisico.subtotal_cheque|formato_es_ar }}</strong></td>
+					</tr>
+				{% endif %}
+				
+				<!-- Cheques Electrónicos -->
+				{% if datos_caja.electronico.cheques %}
+					<tr>
+						<td></td>
+						<td colspan="8" style="padding-top: 5px;">
+							<strong>Cheques Electrónicos</strong>
+						</td>
+					</tr>
+					
+					{% for cheque in datos_caja.electronico.cheques %}
+						<tr>
+							<td></td>
+							<td style="white-space: pre;">{{ cheque.comprobante_completo }}</td>
+							<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_banco|default_if_none:"" }}</td>
+							<td>{{ cheque.id_banco__nombre_banco|default_if_none:"" }}</td>
+							<td class="numeric">{{ cheque.sucursal|default_if_none:"" }}</td>
+							<td class="numeric" style="padding-right: 15px">{{ cheque.codigo_postal|default_if_none:"" }}</td>
+							<td>{{ cheque.fecha_cheque1|date:"d/m/Y" }}</td>
+							<td class="numeric">{{ cheque.numero_cheque_recibo|default_if_none:"" }}</td>
+							<td class="numeric">{{ cheque.importe_cheque|formato_es_ar }}</td>
+						</tr>
+					{% endfor %}
+					<!-- Total Cheques Electrónicos -->
+					<tr>
+						<td colspan="8" style="text-align: right;"><strong>Total Cheques Electrónicos:</strong></td>
+						<td class="numeric"><strong>{{ datos_caja.electronico.subtotal_cheque|formato_es_ar }}</strong></td>
+					</tr>
+				{% endif %}
+				
+				<!-- Total por Caja -->
+				<tr>
+					<td colspan="8" style="text-align: right;"><strong>Total Caja {{ caja|formatear_caja }}:</strong></td>
+					<td class="numeric"><strong>{{ datos_caja.subtotal_caja|formato_es_ar }}</strong></td>
+				</tr>
+				
+				<tr>
+					<td colspan="9"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="8" style="text-align: right;"><strong>Total General:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>			
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

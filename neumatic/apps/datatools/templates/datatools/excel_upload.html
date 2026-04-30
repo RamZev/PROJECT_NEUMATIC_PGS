@@ -1,0 +1,65 @@
+<!-- apps\datatools\templates\datatools\excel_upload.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cargar Archivo Excel{% endblock %}
+
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock %}
+
+{% block main %}
+	<div id="layoutSidenav">
+		<div id="layoutSidenav_nav">
+			{% include 'sidebar.html' %}
+		</div>
+		
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4">
+					<h3 class="mt-4">Productos - Cargar Archivo Excel ({{proceso}})</h3>
+					<ol class="breadcrumb mb-4">
+						<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
+						<li class="breadcrumb-item active">Cargar Excel</li>
+					</ol>
+					
+					<div class="card mb-4">
+						<div class="card-header">
+							<i class="fas fa-file-excel me-1"></i>
+							Seleccionar archivo Excel
+						</div>
+						<div class="card-body">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								
+								<div class="form-group mb-3">
+									<label for="{{ form.archivo_excel.id_for_label }}">{{ form.archivo_excel.label }}</label>
+									{{ form.archivo_excel }}
+								</div>
+								<div class="form-group mb-3">
+									<small class="form-text text-muted">{{ form.archivo_excel.help_text }}</small>
+								</div>
+								{% if form.archivo_excel.errors %}
+									<div class="invalid-feedback d-block">
+										{{ form.archivo_excel.errors }}
+									</div>
+								{% endif %}
+								
+								<button type="submit" class="btn btn-primary">
+									<i class="fas fa-upload me-1"></i>
+									Cargar y Previsualizar
+								</button>
+								<a href="{% url 'home' %}" class="btn btn-secondary">
+									<i class="fas fa-times me-1"></i>
+									Cancelar
+								</a>
+								
+							</form>
+						</div>
+					</div>
+					
+				</div>
+			</main>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,1752 @@
+# neumatic\apps\ventas\views\msdt_views_generics.py
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView
+from django.db.models import Q
+from django.http import JsonResponse
+from django.db import transaction
+from django.db.models import ProtectedError
+
+
+#-- Recursos necesarios para proteger las rutas.
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+
+#-- Recursos necesarios para los permisos de usuarios sobre modelos.
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib import messages
+from django.shortcuts import redirect
+
+from django.utils import timezone
+
+
+# -- Vistas Genéricas Basada en Clases -----------------------------------------------
+@method_decorator(login_required, name='dispatch')
+class MaestroDetalleListView(ListView):
+	cadena_filtro = ""
+	paginate_by = 8
+	
+	search_fields = []
+	ordering = []
+	
+	table_headers = {}
+	table_data = []
+	pagination_options = [8, 20, 30, 40, 50]
+	
+	def get_queryset(self):
+		#-- Acá ya determina el Modelo con el que se trabaja.
+		#-- Obtiene todos los registros sin filtro.
+		#-- Con lo cual no es necesario un filter.all().
+		#-- luego cambiar a que por defecto no haya registros.
+		queryset = super().get_queryset()
+		
+		#-- Obtener el valor de paginate_by de la URL, si está presente.
+		paginate_by_param = self.request.GET.get('paginate_by')
+		if paginate_by_param is not None:
+			try:
+				#-- Intentar convertir a entero, usar valor predeterminado si falla.
+				paginate_by_value = int(paginate_by_param)
+				self.paginate_by = paginate_by_value
+			except ValueError:
+				pass
+		
+		#-- Obtener la cadena de filtro (Propuesto y recomendado por ChatGPT).
+		query = self.request.GET.get('busqueda', None)
+		
+		if query:
+			#-- Generar filtros dinámicamente.
+			search_conditions = Q()
+			for field in self.search_fields:
+				search_conditions |= Q(**{f"{field}__icontains": query})
+			
+			queryset = queryset.filter(search_conditions)
+		
+		return queryset.order_by(*self.ordering)
+		
+		''' Método original de Ricardo y Leoncio. (No seguro)
+		#-- Crear la cadena de filtro en base a la lista search_fields-
+		cadena_filtro = ""
+		for field in self.search_fields:
+			expression = f"Q({field}__icontains='{query}')"
+			cadena_filtro += expression + " | "
+		
+		#-- Eliminar el último " | " en la cadena de filtro.
+		cadena_filtro = "(" + cadena_filtro[:-3] + ")"
+		
+		#-- Ejecutar la consulta.
+		if query and cadena_filtro:
+			queryset = queryset.filter(eval(cadena_filtro))
+		
+		# Ordenar el queryset según la lista ordering
+		queryset = queryset.order_by(*self.ordering)
+		
+		return queryset'''
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context["busqueda"] = self.request.GET.get('busqueda', '')
+		
+		#-- Agregar valores de paginación y valor seleccionado.
+		context['pagination_options'] = self.pagination_options
+		context['selected_pagination'] = int(self.paginate_by)
+		# Para pasar la fecha a la lista del maestro		
+		context['fecha'] = timezone.now()
+
+		return context
+	
+	def get(self, request, *args, **kwargs):
+		#-- Obtener el valor de paginate_by de la URL, si está presente.
+		paginate_by_param = self.request.GET.get('paginate_by')
+		if paginate_by_param is not None:
+			try:
+				#-- Intentar convertir a entero, usar valor predeterminado si falla.
+				paginate_by_value = int(paginate_by_param)
+				self.paginate_by = paginate_by_value
+			except ValueError:
+				pass
+		
+		#-- Mantener el valor de paginate_by en el formulario de paginación.
+		self.request.GET = self.request.GET.copy()
+		self.request.GET['paginate_by'] = str(self.paginate_by)
+		
+		return super().get(request, *args, **kwargs)
+	
+	def get_paginate_by(self, queryset):
+		#-- Utilizar el valor actualizado de paginate_by.
+		return self.paginate_by
+
+
+@method_decorator(login_required, name='dispatch')
+class MaestroDetalleCreateView(PermissionRequiredMixin, CreateView):
+	list_view_name = None
+	
+	def form_valid(self, form):
+		#-- Accede al usuario evaluado.
+		user = self.request.user
+		
+		#-- Asigna el usuario directamente en el modelo.
+		form.instance.id_user = user
+		form.instance.usuario = user.username
+  
+		try:
+			#-- Manejo de transacciones.
+			with transaction.atomic():
+				return super().form_valid(form)
+		
+		except Exception as e:
+			#-- Captura el error de transacción.
+			context = self.get_context_data(form)
+			context['data_has_erors'] = True
+			context['transaction_error'] = str(e)
+			return self.render_to_response(context)
+	
+	def form_invalid(self, form):
+		"""
+		Si el formulario no es válido, renderiza el formulario con los errores.
+		"""
+		
+		context = self.get_context_data(form=form)
+		context['data_has_errors'] = True
+		
+		return self.render_to_response(context)
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		
+		#-- Agregar datos comunes al contexto.
+		context.update({
+			"accion": f"Crear {self.model._meta.verbose_name}",
+			"list_view_name": self.list_view_name,
+		})		
+		
+		#-- Controlar mostrar o no el modal con los errors de validación.
+		#-- Inicialmente, no hay errores.
+		context['data_has_errors'] = False
+		
+		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
+		context['form'] = self.get_form()
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
+		return context
+	
+	#-- Método que agrega mensaje cuando no tiene permiso de crear.
+	def handle_no_permission(self):
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name)	
+
+
+@method_decorator(login_required, name='dispatch')
+class MaestroDetalleUpdateView(PermissionRequiredMixin, UpdateView):
+	list_view_name = None
+	
+	def get_form_kwargs(self):
+		"""
+		Pasa los argumentos adicionales al formulario solo si son necesarios.
+		"""
+		kwargs = super().get_form_kwargs()
+		
+		#-- Verificar si el formulario soporta el argumento 'user'.
+		if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
+			kwargs['user'] = self.request.user  # Pasar el usuario autenticado al formulario
+		
+		return kwargs
+	
+	def form_valid(self, form):
+		#-- Accede al usuario evaluado.
+		user = self.request.user
+		
+		#-- Asigna el usuario directamente en el modelo.
+		form.instance.id_user = user
+		form.instance.usuario = user.username
+		
+		return super().form_valid(form)
+	
+	def form_invalid(self, form):
+		"""
+		Si el formulario no es válido, renderiza el formulario con los errores.
+		"""
+		
+		#-- Establecer el contexto con la información sobre errores.
+		context = self.get_context_data(form=form)
+		#-- Indicar que hay errores.
+		context['data_has_errors'] = True
+		
+		return self.render_to_response(context)
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		
+		#-- Obtener el objeto que se está editando.
+		registro = self.get_object()
+		
+		#-- Agregar información personalizada al contexto.
+		context.update({
+			"accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
+			"list_view_name": self.list_view_name,
+		})
+		
+		#-- Controlar mostrar o no el modal con los errors de validación.
+		#-- Inicialmente, no hay errores.
+		context['data_has_errors'] = False
+		
+		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
+		context['form'] = self.get_form()
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
+		return context
+	
+	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
+	def handle_no_permission(self):
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name)
+
+
+@method_decorator(login_required, name='dispatch')
+class MaestroDetalleDeleteView(PermissionRequiredMixin, DeleteView):
+	list_view_name = None
+	
+	# def get_context_data(self, **kwargs):
+	# 	#-- Llamar al contexto base.
+	# 	context = super().get_context_data(**kwargs)
+	# 	
+	# 	#-- Obtener el objeto que se está eliminando.
+	# 	registro = self.get_object()
+	# 	
+	# 	#-- Agregar datos comunes al contexto.
+	# 	context.update({
+	# 		"accion": f"Eliminar {self.model._meta.verbose_name} - {registro.pk}",
+	# 		"list_view_name": self.list_view_name,
+	# 		"mensaje": "Estás seguro de eliminar el Registro"
+	# 	})
+	# 	
+	# 	return context	
+	
+	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
+	def handle_no_permission(self):
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name)
+	
+	def post(self, request, *args, **kwargs):
+		try:
+			with transaction.atomic():
+				return self.delete(request, *args, **kwargs)
+		except ProtectedError:
+			messages.error(request, 'No se puede eliminar el registro ya que está relacionado con otros.')
+			return redirect(self.success_url)
+		except Exception as e:
+			messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
+			return redirect(self.success_url)
+
+# ------------------------------------------------------------------------------------
+
+
+@method_decorator(login_required, name='dispatch')
+class GenericDetailView(DetailView):
+	def get_data(self, obj):
+		"""
+		Este método debe ser sobreescrito en la clase hija 
+		para proporcionar los datos específicos.
+		"""
+		return {}
+
+	def render_to_response(self, context, **response_kwargs):
+		obj = self.get_object()
+		data = self.get_data(obj)
+		return JsonResponse(data)
+# ------------------------------------------------------------------------------------
+
+
+def obtener_requerimientos_modelo(modelo):
+	requerimientos = {}
+	
+	for field in modelo._meta.fields:
+		exclud_fields = ['usuario', 'estacion', 'fcontrol']
+		field_info = []
+		
+		if not field.primary_key and field.name not in exclud_fields:
+			if not field.blank:
+				field_info.append("Este campo es obligatorio")
+			
+			if hasattr(field, "max_length") and field.max_length is not None:
+				field_info.append(f"Debe tener un máximo de {field.max_length} caracteres")
+			
+			if field.unique:
+				field_info.append("Debe ser único")
+			
+			requerimientos[field.verbose_name] = field_info
+	
+	return requerimientos
+
+
+# neumatic\apps\ventas\views\factura_views.py
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect
+from django.db import transaction
+from django.db.models import F
+from django.db import DatabaseError
+from django.utils import timezone
+
+from .msdt_views_generics import *
+from ..models.factura_models import Factura
+from ...maestros.models.numero_models import Numero
+from ..forms.factura_forms import FacturaForm, DetalleFacturaFormSet
+from ..forms.factura_forms import SerialFacturaFormSet
+from ...maestros.models.base_models import ProductoStock
+from ...maestros.models.valida_models import Valida
+
+from entorno.constantes_base import TIPO_VENTA
+
+modelo = Factura
+
+#-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
+model_string = modelo.__name__.lower()   # Cuando el modelo es una sola palabra.
+
+#-- Usar esta forma cuando el modelo esté compuesto por más de una palabra: Ej. TipoCambio colocar "tipo_cambio".
+#model_string = "color"
+
+formulario = FacturaForm
+
+template_form = f"{model_string}_form.html"
+home_view_name = "home"
+list_view_name = f"{model_string}_list"
+create_view_name = f"{model_string}_create"
+update_view_name = f"{model_string}_update"
+delete_view_name = f"{model_string}_delete"
+
+# @method_decorator(login_required, name='dispatch')
+class FacturaListView(MaestroDetalleListView):
+	model = modelo
+	template_name = f"ventas/maestro_detalle_list.html"
+	context_object_name = 'objetos'
+
+	search_fields = [
+	 'id_factura',
+	 'numero_comprobante',
+	 'cuit',
+	 'id_cliente__nombre_cliente' #separar por guión bajo doble "__"
+	]
+
+	ordering = ['-id_factura']
+
+ 	#-- Encabezado de la Tabla.
+	table_headers = {
+		'id_factura': (1, 'ID'),
+		'compro': (1, 'Compro'),
+		'letra_comprobante': (1, 'Letra'),
+		'numero_comprobante': (1, 'Nro Comp'),
+		'fecha_comprobante': (1, 'fecha'),
+		'cuit': (1, 'CUIT'),
+		'id_cliente': (3, 'Cliente'),
+		'total': (2, 'Total'),
+		'opciones': (1, 'Opciones'),
+	}
+
+	#-- Columnas de la Tabla.
+	table_data = [
+		{'field_name': 'id_factura', 'date_format': None},
+		{'field_name': 'compro', 'date_format': None},
+		{'field_name': 'letra_comprobante', 'date_format': None},
+		{'field_name': 'numero_comprobante', 'date_format': None},
+  	{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
+		{'field_name': 'cuit', 'date_format': None},
+		{'field_name': 'id_cliente', 'date_format': None},
+		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
+	]
+
+	#cadena_filtro = "Q(nombre_color__icontains=text)"
+	extra_context = {
+		"master_title": model._meta.verbose_name_plural,
+		"home_view_name": home_view_name,
+		"list_view_name": list_view_name,
+		"create_view_name": create_view_name,
+		"update_view_name": update_view_name,
+		"delete_view_name": delete_view_name,
+		"table_headers": table_headers,
+		"table_data": table_data,
+		"model_string_for_pdf": "factura",  # ¡Solución clave aquí!
+	}
+
+	def get_queryset(self):
+			# Obtener el queryset base
+			queryset = super().get_queryset()
+
+			# Obtener el usuario actual
+			user = self.request.user
+
+			# Si el usuario no es superusuario, filtrar por sucursal
+			if not user.is_superuser:
+					queryset = queryset.filter(id_sucursal=user.id_sucursal)
+
+			# Aplicar búsqueda y ordenación
+			query = self.request.GET.get('busqueda', None)
+			if query:
+					search_conditions = Q()
+					for field in self.search_fields:
+							search_conditions |= Q(**{f"{field}__icontains": query})
+					queryset = queryset.filter(search_conditions)
+
+			return queryset.order_by(*self.ordering)
+ 
+	def get_context_data(self, **kwargs):
+				# Obtener el contexto base
+				context = super().get_context_data(**kwargs)
+				
+				# Agregar model_string al contexto
+				context['model_string'] = model_string  # Esto devolverá 'factura'
+				
+				# Mantener todos los valores de extra_context
+				if hasattr(self, 'extra_context'):
+						context.update(self.extra_context)
+						
+				return context
+
+# @method_decorator(login_required, name='dispatch')
+class FacturaCreateView(MaestroDetalleCreateView):
+	model = modelo
+	list_view_name = list_view_name
+	form_class = formulario
+	template_name = f"ventas/{template_form}"
+	success_url = reverse_lazy(list_view_name) # Nombre de la url.
+
+	#-- Indicar el permiso que requiere para ejecutar la acción:
+	# Obtener el nombre de la aplicación a la que pertenece el modelo.
+	app_label = model._meta.app_label
+	# Indicar el permiso eN el formato: <app_name>.<permiso>_<modelo>
+	permission_required = f"{app_label}.add_{model.__name__.lower()}"
+
+	# print("Entro a la vista")
+
+	def get_context_data(self, **kwargs):
+		data = super().get_context_data(**kwargs)
+
+		# print("Entro a get_context_data")
+
+		# Pasar variables adicionales al contexto
+		usuario = self.request.user
+		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
+		data['tipo_venta'] = TIPO_VENTA
+
+		if self.request.POST:
+			data['formset_detalle'] = DetalleFacturaFormSet(self.request.POST)
+			data['formset_serial'] = SerialFacturaFormSet(self.request.POST)
+		else:
+			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
+			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
+
+		data['is_edit'] = False  # Indicar que es una creación
+
+		return data
+
+	def form_valid(self, form):
+			context = self.get_context_data()
+			formset_detalle = context['formset_detalle']
+			formset_serial = context['formset_serial']
+
+			if not all([formset_detalle.is_valid(), formset_serial.is_valid()]):
+				return self.form_invalid(form)
+
+			try:
+					with transaction.atomic():
+							# 1. Validación mínima necesaria
+							deposito = form.cleaned_data.get('id_deposito')
+							if not deposito:
+									form.add_error('id_deposito', 'Debe seleccionar un depósito')
+									return self.form_invalid(form)
+
+							# 2. Validación para documentos pendientes
+							comprobante_venta = form.cleaned_data['id_comprobante_venta']
+							if comprobante_venta.pendiente:
+									comprobante_remito = form.cleaned_data.get('comprobante_remito')
+									remito = form.cleaned_data.get('remito')
+									
+									if not all([comprobante_remito, remito]):
+											form.add_error(None, 'Para este tipo de comprobante debe especificar el documento asociado')
+											return self.form_invalid(form)
+       
+       				# 3. Numeración
+							sucursal = form.cleaned_data['id_sucursal']
+							punto_venta = form.cleaned_data['id_punto_venta']
+							comprobante = form.cleaned_data['compro']
+							letra = form.cleaned_data['letra_comprobante']
+							fecha_comprobante = form.cleaned_data['fecha_comprobante']
+
+							numero_obj, created = Numero.objects.select_for_update(
+									nowait=True
+							).get_or_create(
+									id_sucursal=sucursal,
+									id_punto_venta=punto_venta,
+									comprobante=comprobante,
+									letra=letra,
+									defaults={'numero': 0}
+							)
+
+							nuevo_numero = numero_obj.numero + 1
+							Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+							
+							form.instance.numero_comprobante = nuevo_numero
+							form.instance.full_clean()
+
+							# 4. Guardado en el modelo Factura
+							self.object = form.save()
+       
+							# 5. ACTUALIZACIÓN DEL DOCUMENTO ASOCIADO (PARTE CLAVE)
+							if comprobante_venta.pendiente:
+									try:
+											# Buscar el documento asociado (remito) con estado NULL o vacío
+											documento_asociado = Factura.objects.filter(
+													Q(compro=form.cleaned_data['comprobante_remito']) &
+													Q(numero_comprobante=form.cleaned_data['remito']) &
+													(Q(estado="") | Q(estado__isnull=True))
+											).select_for_update().first()
+											
+											if documento_asociado:
+													# Actualización directa y eficiente
+													Factura.objects.filter(pk=documento_asociado.pk).update(
+															estado="F"
+													)
+													print(f"Documento {documento_asociado.compro}-{documento_asociado.numero_comprobante} actualizado a estado 'F'")
+											else:
+													print("Advertencia: No se encontró el documento asociado para actualizar")
+									except Exception as e:
+											print(f"Error al actualizar documento asociado: {str(e)}")
+											# No hacemos return para no impedir la creación de la factura principal
+       
+							# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
+							if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
+									autorizacion = form.cleaned_data['id_valida']
+									Valida.objects.filter(pk=autorizacion.pk).update(
+											hs=timezone.now().time(),
+											estatus_valida=False,
+											# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
+									)
+									print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
+       
+							# 7. Guardado en el modelo Detallefactura y DetalleSerial
+							formset_detalle.instance = self.object
+							detalles = formset_detalle.save()
+							
+							formset_serial.instance = self.object 
+							formset_serial.save() 						
+       
+							# 8. Actualización de inventario
+							for detalle in detalles:
+								# Solo actualizamos si es producto físico (tipo_producto = "P")
+								# print("entró al bucle detalles!!!")
+				
+								if (hasattr(detalle.id_producto, 'tipo_producto') and 
+										detalle.id_producto.tipo_producto == "P" and 
+										detalle.cantidad):
+										
+										# Actualización segura con bloqueo
+										# print("mult_stock", self.object.id_comprobante_venta.mult_stock)
+					
+										ProductoStock.objects.select_for_update().filter(
+												id_producto=detalle.id_producto,
+												id_deposito=deposito
+										).update(
+												#stock=F('stock') - detalle.cantidad,
+												stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_venta.mult_stock),
+												fecha_producto_stock=fecha_comprobante
+										)
+							
+							# Mensaje de confirmación de la creación de la factura y redirección
+							messages.success(self.request, f"Factura {nuevo_numero} creada correctamente")
+							return redirect(self.get_success_url())
+
+							
+			except DatabaseError as e:
+					messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+					return self.form_invalid(form)
+			except Exception as e:
+					messages.error(self.request, f"Error inesperado: {str(e)}")
+					return self.form_invalid(form)
+		
+	def form_invalid(self, form):
+		print("Entro a form_invalid")
+		print("Errores del formulario principal:", form.errors)
+
+		context = self.get_context_data()
+		formset_detalle = context['formset_detalle']
+
+		if formset_detalle:
+			print("Errores del formset:", formset_detalle.errors)
+
+		return super().form_invalid(form)
+
+
+	def get_success_url(self):
+		return reverse(list_view_name)
+
+	def get_initial(self):
+		initial = super().get_initial()
+		usuario = self.request.user  # Obtener el usuario autenticado
+
+		# Establecer valores iniciales basados en el usuario
+		initial['id_sucursal'] = usuario.id_sucursal
+		initial['id_punto_venta'] = usuario.id_punto_venta
+		initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
+		#initial['jerarquia'] = usuario.jerarquia
+
+		return initial
+
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
+
+		return kwargs
+
+# @method_decorator(login_required, name='dispatch')
+class FacturaUpdateView(MaestroDetalleUpdateView):
+	model = modelo
+	list_view_name = list_view_name
+	form_class = formulario
+	template_name = f"ventas/{template_form}"
+	success_url = reverse_lazy(list_view_name) # Nombre de la url.
+
+	#-- Indicar el permiso que requiere para ejecutar la acción:
+	# Obtener el nombre de la aplicación a la que pertenece el modelo.
+	app_label = model._meta.app_label
+	# Indicar el permiso eN el formato: <app_name>.<permiso>_<modelo>
+	permission_required = f"{app_label}.change_{model.__name__.lower()}"
+
+	def get_context_data(self, **kwargs):
+		data = super().get_context_data(**kwargs)
+		usuario = self.request.user
+		data['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
+		data['tipo_venta'] = TIPO_VENTA
+		# data['tipo_doc_ident'] = TipoDocumentoIdentidad.objects.filter(estatus_tipo_documento=True)
+
+		if self.request.POST:
+			data['formset_detalle'] = DetalleFacturaFormSet(self.request.POST, instance=self.object)
+			data['formset_serial'] = SerialFacturaFormSet(self.request.POST, instance=self.object)
+		else:
+			data['formset_detalle'] = DetalleFacturaFormSet(instance=self.object)
+			data['formset_serial'] = SerialFacturaFormSet(instance=self.object)
+
+		data['is_edit'] = True  # Indicar que es una edición
+		return data
+
+	def form_valid(self, form):
+		context = self.get_context_data()
+		formset_detalle = context['formset_detalle']
+		formset_serial = context['formset_serial']
+
+		if formset_detalle.is_valid():
+			try:
+				with transaction.atomic():
+					self.object = form.save()
+					formset_detalle.instance = self.object
+					formset_detalle.save()
+
+				messages.success(self.request, "La factura se ha actualizado correctamente.")
+				return super().form_valid(form)
+			except Exception as e:
+				messages.error(self.request, f"Error al actualizar la factura: {str(e)}")
+				return self.form_invalid(form)
+		else:
+			messages.error(self.request, "Error en el detalle de la factura. Revise los datos.")
+			return self.form_invalid(form)
+
+	def form_invalid(self, form):
+		print("Entro a form_invalid")
+		print("Errores del formulario principal:", form.errors)
+
+		context = self.get_context_data()
+		formset_detalle = context['formset_detalle']
+
+		if formset_detalle:
+			print("Errores del formset:", formset_detalle.errors)
+
+		return super().form_invalid(form)
+
+	def get_success_url(self):
+		return self.success_url
+
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
+
+		return kwargs
+
+
+# @method_decorator(login_required, name='dispatch')
+class FacturaDeleteView(MaestroDetalleDeleteView):
+	model = modelo
+	list_view_name = list_view_name
+	template_name = "base_confirm_delete.html"
+	success_url = reverse_lazy(list_view_name) # Nombre de la url.
+
+	#-- Indicar el permiso que requiere para ejecutar la acción:
+	# Obtener el nombre de la aplicación a la que pertenece el modelo.
+	app_label = model._meta.app_label
+	# Indicar el permiso en el formato: <app_name>.<permiso>_<modelo>
+	permission_required = f"{app_label}.delete_{model.__name__.lower()}"
+
+	extra_context = {
+		"accion": f"Eliminar {model._meta.verbose_name}",
+		"list_view_name" : list_view_name,
+		"mensaje": "Estás seguro que deseas eliminar el Registro"
+	}
+# ------------------------------------------------------------------------------
+
+
+# neumatic\apps\ventas\views\recibo_views.py
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect
+from django.db import transaction
+from django.db.models import F
+from django.db import DatabaseError
+from django.utils import timezone
+from django.contrib import messages
+from django.db.models import Q
+
+from .msdt_views_generics import *
+from ..models.factura_models import Factura
+from ..models.recibo_models import (
+	DetalleRecibo,
+	RetencionRecibo,
+	DepositoRecibo,
+	TarjetaRecibo,
+	ChequeRecibo
+)
+from ..forms.recibo_forms import (
+	FacturaReciboForm,
+	DetalleReciboFormSet,
+	RetencionReciboFormSet,
+	DepositoReciboFormSet,
+	TarjetaReciboFormSet,
+	ChequeReciboFormSet,
+	RetencionReciboForm,
+	RetencionReciboInputForm,
+	DepositoReciboInputForm,
+	TarjetaReciboInputForm,
+	ChequeReciboInputForm
+)
+
+modelo = Factura
+model_string = "recibo"  # Usamos "recibo" aunque el modelo sea Factura, para las URLs
+formulario = FacturaReciboForm
+
+template_form = f"{model_string}_form.html"
+home_view_name = "home"
+list_view_name = f"{model_string}_list"
+create_view_name = f"{model_string}_create"
+update_view_name = f"{model_string}_update"
+delete_view_name = f"{model_string}_delete"
+
+class ReciboListView(MaestroDetalleListView):
+	model = modelo
+	template_name = f"ventas/maestro_detalle_list.html"
+	context_object_name = 'objetos'
+
+	search_fields = [
+		'id_factura',
+		'numero_comprobante',
+		'cuit',
+		'id_cliente__nombre_cliente'
+	]
+
+	ordering = ['-id_factura']
+
+	table_headers = {
+		'id_factura': (1, 'ID'),
+		'compro': (1, 'Compro'),
+		'letra_comprobante': (1, 'Letra'),
+		'numero_comprobante': (1, 'Nro Comp'),
+		'fecha_comprobante': (1, 'Fecha'),
+		'cuit': (1, 'CUIT'),
+		'id_cliente': (3, 'Cliente'),
+		'total': (2, 'Total'),
+		'opciones': (1, 'Opciones'),
+	}
+
+	table_data = [
+		{'field_name': 'id_factura', 'date_format': None},
+		{'field_name': 'compro', 'date_format': None},
+		{'field_name': 'letra_comprobante', 'date_format': None},
+		{'field_name': 'numero_comprobante', 'date_format': None},
+		{'field_name': 'fecha_comprobante', 'date_format': 'd/m/Y'},
+		{'field_name': 'cuit', 'date_format': None},
+		{'field_name': 'id_cliente', 'date_format': None},
+		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
+	]
+
+	extra_context = {
+		"master_title": "Recibos",
+		"home_view_name": home_view_name,
+		"list_view_name": list_view_name,
+		"create_view_name": create_view_name,
+		"update_view_name": update_view_name,
+		"delete_view_name": delete_view_name,
+		"table_headers": table_headers,
+		"table_data": table_data,
+		"model_string_for_pdf": "factura",  # ¡Solución clave aquí!
+	}
+
+	def get_queryset(self):
+		queryset = super().get_queryset()
+		user = self.request.user
+
+		if not user.is_superuser:
+			queryset = queryset.filter(id_sucursal=user.id_sucursal)
+
+		# Filtrar solo facturas con recibos asociados
+		queryset = queryset.filter(
+		id_comprobante_venta__recibo=True
+		).distinct()
+
+		query = self.request.GET.get('busqueda', None)
+		if query:
+			search_conditions = Q()
+			for field in self.search_fields:
+				search_conditions |= Q(**{f"{field}__icontains": query})
+			queryset = queryset.filter(search_conditions)
+
+		return queryset.order_by(*self.ordering)
+
+class ReciboCreateView(MaestroDetalleCreateView):
+	model = modelo
+	list_view_name = list_view_name
+	form_class = formulario
+	template_name = f"ventas/{template_form}"
+	success_url = reverse_lazy(list_view_name)
+	
+	app_label = model._meta.app_label
+	permission_required = f"{app_label}.add_{model.__name__.lower()}"
+
+	def get_context_data(self, **kwargs):
+		data = super().get_context_data(**kwargs)
+		usuario = self.request.user
+
+		if self.request.POST:
+			data['formset_recibo'] = DetalleReciboFormSet(self.request.POST)
+			data['formset_retencion'] = RetencionReciboFormSet(self.request.POST)
+			data['formset_deposito'] = DepositoReciboFormSet(self.request.POST)
+			data['formset_tarjeta'] = TarjetaReciboFormSet(self.request.POST)
+			data['formset_cheque'] = ChequeReciboFormSet(self.request.POST)
+		else:
+			data['formset_recibo'] = DetalleReciboFormSet(queryset=DetalleRecibo.objects.none())
+			data['formset_retencion'] = RetencionReciboFormSet(queryset=RetencionRecibo.objects.none())
+			data['formset_deposito'] = DepositoReciboFormSet(queryset=DepositoRecibo.objects.none())
+			data['formset_tarjeta'] = TarjetaReciboFormSet(queryset=TarjetaRecibo.objects.none())
+			data['formset_cheque'] = ChequeReciboFormSet(queryset=ChequeRecibo.objects.none())
+
+		data['form_retencion_input'] = RetencionReciboForm()
+		data['form_deposito_input'] = DepositoReciboInputForm()  # Nuevo
+		data['form_tarjeta_input'] = TarjetaReciboInputForm()
+		data['form_cheque_input'] = ChequeReciboInputForm()
+		data['is_edit'] = False
+		return data
+
+	def form_valid_ini(self, form):
+		context = self.get_context_data()
+		formsets = [
+			context['formset_recibo'],
+			context['formset_retencion'],
+			context['formset_deposito'],
+			context['formset_tarjeta'],
+			context['formset_cheque']
+		]
+
+		if not all([formset.is_valid() for formset in formsets]):
+			return self.form_invalid(form)
+
+		try:
+			with transaction.atomic():
+				self.object = form.save()
+				
+				# Guardar todos los formsets
+				for formset in formsets:
+					formset.instance = self.object
+					formset.save()
+
+				messages.success(self.request, "Recibo creado correctamente")
+				return redirect(self.get_success_url())
+
+		except DatabaseError as e:
+			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+			return self.form_invalid(form)
+		except Exception as e:
+			messages.error(self.request, f"Error inesperado: {str(e)}")
+			return self.form_invalid(form)
+	
+	def form_valid(self, form):
+		context = self.get_context_data()
+		formsets = [
+			context['formset_recibo'],
+			context['formset_retencion'],
+			context['formset_deposito'],
+			context['formset_tarjeta'],
+			context['formset_cheque']
+		]
+
+		for i, formset in enumerate(formsets):
+			if not formset.is_valid():
+				print(f"Formset {i} no es válido. Errores:", formset.errors)
+				print(f"Management form errores:", formset.management_form.errors)
+				return self.form_invalid(form)
+
+		try:
+			with transaction.atomic():
+				self.object = form.save()
+				
+				for formset in formsets:
+					formset.instance = self.object
+					formset.save()
+
+				messages.success(self.request, "Recibo creado correctamente")
+				return redirect(self.get_success_url())
+
+		except DatabaseError as e:
+			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+			return self.form_invalid(form)
+		except Exception as e:
+			messages.error(self.request, f"Error inesperado: {str(e)}")
+			return self.form_invalid(form)
+	
+	def form_invalid(self, form):
+		print("Entro a form_invalid")
+		print("Errores del formulario principal:", form.errors)
+
+		context = self.get_context_data()
+		formset_recibo= context['formset_recibo']
+
+		if formset_recibo:
+			print("Errores del formset:", formset_recibo.errors)
+			return super().form_invalid(form)
+
+		if formset_recibo:
+			print("Errores del formset:", formset_recibo.errors)
+
+		return super().form_invalid(form)
+	
+	def get_success_url(self):
+		return reverse(list_view_name)
+	
+	def get_initial(self):
+		initial = super().get_initial()
+		usuario = self.request.user  # Obtener el usuario autenticado
+
+		# Establecer valores iniciales basados en el usuario
+		initial['id_sucursal'] = usuario.id_sucursal
+		initial['id_punto_venta'] = usuario.id_punto_venta
+		initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
+		#initial['jerarquia'] = usuario.jerarquia
+
+		return initial
+	
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['usuario'] = self.request.user  # Pasar el usuario autenticado
+
+		return kwargs
+
+
+class ReciboUpdateView(MaestroDetalleUpdateView):
+	model = modelo
+	list_view_name = list_view_name
+	form_class = formulario
+	template_name = f"ventas/{template_form}"
+	success_url = reverse_lazy(list_view_name)
+	
+	app_label = model._meta.app_label
+	permission_required = f"{app_label}.change_{model.__name__.lower()}"
+
+	def get_context_data(self, **kwargs):
+		data = super().get_context_data(**kwargs)
+		
+		if self.request.POST:
+			data['formset_recibo'] = DetalleReciboFormSet(self.request.POST, instance=self.object)
+			data['formset_retencion'] = RetencionReciboFormSet(self.request.POST, instance=self.object)
+			data['formset_deposito'] = DepositoReciboFormSet(self.request.POST, instance=self.object)
+			data['formset_tarjeta'] = TarjetaReciboFormSet(self.request.POST, instance=self.object)
+			data['formset_cheque'] = ChequeReciboFormSet(self.request.POST, instance=self.object)
+		else:
+			data['formset_recibo'] = DetalleReciboFormSet(
+				instance=self.object,
+				initial=[
+					{
+						'id_detalle_recibo': detalle.id_detalle_recibo,
+						'id_factura': detalle.id_factura,
+						'id_factura_cobrada': detalle.id_factura_cobrada_id,
+						'monto_cobrado': detalle.monto_cobrado,
+						'comprobante': detalle.id_factura_cobrada.id_comprobante_venta.nombre_comprobante_venta,
+						'letra_comprobante': detalle.id_factura_cobrada.letra_comprobante,
+						'numero_comprobante': detalle.id_factura_cobrada.numero_comprobante,
+						'fecha_comprobante': detalle.id_factura_cobrada.fecha_comprobante.strftime('%d/%m/%Y'),
+						'total': detalle.id_factura_cobrada.total,
+						'entrega': detalle.id_factura_cobrada.entrega,
+						'saldo': detalle.id_factura_cobrada.total - detalle.id_factura_cobrada.entrega,
+					} for detalle in DetalleRecibo.objects.filter(id_factura=self.object).select_related('id_factura_cobrada__id_comprobante_venta')
+				]
+			)
+			data['formset_retencion'] = RetencionReciboFormSet(instance=self.object)
+			data['formset_deposito'] = DepositoReciboFormSet(instance=self.object)
+			data['formset_tarjeta'] = TarjetaReciboFormSet(instance=self.object)
+			data['formset_cheque'] = ChequeReciboFormSet(instance=self.object)
+
+		# Usar RetencionReciboInputForm para la fila de inserción
+		data['form_retencion_input'] = RetencionReciboInputForm()
+		data['form_deposito_input'] = DepositoReciboInputForm()
+		data['form_tarjeta_input'] = TarjetaReciboInputForm()
+		data['form_cheque_input'] = ChequeReciboInputForm()
+		data['is_edit'] = True
+		return data
+
+	def form_valid(self, form):
+		context = self.get_context_data()
+		formsets = [
+			context['formset_recibo'],
+			context['formset_retencion'],
+			context['formset_deposito'],
+			context['formset_tarjeta'],
+			context['formset_cheque']
+		]
+
+		if not all([formset.is_valid() for formset in formsets]):
+			return self.form_invalid(form)
+
+		try:
+			with transaction.atomic():
+				self.object = form.save()
+				
+				for formset in formsets:
+					formset.instance = self.object
+					formset.save()
+
+				messages.success(self.request, "Recibo actualizado correctamente")
+				return redirect(self.get_success_url())
+
+		except Exception as e:
+			messages.error(self.request, f"Error al actualizar: {str(e)}")
+			return self.form_invalid(form)
+
+class ReciboDeleteView(MaestroDetalleDeleteView):
+	model = modelo
+	list_view_name = list_view_name
+	template_name = "base_confirm_delete.html"
+	success_url = reverse_lazy(list_view_name)
+	
+	app_label = model._meta.app_label
+	permission_required = f"{app_label}.delete_{model.__name__.lower()}"
+
+	extra_context = {
+		"accion": "Eliminar Recibo",
+		"list_view_name": list_view_name,
+		"mensaje": "¿Estás seguro que deseas eliminar este Recibo?"
+	}
+
+
+# neumatic\apps\ventas\views\consultas_factura_views.py
+from django.db.models import Sum
+from django.http import JsonResponse
+from django.db.models import Q, F
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST, require_GET
+from django.utils import timezone
+from django.conf import settings
+
+from datetime import date, timedelta
+
+from apps.maestros.models.base_models import (ProductoStock, 
+                                              ProductoMinimo,
+                                              AlicuotaIva,
+                                              ComprobanteVenta)
+from apps.ventas.models.factura_models import Factura, DetalleFactura
+from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.cliente_models import Cliente
+from apps.maestros.models.vendedor_models import Vendedor
+from apps.maestros.models.base_models import ComprobanteVenta
+from apps.maestros.models.descuento_vendedor_models import DescuentoVendedor
+from apps.maestros.models.numero_models import Numero
+from apps.maestros.models.valida_models import Valida
+
+
+import json
+
+def buscar_producto(request):
+    # Capturar parámetros de la solicitud
+    medida = request.GET.get('medida', '')
+    nombre = request.GET.get('nombre', '')
+    cai = request.GET.get('cai', '')
+    filtro_marca = request.GET.get('filtro_marca', 'primeras')  # Valor por defecto
+    id_cliente = request.GET.get('id_cliente', None)
+    
+    
+    # Obtener el vendedor asociado al cliente
+    vendedor = None
+    col_descuento = 0  # Valor por defecto
+    if id_cliente:
+        cliente = Cliente.objects.filter(id_cliente=id_cliente).select_related("id_vendedor").first()
+        if cliente and cliente.id_vendedor:
+            vendedor = cliente.id_vendedor
+            col_descuento = vendedor.col_descuento  # Obtener columna de descuento
+            
+            print("col_descuento", col_descuento)
+
+    # Realizar la consulta inicial
+    productos = Producto.objects.all()
+
+    # Aplicar filtros dinámicamente
+    if medida:
+        productos = productos.filter(medida__icontains=medida)
+    if nombre:
+        productos = productos.filter(nombre_producto__icontains=nombre)
+    if cai:
+        productos = productos.filter(id_cai__descripcion_cai__icontains=cai)
+        
+    # Aplicar filtro de marcas o stock
+    if filtro_marca == "primeras":
+        productos = productos.filter(id_marca__principal=True)
+    elif filtro_marca == "otras":
+        print("Entró a otras")
+        productos = productos.filter(id_marca__principal__in=[False, None])
+    elif filtro_marca == "stock":
+        print("stock")
+        productos = productos.annotate(total_stock=Sum("productostock__stock")).filter(total_stock__gt=0)
+
+    # Preparar los datos de respuesta usando lista por comprensión
+    resultados = []
+    for producto in productos:
+        # Filtrar los descuentos del vendedor por marca y familia
+        if col_descuento > 0:
+            dv = DescuentoVendedor.objects.filter(
+                id_marca=producto.id_marca.id_producto_marca, 
+                id_familia=producto.id_familia.id_producto_familia
+            ).first()
+        
+        # Obtener el valor del campo dinámico usando getattr
+        descuento = 0
+        if dv and col_descuento > 0:
+            descuento_field = f"desc{col_descuento}"
+            descuento = getattr(dv, descuento_field, 0)  # Devuelve 0 si el campo no existe
+            
+            #print("col_descuento:", col_descuento)
+            #print("descuento:", descuento)
+                
+        # Obtener alícuota IVA
+        alicuota_iva = 0
+        if producto.id_alicuota_iva:
+            alicuota_iva = producto.id_alicuota_iva.alicuota_iva
+
+        resultados.append({
+            'id': producto.id_producto,
+            'marca': producto.id_marca.nombre_producto_marca if producto.id_marca else 'Sin marca',
+            'medida': producto.medida,
+            'cai': producto.id_cai.descripcion_cai if producto.id_cai else 'Sin CAI',
+            'nombre': producto.nombre_producto,
+            'precio': producto.precio,
+            'stock': ProductoStock.objects.filter(id_producto=producto).aggregate(total_stock=Sum('stock'))['total_stock'] or 0,
+            'minimo': producto.minimo,
+            'id_marca': producto.id_marca.id_producto_marca if producto.id_marca else None,
+            'id_familia': producto.id_familia.id_producto_familia if producto.id_familia else None,
+            'descuento_vendedor': descuento,
+            'id_alicuota_iva': producto.id_alicuota_iva_id if producto.id_alicuota_iva else None,
+            'alicuota_iva': alicuota_iva
+
+        })
+
+    # print("Productos:", resultados)
+    # Devolver los resultados como JSON
+    return JsonResponse(resultados, safe=False)
+
+
+def detalle_producto(request, id_producto):
+    producto = get_object_or_404(Producto, id_producto=id_producto)
+
+    # Obtener stock por depósito
+    stock_por_deposito = ProductoStock.objects.filter(id_producto=producto).select_related('id_deposito')
+    stock_data = [
+        {
+            'deposito': stock.id_deposito.nombre_producto_deposito,
+            'stock': stock.stock
+        }
+        for stock in stock_por_deposito
+    ]
+    
+    # print("stock_por_deposito", stock_por_deposito)
+    
+    # Obtener mínimos por depósito (usando id_cai)
+    minimos_por_deposito = ProductoMinimo.objects.filter(id_cai=producto.id_cai).select_related('id_deposito')
+    minimos_data = [
+        {
+            'deposito': minimo.id_deposito.nombre_producto_deposito,
+            'minimo': minimo.minimo
+        }
+        for minimo in minimos_por_deposito
+    ]
+
+    return JsonResponse({'stock': stock_data, 'minimos': minimos_data})
+
+
+def validar_documento(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        print("Validando!")
+        
+        nro_doc_identidad = data.get('nro_doc_identidad')
+        print(nro_doc_identidad)
+
+        # Busca el documento en el modelo Cliente
+        try:
+            agenda = Cliente.objects.filter(cuit=nro_doc_identidad).first()
+            
+            if agenda:
+                print("Aquí es cliente:", agenda.nombre_cliente)
+                print("Aquí es domicilio:", agenda.domicilio_cliente)
+                
+                response_data = {
+                    'exists': True,
+                    'nombre_receptor': agenda.nombre_cliente,
+                    'domicilio_receptor': agenda.domicilio_cliente
+                }
+            else:
+                response_data = {
+                    'exists': False
+                }
+        except Exception as e:
+            print(f"Error al validar documento: {e}")
+            response_data = {
+                'exists': False,
+                'error': 'Error al validar el documento'
+            }
+
+        return JsonResponse(response_data)
+    
+# Búsqueda en Agenda para la ventana Modal de Factura
+def buscar_agenda(request):
+    busqueda_general = request.GET.get('busqueda_general', '')
+    print("Entro a buscar el Cliente")
+
+    try:
+        id_cliente = int(busqueda_general)
+        clientes = Cliente.objects.filter(
+            Q(id_cliente=id_cliente) |
+            Q(cuit=id_cliente) |
+            Q(nombre_cliente__icontains=busqueda_general)
+        )
+    except ValueError:
+        clientes = Cliente.objects.filter(
+            Q(nombre_cliente__icontains=busqueda_general)
+        )
+
+    resultados = clientes.values(
+        'id_cliente',
+        'cuit',
+        'nombre_cliente',
+        'domicilio_cliente',
+        'codigo_postal',
+        'movil_cliente',
+        'email_cliente',
+        'id_vendedor',
+        'id_vendedor__nombre_vendedor',
+        'id_vendedor__tipo_venta',
+        'id_tipo_iva__nombre_iva',
+        'id_tipo_iva__discrimina_iva',        
+        'condicion_venta',
+        'id_sucursal',
+        'vip',
+        'mayorista',
+        'sub_cuenta',
+        'observaciones_cliente',
+        'black_list',
+        'black_list_motivo',
+    )
+
+    #print("resultados", resultados)
+
+    return JsonResponse(list(resultados), safe=False)
+
+def buscar_cliente(request):
+    busqueda = request.GET.get('busqueda', '').strip()
+    
+    print("busqueda", busqueda)
+
+    # Si el input está vacío, no hacer búsqueda
+    if not busqueda:
+        return JsonResponse({'error': 'No se proporcionó un criterio de búsqueda'}, status=400)
+
+    try:
+        # Intentamos convertir a entero para buscar por ID o CUIT
+        busqueda_num = int(busqueda)
+        cliente = Cliente.objects.filter(
+            Q(id_cliente=busqueda_num) | Q(cuit=busqueda_num)
+        ).first()
+    except ValueError:
+        # Si no es un número, devolvemos error
+        return JsonResponse({'error': 'Solo se permiten valores numéricos'}, status=400)
+
+    if cliente:
+        response_data = {
+            'id_cliente': cliente.id_cliente,
+            'nombre': cliente.nombre_cliente,
+            'direccion': cliente.domicilio_cliente,
+            'cuit': cliente.cuit,
+            'movil': cliente.movil_cliente,
+            'email': cliente.email_cliente,
+            'id_vendedor': cliente.id_vendedor.id_vendedor if cliente.id_vendedor else None,
+            'nombre_vendedor': cliente.id_vendedor.nombre_vendedor if cliente.id_vendedor else "Sin asignar",
+            'id_sucursal': cliente.id_sucursal.id_sucursal,
+            'vip': cliente.vip,
+            'black_list': cliente.black_list,
+            'black_list_motivo': cliente.black_list_motivo
+        }
+    else:
+        response_data = {'error': 'No se encontraron resultados'}
+        
+    # print("response_data", response_data)
+
+    return JsonResponse(response_data)
+
+def datos_comprobante(request, pk):
+    try:
+        comprobante = ComprobanteVenta.objects.get(pk=pk)
+        
+        print("Entramos a la vista:", comprobante.compro_asociado)
+        
+        return JsonResponse({
+            'codigo': comprobante.codigo_comprobante_venta,
+            'es_remito': comprobante.remito,
+            'es_pendiente': comprobante.pendiente,
+            'es_presupuesto': comprobante.presupuesto,
+            'compro_asociado': comprobante.compro_asociado
+        })
+    except ComprobanteVenta.DoesNotExist:
+        return JsonResponse({'error': 'Comprobante no encontrado'}, status=404)
+    
+
+# Obtener número de comprobante
+def obtener_numero_comprobante(request):
+    # Obtener parámetros de la solicitud
+    id_sucursal = request.GET.get('id_sucursal')
+    id_punto_venta = request.GET.get('id_punto_venta')
+    comprobante = request.GET.get('comprobante')
+    letra = request.GET.get('letra')
+
+    if not all([id_sucursal, id_punto_venta, comprobante, letra]):
+        return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+
+    try:
+        # Obtener número referencial (último número + 1)
+        ultimo_numero = Numero.objects.filter(
+            id_sucursal=id_sucursal,
+            id_punto_venta=id_punto_venta,
+            comprobante=comprobante,
+            letra=letra
+        ).order_by('-numero').first()
+
+        numero_referencial = (ultimo_numero.numero + 1) if ultimo_numero else 1
+
+        # Obtener número definitivo (podría incluir lógica adicional aquí)
+        numero_definitivo = numero_referencial  # Por defecto son iguales
+
+        return JsonResponse({
+            'numero_referencial': numero_referencial,
+            'numero_definitivo': numero_definitivo,
+            'success': True
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)
+
+
+def validar_vencimientos_cliente(request, cliente_id):
+    try:
+        cliente = Cliente.objects.filter(pk=cliente_id).first()
+        if not cliente:
+            return JsonResponse({'error': 'Cliente no encontrado', 'requiere_autorizacion': False}, status=404)
+
+        # 1. Primero buscar factura en cuenta corriente 
+        factura_antigua = Factura.objects.filter(
+            id_cliente_id=cliente_id,
+            condicion_comprobante=2,
+            total__gt=0
+        ).exclude(
+            total=F('entrega')
+        ).select_related('id_vendedor', 'id_comprobante_venta'
+        ).order_by('fecha_comprobante').first()
+
+        if factura_antigua:
+            dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
+            fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
+            dias_vencidos = (date.today() - fecha_vencimiento).days
+
+            return JsonResponse({
+                'requiere_autorizacion': dias_vencidos > 0,
+                'datos_comprobante': {
+                    'tipo_comprobante': factura_antigua.id_comprobante_venta.nombre_comprobante_venta if factura_antigua.id_comprobante_venta else 'N/A',
+                    'letra_comprobante': factura_antigua.letra_comprobante or 'N/A',
+                    'numero_comprobante': factura_antigua.numero_comprobante or 'N/A',
+                    'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%d/%m/%Y') if factura_antigua.fecha_comprobante else 'N/A',
+                    'dias_credito': dias_credito,
+                    'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+                    'dias_vencidos': dias_vencidos,
+                    'monto_pendiente': float((factura_antigua.total or 0) - (factura_antigua.entrega or 0)),
+                    'vendedor': factura_antigua.id_vendedor.nombre_vendedor if factura_antigua.id_vendedor else 'No asignado'
+                }
+            })
+
+        # 2. Solo si no hay factura pendiente, buscar remito (nueva lógica)
+        remito_pendiente = Factura.objects.filter(
+            id_cliente_id=cliente_id,
+            estado="",
+            id_comprobante_venta__mult_venta=0,
+            id_comprobante_venta__mult_stock__lt=0
+        ).select_related('id_vendedor', 'id_comprobante_venta'
+        ).order_by('fecha_comprobante').first()
+
+        if remito_pendiente:
+            dias_credito = remito_pendiente.id_vendedor.vence_remito if remito_pendiente.id_vendedor else 0
+            fecha_vencimiento = remito_pendiente.fecha_comprobante + timedelta(days=dias_credito)
+            dias_vencidos = (date.today() - fecha_vencimiento).days
+
+            return JsonResponse({
+                'requiere_autorizacion': dias_vencidos > 0,
+                'datos_comprobante': {
+                    'tipo_comprobante': remito_pendiente.id_comprobante_venta.nombre_comprobante_venta if remito_pendiente.id_comprobante_venta else 'N/A',
+                    'letra_comprobante': remito_pendiente.letra_comprobante or 'N/A',
+                    'numero_comprobante': remito_pendiente.numero_comprobante or 'N/A',
+                    'fecha_comprobante': remito_pendiente.fecha_comprobante.strftime('%d/%m/%Y') if remito_pendiente.fecha_comprobante else 'N/A',
+                    'dias_credito': dias_credito,
+                    'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+                    'dias_vencidos': dias_vencidos,
+                    'monto_pendiente': 0,  # Remitos no tienen monto pendiente
+                    'vendedor': remito_pendiente.id_vendedor.nombre_vendedor if remito_pendiente.id_vendedor else 'No asignado'
+                }
+            })
+
+        # Si no hay ningún documento pendiente
+        return JsonResponse({'requiere_autorizacion': False})
+    
+    except Exception as e:
+        print(f"Error completo en validar_vencimientos_cliente - Cliente ID: {cliente_id}: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'error': 'Error interno al validar vencimientos',
+            'requiere_autorizacion': True,  # Importante: fallar hacia la seguridad
+            'detalle_error': str(e),
+            'cliente_id': cliente_id  # Para debugging
+        }, status=500)
+
+    
+@require_POST
+def valida_autorizacion(request):
+    if request.method != 'POST':
+        return JsonResponse({'valido': False, 'mensaje': 'Método no permitido'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        codigo = str(data.get('codigo', '')).strip()
+        cliente_id = data.get('cliente_id')
+        sucursal_id = data.get('sucursal_id')
+        fecha_comprobante = data.get('fecha_comprobante')
+        
+        '''
+        print("Datos recibidos:")
+        print(f"Código: {codigo}")
+        print(f"Cliente ID: {cliente_id}")
+        print(f"Sucursal ID: {sucursal_id}")
+        print(f"Fecha Comprobante: {fecha_comprobante}")
+        '''
+
+        # Validación básica del código
+        if not codigo.isdigit() or int(codigo) <= 0:
+            return JsonResponse({
+                'valido': False,
+                'mensaje': 'El código debe ser un entero positivo'
+            }, status=400)
+
+        # Buscar autorización
+        try:
+            autorizacion = Valida.objects.get(
+                id_valida=int(codigo),
+                estatus_valida=True
+            )
+            print("Autorización encontrada:", autorizacion)
+        except Valida.DoesNotExist:
+            return JsonResponse({
+                'valido': False,
+                'mensaje': 'Autorización no encontrada o inactiva'
+            }, status=404)
+
+        # Validar coincidencias (versión optimizada)
+        errores = []
+        
+        # Comparación de sucursal (usa id_sucursal_id para evitar JOIN innecesario)
+        if str(autorizacion.id_sucursal_id) != str(sucursal_id):
+            errores.append(f'Sucursal no coincide (BD: {autorizacion.id_sucursal_id} vs Recibido: {sucursal_id})')
+            
+        # Comparación de cliente (usa id_cliente_id)
+        if str(autorizacion.id_cliente_id) != str(cliente_id):
+            errores.append(f'Cliente no coincide (BD: {autorizacion.id_cliente_id} vs Recibido: {cliente_id})')
+            
+        # Comparación de fecha (formato YYYY-MM-DD)
+        if fecha_comprobante:
+            fecha_bd = autorizacion.fecha_valida.strftime('%Y-%m-%d') if autorizacion.fecha_valida else None
+            if fecha_bd != fecha_comprobante:
+                errores.append(f'Fecha no coincide (BD: {fecha_bd} vs Recibido: {fecha_comprobante})')
+
+        if errores:
+            print("Errores de validación:", errores)
+            return JsonResponse({
+                'valido': False,
+                'mensaje': ' | '.join(errores),
+                'detalle': {
+                    'sucursal_bd': autorizacion.id_sucursal_id,
+                    'cliente_bd': autorizacion.id_cliente_id,
+                    'fecha_bd': autorizacion.fecha_valida.strftime('%Y-%m-%d') if autorizacion.fecha_valida else None
+                }
+            }, status=403)
+
+        return JsonResponse({
+            'valido': True,
+            'mensaje': 'Autorización validada exitosamente',
+            'datos_autorizacion': {
+                'codigo': autorizacion.id_valida,
+                'sucursal': autorizacion.id_sucursal_id,
+                'cliente': autorizacion.id_cliente_id,
+                'fecha': autorizacion.fecha_valida.strftime('%Y-%m-%d') if autorizacion.fecha_valida else None
+            }
+        })
+
+    except Exception as e:
+        print(f"Error interno: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'valido': False,
+            'mensaje': f'Error interno: {str(e)}'
+        }, status=500)
+        
+
+@require_GET
+@login_required
+def verificar_remito(request):
+    comprobante_remito = request.GET.get('comprobante_remito', '').strip()
+    remito = request.GET.get('remito', '').strip()
+    
+    if not comprobante_remito or not remito:
+        return JsonResponse(
+            {'error': 'comprobante_remito y remito son requeridos'},
+            status=400
+        )
+
+    try:
+        # Búsqueda optimizada con first()
+        factura = Factura.objects.filter(
+            compro=comprobante_remito,
+            numero_comprobante=remito,
+        ).filter(
+            Q(estado="") | Q(estado__isnull=True)
+        ).select_related('id_comprobante_venta').only(
+            'id_factura',
+            'id_comprobante_venta__pendiente'
+        ).first()
+        
+        # print("factura.estado:", factura.estado, factura.compro, factura.numero_comprobante)
+                        
+        if not factura:
+            return JsonResponse({
+                'existe': False,
+                'id_factura': None,
+                'pendiente': None,
+                'detalles': []
+            })
+
+
+        # Obtener los detalles relacionados
+        detalles = DetalleFactura.objects.filter(
+            id_factura=factura.id_factura
+        ).select_related('id_producto').values(
+            'id_producto',
+            'id_producto__medida',
+            'producto_venta',
+            'cantidad',
+            'precio',
+            'precio_lista',
+            'desc_vendedor',
+            'descuento',
+            'gravado',
+            'alic_iva',
+            'iva',
+            'total',
+            'id_producto__id_alicuota_iva__alicuota_iva'
+        )
+        
+        # Convertir el QuerySet a lista y asegurar valores decimales como float
+        detalles_lista = []
+        for detalle in detalles:
+            detalle_dict = {
+                'id_producto': detalle['id_producto'],
+                'medida': detalle['id_producto__medida'],
+                'nombre': detalle['producto_venta'],
+                'cantidad': float(detalle['cantidad']),
+                'precio': float(detalle['precio']),
+                'precio_lista': float(detalle['precio_lista']),
+                'desc_vendedor': float(detalle['desc_vendedor']),
+                'descuento': float(detalle['descuento']),
+                'gravado': float(detalle['gravado']),
+                'alic_iva': float(detalle.get('id_producto__id_alicuota_iva__alicuota_iva', detalle['alic_iva'])),
+                'iva': float(detalle['iva']),
+                'total': float(detalle['total'])
+            }
+            detalles_lista.append(detalle_dict)
+
+        print(detalles_lista)
+
+        return JsonResponse({
+            'existe': True,
+            'id_factura': factura.id_factura,
+            'pendiente': factura.id_comprobante_venta.pendiente,
+            'detalles': detalles_lista  # Convertimos el QuerySet a lista
+        })
+
+    except Exception as e:
+        return JsonResponse(
+            {'error': f'Error en el servidor: {str(e)}'},
+            status=500
+        )
+
+
+# validar_deudas_cliente
+@require_GET
+@login_required
+def validar_deudas_cliente(request, cliente_id):
+    if not Cliente.objects.filter(id_cliente=cliente_id).exists():
+        return JsonResponse({
+            'success': True,
+            'has_debts': False,
+            'facturas_pendientes': [],
+            'message': 'Cliente no encontrado o sin deudas pendientes'
+        }, status=200)
+
+    facturas_pendientes = Factura.objects.filter(
+        id_cliente_id=cliente_id,
+        id_comprobante_venta__mult_saldo__isnull=False,
+        total__gt=F('entrega')
+    ).exclude(
+        id_comprobante_venta__mult_saldo=0
+    ).select_related('id_comprobante_venta').values(
+        'id_factura',
+        'letra_comprobante',
+        'numero_comprobante',
+        'fecha_comprobante',
+        'total',
+        'entrega',
+        'id_comprobante_venta__nombre_comprobante_venta'
+    )
+
+    resultados = []
+    for factura in facturas_pendientes:
+        factura_dict = {
+            'id_factura': factura['id_factura'],
+            'tipo_comprobante': factura['id_comprobante_venta__nombre_comprobante_venta'],
+            'letra_comprobante': factura['letra_comprobante'] or 'N/A',
+            'numero_comprobante': factura['numero_comprobante'] or 'N/A',
+            'fecha_comprobante': factura['fecha_comprobante'].strftime('%d/%m/%Y') if factura['fecha_comprobante'] else 'N/A',
+            'total': float(factura['total']),
+            'entrega': float(factura['entrega']),
+            'monto_pendiente': float(factura['total'] - factura['entrega']),
+        }
+        resultados.append(factura_dict)
+
+    has_debts = len(resultados) > 0
+
+    # print("resultados", resultados)
+
+    return JsonResponse({
+        'success': True,
+        'has_debts': has_debts,
+        'facturas_pendientes': resultados,
+        'message': 'No hay deudas pendientes' if not has_debts else 'Facturas pendientes encontradas'
+    }, status=200)
+
+
+# neumatic\apps\ventas\urls.py
+from django.urls import path
+from .views.factura_views import (FacturaListView, FacturaCreateView, 
+                                  FacturaUpdateView, FacturaDeleteView)
+
+from .views.recibo_views import (ReciboListView, ReciboCreateView, 
+                                ReciboUpdateView, ReciboDeleteView)
+
+from .views.consultas_factura_views import (buscar_agenda, 
+                                            buscar_producto,
+                                            buscar_cliente,
+                                            validar_documento,
+                                            detalle_producto,
+                                            datos_comprobante,
+                                            obtener_numero_comprobante,
+                                            validar_vencimientos_cliente,
+                                            validar_deudas_cliente,
+                                            valida_autorizacion,
+                                            verificar_remito)
+
+from .views.crear_agenda import crear_agenda
+from .views.genera_pdf import GeneraPDFView
+
+urlpatterns = [
+   path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
+   path('factura/crear/', FacturaCreateView.as_view(), name='factura_create'),
+   path('factura/editar/<int:pk>/', FacturaUpdateView.as_view(), name='factura_update'),
+   path('factura/eliminar/<int:pk>/', FacturaDeleteView.as_view(), name='factura_delete'),
+   
+   path('recibo/listar/', ReciboListView.as_view(), name='recibo_list'),
+   path('recibo/crear/', ReciboCreateView.as_view(), name='recibo_create'),
+   path('recibo/editar/<int:pk>/', ReciboUpdateView.as_view(), name='recibo_update'),
+   path('recibo/eliminar/<int:pk>/', ReciboDeleteView.as_view(), name='recibo_delete'),
+      
+   path('buscar/producto/', buscar_producto, name='buscar_producto'),
+   path('validar/documento/', validar_documento, name='validar_documento'),
+   path('buscar/agenda/', buscar_agenda, name='buscar_agenda'),
+   path('buscar/cliente/', buscar_cliente, name='buscar_agenda'),
+   
+   path('crear/agenda/', crear_agenda, name='crear_agenda'),
+   path('detalle_producto/<int:id_producto>/', detalle_producto, name='detalle_producto'),
+   path('comprobante/<int:pk>/codigo/', datos_comprobante, name='comprobante_codigo'),
+   path('obtener-numero-comprobante/', obtener_numero_comprobante, name='obtener_numero_comprobante'),
+   path('<str:model_name>/pdf/<int:pk>/', GeneraPDFView.as_view(), name='generic_pdf'),
+   path('clientes/<int:cliente_id>/validar-vencimientos/', validar_vencimientos_cliente, name='validar_vencimientos'),
+   path('clientes/<int:cliente_id>/validar-deudas-cliente/', validar_deudas_cliente, name='validar_deudas_cliente'),
+   path('clientes/validar-autorizacion/', valida_autorizacion, name='validar_autorizacion'),
+   path('verificar/remito/', verificar_remito, name='verificar_remito'),
+]

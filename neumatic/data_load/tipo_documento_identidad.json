@@ -1,0 +1,74 @@
+[
+    {
+        "codigo_afip": "67",
+        "estacion": "ESTACION03",
+        "estatus_tipo_documento_identidad": 1,
+        "fcontrol": "2025-07-25 10:51:21",
+        "id_tipo_documento_identidad": 1,
+        "id_user_id": 1,
+        "nombre_documento_identidad": "CUIT",
+        "tipo_documento_identidad": "67",
+        "usuario": null,
+        "ws_afip": "80"
+    },
+    {
+        "codigo_afip": "87",
+        "estacion": "ESTACION03",
+        "estatus_tipo_documento_identidad": 1,
+        "fcontrol": "2025-07-25 10:51:22",
+        "id_tipo_documento_identidad": 2,
+        "id_user_id": 1,
+        "nombre_documento_identidad": "CDI",
+        "tipo_documento_identidad": "87",
+        "usuario": null,
+        "ws_afip": "87"
+    },
+    {
+        "codigo_afip": "91",
+        "estacion": "ESTACION03",
+        "estatus_tipo_documento_identidad": 1,
+        "fcontrol": "2025-07-25 10:51:22",
+        "id_tipo_documento_identidad": 3,
+        "id_user_id": 1,
+        "nombre_documento_identidad": "CI Extranjera",
+        "tipo_documento_identidad": "91",
+        "usuario": null,
+        "ws_afip": "91"
+    },
+    {
+        "codigo_afip": "94",
+        "estacion": "ESTACION03",
+        "estatus_tipo_documento_identidad": 1,
+        "fcontrol": "2025-07-25 10:51:22",
+        "id_tipo_documento_identidad": 4,
+        "id_user_id": 1,
+        "nombre_documento_identidad": "Pasaporte",
+        "tipo_documento_identidad": "94",
+        "usuario": null,
+        "ws_afip": "94"
+    },
+    {
+        "codigo_afip": "50",
+        "estacion": "ESTACION03",
+        "estatus_tipo_documento_identidad": 1,
+        "fcontrol": "2025-07-25 10:51:22",
+        "id_tipo_documento_identidad": 5,
+        "id_user_id": 1,
+        "nombre_documento_identidad": "DNI",
+        "tipo_documento_identidad": "50",
+        "usuario": null,
+        "ws_afip": "96"
+    },
+    {
+        "codigo_afip": "99",
+        "estacion": "ESTACION03",
+        "estatus_tipo_documento_identidad": 1,
+        "fcontrol": "2025-07-25 10:51:22",
+        "id_tipo_documento_identidad": 6,
+        "id_user_id": 1,
+        "nombre_documento_identidad": "Otro",
+        "tipo_documento_identidad": "99",
+        "usuario": null,
+        "ws_afip": "99"
+    }
+]

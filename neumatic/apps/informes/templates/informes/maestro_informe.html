@@ -1,0 +1,141 @@
+<!-- neumatic\apps\informes\templates\informes\maestro_informe.html -->
+<!-- Plantilla base para renderizar las plantillas para reporte de CRUDs, PROCESOS y ESTADÍSTICAS -->
+ 
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Block Title -->
+{% block title %}
+	{{ master_title }}
+{% endblock title %}
+
+{% block style %}
+	body {
+		background-color: rgb(0, 204, 255);
+	}
+{% endblock style %}
+
+<!-- Block Header -->
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock header %}
+
+<!-- Block Main -->
+{% block main %}
+	{% block sidebar %}
+		{% if user.is_authenticated %} 
+			{% include 'sidebar.html' %}
+		{% endif %}
+	{% endblock sidebar %}
+	
+	<!-- Main Component Start -->
+	{% block maincomponent %}
+		
+		<!-- Main principalcomponent Start -->
+		{% block principalcomponent %}
+			<div id="layoutSidenav_content">
+				<main>	
+					<div class="container-fluid">
+						
+						<div class="card border-secondary mb-3 mt-2">
+							
+							<div class="card-header bg-primary bg-opacity-25 text-dark d-flex justify-content-between p-1">
+								<h4>{{ master_title }}</h4>
+								<!-- Botón cerrar lista -->
+								<button type="button" class="btn-close btn-close-blue" 
+									aria-label="Close"
+									onclick="window.location.href='{% url home_view_name %}'">
+								</button>
+							</div>
+							
+							<div class="card-body">
+								
+								<form method="GET" id="formulario" novalidate>
+									
+									<!-- Opciones de salida (opciones_reporte)-->
+									<!-- Opciones generales de reporte -->
+									<div class="row mb-2">
+										{% include 'informes/opciones_reporte.html' %}
+									</div>
+									
+									<!-- Formulario de parámetros de filtro del reporte (buscador_<model>) -->
+									<div class="row">
+										<div class="col col-12">
+											<!-- Incluir el buscador específico pasado como variable de contexto -->
+											{% include buscador_template %}
+										</div>
+									</div>
+									
+									<!-- Botones -->
+									<div class="row mt-3">
+										<div class="col-md-12">
+											<button type="reset" class="btn btn-secondary">Limpiar Filtros</button>
+											<button 
+												type="submit" 
+												class="btn btn-primary" 
+												id="generar"
+												data-pantalla-url="{% url url_pantalla %}"
+  												data-pdf-url="{% url url_pdf %}"
+												>
+												Generar
+											</button>
+										</div>
+									</div>
+								
+								</form>
+							</div>
+							
+						</div>
+						
+					</div>
+				</main>
+			</div>
+		{% endblock principalcomponent %}
+		<!-- Main principalcomponent End -->
+		
+	{% endblock maincomponent %}
+	
+{% endblock main %}
+
+{% block modals %}
+	<!-- Modal para mostrar errores -->
+	{% include 'modal_errors.html' %}
+	
+	<!-- Modal para buscar y seleccionar cliente -->
+	{% include 'informes/modal_buscar_cliente.html' %}
+	
+{% endblock modals %}
+
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			//-- Cargar y ejecutar el JS común.
+			const scriptOpciones = document.createElement('script');
+			scriptOpciones.src = "{% static 'js/opciones_reporte.js' %}";
+			scriptOpciones.onload = function() {
+				console.log("opciones_reporte.js cargado y ejecutado.");
+			};
+			scriptOpciones.onerror = function() {
+				console.error("Error al cargar opciones_reporte.js.");
+			};
+			document.head.appendChild(scriptOpciones);
+			
+			//-- Cargar el JS específico si está definido.
+			{% if js_file %}
+				const scriptEspecifico = document.createElement('script');
+				scriptEspecifico.src = "{% static js_file %}";
+				scriptEspecifico.onload = function() {
+					console.log("JS específico {{ js_file }} cargado y ejecutado.");
+				};
+				scriptEspecifico.onerror = function() {
+					console.error("Error al cargar el JS específico {{ js_file }}.");
+				};
+				document.head.appendChild(scriptEspecifico);
+			{% endif %}
+		});
+	</script>
+		
+{% endblock script %}

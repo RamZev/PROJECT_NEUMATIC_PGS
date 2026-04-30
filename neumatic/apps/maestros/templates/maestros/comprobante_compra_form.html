@@ -1,0 +1,194 @@
+<!-- neumatic\apps\maestros\templates\maestros\comprobante_compra_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Comprobante_Compra" 
+												aria-expanded="true" 
+												aria-controls="Información_Comprobante_Compra">
+												<strong>Información Comprobante Compra</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Comprobante_Compra">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_comprobante_compra.id_for_label }}">
+															{{ form.estatus_comprobante_compra.label }}
+														</label>
+														{{ form.estatus_comprobante_compra }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_comprobante_compra.id_for_label }}">
+															{{ form.codigo_comprobante_compra.label }}
+														</label>
+														{{ form.codigo_comprobante_compra }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_comprobante_compra.id_for_label }}">
+															{{ form.nombre_comprobante_compra.label }}
+														</label>
+														{{ form.nombre_comprobante_compra }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_impresion.id_for_label }}">
+															{{ form.nombre_impresion.label }}
+														</label>
+														{{ form.nombre_impresion }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_compra.id_for_label }}">
+															{{ form.mult_compra.label }}
+														</label>
+														{{ form.mult_compra }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_saldo.id_for_label }}">
+															{{ form.mult_saldo.label }}
+														</label>
+														{{ form.mult_saldo }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_stock.id_for_label }}">
+															{{ form.mult_stock.label }}
+														</label>
+														{{ form.mult_stock }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.mult_caja.id_for_label }}">
+															{{ form.mult_caja.label }}
+														</label>
+														{{ form.mult_caja }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_afip_a.id_for_label }}">
+															{{ form.codigo_afip_a.label }}
+														</label>
+														{{ form.codigo_afip_a }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_afip_b.id_for_label }}">
+															{{ form.codigo_afip_b.label }}
+														</label>
+														{{ form.codigo_afip_b }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_afip_c.id_for_label }}">
+															{{ form.codigo_afip_c.label }}
+														</label>
+														{{ form.codigo_afip_c }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_afip_m.id_for_label }}">
+															{{ form.codigo_afip_m.label }}
+														</label>
+														{{ form.codigo_afip_m }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.libro_iva }}
+																{{ form.libro_iva.label }}
+															</label>
+														</div>
+													</div>
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.remito }}
+																{{ form.remito.label }}
+															</label>
+														</div>
+													</div>
+													<div class="col-md-2 d-flex align-items-center">
+														<div class="form-check mt-lg-3">
+															<label class="form-check-label form-label text-primary">
+																{{ form.retencion }}
+																{{ form.retencion.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+		
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}

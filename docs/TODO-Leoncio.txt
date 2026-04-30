@@ -1,0 +1,71 @@
+-------------------------------------------------------------------------------
+2024/11/11 - 2024/11/15
+-------------------------------------------------------------------------------
+- Se crea el CRUD de Alícuotas IVA.
+- CRUD Clientes: Se deshabilita el combobox sucursal para que se asigne del usuario autenticado.
+- Corregida la actualización del mínimo en la tabla y el modal de Productos Mínimos en Productos.
+
+- Modelo Cliente:
+	- Se crea campo temporal codigo_cliente (para efectos de migraciones).
+	- El campo movil_cliente se establece como opcional (null=True, blank=True).
+	
+- Modelo Proveedor:
+	- El campo movil_proveedor se establece como opcional (null=True, blank=True).
+
+- Modelo AlicuotaIva:
+	- Se modifica el __str__() para que solo devuelva la alícuota: return f"{self.alicuota_iva:3.2f}%"
+
+- Modelo Numero:
+	Se cambia el campo punto_venta por id_punto_venta.
+
+- Se agrega Estado y ID en los listados de los CRUDs.
+
+- Se muestra el Id del registro en el título del formulario de actualización del CRUD.
+
+-------------------------------------------------------------------------------
+2024/11/16 - 2024/11/22
+-------------------------------------------------------------------------------
+- Modelo PuntoVenta:
+	- El campo punto_venta se establece como único (unique=True).
+
+- Modelo Provincia:
+	- El campo codigo_provincia se establece como único (unique=True).
+	- El campo codigo_provincia se amplía de 1 a 2 caracteres (max_length=2).
+
+- Modelo TipoDocumentoIdentidad:
+	- El campo tipo_documento_identidad se establece como único (unique=True).
+
+- Modelo TipoIva:
+	- El campo codigo_iva se establece como único (unique=True).
+
+- Modelo AlicuotaIva:
+	- Los campos codigo_alicuota y alicuota_iva se establecen como únicos (unique=True).
+
+- Modelo TipoPercepcionIb:
+	- El campo alicuota permite valores de 0 a 99.99
+	- Los campos monto y minimo permiten valores de 0 a 9999999999999
+
+- Modelo TipoRetencionIb:
+	- Los campos alicuota_inscripto y alicuota_no_inscripto permiten valores de 0 a 99.99
+	- Los campos monto y minimo permiten valores de 0 a 9999999999999
+
+- Modelo ComprobanteVenta:
+	- El campo codigo_comprobante_venta se establece como único (unique=True).
+
+- Modelo ComprobanteCompra:
+	- El campo codigo_comprobante_compra se establece como único (unique=True).
+
+- Modelo ProductoCai:
+	- El campo cai se establece como único (unique=True).
+
+- Modelo ProductoEstado:
+	- Se arega el campo estatus_producto_estado (BooleanField).
+
+-------------------------------------------------------------------------------
+2024/11/25 - 2024/11/29
+-------------------------------------------------------------------------------
+- Modelo User:
+	- Se le asigna un choice al campo jerarquia con un valor por defecto = "Z" (choices=JERARQUIA, default="Z").
+
+
+

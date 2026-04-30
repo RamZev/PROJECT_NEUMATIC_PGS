@@ -1,0 +1,59 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\base_reportes.html -->
+<!-- Plantilla base para mostrar los reportes en pantalla -->
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+		<meta charset="UTF-8">
+		{% load static %}
+		{% load custom_tags %}
+		<title>{% block title %}{{ titulo }}{% endblock %}</title>
+		<link rel="stylesheet" href="{{ css_url }}">
+		{% block extra_css %}{% endblock extra_css %}
+	</head>
+	<body>
+		
+		<!-- Header con dos secciones: top y bottom -->
+		{% block header %}
+			<header>
+				<!-- Sección Superior (25% | 75%) -->
+				<div class="header-top">
+					<div class="logo-section">
+						{% block logo_block %}
+							
+							{% if logo_url %}
+								<img src="{{ logo_url }}" alt="Logo" class="logo">
+							{% endif %}
+							
+						{% endblock %}
+					</div>
+					<div class="title-section">
+						{% block title_block %}
+							<p>Fecha: {{ fecha_hora_reporte }}</p>
+							<h2><i>{{ titulo }}</i></h2>
+						{% endblock %}
+					</div>
+				</div>
+				
+				<!-- Sección Inferior (50% | 50%) -->
+				<div class="header-bottom">
+					<div class="left-content">
+						{% block header_bottom_left %}
+							<!-- Contenido izquierdo dinámico (ej: datos del cliente) -->
+						{% endblock %}
+					</div>
+					<div class="right-content">
+						{% block header_bottom_right %}
+							<!-- Contenido derecho dinámico (ej: parámetros del reporte) -->
+						{% endblock %}
+					</div>
+				</div>
+			</header>
+		{% endblock header%}
+		
+		<!-- Contenido Principal -->
+		<main>
+			{% block content %}{% endblock content %}
+		</main>
+		
+	</body>
+</html>

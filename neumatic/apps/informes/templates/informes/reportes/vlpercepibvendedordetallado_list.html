@@ -1,0 +1,78 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlpercepibvendedordetallado_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		
+		<thead>
+			<tr>
+				<th>Comprobante</th>
+				<th>Fecha</th>
+				<th class="numeric" style="padding-right: 10px">Código</th>
+				<th>Cliente</th>
+				<th>C.U.I.T.</th>
+				<th class="numeric">Neto</th>
+				<th class="numeric">Percep IB</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for id_vendedor, data in objetos.items %}
+				<!-- Fila con los datos del Vendedor -->
+				<tr>
+					<td colspan="7" style="padding-top: 5px;">
+						<strong>Vendedor: </strong>
+						<strong>[{{ id_vendedor }}]</strong>
+						<strong>{{ data.vendedor }}</strong>
+					</td>
+				</tr>
+				
+				<!-- Filas con el detalle del comprobante -->
+				{% for comp in data.comprobantes %}
+					<tr>
+						<td style="white-space: pre">{{ comp.comprobante }}</td>
+						<td>{{ comp.fecha_comprobante|date:'d/m/Y' }}</td>
+						<td class="numeric" style="padding-right: 10px">{{ comp.id_cliente_id }}</td>
+						<td>{{ comp.nombre_cliente }}</td>
+						<td>{{ comp.cuit }}</td>
+						<td class="numeric">{{ comp.neto|formato_es_ar }}</td>
+						<td class="numeric">{{ comp.percep_ib|formato_es_ar }}</td>
+					</tr>
+				{% endfor %}
+				<tr>
+					<td colspan="5"></td>
+					<td class="numeric"><strong>{{ data.total_neto|formato_es_ar }}</strong></td>
+					<td class="numeric"><strong>{{ data.total_percep|formato_es_ar }}</strong></td>
+				</tr>
+				
+				<tr>
+					<td colspan="7"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			
+		</tbody>
+	</table>
+{% endblock content %}

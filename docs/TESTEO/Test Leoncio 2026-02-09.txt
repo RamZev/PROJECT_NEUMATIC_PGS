@@ -1,0 +1,160 @@
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- VENTAS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Comprobante Electrónico.
+	FACTURA ELECTRÓNICA:
+*	1 - Determinar el número de factura correctamente según condiciones del cliente: Si el cliente es Consum. Final muestra Letra A y debe ser B
+	    [Solucionado: En la plantilla se estaba preguntando por un valor booleano y era string.]
+	2 - Facturas: Tomar en cuenta el campo estatus_producto en las búsqueda. ????
+	3 - Mostrar aviso cuando la caja no esté abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
+	4 - Al Editar un comprobante desde el listado de comprobantes hay que deshabilitar el botón Actualizar, porque al pulsarlo da error.
+	
+	FACTURA REMITO:
+*	1 - Al indicar el Remito asociado sale un Alert Error al conectar con el servidor.
+	    [El alert sale cuando no consigue el comprobante asociado, bien sea porque no existe el número o no pertenece al mismo cliente.]
+	    [Mostrar mensajes más alusivos]
+*	2 - Se contemplará hacer Factura Remito a un Remito Interno (RM)???
+	    [No, solo a Remito (RF) y Remito Manual (RT)]
+*	3 - Se está permitiendo hacer Factura Remito de un cliente asociando un Remito de otro cliente.
+	    [Si es permitido]
+	4 - Al momento de editar desde el listado de comprobantes no muestra el tipo de remito asociado (compro) en el combobox.
+	5 - Al cargar los datos del Remito asociado, permite modificar el detalle en la factura. Se debe deshabilitar la edición???
+	
+	NOTA DE CRÉDITO/DÉBITO:
+	1 - El Comprobante Asociado solo debe ser Factura elect. (FF) y Factura Remito elect. (FR)???
+	2 - Al indicar el número del Comp. Asoc. y no lo encuentra, luego no deja escribir otro número, queda deshabilitado el campo. y si 
+	    el Comp. Asoc. indicado pertenece a otro cliente, se debe mostrar un mensaje alusivo y no deshabilitar el campo para poder indicar otro.
+	3 - Si se intenta guardar (Botón Guardar) y no se ha agregado ningún detalle, no deja guardar el comprobante (eso es correcto) pero debería notificarse
+	    con un mensaje al usuario. Además, si se han agregado seriales y se borra alguno antes de guardar, al volver renderizar el formulario por el error,
+	    se vuelven a mostrar todos los seriales incluso los eliminados previamente.
+	4 - Al editar el comprobante, no muestra el número de comprobante asociado.
+	
+	REMITO / REMITO DE MICHELIN / NOTA DE DÉBITO ELECT.
+*	1 - El campo 'estado' queda en null, debería ser vacío.
+	    [Arreglado, modificado el modelo Factura para que ese campo tenga un valor por defecto '']
+	
+	
+	
+	· CONTEMPLAR LOS CAMPOS NULL.
+	· SUSTITUIR LOS ARLET POR MODAL O MENSAJES EN LA PLANTILLA.
+	· CUANDO SE HACE UNA FACTURA (ELECT/MANUAL) Y LA CONDICIÓN ES 'CONTADO' ASIGNA EL MONTO A LOS CAMPOS TOTAL Y ENTREGA Y CUANDO SE HACE UNA NCR
+	  DUPLICA EL MONTO EN EL CAMPO 'ENTREGA'.
+	· GENERAR EL CÓDIGO QR PARA LOS PDFs.
+	
+
+Comprobante Manual.
+*	· Controlar si la caja no está abierta y/o la fecha del comprobante no corresponda a la de la caja abierta.
+*	· Al "Ver Registro" (Editar) desde la lista de Comprobantes hay que controlar el redireccionamiento del botón "Cancelar" porque está redireccionando al listado de Comprobantes Electrónicos.
+	  [Corregido: Cambié la plantilla usando la variable de entorno 'list_vie_name']
+	
+	
+	FACTURA (FA):
+	1 - Los número son manuales, tendrán alguna restricción, validación o condición???
+	2 - Está permitiendo crear (duplicando) Factura con el mismo número y misma letra. Se debe validar que no exista un comprobante con la misma letra y número.
+	
+	FACTURA REMITO (MF):
+	1 - Al crear una nueva e indicar el Remito Asociado, si no lo encuentra mostrar un mensaje apropiado. No está mostrando mensaje alguno y solo renderiza nuevamente el formulario.
+	2 - Al crearla no arrastra las observaciones ni los seriales desde el remito asociado.
+	
+	REMITO MANUAL (RT)
+	1 - El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
+	2 - Al crear uno nuevo y la condición de venta es 'Contado' el campo estado tiene el valor 'C' y debería ser vacío (valor por defecto según modelo).
+	
+	NOTA DE CRÉDITO (NC) / NOTA DE DÉBITO (ND)
+	1 - En la tabla comprobante_venta no tiene asociado ningún comprobante, le he asociado FACTURA (FA) y FACTURA REMITO (MF).
+	2 - Al indicar el número del Comp. Asoc. y no lo encuentra, deshabilita el campo no permitiendo intentar con otro número y si 
+	    el Comp. Asoc. indicado pertenece a otro cliente, se debe mostrar un mensaje alusivo y no deshabilitar el campo para poder indicar otro.
+	
+	
+	REMITO INT. MANUAL (MR)
+	1 - El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
+	2 - Permite modificar la REVENTA y el PRECIO en el detalle.
+	
+	REMITO DEV. MANUAL (MD)
+	1 - El campo número de comprobante está habilitado para indicar el número manualmente, pero no toma este sino que lo determina automáticamente desde el modelo Numero.
+	2 - Permite modificar la REVENTA y el PRECIO en el detalle.
+	
+	REMITO INT.DEV. MANUAL (MS)
+	1 - Permite agregar y modificar detalle.
+	2 - No marca es estado del comprobante asociado como cargado (estado='C' o estado='F') cuando se graba el Remito.
+	
+
+
+Recibo.
+	· Recibo Manual:  Cuando no hay número registrado en Numero no debe permitir hacer el recibo, debe mostrar un mensaje.
+	. He actualizado el campo letra en la tabla numero: los recibos (RB, RE) tenían la letra 'X' y la he cambiado a 'R', presupuesto (PR) tenía la letra 'X' y la he cambiado a 'P'
+	  Tal como están los comprobantes en la tabla factura al igual que en facturas.dbf.
+	· Se debe poner la validación si existe una caja abierta antes de mostrar el listado de recibos. (Al igual que con Compro. Elect/Manual).
+	· Validar los inputs de tipo fecha y mostrar mensaje apropiado.
+	· Permite eliminar un recibo. Es correcto??? Y si es permitido, se debe considerar recalcular el monto en el campo "Entrega" y todo lo que haya que revertir (campo estado, etc.).
+	
+	RECIBO (RB)
+	1 - Se está validando que el cliente tenga CUIT. Si el cliente tiene DNI cuyo número tiene longitud 8 exige que tenga 11 dígitos. Hay que validar por tipo de documento.
+	2 - Está permitiendo editar la fecha del recibo. Es correcto??? No ebería por el tema de la Caja.
+	3 - Al intentar grabar el recibo cuando la sumatoria total de formas de pago difiere del total cobrado en el alert salen 2 mensajes alusivos al mismo error, debería ser 1.
+	4 - Se pueden modificar algunos datos de los detalles, pero si se modifican los montos se deben actualizar los acumuladores (totales).
+	5 - En pago con cheques, al agregar un pago y se indica el código del banco, automáticamente coloca la fecha del día en el campo 'Fecha Ingreso' más no así cuando se escoge el 
+		banco en el combobox.
+	6 - No le está asignando el id_caja a los Recibos (RB).
+	7 - Entre los mensajes de validación en Pagos con Cheques, el mensaje "Fecha de Cobro" debe ser cónsono con el Label del campo (Fecha Ingreso o Fecha Cheque):
+		si se ingresa "Fecha Ingreso" y vacía la "Fecha Cheque" pide "Fecha Cobro"; Si de deja vacía "Fecha Ingreso" e ingresa "Fecha Cheque" pide "Fecha de Emisión".
+	8 - Permite introducir valores cero o negativos en todos los campos numéricos. Permitiendo guardar el recibo con montos negativos en los totales de formas de pago.
+	9 - En Pago con Cheques: a priori no valida como obligatorio los campos "Cuenta" y "CUIT" para insertar un pago con cheque, pero al intentar guardar el Recibo si valida esos campos
+		y no deja guardar el recibo pero no muestra ningún mensaje de error, además sucede lo siguiente:
+		· Quita todos los comprobantes del "Detalle del Recibo" (lista) menos el comprobante abonado, blanqueando los datos dde este a excepción del monto insdicado en el campo "Pagos".
+		· En la lista de "Detalle del Pago con Cheques" aparece un check al extremo derecho, que si se marca y se guarda el comprobante, borra ese detalle y permite guardar el recibo si 
+		  valida los datos (si cuadran los totales).
+		· Este comportamiento el igual para todos las formas de pago en el Recibo (Retenciones, Depósitos, Tarjetas y Cheques).
+   10 - Al agregar cualquier detalle (Retenciones, Depósitos, Tarjetas, Cheques) y se modifica el importe directamente en la tabla de detalle, permite guardar porque al momento de modificar
+		no se actualizan los totales y si estos están cuadrados permite guardar el recibo aunque diferan los montos luego de grabado. Se tienen que actualizar los totales para que no deje 
+		guardar si hay diferencias.
+	
+
+Presupuesto.
+*	1 - No deja guardar un presupuesto, está haciendo una validación sobre "Comprobante Interno NO Seleccionado". Este mensaje sale en la consola del navegador. Y cuando se devuelve a 
+		la lista de los presupuesto aparece un modal con este mensaje: "Error inesperado: cannot access local variable 'tipo_numeracion' where it is not associated with a value"
+		[Solucionado, no se inicializaba la variable tipo_numeracion para los presupuestos]
+	2 - Al "Ver Registro" (Editar) desde la lista de Presupuestos hay que deshabilitar el botón "Actualizar" porque si se pulsa revienta un error.
+*	3 - Al "Ver Registro" (Editar) desde la lista de Presupuestos hay que controlar el redireccionamiento del botón "Cancelar" porque está redireccionando al listado de Comprobantes Electrónicos.
+		[Corregido: Cambié la plantilla usando la variable de entorno 'list_vie_name']
+	4 - Revisar los títulos de los acordeones, deberían ser cónsonos con el comprobante. Ej, si se crea un Presupuesto dice "Detalle del Comprobante de Venta". Esto es igual para otros comprobantes.
+*	5 - Permite borrar Presupuesto. Se permitirá???
+		[No es relevanta, se puede eliminar, o tal vez lo puede hacer un usuario con jerarquía]
+*	6 - No debería exigir Operario en el caso de servicio ya que es un presupuesto y no vaya a afectar los reportes.
+		[Indistinto, pueden asignar cualquier operario ya que los reportes es sobre facturas no sobre presupuestos]
+
+Movimiento Interno.
+	1 - El título del acordeón debería decir "Detalle del Movimiento Interno" y no "Detalle del Comprobante de Venta". Aplicar generalidad.
+	2 - Al crear un MI y agregar detalle, no se debería pemitir modificar: Reventa, Descuento y Operario.
+	3 - No debería exigir Operario en el caso de servicio ya que es un Movimiento Interno y no vaya a afectar los reportes.
+
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- COMPRAS
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+· En el modelo ComprobanteCompra existen comprobantes: AJUSTE, DEVOLUCIÓN, FACTURA, NOTA DÉBITO, NOTA CRÉDITO, ORDEN PAGO pero sólo está contemplado la elaboración de
+  comprobantes: REMITOS, REMITOS INTERNOS, RETENCIONES.
+
+Remitos
+	1 - Permite modificar la letra del comprobante. Es correcto???
+	2 - Una vez creado el remito, al editarlo permite agregar más detalle. Al darle al botón "Actualizar" avisa que ya existe un docmprobante con ese número.
+	
+Retenciones
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+- CAJA
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Caja
+
+Movimiento de Caja
+
+
+
+
+######################################################################################################################################################################################
+RESUELTO
+######################################################################################################################################################################################
+- Formato (separador de miles) en los campos de tipo enteros (IDs, CUIT, Nro. Comprob.).
+- Agregado el combobox "Marketing" en formularios de Comprobantes de Ventas.
+- Agregado el campo "Marketing" en los reportes (Excel) de Tablas Dinámicas.
+- Acordeón "Detalle de Comprobante" ya aparece desplegado.

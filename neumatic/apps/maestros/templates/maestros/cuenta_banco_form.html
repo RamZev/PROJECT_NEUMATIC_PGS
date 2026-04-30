@@ -1,0 +1,171 @@
+<!-- neumatic\apps\maestros\templates\maestros\cuenta_banco_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Cuentas_de_Banco" 
+												aria-expanded="true" 
+												aria-controls="Información_Cuentas_de_Banco">
+												<strong>Información Cuentas de Banco</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Cuentas_de_Banco">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_cuenta_banco.id_for_label }}">
+															{{ form.estatus_cuenta_banco.label }}
+														</label>
+														{{ form.estatus_cuenta_banco }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.numero_cuenta.id_for_label }}">
+															{{ form.numero_cuenta.label }}
+														</label>
+														{{ form.numero_cuenta }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.tipo_cuenta.id_for_label }}">
+															{{ form.tipo_cuenta.label }}
+														</label>
+														{{ form.tipo_cuenta }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_banco.id_for_label }}">
+															{{ form.id_banco.label }}
+														</label>
+														{{ form.id_banco }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.sucursal.id_for_label }}">
+															{{ form.sucursal.label }}
+														</label>
+														{{ form.sucursal }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_postal.id_for_label }}">
+															{{ form.codigo_postal.label }}
+														</label>
+														{{ form.codigo_postal }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_proveedor.id_for_label }}">
+															{{ form.id_proveedor.label }}
+														</label>
+														{{ form.id_proveedor }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_moneda.id_for_label }}">
+															{{ form.id_moneda.label }}
+														</label>
+														{{ form.id_moneda }}
+													</div>
+												</div>										
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.cbu.id_for_label }}">
+															{{ form.cbu.label }}
+														</label>
+														{{ form.cbu }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.codigo_imputacion.id_for_label }}">
+															{{ form.codigo_imputacion.label }}
+														</label>
+														{{ form.codigo_imputacion }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.tope_negociacion.id_for_label }}">
+															{{ form.tope_negociacion.label }}
+														</label>
+														{{ form.tope_negociacion }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.reporte_reques.id_for_label }}">
+															{{ form.reporte_reques.label }}
+														</label>
+														{{ form.reporte_reques }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}

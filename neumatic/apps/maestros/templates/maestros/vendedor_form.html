@@ -1,0 +1,378 @@
+<!-- neumatic\apps\maestros\templates\maestros\vendedor_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_Vendedor" 
+												aria-expanded="true" 
+												aria-controls="Información_Vendedor">
+												<strong>Información Vendedor</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_Vendedor">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.estatus_vendedor.id_for_label }}">
+															{{ form.estatus_vendedor.label }}
+														</label>
+														{{ form.estatus_vendedor }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.nombre_vendedor.id_for_label }}">
+															{{ form.nombre_vendedor.label }}
+														</label>
+														{{ form.nombre_vendedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.telefono_vendedor.id_for_label }}">
+															{{ form.telefono_vendedor.label }}
+														</label>
+														{{ form.telefono_vendedor }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0" for="{{ form.domicilio_vendedor.id_for_label }}">
+															{{ form.domicilio_vendedor.label }}
+														</label>
+														{{ form.domicilio_vendedor }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.email_vendedor.id_for_label }}">
+															{{ form.email_vendedor.label }}
+														</label>
+														{{ form.email_vendedor }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.pje_auto.id_for_label }}">
+															{{ form.pje_auto.label }}
+														</label>
+														{{ form.pje_auto }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.pje_camion.id_for_label }}">
+															{{ form.pje_camion.label }}
+														</label>
+														{{ form.pje_camion }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.vence_factura.id_for_label }}">
+															{{ form.vence_factura.label }}
+														</label>
+														{{ form.vence_factura }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.vence_remito.id_for_label }}">
+															{{ form.vence_remito.label }}
+														</label>
+														{{ form.vence_remito }}
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="{{ form.id_sucursal.id_for_label }}">
+															{{ form.id_sucursal.label }}
+														</label>
+														{{ form.id_sucursal }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.tipo_venta.id_for_label }}">
+															{{ form.tipo_venta.label }}
+														</label>
+														{{ form.tipo_venta }}
+													</div>
+													
+													<!-- ---------------------------------------------------------------------------- -->
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.col_descuento.id_for_label }}">
+															{{ form.col_descuento.label }}
+														</label>
+														{{ form.col_descuento }}
+													</div>
+													<div class="col-md-2 d-flex align-items-end mb-2">
+														<button 
+															class="btn btn-outline-primary w-100" 
+															type="button" 
+															id="btnVerDescuentos"
+															data-bs-toggle="modal" 
+															data-bs-target="#descuentosModal"
+															style="height: 30px; padding-top: 6px; padding-bottom: 6px; display: flex; align-items: center; justify-content: center;"
+															{% if not form.col_descuento.value %}disabled{% endif %}>
+															<i class="bi bi-list-ul me-1"></i> Ver Descuentos
+														</button>
+													</div>
+													
+												</div>
+												<!-- ---------------------------------------------------------------------------- -->
+												<div class="row">
+													<div class="col-md-4 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.email_venta }}
+																{{ form.email_venta.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-4 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_saldo }}
+																{{ form.info_saldo.label }}
+															</label>
+														</div>
+													</div>
+													
+													<div class="col-md-4 d-flex align-items-center">
+														<div class="form-check mt-lg-4">
+															<label class="form-check-label form-label text-primary">
+																{{ form.info_estadistica }}
+																{{ form.info_estadistica.label }}
+															</label>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+	
+	<!-- NUEVO: Modal para mostrar la lista de descuentos -->
+	<div class="modal fade" id="descuentosModal" tabindex="-1" aria-labelledby="descuentosModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header bg-primary text-white">
+					<h5 class="modal-title" id="descuentosModalLabel">Descuentos por Marca y Familia</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="text-center" id="descuentosLoading" style="display: none;">
+						<div class="spinner-border text-primary" role="status">
+							<span class="visually-hidden">Cargando...</span>
+						</div>
+					</div>
+					<div class="table-responsive" id="descuentosTableContainer" style="display: none;">
+						<table class="table table-sm table-striped table-hover">
+							<thead class="table-dark">
+								<tr>
+									<th>Marca</th>
+									<th>Familia</th>
+									<th style="text-align: right; padding-right: 1rem;">Descuento (%)</th>
+								</tr>
+							</thead>
+							<tbody id="descuentosTableBody">
+								<!-- Los datos se cargarán aquí dinámicamente con JavaScript -->
+							</tbody>
+						</table>
+					</div>
+					<div class="alert alert-info" id="descuentosNoData" style="display: none;">
+						No hay descuentos definidos para esta columna.
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock modals %}
+
+<!-- Block extra_js ------------------------------------------------------ -->
+{% block script %}
+	{{ block.super }}
+	<script>
+		document.addEventListener('DOMContentLoaded', function() {
+			const colDescuentoInput = document.getElementById('{{ form.col_descuento.id_for_label }}');
+			const btnVerDescuentos = document.getElementById('btnVerDescuentos');
+			const descuentosModal = document.getElementById('descuentosModal');
+			const loadingSpinner = document.getElementById('descuentosLoading');
+			const tableContainer = document.getElementById('descuentosTableContainer');
+			const noDataDiv = document.getElementById('descuentosNoData');
+			const tableBody = document.getElementById('descuentosTableBody');
+			
+			//-- Función para validar si el valor es un número entero positivo.
+			function esNumeroColumnaValido(valor) {
+				if (!valor || valor === '') return false;
+				const num = parseInt(valor, 10);
+				return !isNaN(num) && Number.isInteger(num) && num > 0;
+			}
+			
+			function toggleButtonState() {
+				const columna = colDescuentoInput.value;
+				const esValido = esNumeroColumnaValido(columna);
+				btnVerDescuentos.disabled = !esValido;
+				
+				//-- Feedback visual opcional: agregar/remover clase CSS.
+				if (columna && !esValido) {
+					colDescuentoInput.classList.add('is-invalid');
+				} else {
+					colDescuentoInput.classList.remove('is-invalid');
+				}
+			}
+			
+			//-- Escuchar cambios en el input para habilitar/deshabilitar el botón.
+			colDescuentoInput.addEventListener('input', toggleButtonState);
+			colDescuentoInput.addEventListener('change', toggleButtonState);
+			
+			//-- Estado inicial.
+			toggleButtonState();
+			
+			//-- Función para cargar los datos en el modal.
+			function cargarDescuentosEnModal(columna) {
+				//-- Mostrar spinner y ocultar otras secciones.
+				loadingSpinner.style.display = 'block';
+				tableContainer.style.display = 'none';
+				noDataDiv.style.display = 'none';
+				tableBody.innerHTML = ''; //-- Limpiar datos anteriores.
+				
+				//-- Construir la URL para la petición AJAX.
+				const urlBase = "{% url 'get_descuentos_columna' columna='__columna__' %}";
+				const url = urlBase.replace('__columna__', 'desc' + columna);
+				
+				fetch(url)
+					.then(async response => {
+						const data = await response.json();
+						if (!response.ok) {
+							//-- Si la respuesta no es ok, lanzamos un error con el mensaje del servidor.
+							throw new Error(data.error || 'Error en la respuesta del servidor');
+						}
+						return data;
+					})
+					.then(data => {
+						loadingSpinner.style.display = 'none';
+						
+						if (data.error) {
+							console.error('Error:', data.error);
+							noDataDiv.textContent = 'Error al cargar los datos: ' + data.error;
+							noDataDiv.style.display = 'block';
+							return;
+						}
+						
+						if (data.length > 0) {
+							//-- Llenar la tabla con los datos.
+							data.forEach(item => {
+								const row = document.createElement('tr');
+								row.innerHTML = `
+									<td>${item.marca_nombre || ''}</td>
+									<td>${item.familia_nombre || ''}</td>
+									<td style="text-align: right; padding-right: 1rem;">${item.descuento_valor || '0.00'}</td>
+								`;
+								tableBody.appendChild(row);
+							});
+							tableContainer.style.display = 'block';
+						} else {
+							noDataDiv.style.display = 'block';
+						}
+					})
+					.catch(error => {
+						console.error('Error en la petición fetch:', error);
+						loadingSpinner.style.display = 'none';
+						//-- Mostramos el mensaje de error específico del servidor.
+						noDataDiv.textContent = error.message || 'Error de conexión.';
+						noDataDiv.style.display = 'block';
+					});
+			}
+			
+			//-- Cuando el modal se vaya a abrir.
+			descuentosModal.addEventListener('show.bs.modal', function (event) {
+				const columna = colDescuentoInput.value;
+				//const numColumna = parseInt(columna, 10);
+				
+				//-- Esta validación es solo por seguridad, ya que el botón ya debería estar deshabilitado.
+				if (esNumeroColumnaValido(columna)) {
+					//-- Actualizar el título del modal para mostrar la columna.
+					const modalTitle = document.getElementById('descuentosModalLabel');
+					//modalTitle.textContent = `Descuentos - Columna ${numColumna}`;
+					modalTitle.textContent = `Descuentos - Columna ${columna}`;
+					
+					//-- Cargar los datos.
+					cargarDescuentosEnModal(columna);
+				} else {
+					//-- Si por alguna razón el modal intenta abrirse con valor inválido, lo prevenimos.
+					event.preventDefault();
+				}
+			});
+			
+			//-- (Opcional) Limpiar el contenido del modal cuando se cierra para no mostrar datos antiguos.
+			descuentosModal.addEventListener('hidden.bs.modal', function () {
+				loadingSpinner.style.display = 'none';
+				tableContainer.style.display = 'none';
+				noDataDiv.style.display = 'none';
+				tableBody.innerHTML = '';
+			});
+		});
+	</script>
+{% endblock script %}

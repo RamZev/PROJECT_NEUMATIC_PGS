@@ -1,0 +1,22 @@
+<!-- neumatic\apps\maestros\templates\maestros\modal.html -->
+<!-- Modal para el manejo de los mensajes de error sobre los permisos de usuario. -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header text-white bg-primary opacity-75">
+				<h5 class="modal-title" id="errorModalLabel">Atención!</h5>
+				<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<ul class="list-unstyled" id="message-list">
+					{% for message in messages %}
+						<li class="alert alert-danger alert-{{ message.tags }}">{{ message }}</li>
+					{% endfor %}
+				</ul>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+			</div>
+		</div>
+	</div>
+</div>

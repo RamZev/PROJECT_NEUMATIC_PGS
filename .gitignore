@@ -1,0 +1,21 @@
+__pycache__/
+db.sqlite3
+db.sqlite3-journal
+*.sqlite3
+data/
+*.rar
+*.zip
+back/
+datavfox/
+venv/
+# migrations/
+staticfiles/
+neumatic_bak/
+neumatic_bak2/
+datavfox_old/
+datavfox_ult/
+bak/
+certif/
+neumatic_20251125/
+*.log
+neumatic/xml_afiparca/

@@ -1,0 +1,65 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\vlivaventassitrib_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Blque Header -------------------------------------------------------------------------- -->
+ 
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	<p>{{ datos_empresa.empresa }}</p>
+	<p>{{ datos_empresa.domicilio }}</p>
+	<p>C.P.: {{ datos_empresa.cp }} {{ datos_empresa.localidad }} - {{ datos_empresa.provincia }}</p>
+	<p>{{ datos_empresa.sit_iva }} C.U.I.T.:{{ datos_empresa.cuit }}</p>
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<table>
+		
+		<thead>
+			<tr>
+				<th colspan="2">Categoría</th>
+				<th class="numeric">Gravado</th>
+				<th class="numeric">Exento</th>
+				<th class="numeric">I.V.A.</th>
+				<th class="numeric">Percep IB</th>
+				<th class="numeric">Total</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.codigo_iva }}</td>
+					<td>{{ obj.nombre_iva }}</td>
+					<td class="numeric">{{ obj.gravado|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.exento|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.iva|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.percep_ib|formato_es_ar }}</td>
+					<td class="numeric">{{ obj.total|formato_es_ar }}</td>
+				</tr>
+			{% endfor %}
+			<!-- Totales -->
+			<tr style="border-top: 1px solid #000;">
+				<td colspan="2" style="text-align: right;"><strong>Totales:</strong></td>
+				<td class="numeric"><strong>{{ total_gravado|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ total_exento|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ total_iva|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ total_percep_ib|formato_es_ar }}</strong></td>
+				<td class="numeric"><strong>{{ total_total|formato_es_ar }}</strong></td>
+			</tr>			
+			
+		</tbody>
+	</table>
+{% endblock content %}

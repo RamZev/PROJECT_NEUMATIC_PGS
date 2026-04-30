@@ -1,0 +1,123 @@
+[
+    {
+        "descripcion_punto_venta": "San Justo 21",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 15:53:32",
+        "id_punto_venta": 1,
+        "id_sucursal_id": 1,
+        "id_user_id": 1,
+        "punto_venta": "00021",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Santa Fe 22",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 15:56:29",
+        "id_punto_venta": 2,
+        "id_sucursal_id": 2,
+        "id_user_id": 1,
+        "punto_venta": "00022",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Parana 23",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 15:56:14",
+        "id_punto_venta": 3,
+        "id_sucursal_id": 3,
+        "id_user_id": 1,
+        "punto_venta": "00023",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Rosario 24",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 15:59:01",
+        "id_punto_venta": 4,
+        "id_sucursal_id": 4,
+        "id_user_id": 1,
+        "punto_venta": "00024",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Baigorria Truck 37",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-19 13:40:14",
+        "id_punto_venta": 5,
+        "id_sucursal_id": 6,
+        "id_user_id": 1,
+        "punto_venta": "00037",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Rafaela 26",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:02:25",
+        "id_punto_venta": 6,
+        "id_sucursal_id": 7,
+        "id_user_id": 1,
+        "punto_venta": "00026",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Reconquista 27",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:13:49",
+        "id_punto_venta": 7,
+        "id_sucursal_id": 8,
+        "id_user_id": 1,
+        "punto_venta": "00027",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Baigorria - Recapados 37",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-19 13:39:53",
+        "id_punto_venta": 8,
+        "id_sucursal_id": 9,
+        "id_user_id": 1,
+        "punto_venta": "00037",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Interpuertos 43",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:28:23",
+        "id_punto_venta": 9,
+        "id_sucursal_id": 10,
+        "id_user_id": 1,
+        "punto_venta": "00043",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Rosario Sud 46",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:49:34",
+        "id_punto_venta": 10,
+        "id_sucursal_id": 11,
+        "id_user_id": 1,
+        "punto_venta": "00046",
+        "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Funes",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:49:34",
+        "id_punto_venta": 11,
+        "id_sucursal_id": 5,
+        "id_user_id": 1,
+        "punto_venta": "00025",
+        "usuario": "admin"
+    }
+]

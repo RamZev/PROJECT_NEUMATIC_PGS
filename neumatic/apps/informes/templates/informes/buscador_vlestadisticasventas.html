@@ -1,0 +1,67 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlestadisticasventas.html -->
+<div class="row">
+	
+	<div class="col-md-4">
+		{{ form.sucursal.label }}
+		{{ form.sucursal }}
+	</div>
+
+	<div class="col-md-2">
+		{{ form.id_cliente.label }}
+		<div class="d-flex align-items-stretch">
+			{{ form.id_cliente }}
+			<button 
+				type="button" 
+				class="btn btn-outline-primary btn-sm ms-2" 
+				title="Listar" 
+				data-bs-toggle="modal" 
+				data-bs-target="#agendaModal" 
+				style="height: calc(1.5em + 0.5rem + 2px);">
+					<i class="bi bi-card-list"></i>
+			</button>
+		</div>
+	</div>
+	
+	<div class="col-md-4">
+		{{ form.nombre_cliente.label }}
+		{{ form.nombre_cliente }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.fecha_desde.label }}
+		{{ form.fecha_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.fecha_hasta.label }}
+		{{ form.fecha_hasta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_marca_desde.label }}
+		{{ form.id_marca_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_marca_hasta.label }}
+		{{ form.id_marca_hasta }}
+	</div>
+</div>
+
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.agrupar.label }}
+		{{ form.agrupar }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.mostrar.label }}
+		{{ form.mostrar }}
+	</div>
+
+</div>

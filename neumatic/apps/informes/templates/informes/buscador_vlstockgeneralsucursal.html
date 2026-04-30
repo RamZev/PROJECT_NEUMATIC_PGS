@@ -1,0 +1,102 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlstockgeneralsucursal.html -->
+
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.id_familia_desde.label }}
+		{{ form.id_familia_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_familia_hasta.label }}
+		{{ form.id_familia_hasta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_marca_desde.label }}
+		{{ form.id_marca_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_marca_hasta.label }}
+		{{ form.id_marca_hasta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_modelo_desde.label }}
+		{{ form.id_modelo_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_modelo_hasta.label }}
+		{{ form.id_modelo_hasta }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-4">
+		<label class="form-label">{{ form.sucursales.label }}</label>
+		<div id="sucursales-counter" class="text-muted small mb-2">Seleccionadas: 0/8</div>
+		<ul class="list-group border border-primary" id="sucursales-list">
+			{% for checkbox in form.sucursales %}
+				<li class="list-group-item">
+					<input 
+						class="form-check-input me-1 sucursal-checkbox" 
+						type="checkbox" 
+						name="{{ checkbox.data.name }}" 
+						value="{{ checkbox.data.value }}" 
+						id="{{ checkbox.id_for_label }}"
+						{% if checkbox.data.selected %}checked{% endif %}
+						onchange="updateSucursalesCounter()"
+					>
+					<label class="form-check-label stretched-link" for="{{ checkbox.id_for_label }}">
+						{{ checkbox.choice_label }}
+					</label>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+	
+</div>
+
+<style>
+	.list-group-item:hover {
+		background-color: #f8f9fa;
+	}
+	.form-check-input:checked + .form-check-label {
+		color: #0d6efd; /* Texto azul al seleccionar */
+	}
+	.checkbox-disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+</style>
+<script>
+	function updateSucursalesCounter() {
+		const checkboxes = document.querySelectorAll('.sucursal-checkbox:checked');
+		const counter = document.getElementById('sucursales-counter');
+		const maxSucursales = 8;
+		
+		counter.textContent = `Seleccionadas: ${checkboxes.length}/${maxSucursales}`;
+		
+		//-- Deshabilitar checkboxes no seleccionados si se alcanzó el máximo.
+		if (checkboxes.length >= maxSucursales) {
+			document.querySelectorAll('.sucursal-checkbox:not(:checked)').forEach(checkbox => {
+				checkbox.disabled = true;
+				checkbox.parentElement.classList.add('checkbox-disabled');
+			});
+		} else {
+			document.querySelectorAll('.sucursal-checkbox').forEach(checkbox => {
+				checkbox.disabled = false;
+				checkbox.parentElement.classList.remove('checkbox-disabled');
+			});
+		}
+	}
+	
+	//-- Inicializar el contador al cargar la página.
+	document.addEventListener('DOMContentLoaded', function() {
+		updateSucursalesCounter();
+	});
+</script>

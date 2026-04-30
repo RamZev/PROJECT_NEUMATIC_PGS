@@ -1,0 +1,11 @@
+1) Antesde de migrar la tabla actividad.DBF 
+se asignó el valor 7 - SIN ACTIVIDAD DECLARADA
+al campo CODIGO, que tenía valor blanco o cero
+Ello implica hacer ese cambio en las tablas donde se utiliza
+Por ejemplo en el modelo Venta
+
+2) Antes de migrar la tabla vendedor.DBF
+se asignó el valor 1 - SANTA FE MOSTRADOR            
+al campo CODIGO, que tenía valor blanco o cero
+Ello implica hacer ese cambio en las tablas donde se utiliza
+Por ejemplo en el modelo Venta

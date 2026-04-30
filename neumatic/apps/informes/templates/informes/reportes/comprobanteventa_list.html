@@ -1,0 +1,86 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\comprobanteventa_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 90%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th>Estatus</th>
+				<th>Nombre Comprobante</th>
+				
+				<th class="numeric">M. Venta</th>
+				<th class="numeric">M. Saldo</th>
+				<th class="numeric">M. Stock</th>
+				<th class="numeric">M. Comisión</th>
+				<th class="numeric">M. Caja</th>
+				<th class="numeric" style="padding-right: 15px;">M. Estadis.</th>
+				
+				<th>Libro IVA</th>
+				<th>Estadis.</th>
+				<th>Elect.</th>
+				<th>Presup.</th>
+				<th>Pend.</th>
+				
+				<th>Cód. ARCA A</th>
+				<th>Cód. ARCA B</th>
+				
+				<th>I/M Auto</th>
+				<th>I/M Camión</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for obj in objetos %}
+				<tr>
+					<td>{{ obj.estatus_comprobante_venta|get_estatus }}</td>
+					<td>{{ obj.nombre_comprobante_venta }}</td>
+					
+					<td class="numeric">{{ obj.mult_venta }}</td>
+					<td class="numeric">{{ obj.mult_saldo }}</td>
+					<td class="numeric">{{ obj.mult_stock }}</td>
+					<td class="numeric">{{ obj.mult_comision }}</td>
+					<td class="numeric">{{ obj.mult_caja }}</td>
+					<td class="numeric" style="padding-right: 15px;">{{ obj.mult_estadistica }}</td>
+					
+					<td>{{ obj.libro_iva|get_si_no }}</td>
+					<td>{{ obj.estadistica|get_si_no }}</td>
+					<td>{{ obj.electronica|get_si_no }}</td>
+					<td>{{ obj.presupuesto|get_si_no }}</td>
+					<td>{{ obj.pendiente|get_si_no }}</td>
+					
+					<td>{{ obj.codigo_afip_a }}</td>
+					<td>{{ obj.codigo_afip_b }}</td>
+					
+					<td>{{ obj.info_michelin_auto|get_si_no }}</td>
+					<td>{{ obj.info_michelin_camion|get_si_no }}</td>
+				</tr>
+			{% endfor %}
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

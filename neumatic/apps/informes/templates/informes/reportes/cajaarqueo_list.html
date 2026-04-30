@@ -1,0 +1,61 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\cajaarqueo_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 50%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th class="numeric">Cantidad</th>
+				<th class="numeric" style="padding-right: 15px">Valor</th>
+				<th>Detalle</th>
+				<th class="numeric">Total</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for objeto in objetos %}
+				<tr>
+					<td class="numeric">{{ objeto.cantidad|formato_es_ar_entero }}</td>
+					<td class="numeric" style="padding-right: 15px">{{ objeto.valor|formato_es_ar }}</td>
+					<td>{{ objeto.detalle }}</td>
+					<td class="numeric">{{ objeto.total|formato_es_ar }}</td>
+				</tr>
+				
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="4"><hr></td>
+			</tr>
+			<tr>
+				<td colspan="3" style="text-align: right;"><strong>Total en Caja:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

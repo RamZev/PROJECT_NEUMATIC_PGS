@@ -1,0 +1,62 @@
+<!-- neumatic\apps\informes\templates\informes\opciones_reporte.html -->
+
+<!-- Tipo de Salida -->
+<div class="col-md-4">
+	Tipo de Salida:
+	<div class="form-check">
+		<input class="form-check-input" type="radio" name="tipo_salida" id="pantalla" value="pantalla" checked>
+		<label class="form-check-label" for="pantalla">Vista Preliminar en Pantalla</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="radio" name="tipo_salida" id="pdf_preliminar" value="pdf_preliminar">
+		<label class="form-check-label" for="pdf_preliminar">Vista Preliminar en PDF</label>
+	</div>
+	
+	<div class="form-check">
+		<input class="form-check-input" type="radio" name="tipo_salida" id="excel_preliminar" value="excel_preliminar">
+		<label class="form-check-label" for="excel_preliminar">Vista Preliminar en Excel</label>
+	</div>
+	
+	<div class="form-check">
+		<input class="form-check-input" type="radio" name="tipo_salida" id="csv_preliminar" value="csv_preliminar">
+		<label class="form-check-label" for="csv_preliminar">Vista Preliminar en CSV</label>
+	</div>
+	
+	<div class="form-check">
+		<input class="form-check-input" type="radio" name="tipo_salida" id="email_envio" value="email">
+		<label class="form-check-label" for="email_envio">Envío por eMail</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="radio" name="tipo_salida" id="whatsapp_envio" value="whatsapp">
+		<label class="form-check-label" for="whatsapp_envio">Envío por WhatsApp</label>
+	</div>
+</div>
+
+<!-- Formato de Envío -->
+<div class="col-md-4">
+	Formato de Envío:
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_pdf" value="pdf">
+		<label class="form-check-label" for="formato_pdf">PDF</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_excel" value="excel">
+		<label class="form-check-label" for="formato_excel">Excel</label>
+	</div>
+	<div class="form-check">
+		<input class="form-check-input" type="checkbox" name="formato_envio" id="formato_csv" value="csv">
+		<label class="form-check-label" for="formato_csv">CSV</label>
+	</div>
+	
+	<!-- Botón para seleccionar todos los formatos -->
+	<button type="button" class="btn btn-link p-0 mt-1" onclick="selectAllFormats()">Seleccionar Todos</button>
+</div>
+
+<!-- Detalles de Contacto -->
+<div class="col-md-4">
+	<label for="email">eMAIL</label>
+	<input type="email" class="form-control mb-2" id="email" name="email" placeholder="email@example.com" autocomplete="off">
+	
+	<label for="celular">Celular</label>
+	<input type="tel" class="form-control" id="celular" name="celular" placeholder="Número de celular">
+</div>

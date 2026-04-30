@@ -1,0 +1,64 @@
+                    const newFormHTML = `
+                    <tr data-form-index="${currentIndex}" class="small-font">
+
+                        <!-- Inputs ocultos para manejar relaciones -->
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-id_detalle_factura" 
+                            id="id_detallefactura_set-${currentIndex}-id_detalle_factura">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-id_factura" 
+                            id="id_detallefactura_set-${currentIndex}-id_factura">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-id_producto" 
+                            id="id_detallefactura_set-${currentIndex}-id_producto" value="${producto.id}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-precio_lista" 
+                            id="id_detallefactura_set-${currentIndex}-precio_lista" value="${producto.precio}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-desc_vendedor" 
+                            id="id_detallefactura_set-${currentIndex}-desc_vendedor" value="${producto.descuento_vendedor}">
+                        <td>${producto.medida}</td> <!-- Mostrar medida -->
+
+                        <td>
+                            <input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
+                                class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}>
+                        </td>
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
+                                class="${formControlClass} text-end" value="${cantidad}" min="1" step="1" required>
+                        </td>
+                        <td>
+                            <select name="detallefactura_set-${currentIndex}-reventa" class="${formControlClass}" required>
+                                <option value="M" ${valorPorDefecto === "M" ? "selected" : ""}>M</option>
+                                <option value="R" ${valorPorDefecto === "R" ? "selected" : ""}>R</option>
+                                <option value="E" ${valorPorDefecto === "E" ? "selected" : ""}>E</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-precio" 
+                                class="${formControlClass} text-end" value="${precioConDescuento}" ${nombreInputAttributes}
+                                min="0" step="0.1">
+                        </td>
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-descuento" 
+                                class="${formControlClass} text-end" value="0" step="0.1" min="0">
+                        </td>
+
+                        <!-- Campos OCULTOS para IVA -->
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-gravado" 
+                        value="${gravado}">
+                        <input type="hidden" name="detallefactura_set-${currentIndex}-alic_iva" 
+                        value="${parseFloat(producto.alicuota_iva || 0).toFixed(2)}">
+                        <input type="hidden" 
+                        name="detallefactura_set-${currentIndex}-iva" 
+                        value="${iva}">
+                        
+                        <td>
+                            <input type="number" name="detallefactura_set-${currentIndex}-total" 
+                                class="${formControlClass} text-end" value="${montoTotal}" readonly>
+                        </td>
+                        
+                        <td>
+                            <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${currentIndex}" 
+                                data-toggle="tooltip" title="Eliminar">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                            <input type="checkbox" name="detallefactura_set-${currentIndex}-DELETE" class="delete-checkbox" style="display: none;">
+                        </td>
+                    </tr>
+                    `;

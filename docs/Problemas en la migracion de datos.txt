@@ -1,0 +1,59 @@
+TABLA cliente
+tiene todos los tipo_iva_id = 1
+todas tipo_documenteo_identidad_id = 1
+todas las condicion_venta = 0 
+todos tipo_persona = blanco
+todos campo vip = 0
+el campo sub_cuenta es numero porque debe coincidir con un codigo de cliente de esta misma tabla (ok)
+
+TABLA factura
+no esta migrando el campo percep_ib estan todos en 0 
+las suma de los campos gravado + iva + exento + percep_ib debe ser igual al total
+el campo stock_cli estan todos en 0
+los campos nombre_factura, domicilio_factura, cuit, no deberian existir
+
+
+OBSERVACIONES en la tabla clientes.dbf
+Están pendientes los puntos 2) Y 4)
+
+1) Se eliminaron los clientes sin nombre. 
+Luego de verificar que su código no existe en la tabla facturas.dbf (RESUELTO)
+verfclfa.prg
+
+2) En el campo TIPOCLI hay estos valores: "", "F", "J"
+Existen 5707 registros sin valor asignado
+¿Qué criterio aplico para asignarles "F" o "J" (PENDIENTE)
+
+3) En el campo SITIVA hay estos valores: "", "CF", "EXE", "RI", "RMT"
+Solo se detectaron dos registros con valores en blanco, codigo = 155999, 156725
+Se eliminaron los dos porque no existen en la tabla facturas.dbf (RESUELTO)
+
+4) En el campo CONVTA hay estos valores: 0, 1, 2 y 3 
+Hay 628 registros con valor 0 y 216 registros con valor 3
+Pero en nuetra constante solo tenemos para el modelo Cliente:
+
+CONDICION_VENTA = [
+	(1, 'Contado'),
+	(2, 'Cuenta Corriente'),
+]
+
+Qué criterios aplicamos con los valores 0 y 3? (PENDIENTE)
+
+5) En el campo TIPODOC hay estos valores: "", "CI", "CUT", "DNI", "LC", "LE"
+Se encontraron 50 clientes con valores en blanco.
+Se verificó que esos clientes no estaban en facturas.dbf y se eliminaron  (RESUELTO)
+verfcltd.prg
+
+6) Se eliminaron los clientes sin CUIT. 
+Luego de verificar que su código no existe en la tabla facturas.dbf (RESUELTO)
+verfclcu.prg
+
+
+Cambios en los modelos:
+
+Cliente
+Factura
+DetalleFactura
+DescuentoVendedor
+
+

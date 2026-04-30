@@ -1,0 +1,98 @@
+Punto de Venta [SOLUCIONADO]
+[SOLUCIONADO] - Al dar de alta un punto de venta me deja duplicarlo
+
+-------------------------------------------------------------------------------------------------------------------------------
+Clientes [SOLUCIONADO]
+[SOLUCIONADO] - En clientes cuando Ingreso un CUIT debe verificar si existe y pedir si quiere modificar el existente o agregar uno nuevo  ???
+	Cuando se crea: Si se duplica que de una advertencia, pero lo permita
+	Cuando se actualiza: Si se duplica que de una advertencia, pero lo permita
+
+[SOLUCIONADO] - En clientes si es nuevo ingreso, el operador o usuario puede cargar todos los campos, ahora, si es una modificacion hay campos 
+  que no los puede modificar o el usuario debe tener un nivel < K (A - K) - 
+	
+	Usar la jerarquía para deshabilitar esos elementos
+	Usar un choice (contante) para seleccionar la jerarquía
+	
+	Los campos protegidos son Vendedor, Telefonos, mail (con la jerarquía)
+	
+[SOLUCIONADO] - En clientes cuando se ingresa la sub cuenta debe ser validado el cliente ingresado
+	Validar por el ID
+
+[SOLUCIONADO] - En el buscador agregar el ID para buscar 
+	Agregarlo al filtro de búsqueda
+
+-------------------------------------------------------------------------------------------------------------------------------
+Proveedores [SOLUCIONADO]
+[SOLUCIONADO] - Si forzas varios errores por campos vacios o CUIT duplicados, te cambia la provincia y localidad, a veces que avisa que no tiene localidad 
+  pero a veces solo modifica la provincia y localidad por cualquier otra
+
+	Revisar y hacer pruebas buscando el error
+	
+[SOLUCIONADO] - En el buscardor agregar el ID para buscar 
+	idem al anterior - Principalmente en el modelo Cliente y Proveedor
+
+-------------------------------------------------------------------------------------------------------------------------------
+Depositos
+[SOLUCIONADO] - Ordenar por Sucursal en el listado inicial
+
+-------------------------------------------------------------------------------------------------------------------------------
+Estados de Productos [SOLUCIONADO]
+(Faltante, Disponible, Pocos, Ofertas, )
+	D: Disponibles.
+	E: Entrantes.
+	F: Faltantes.
+	O: Ofertas.
+	P: Pocas.
+
+[SOLUCIONADO] - Falta el campo Estatus y hay uno que dice estado, seguramente es el codigo de estado, si es el codigo 
+				estado deberia permitir solo mayusculas
+[SOLUCIONADO] - Me esta dejando duplicar el estado
+
+-------------------------------------------------------------------------------------------------------------------------------
+Codigos de Ventas [SOLUCIONADO]
+[SOLUCIONADO] - Me deja duplicar el codigo de comprobante y tambien me deja modificar ese codigo, no se como grabaria en la tablas de ventas
+[SOLUCIONADO] - quitar la columna ID (En el listado)
+
+-------------------------------------------------------------------------------------------------------------------------------
+Codigo de Compras [SOLUCIONADO]
+[SOLUCIONADO] - Igual a ventas
+[SOLUCIONADO] - quitar la columna ID (En el listado)
+
+-------------------------------------------------------------------------------------------------------------------------------
+Provincias [SOLUCIONADO]
+[SOLUCIONADO] - Te permite duplicar el codigo
+	Aplicar UNIQUE
+
+-------------------------------------------------------------------------------------------------------------------------------
+Tipo de Documento de Identidad [SOLUCIONADO] 
+[SOLUCIONADO] - Permite duplicar (el tipo seria un codigo unico)
+	Aplicar UNIQUE 
+[SOLUCIONADO] - quitar la columna ID  (En el listado)
+
+-------------------------------------------------------------------------------------------------------------------------------
+Tipo de IVA [SOLUCIONADO] 
+[SOLUCIONADO] - Permite duplicar (el codigo de IVA seria un codigo unico)
+[SOLUCIONADO] - quitar la columna ID (En el listado)
+
+-------------------------------------------------------------------------------------------------------------------------------
+Alicuotas de IVA [SOLUCIONADO]
+[SOLUCIONADO] - Permite duplicar (el codigo de Alicuota IVA y Alicuota de IVA son unicos)
+	Aplicar UNIQUE a ambos campos
+[SOLUCIONADO] - quitar la columna ID   (En el listado)
+
+-------------------------------------------------------------------------------------------------------------------------------
+Tipo de Percepcion IB [SOLUCIONADO]
+[SOLUCIONADO] - Validar de 0% a 100% 
+[SOLUCIONADO] - Validar Montos y Minimos en 0 
+
+-------------------------------------------------------------------------------------------------------------------------------
+Tipo de Retencion IB [SOLUCIONADO]
+[SOLUCIONADO] - Validar de 0% a 100% 
+[SOLUCIONADO] - Validar Montos y Minimos en 0
+
+
+-------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------
+- Modelo ProductoCai:
+	- He establecido el campo CAI como único (unique=True)
+

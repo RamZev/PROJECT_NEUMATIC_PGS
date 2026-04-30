@@ -1,0 +1,32 @@
+Compra: compras.dbf
+id_compra: ID
+estatus_comprabante: True
+id_sucursal: SUCURSAL
+id_punto_venta: 
+id_deposito: DEPOSITO
+id_comprobante_compra: Por asignar
+compro: COMPROBANTE
+letra_comprobante: LETRA
+numero_comprobante: NUMERO
+fecha_comprobante: FECHA
+id_proveedor: PROVEEDOR
+id_provincia: PROVINCIA ("", "S")
+condicion_comprobante: CONDICION
+fecha_registro: REGISTRACION
+fecha_vencimiento: VENCIMIENTO
+gravado: GRAVADO
+no_gravado: NOGRAVADO
+no_inscripto: NOINSCRIPTO
+exento: EXENTO
+retencion_iva: RETIVA
+retencion_ganancia: RETGCIA
+retencion_ingreso_bruto: RETIB
+sellado: SELLO
+percepcion_iva: PERCEPCION
+percepcion_ingreso_bruto: PERCEPCIONIB
+iva: IVA
+total: TOTAL
+entrega: ENTREGA
+documento_asociado: AFECTADO
+alicuota_iva: ALICIVA
+observa_comprobante: OBSERVACION

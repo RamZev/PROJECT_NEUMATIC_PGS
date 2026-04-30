@@ -1,0 +1,269 @@
+<!-- neumatic\apps\maestros\templates\maestros\cai_estados_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+{% load custom_tags %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Estructura generada -->
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Información_CAI_Estados" 
+												aria-expanded="true" 
+												aria-controls="Información_CAI_Estados">
+												<strong>Información CAI Estados</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Información_CAI_Estados">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.id_cai.id_for_label }}">
+															{{ form.id_cai.label }}
+														</label>
+														{{ form.id_cai }}
+													</div>
+													
+													<!-- Campos de solo lectura que se llenarán con JavaScript -->
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="medida-display">
+															Medida
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
+															id="medida-display" readonly 
+															style="background-color: #d4eaff;">
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0" for="nombre-producto-display">
+															Descripción Producto
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2" 
+															id="nombre-producto-display" readonly 
+															style="background-color: #d4eaff;">
+													</div>
+												</div>
+													
+												<div class="row">
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.stock_desde.id_for_label }}">
+															{{ form.stock_desde.label }}
+														</label>
+														{{ form.stock_desde }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="{{ form.stock_hasta.id_for_label }}">
+															{{ form.stock_hasta.label }}
+														</label>
+														{{ form.stock_hasta }}
+													</div>
+													
+													<!-- Campo oculto para el estado (siempre será POCAS) -->
+													{{ form.id_estado }}
+													
+													<!-- Mostrar el estado como campo de solo lectura -->
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="estado-display">
+															Estado
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold" 
+															id="estado-display"
+															value="POCAS" readonly 
+															style="background-color: {% get_color_estado 'POCAS' %};">
+													</div>
+													
+												</div>
+												<!-- "Menos de" Estado FALTANTES -->
+												<div class="row align-items-center">
+													
+													<div class="col-md-2 text-end">
+														<span class="form-label text-primary mb-0 mt-3">
+															<b>Menos de :</b>
+														</span>
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="stock_desde_display">
+															{{ form.stock_desde.label }}
+														</label>
+														<input type="number" id="stock_desde_display" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="estado-faltantes-display">
+															Estado
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold"
+															id="estado-faltantes-display"
+															value="FALTANTES" readonly  
+															style="background-color: {% get_color_estado 'FALTANTES' %};">
+													</div>
+														
+												</div>
+												<!-- "Más de" Estado DISPONIBLES -->
+												<div class="row align-items-center">
+													
+													<div class="col-md-2 text-end">
+														<span class="form-label text-primary mb-0 mt-3">
+															<b>Más de :</b>
+														</span>
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="stock_hasta_display">
+															{{ form.stock_hasta.label }}
+														</label>
+														<input type="number" id="stock_hasta_display" readonly class="form-control form-control-sm border border-primary mb-2" style="background-color: #d4eaff;">
+													</div>
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0" for="estado-disponibles-display">
+															Estado
+														</label>
+														<input type="text" class="form-control form-control-sm border border-primary mb-2 estado-color fw-bold" 
+															id="estado-disponibles-display"
+															value="DISPONIBLES" readonly  
+															style="background-color: {% get_color_estado 'DISPONIBLES' %};">
+													</div>
+												</div>
+													
+											</div>
+												
+										</div>
+									</div>
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+								
+							</form>
+						</div>
+						
+					</div>
+					
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block Script -------------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	
+	<script>
+		//== Funcionalidad para mostrar buscar y mostrar los datos dle CAI seleccionado. ==
+		document.addEventListener('DOMContentLoaded', function() {
+			const caiSelect = document.getElementById('id_id_cai');
+			const medidaDisplay = document.getElementById('medida-display');
+			const nombreProductoDisplay = document.getElementById('nombre-producto-display');
+			
+			//-- Función para cargar los datos del CAI seleccionado.
+			function cargarDatosCAI() {
+				const caiId = caiSelect.value;
+				
+				if (caiId) {
+					//-- Hacer una petición AJAX para obtener los datos del CAI.
+					fetch(`{% url 'cai-datos-api' 0 %}`.replace('0', caiId))
+						.then(response => {
+							if (!response.ok) {
+								throw new Error('Error en la respuesta del servidor');
+							}
+							return response.json();
+						})
+						.then(data => {
+							medidaDisplay.value = data.medida || '';
+							nombreProductoDisplay.value = data.nombre_producto || '';
+						})
+						.catch(error => {
+							console.error('Error al cargar datos del CAI:', error);
+							medidaDisplay.value = '';
+							nombreProductoDisplay.value = '';
+						});
+				} else {
+					medidaDisplay.value = '';
+					nombreProductoDisplay.value = '';
+				}
+			}
+			
+			//-- Cargar datos cuando cambia la selección.
+			caiSelect.addEventListener('change', cargarDatosCAI);
+			
+			//-- Cargar datos inicialmente si ya hay un valor seleccionado (en modo edición).
+			if (caiSelect.value) {
+				cargarDatosCAI();
+			}
+			
+			//-- Función para actualizar los campos de solo lectura.
+			function actualizarCamposSoloLectura() {
+				const stockDesde = document.getElementById('id_stock_desde');
+				const stockHasta = document.getElementById('id_stock_hasta');
+				const stockDesdeDisplay = document.getElementById('stock_desde_display');
+				const stockHastaDisplay = document.getElementById('stock_hasta_display');
+				
+				if (stockDesde && stockDesdeDisplay) {
+					stockDesdeDisplay.value = stockDesde.value;
+				}
+				
+				if (stockHasta && stockHastaDisplay) {
+					stockHastaDisplay.value = stockHasta.value;
+				}
+			}
+			
+			//-- Actualizar cuando cambien los valores.
+			document.getElementById('id_stock_desde').addEventListener('input', actualizarCamposSoloLectura);
+			document.getElementById('id_stock_hasta').addEventListener('input', actualizarCamposSoloLectura);
+			
+			//-- Actualizar al cargar la página (para modo edición).
+			actualizarCamposSoloLectura();
+			//=================================================================================
+		});
+	</script>
+{% endblock script %}

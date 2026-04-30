@@ -1,0 +1,194 @@
+<!-- neumatic\apps\ventas\templates\ventas\caja_detalle_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+<!-- -------------------------------------------------------------------- -->
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate>
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									<!-- Información del Detalle de Caja -->
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button 
+												class="accordion-button py-2 " 
+												type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#Informacion_Detalle" 
+												aria-expanded="true" 
+												aria-controls="Informacion_Detalle">
+												<strong>Información del Movimiento de Caja</strong>
+											</button>
+										</h2>
+										<div class="accordion-collapse collapse show"
+											id="Informacion_Detalle">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<!-- Campo oculto para id_caja -->
+												{{ form.id_caja }}
+												
+												<div class="row mb-3">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idventas.label }}
+														</label>
+														{{ form.idventas }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.tipo_movimiento.label }}
+														</label>
+														<div class="mt-2">
+															{% for radio in form.tipo_movimiento %}
+																<div class="form-check form-check-inline">
+																	{{ radio.tag }}
+																	<label class="form-check-label" for="{{ radio.id_for_label }}">
+																		{{ radio.choice_label }}
+																	</label>
+																</div>
+															{% endfor %}
+														</div>
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_forma_pago.label }}
+														</label>
+														{{ form.id_forma_pago }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.importe.label }}
+														</label>
+														{{ form.importe }}
+													</div>
+												</div>
+
+												<div class="row mb-3">
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idventas.label|default:"ID Venta" }}
+														</label>
+														{{ form.idventas }}
+													</div>
+						
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idcompras.label|default:"ID Compra" }}
+														</label>
+														{{ form.idcompras }}
+													</div>
+
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.idbancos.label|default:"ID Banco" }}
+														</label>
+														{{ form.idbancos }}
+													</div>
+
+													
+												</div>
+
+												<div class="row">
+													<div class="col-md-12">
+														<label class="form-label text-primary mb-0">
+															{{ form.observacion.label }}
+														</label>
+														{{ form.observacion }}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+		
+								</div>
+								
+								<div class="container mt-3">
+									<button class="btn btn-primary" type="submit" id="guardarBtn">
+										Guardar
+									</button>
+									<a class="btn btn-secondary" href="{% url list_view_name %}">
+										Cancelar
+									</a>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Modals -------------------------------------------------------- -->
+{% block modals %}
+	{{ block.super }}
+	
+	<!-- Modal para mostrar los requerimientos de los campos -->
+	{% include 'maestros/modal_fields_requirements.html' %}
+{% endblock modals %}
+
+<!-- Block Scripts ------------------------------------------------------- -->
+{% block scripts %}
+	{{ block.super }}
+	<script>
+		// Script para actualizar automáticamente el campo "caja" basado en id_caja
+		document.addEventListener('DOMContentLoaded', function() {
+			const idCajaInput = document.querySelector('[name="id_caja"]');
+			const cajaInput = document.querySelector('[name="caja"]');
+			
+			if (idCajaInput && cajaInput) {
+				// Si id_caja tiene un valor, actualizar el campo caja
+				if (idCajaInput.value) {
+					cajaInput.value = idCajaInput.value;
+				}
+				
+				// Opcional: Escuchar cambios en id_caja (si es editable)
+				idCajaInput.addEventListener('change', function() {
+					cajaInput.value = this.value;
+				});
+			}
+			
+			// Script para validar que al menos un campo de referencia (ventas/compras/bancos) esté lleno
+			const form = document.querySelector('form');
+			if (form) {
+				form.addEventListener('submit', function(event) {
+					const idventas = document.querySelector('[name="idventas"]').value;
+					const idcompras = document.querySelector('[name="idcompras"]').value;
+					const idbancos = document.querySelector('[name="idbancos"]').value;
+					
+					if (!idventas && !idcompras && !idbancos) {
+						event.preventDefault();
+						alert('Por favor, complete al menos uno de los campos: ID Venta, ID Compra o ID Banco');
+					}
+				});
+			}
+		});
+	</script>
+{% endblock scripts %}

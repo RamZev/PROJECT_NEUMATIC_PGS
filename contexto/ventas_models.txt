@@ -1,0 +1,738 @@
+# neumatic\apps\ventas\models\factura_models.py
+from django.db import models
+
+from apps.maestros.models.base_gen_models import ModeloBaseGenerico
+from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
+from apps.maestros.models.base_models import (ComprobanteVenta, 
+											  ProductoDeposito, 
+											  Operario, 
+											  PuntoVenta)
+from apps.maestros.models.sucursal_models import Sucursal
+from apps.maestros.models.cliente_models import Cliente
+from apps.maestros.models.producto_models import Producto
+from apps.maestros.models.vendedor_models import Vendedor
+from apps.maestros.models.valida_models import Valida
+
+
+class Factura(ModeloBaseGenerico):
+	id_factura = models.AutoField(
+		primary_key=True
+	)
+	id_orig = models.IntegerField(
+		verbose_name="ID_ORIG",
+		null=True,
+		blank=True
+	)
+	estatus_comprobante = models.BooleanField(
+		verbose_name="Estatus",
+		default=True,
+		choices=ESTATUS_GEN
+	)
+	id_sucursal = models.ForeignKey(
+		Sucursal,
+		on_delete=models.PROTECT,
+		verbose_name="Sucursal",
+		null=True,
+		blank=True
+	)
+	id_punto_venta = models.ForeignKey(
+		PuntoVenta,
+		on_delete=models.PROTECT,
+		verbose_name="Punto de Venta",
+		null=True,
+		blank=True
+	)
+	jerarquia = models.CharField(
+		verbose_name="Jerarquía", 
+		max_length=1,
+		null=True, 
+		blank=True
+	)
+	id_comprobante_venta = models.ForeignKey(
+		ComprobanteVenta,
+		on_delete=models.PROTECT,
+		verbose_name="Comprobante",
+		null=True,
+		blank=True
+	)
+	compro = models.CharField(
+		verbose_name="Compro",
+		max_length=3,
+		null=True,
+		blank=True
+	) 
+	letra_comprobante = models.CharField(
+		verbose_name="Letra",
+		max_length=1,
+		null=True,
+		blank=True
+	)
+	numero_comprobante = models.IntegerField(
+		verbose_name="Número",
+		null=True,
+		blank=True
+	)
+	comprobante_remito = models.CharField(
+		verbose_name="Comprobante Remito",
+		max_length=2,
+		default="",
+		null=True,
+		blank=True
+	)
+	remito = models.CharField(
+		verbose_name="Remito",
+		max_length=15,
+		null=True,
+		blank=True
+	)
+	fecha_comprobante = models.DateField(
+		verbose_name="Fecha Emisión",
+		null=True,
+		blank=True
+	)
+	id_cliente = models.ForeignKey(
+		Cliente,
+		on_delete=models.PROTECT,
+		verbose_name="Cliente",
+		null=True,
+		blank=True
+	)
+	cuit = models.IntegerField(
+		verbose_name="CUIT",
+		null=True,
+		blank=True
+	)
+	nombre_factura = models.CharField(
+		verbose_name="Nombre",
+		max_length=50,
+		null=True,
+		blank=True
+	)
+	domicilio_factura = models.CharField(
+		verbose_name="Domicilio",
+		max_length=50,
+		null=True,
+		blank=True
+	)
+	movil_factura = models.CharField(
+		verbose_name="Móvil", 
+		max_length=15, 
+		null=True, 
+		blank=True
+	)
+	email_factura = models.EmailField(
+		verbose_name="Email*", 
+		max_length=50, 
+		null=True, 
+		blank=True
+	)
+	condicion_comprobante = models.IntegerField(
+		verbose_name="Condición de Venta",
+		default=1,
+		choices=CONDICION_VENTA
+	)
+	id_vendedor = models.ForeignKey(
+		Vendedor, 
+		on_delete=models.PROTECT,
+		null=True, blank=True,
+		verbose_name="Vendedor"
+	)
+	gravado = models.DecimalField(
+		verbose_name="Gravado",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	exento = models.DecimalField(
+		verbose_name="Exento",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	iva = models.DecimalField(
+		verbose_name="IVA",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	percep_ib = models.DecimalField(
+		verbose_name="Percepción IB",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	total = models.DecimalField(
+		verbose_name="Total",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	entrega = models.DecimalField(
+		verbose_name="Entrega",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	estado = models.CharField(
+		verbose_name="Estado",
+		max_length=1,
+		null=True,
+		blank=True
+	)
+	marca = models.CharField(
+		verbose_name="Marca",
+		max_length=1,
+		null=True,
+		blank=True
+	)
+	comision = models.CharField(
+		verbose_name="Comisión",
+		max_length=1,
+		null=True,
+		blank=True
+	)
+	fecha_pago = models.DateField(
+		verbose_name="Fecha Pago",
+		null=True,
+		blank=True
+	)
+	no_estadist = models.BooleanField(
+		verbose_name="No estadist.",
+		null=True,
+		blank=True
+	)
+	suc_imp = models.SmallIntegerField(
+		verbose_name="sucimp",
+		null=True,
+		blank=True
+	)
+	cae = models.IntegerField(
+		verbose_name="CAE",
+		null=True,
+		blank=True,
+		default=0
+	)
+	cae_vto = models.DateField(
+		verbose_name="Vcto. CAE",
+		null=True,
+		blank=True
+	)
+	observa_comprobante = models.CharField(
+		verbose_name="Observaciones",
+		max_length=30,
+		null=True,
+		blank=True
+	)
+	stock_clie = models.BooleanField(
+		verbose_name="stockclie",
+		null=True,
+		blank=True
+	)
+	id_deposito = models.ForeignKey(
+		ProductoDeposito,
+		on_delete=models.PROTECT,
+		verbose_name="Depósito",
+		null=True,
+		blank=True
+	)
+	promo = models.BooleanField(
+		verbose_name="Promo",
+		null=True,
+		blank=True
+	)
+	id_valida = models.ForeignKey(
+		Valida,
+		on_delete=models.PROTECT,
+		verbose_name="Validar",
+		null=True,
+		blank=True
+	)
+	recibo_manual_auto = models.SmallIntegerField(
+		verbose_name="Talonario",
+		null=True,
+		blank=True
+	)
+	suma_comision_vendedor = models.BooleanField(
+		verbose_name="Suma Comisión a Vendedor",
+		null=True,
+		blank=True
+	)
+	productos_camiones = models.BooleanField(
+		verbose_name="Productos de Camiones",
+		null=True,
+		blank=True
+	)
+	efectivo_recibo = models.DecimalField(
+		verbose_name="Efectivo",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.0
+	)
+	
+	class Meta:
+		db_table = "factura"
+		verbose_name = ('Factura')
+		verbose_name_plural = ('Facturas')
+		# ordering = ['id_factura']
+	
+	def __str__(self):
+		numero = str(self.numero_comprobante).strip().zfill(12)
+		return f"{self.id_comprobante_venta.codigo_comprobante_venta} {self.letra_comprobante} {numero[:4]}-{numero[4:]}"
+
+
+class DetalleFactura(ModeloBaseGenerico):
+	id_detalle_factura = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	id_producto = models.ForeignKey(
+		Producto,
+		on_delete=models.PROTECT,
+		verbose_name="Producto",
+		null=True,
+		blank=True
+	)
+	codigo = models.IntegerField(
+		verbose_name="Cód. Producto",
+		null=True,
+		blank=True
+	)
+	producto_venta = models.CharField(
+	 	"Nombre producto", 
+	  	max_length=50,
+		null=True,
+		blank=True
+	)
+	cantidad = models.DecimalField(
+		verbose_name="Cantidad",
+		max_digits=7,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	costo = models.DecimalField(
+		verbose_name="Costo",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	precio_lista = models.DecimalField(
+		verbose_name="Precio",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	precio = models.DecimalField(
+		verbose_name="Precio",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	descuento = models.DecimalField(
+		verbose_name="Descuento(%)",
+		max_digits=6,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	desc_vendedor = models.DecimalField(
+		verbose_name="Descuento(%)",
+		max_digits=6,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	gravado = models.DecimalField(
+		verbose_name="Gravado",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	alic_iva = models.DecimalField(
+		verbose_name="Alíc. IVA(%)",
+		max_digits=6,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	iva = models.DecimalField(
+		verbose_name="IVA",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	total = models.DecimalField(
+		verbose_name="Total",
+		max_digits=14,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	reventa = models.CharField(
+		verbose_name="Reventa",
+		max_length=1,
+		null=True,
+		blank=True
+	)
+	stock = models.DecimalField(
+		verbose_name="Stock",
+		max_digits=10,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	act_stock = models.BooleanField(
+		verbose_name="Act. Stock",
+		null=True,
+		blank=True
+	)
+	id_operario = models.ForeignKey(
+		Operario,
+		on_delete=models.PROTECT,
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = "detalle_factura"
+		verbose_name = ('Detalle Factura')
+		verbose_name_plural = ('Detalles Factura')
+		# ordering = ['id_detalle_factura']
+	
+	def __str__(self):
+		return self.id_detalle_factura
+
+
+class SerialFactura(ModeloBaseGenerico):
+	id_serial_factura = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	producto_serial = models.CharField(
+		"Serial producto", 
+		max_length=50,
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = "serial_factura"
+		verbose_name = ('Detalle Serial')
+		verbose_name_plural = ('Detalles Serial')
+	
+	def __str__(self):
+		return self.producto_serial
+
+
+# neumatic\apps\ventas\models\recibo_models.py
+from django.db import models
+
+from apps.maestros.models.base_gen_models import ModeloBaseGenerico
+from apps.maestros.models.base_models import Banco, ConceptoBanco, Tarjeta
+from .factura_models import Factura
+
+from entorno.constantes_base import ESTATUS_GEN, CONDICION_VENTA
+
+
+# Detalle del Recibo (I)
+class DetalleRecibo(ModeloBaseGenerico):
+	id_detalle_recibo = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		related_name='detalles_recibo',
+		null=True,
+		blank=True
+	)
+	id_factura_cobrada = models.ForeignKey(
+		Factura,
+		on_delete=models.PROTECT,
+		verbose_name="Factura Cobrada",
+		related_name='cobranza',
+		null=True,
+		blank=True
+	)
+	monto_cobrado = models.DecimalField(
+		verbose_name="Costo",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	observaciones_recibo = models.CharField(
+		verbose_name="Observaciones", 
+		max_length=50,
+		null=True,
+		blank=True
+ 	)
+	
+	class Meta:
+		db_table = "detalle_recibo"
+		verbose_name = 'Recibo'
+		verbose_name_plural = 'Recibo'
+		# ordering = ['id_detalle_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_detalle_recibo}"
+
+   
+# Detalle de las Retenciones (II)
+class RetencionRecibo(ModeloBaseGenerico):
+	id_retencion_recibo = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	id_codigo_retencion	= models.ForeignKey(
+		ConceptoBanco,
+		on_delete=models.CASCADE,
+		verbose_name="Código Retención",
+		null=True,
+		blank=True
+	)
+	certificado = models.CharField(
+		verbose_name="Certificado", 
+		max_length=20,
+		null=True,
+		blank=True
+ 	)
+	importe_retencion = models.DecimalField(
+		verbose_name="Importe Retención",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	fecha_retencion = models.DateField(
+		verbose_name="Fecha Retención",
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = "retencion_recibo"
+		verbose_name = 'Retención Recibo'
+		verbose_name_plural = 'Retenciones Recibo'
+		# ordering = ['id_retencion_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_retencion_recibo}"
+
+
+# Detalle del depósito o transferencia  (III)
+class DepositoRecibo(ModeloBaseGenerico):
+	id_deposito_recibo = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	id_banco = models.ForeignKey(
+		Banco,
+		on_delete=models.CASCADE,
+		verbose_name="Banco",
+		null=True,
+		blank=True
+	)
+	id_concepto_banco = models.ForeignKey(
+		ConceptoBanco,
+		on_delete=models.CASCADE,
+		verbose_name="Concepto",
+		null=True,
+		blank=True
+	)
+	fecha_deposito = models.DateField(
+		verbose_name="Fecha Depósito",
+		null=True,
+		blank=True
+	)
+	importe_deposito = models.DecimalField(
+		verbose_name="Importe Depósito",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	detalle_deposito = models.CharField(
+		verbose_name="Detalle", 
+		max_length=20,
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = "deposito_recibo"
+		verbose_name = 'Depósito Recibo'
+		verbose_name_plural = 'Dépositos Recibo'
+		# ordering = ['id_deposito_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_deposito_recibo}"
+
+
+# Detalle de Tarjeta  (IV)
+class TarjetaRecibo(ModeloBaseGenerico):
+	id_tarjeta_recibo = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	id_tarjeta = models.ForeignKey(
+		Tarjeta,
+		on_delete=models.CASCADE,
+		verbose_name="Tarjeta",
+		null=True,
+		blank=True
+	)
+	cupon = models.SmallIntegerField(
+		verbose_name="Cupón",
+		null=True,
+		blank=True
+	)
+	lote = models.SmallIntegerField(
+		verbose_name="Lote",
+		null=True,
+		blank=True
+	)
+	cuotas = models.SmallIntegerField(
+		verbose_name="Cuotas",
+		null=True,
+		blank=True
+	)
+	importe_tarjeta = models.DecimalField(
+		verbose_name="Importe Tarjeta",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = "tarjeta_recibo"
+		verbose_name = 'Tarjeta Recibo'
+		verbose_name_plural = 'Tarjetas Recibo'
+		# ordering = ['id_tarjeta_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_tarjeta_recibo}"
+
+
+# Detalle del cheque  (V)
+class ChequeRecibo(ModeloBaseGenerico):
+	id_cheque_recibo = models.AutoField(
+		primary_key=True
+	)
+	id_factura = models.ForeignKey(
+		Factura,
+		on_delete=models.CASCADE,
+		verbose_name="Factura",
+		null=True,
+		blank=True
+	)
+	id_banco = models.ForeignKey(
+		Banco,
+		on_delete=models.CASCADE,
+		verbose_name="Banco",
+		null=True,
+		blank=True
+	)
+	sucursal = models.SmallIntegerField(
+		verbose_name="Sucursal",
+		null=True,
+		blank=True
+	)
+	codigo_postal = models.SmallIntegerField(
+		verbose_name="Código Postal",
+		null=True,
+		blank=True
+	)
+	numero_cheque_recibo = models.SmallIntegerField(
+		verbose_name="Número",
+		null=True,
+		blank=True
+	)
+	cuenta_cheque_recibo = models.SmallIntegerField(
+		verbose_name="Cuenta",
+		null=True,
+		blank=True
+	)
+	cuit_cheque_recibo = models.SmallIntegerField(
+		verbose_name="CUIT",
+		null=True,
+		blank=True
+	)
+	fecha_cheque1 = models.DateField(
+		verbose_name="Fecha 1",
+		null=True,
+		blank=True
+	)
+	fecha_cheque2 = models.DateField(
+		verbose_name="Fecha 2",
+		null=True,
+		blank=True
+	)
+	importe_cheque = models.DecimalField(
+		verbose_name="Importe Cheque",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True
+	)
+	
+	class Meta:
+		db_table = "cheque_recibo"
+		verbose_name = 'Cheque Recibo'
+		verbose_name_plural = 'Cheques Recibo'
+		# ordering = ['id_cheque_recibo']
+	
+	def __str__(self):
+		return f"{self.id_factura} {self.id_cheque_recibo}"
+
