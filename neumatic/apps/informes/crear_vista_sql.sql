@@ -1,82 +1,26 @@
 -- ============================================
--- MIGRACIÓN DE VISTAS DE SQLITE3 A POSTGRESQL 18
--- CONVERSIÓN COMPLETA Y DEFINITIVA
--- ============================================
-
--- Eliminar vistas si existen
-DROP VIEW IF EXISTS VLSaldosClientes CASCADE;
-DROP VIEW IF EXISTS VLResumenCtaCte CASCADE;
-DROP VIEW IF EXISTS VLMercaderiaPorCliente CASCADE;
-DROP VIEW IF EXISTS VLRemitosClientes CASCADE;
-DROP VIEW IF EXISTS VLTotalRemitosClientes CASCADE;
-DROP VIEW IF EXISTS VLVentaComproLocalidad CASCADE;
-DROP VIEW IF EXISTS VLVentaMostrador CASCADE;
-DROP VIEW IF EXISTS VLVentaCompro CASCADE;
-DROP VIEW IF EXISTS VLComprobantesVencidos CASCADE;
-DROP VIEW IF EXISTS VLRemitosPendientes CASCADE;
-DROP VIEW IF EXISTS VLRemitosVendedor CASCADE;
-DROP VIEW IF EXISTS VLIVAVentasFULL CASCADE;
-DROP VIEW IF EXISTS VLIVAVentasProvincias CASCADE;
-DROP VIEW IF EXISTS VLIVAVentasSitrib CASCADE;
-DROP VIEW IF EXISTS VLPercepIBVendedorTotales CASCADE;
-DROP VIEW IF EXISTS VLPercepIBVendedorDetallado CASCADE;
-DROP VIEW IF EXISTS VLPercepIBSubcuentaTotales CASCADE;
-DROP VIEW IF EXISTS VLPercepIBSubcuentaDetallado CASCADE;
-DROP VIEW IF EXISTS VLComisionVendedor CASCADE;
-DROP VIEW IF EXISTS VLComisionVendedorDetalle CASCADE;
-DROP VIEW IF EXISTS VLComisionOperario CASCADE;
-DROP VIEW IF EXISTS VLPrecioDiferente CASCADE;
-DROP VIEW IF EXISTS VLVentasResumenIB CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasVentas CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasVentasVendedor CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasVentasVendedorCliente CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasSegunCondicion CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasVentasMarca CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasVentasMarcaVendedor CASCADE;
-DROP VIEW IF EXISTS VLClienteUltimaVenta CASCADE;
-DROP VIEW IF EXISTS VLEstadisticasVentasProvincia CASCADE;
-DROP VIEW IF EXISTS VLVentaSinEstadistica CASCADE;
-DROP VIEW IF EXISTS VLTablaDinamicaVentas CASCADE;
-DROP VIEW IF EXISTS VLTablaDinamicaDetalleVentas CASCADE;
-DROP VIEW IF EXISTS VLTablaDinamicaEstadistica CASCADE;
-DROP VIEW IF EXISTS VLLista CASCADE;
-DROP VIEW IF EXISTS VLListaRevendedor CASCADE;
-DROP VIEW IF EXISTS VLStockSucursal CASCADE;
-DROP VIEW IF EXISTS VLStockGeneralSucursal CASCADE;
-DROP VIEW IF EXISTS VLStockFecha CASCADE;
-DROP VIEW IF EXISTS VLStockUnico CASCADE;
-DROP VIEW IF EXISTS VLReposicionStock CASCADE;
-DROP VIEW IF EXISTS VLMovimientoInternoStock CASCADE;
-DROP VIEW IF EXISTS VLStockCliente CASCADE;
-DROP VIEW IF EXISTS VLStockDeposito CASCADE;
-DROP VIEW IF EXISTS VLFichaSeguimientoStock CASCADE;
-DROP VIEW IF EXISTS VLDetalleCompraProveedor CASCADE;
-DROP VIEW IF EXISTS VLCompraIngresada CASCADE;
-DROP VIEW IF EXISTS VLProductoMinimo CASCADE;
-
--- ============================================
 -- FUNCIÓN AUXILIAR PARA FORMATEAR NÚMEROS DE COMPROBANTE
 -- ============================================
-CREATE OR REPLACE FUNCTION format_comprobante(letra VARCHAR, numero INTEGER, formato VARCHAR DEFAULT 'completo')
+CREATE OR REPLACE FUNCTION format_comprobante(letra VARCHAR, numero BIGINT, formato VARCHAR DEFAULT 'completo')
 RETURNS VARCHAR AS $$
 DECLARE
-    numero_padded VARCHAR;
-    parte1 VARCHAR;
-    parte2 VARCHAR;
+	numero_padded VARCHAR;
+	parte1 VARCHAR;
+	parte2 VARCHAR;
 BEGIN
-    numero_padded := LPAD(numero::TEXT, 12, '0');
-    
-    IF formato = 'completo' THEN
-        parte1 := SUBSTRING(numero_padded FROM 1 FOR 4);
-        parte2 := SUBSTRING(numero_padded FROM 5);
-        RETURN letra || ' ' || parte1 || '-' || parte2;
-    ELSIF formato = 'solo_numero' THEN
-        RETURN SUBSTRING(numero_padded FROM 1 FOR 4) || '-' || SUBSTRING(numero_padded FROM 5);
-    ELSE
-        RETURN numero_padded;
-    END IF;
+	numero_padded := LPAD(numero::TEXT, 12, '0');
+	
+	IF formato = 'completo' THEN
+		parte1 := SUBSTRING(numero_padded FROM 1 FOR 4);
+		parte2 := SUBSTRING(numero_padded FROM 5);
+		RETURN letra || ' ' || parte1 || '-' || parte2;
+	ELSIF formato = 'solo_numero' THEN
+		RETURN SUBSTRING(numero_padded FROM 1 FOR 4) || '-' || SUBSTRING(numero_padded FROM 5);
+	ELSE
+		RETURN numero_padded;
+	END IF;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql IMMUTABLE;
 
 -- ============================================
 -- FUNCIÓN AUXILIAR PARA JULIANDAY
@@ -84,7 +28,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION julianday(fecha DATE)
 RETURNS DECIMAL AS $$
 BEGIN
-    RETURN EXTRACT(EPOCH FROM fecha) / 86400.0 + 2440587.5;
+	RETURN EXTRACT(EPOCH FROM fecha) / 86400.0 + 2440587.5;
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
@@ -92,6 +36,7 @@ $$ LANGUAGE plpgsql IMMUTABLE;
 -- Saldos Clientes.
 -- Modelo: VLSaldosClientes
 -- ============================================
+DROP VIEW IF EXISTS VLSaldosClientes CASCADE;
 CREATE VIEW VLSaldosClientes AS 
 	SELECT 
 		f.id_cliente_id, 
@@ -123,6 +68,7 @@ CREATE VIEW VLSaldosClientes AS
 -- Resumen Cuenta Corriente.
 -- Modelo: VLResumenCtaCte
 -- ============================================
+DROP VIEW IF EXISTS VLResumenCtaCte CASCADE;
 CREATE VIEW VLResumenCtaCte AS 
 	SELECT 
 		f.id_cliente_id, 
@@ -169,6 +115,7 @@ CREATE VIEW VLResumenCtaCte AS
 -- Mercadería por Cliente.
 -- Modelo: VLMercaderiaPorCliente
 -- ============================================
+DROP VIEW IF EXISTS VLMercaderiaPorCliente CASCADE;
 CREATE VIEW VLMercaderiaPorCliente AS 
 	SELECT 
 	   f.id_cliente_id, 
@@ -196,6 +143,7 @@ CREATE VIEW VLMercaderiaPorCliente AS
 -- Remitos por Clientes.
 -- Modelo: VLRemitosClientes
 -- ============================================
+DROP VIEW IF EXISTS VLRemitosClientes CASCADE;
 CREATE VIEW VLRemitosClientes AS
 	SELECT
 		f.id_cliente_id, 
@@ -223,6 +171,7 @@ CREATE VIEW VLRemitosClientes AS
 -- Total Remitos por Clientes.
 -- Modelo: VLTotalRemitosClientes
 -- ============================================
+DROP VIEW IF EXISTS VLTotalRemitosClientes CASCADE;
 CREATE VIEW VLTotalRemitosClientes AS 
 	SELECT 
 		f.id_cliente_id, 
@@ -246,6 +195,7 @@ CREATE VIEW VLTotalRemitosClientes AS
 -- Ventas por Localidad.
 -- Modelo: VLVentaComproLocalidad
 -- ============================================
+DROP VIEW IF EXISTS VLVentaComproLocalidad CASCADE;
 CREATE VIEW VLVentaComproLocalidad AS 
 	SELECT 
 		f.id_cliente_id,
@@ -277,6 +227,7 @@ CREATE VIEW VLVentaComproLocalidad AS
 -- Ventas por Mostrador.
 -- Modelo: VLVentaMostrador
 -- ============================================
+DROP VIEW IF EXISTS VLVentaMostrador CASCADE;
 CREATE VIEW VLVentaMostrador AS 
 	SELECT 
 		df.id_detalle_factura,
@@ -305,12 +256,13 @@ CREATE VIEW VLVentaMostrador AS
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN producto p ON df.id_producto_id = p.id_producto
 	WHERE
-		cv.mult_venta <> 0 AND f.no_estadist <> True;
+		cv.mult_venta <> 0 AND f.no_estadist = False;
 
 -- ============================================
 -- Ventas por Comprobantes.
 -- Modelo: VLVentaCompro
 -- ============================================
+DROP VIEW IF EXISTS VLVentaCompro CASCADE;
 CREATE VIEW VLVentaCompro AS 
 	SELECT 
 		f.id_factura,
@@ -340,6 +292,7 @@ CREATE VIEW VLVentaCompro AS
 -- Comprobantes Vencidos.
 -- Modelo: VLComprobantesVencidos
 -- ============================================
+DROP VIEW IF EXISTS VLComprobantesVencidos CASCADE;
 CREATE VIEW VLComprobantesVencidos AS 
 	SELECT 
 		f.id_factura,
@@ -367,6 +320,7 @@ CREATE VIEW VLComprobantesVencidos AS
 -- Remitos Pendientes.
 -- Modelo: VLRemitosPendientes
 -- ============================================
+DROP VIEW IF EXISTS VLRemitosPendientes CASCADE;
 CREATE VIEW VLRemitosPendientes AS 
 	SELECT 
 		f.id_factura,
@@ -394,13 +348,14 @@ CREATE VIEW VLRemitosPendientes AS
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE
-		cv.mult_venta = 0 AND cv.remito = 1
+		cv.mult_venta = 0 AND cv.remito
 		AND f.estado = '';
 
 -- ============================================
 -- Remitos Vendedor.
 -- Modelo: VLRemitosVendedor
 -- ============================================
+DROP VIEW IF EXISTS VLRemitosVendedor CASCADE;
 CREATE VIEW VLRemitosVendedor AS 
 	SELECT 
 		f.id_factura,
@@ -432,6 +387,7 @@ CREATE VIEW VLRemitosVendedor AS
 -- Libro I.V.A. Ventas - Detalle.
 -- Modelo: VLIVAVentasFULL
 -- ============================================
+DROP VIEW IF EXISTS VLIVAVentasFULL CASCADE;
 CREATE VIEW VLIVAVentasFULL AS 
 	SELECT 
 		f.id_factura,
@@ -462,6 +418,7 @@ CREATE VIEW VLIVAVentasFULL AS
 -- Libro I.V.A. Ventas - Totales por Provincias.
 -- Modelo: VLIVAVentasProvincias
 -- ============================================
+DROP VIEW IF EXISTS VLIVAVentasProvincias CASCADE;
 CREATE VIEW VLIVAVentasProvincias AS 
 	SELECT 
 		f.id_factura,
@@ -487,6 +444,7 @@ CREATE VIEW VLIVAVentasProvincias AS
 -- Libro I.V.A. Ventas - Totales para SITRIB.
 -- Modelo: VLIVAVentasSitrib
 -- ============================================
+DROP VIEW IF EXISTS VLIVAVentasSitrib CASCADE;
 CREATE VIEW VLIVAVentasSitrib AS 
 	SELECT 
 		f.id_factura,
@@ -513,6 +471,7 @@ CREATE VIEW VLIVAVentasSitrib AS
 -- Percepciones por Vendedor - Totales.
 -- Modelo: VLPercepIBVendedorTotales
 -- ============================================
+DROP VIEW IF EXISTS VLPercepIBVendedorTotales CASCADE;
 CREATE VIEW VLPercepIBVendedorTotales AS 
 	SELECT 
 		f.id_factura,
@@ -534,6 +493,7 @@ CREATE VIEW VLPercepIBVendedorTotales AS
 -- Percepciones por Vendedor - Detallado.
 -- Modelo: VLPercepIBVendedorDetallado
 -- ============================================
+DROP VIEW IF EXISTS VLPercepIBVendedorDetallado CASCADE;
 CREATE VIEW VLPercepIBVendedorDetallado AS
 	SELECT 
 		f.id_factura,
@@ -563,6 +523,7 @@ CREATE VIEW VLPercepIBVendedorDetallado AS
 -- Percepciones por Sub Cuenta - Totales.
 -- Modelo: VLPercepIBSubcuentaTotales
 -- ============================================
+DROP VIEW IF EXISTS VLPercepIBSubcuentaTotales CASCADE;
 CREATE VIEW VLPercepIBSubcuentaTotales AS 
 	SELECT 
 		f.id_factura,
@@ -586,6 +547,7 @@ CREATE VIEW VLPercepIBSubcuentaTotales AS
 -- Percepciones por Sub Cuenta - Detallado.
 -- Modelo: VLPercepIBSubcuentaDetallado
 -- ============================================
+DROP VIEW IF EXISTS VLPercepIBSubcuentaDetallado CASCADE;
 CREATE VIEW VLPercepIBSubcuentaDetallado AS 
 	SELECT 
 		f.id_factura,
@@ -611,12 +573,14 @@ CREATE VIEW VLPercepIBSubcuentaDetallado AS
 		f.percep_ib <> 0
 		AND cv.mult_venta <> 0
 	GROUP BY
-		c.sub_cuenta, f.numero_comprobante;
+		f.id_factura, c.sub_cuenta, nombre_cliente_padre, cv.codigo_comprobante_venta, f.letra_comprobante,
+		f.numero_comprobante, c.nombre_cliente, c.cuit, cv.mult_venta;
 
 -- ============================================
 -- Comisiones a Vendedores según Facturas.
 -- Modelo: VLComisionVendedor
 -- ============================================
+DROP VIEW IF EXISTS VLComisionVendedor CASCADE;
 CREATE VIEW VLComisionVendedor AS 
 	SELECT 
 		f.id_factura,
@@ -657,6 +621,7 @@ CREATE VIEW VLComisionVendedor AS
 -- Comisiones a Vendedores según Facturas (Detalle).
 -- Modelo: VLComisionVendedorDetalle
 -- ============================================
+DROP VIEW IF EXISTS VLComisionVendedorDetalle CASCADE;
 CREATE VIEW VLComisionVendedorDetalle AS 
 	SELECT 
 		f.id_factura,
@@ -700,12 +665,13 @@ CREATE VIEW VLComisionVendedorDetalle AS
 		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
 	WHERE 
 		cv.mult_comision <> 0
-		AND f.no_estadist <> True;
+		AND f.no_estadist = False;
 
 -- ============================================
 -- Comisiones a Operarios.
 -- Modelo: VLComisionOperario
 -- ============================================
+DROP VIEW IF EXISTS VLComisionOperario CASCADE;
 CREATE VIEW VLComisionOperario AS 
 	SELECT 
 		f.id_factura,
@@ -737,6 +703,7 @@ CREATE VIEW VLComisionOperario AS
 -- Diferencias de Precios en Facturación.
 -- Modelo: VLPrecioDiferente
 -- ============================================
+DROP VIEW IF EXISTS VLPrecioDiferente CASCADE;
 CREATE VIEW VLPrecioDiferente AS 
 	SELECT 
 		f.id_factura,
@@ -771,6 +738,7 @@ CREATE VIEW VLPrecioDiferente AS
 -- Resumen de Ventas Ing. Brutos Mercadolibre.
 -- Modelo: VLVentasResumenIB
 -- ============================================
+DROP VIEW IF EXISTS VLVentasResumenIB CASCADE;
 CREATE VIEW VLVentasResumenIB AS 
 	SELECT 
 		f.id_factura,
@@ -793,6 +761,7 @@ CREATE VIEW VLVentasResumenIB AS
 -- Estadísticas de Ventas.
 -- Modelo: VLEstadisticasVentas
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasVentas CASCADE;
 CREATE VIEW VLEstadisticasVentas AS 
 	SELECT 
 		f.id_factura, 
@@ -829,6 +798,7 @@ CREATE VIEW VLEstadisticasVentas AS
 -- Estadísticas de Ventas Vendedor.
 -- Modelo: VLEstadisticasVentasVendedor
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasVentasVendedor CASCADE;
 CREATE VIEW VLEstadisticasVentasVendedor AS 
 	SELECT 
 		f.id_factura, 
@@ -843,7 +813,6 @@ CREATE VIEW VLEstadisticasVentasVendedor AS
 		df.cantidad * cv.mult_estadistica AS cantidad,
 		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
-		p.id_marca_id,
 		f.id_sucursal_id,
 		f.id_vendedor_id
 	FROM 
@@ -863,6 +832,7 @@ CREATE VIEW VLEstadisticasVentasVendedor AS
 -- Estadísticas de Ventas Vendedores Clientes.
 -- Modelo: VLEstadisticasVentasVendedorCliente
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasVentasVendedorCliente CASCADE;
 CREATE VIEW VLEstadisticasVentasVendedorCliente AS 
 	SELECT 
 		df.id_producto_id,
@@ -900,6 +870,7 @@ CREATE VIEW VLEstadisticasVentasVendedorCliente AS
 -- Ventas de Productos según Condición.
 -- Modelo: VLEstadisticasSegunCondicion
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasSegunCondicion CASCADE;
 CREATE VIEW VLEstadisticasSegunCondicion AS 
 	SELECT
 		p.id_familia_id,
@@ -932,6 +903,7 @@ CREATE VIEW VLEstadisticasSegunCondicion AS
 -- Estadísticas de Ventas por Marcas.
 -- Modelo: VLEstadisticasVentasMarca
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasVentasMarca CASCADE;
 CREATE VIEW VLEstadisticasVentasMarca AS 
 	SELECT
 		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
@@ -962,12 +934,13 @@ CREATE VIEW VLEstadisticasVentasMarca AS
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
 		cv.mult_estadistica <> 0
-		AND f.no_estadist <> True;
+		AND f.no_estadist = False;
 
 -- ============================================
 -- Estadísticas de Ventas por Marcas Vendedor.
 -- Modelo: VLEstadisticasVentasMarcaVendedor
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasVentasMarcaVendedor CASCADE;
 CREATE VIEW VLEstadisticasVentasMarcaVendedor AS 
 	SELECT
 		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
@@ -999,12 +972,13 @@ CREATE VIEW VLEstadisticasVentasMarcaVendedor AS
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
 		cv.mult_estadistica <> 0
-		AND f.no_estadist <> True;
+		AND f.no_estadist = False;
 
 -- ============================================
 -- Estadísticas de clientes sin Ventas.
 -- Modelo: VLClienteUltimaVenta
 -- ============================================
+DROP VIEW IF EXISTS VLClienteUltimaVenta CASCADE;
 CREATE VIEW VLClienteUltimaVenta AS 
 	SELECT 
 		f.id_cliente_id,
@@ -1015,7 +989,7 @@ CREATE VIEW VLClienteUltimaVenta AS
 		factura f
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	GROUP BY
-		f.id_cliente_id
+		f.id_cliente_id, c.nombre_cliente, f.id_vendedor_id
 	ORDER BY
 		f.id_cliente_id;
 
@@ -1023,6 +997,7 @@ CREATE VIEW VLClienteUltimaVenta AS
 -- Estadísticas de Ventas por Provincia.
 -- Modelo: VLEstadisticasVentasProvincia
 -- ============================================
+DROP VIEW IF EXISTS VLEstadisticasVentasProvincia CASCADE;
 CREATE VIEW VLEstadisticasVentasProvincia AS 
 	SELECT 
 		f.id_factura,
@@ -1037,7 +1012,6 @@ CREATE VIEW VLEstadisticasVentasProvincia AS
 		df.cantidad * cv.mult_estadistica AS cantidad,
 		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
-		p.id_marca_id,
 		f.id_sucursal_id,
 		f.id_vendedor_id,
 		pr.id_provincia,
@@ -1061,6 +1035,7 @@ CREATE VIEW VLEstadisticasVentasProvincia AS
 -- Comprobantes sin Estadísticas.
 -- Modelo: VLVentaSinEstadistica
 -- ============================================
+DROP VIEW IF EXISTS VLVentaSinEstadistica CASCADE;
 CREATE VIEW VLVentaSinEstadistica AS 
 	SELECT
 		f.fecha_comprobante, 
@@ -1085,6 +1060,7 @@ CREATE VIEW VLVentaSinEstadistica AS
 -- Tablas Dinámicas de Ventas - Ventas por Comprobantes.
 -- Modelo: VLTablaDinamicaVentas
 -- ============================================
+DROP VIEW IF EXISTS VLTablaDinamicaVentas CASCADE;
 CREATE VIEW VLTablaDinamicaVentas AS 
 	SELECT
 		s.nombre_sucursal,
@@ -1136,6 +1112,7 @@ CREATE VIEW VLTablaDinamicaVentas AS
 -- Tablas Dinámicas de Ventas - Detalle de Ventas por Productos.
 -- Modelo: VLTablaDinamicaDetalleVentas
 -- ============================================
+DROP VIEW IF EXISTS VLTablaDinamicaDetalleVentas CASCADE;
 CREATE VIEW VLTablaDinamicaDetalleVentas AS 
 	SELECT
 		df.id_factura_id,
@@ -1207,6 +1184,7 @@ CREATE VIEW VLTablaDinamicaDetalleVentas AS
 -- Tablas Dinámicas de Ventas - Tablas para Estadísticas.
 -- Modelo: VLTablaDinamicaEstadistica
 -- ============================================
+DROP VIEW IF EXISTS VLTablaDinamicaEstadistica CASCADE;
 CREATE VIEW VLTablaDinamicaEstadistica AS 
 	SELECT
 		df.id_factura_id,
@@ -1281,6 +1259,7 @@ CREATE VIEW VLTablaDinamicaEstadistica AS
 -- Lista de Precios.
 -- Modelo: VLLista
 -- ============================================
+DROP VIEW IF EXISTS VLLista CASCADE;
 CREATE VIEW VLLista AS 
 	SELECT
 		p.id_producto,
@@ -1325,6 +1304,7 @@ CREATE VIEW VLLista AS
 -- Lista de Precios a Revendedor.
 -- Modelo: VLListaRevendedor
 -- ============================================
+DROP VIEW IF EXISTS VLListaRevendedor CASCADE;
 CREATE VIEW VLListaRevendedor AS 
 	SELECT
 		p.id_familia_id,
@@ -1353,6 +1333,7 @@ CREATE VIEW VLListaRevendedor AS
 -- Listado de Stock por Sucursal.
 -- Modelo: VLStockSucursal
 -- ============================================
+DROP VIEW IF EXISTS VLStockSucursal CASCADE;
 CREATE VIEW VLStockSucursal AS 
 	SELECT
 		p.id_familia_id,
@@ -1383,6 +1364,7 @@ CREATE VIEW VLStockSucursal AS
 -- Stock General por Sucursal.
 -- Modelo: VLStockGeneralSucursal
 -- ============================================
+DROP VIEW IF EXISTS VLStockGeneralSucursal CASCADE;
 CREATE VIEW VLStockGeneralSucursal AS 
 	SELECT 1 AS dummy;
 
@@ -1390,6 +1372,7 @@ CREATE VIEW VLStockGeneralSucursal AS
 -- Listado de Stock a Fecha.
 -- Modelo: VLStockFecha
 -- ============================================
+DROP VIEW IF EXISTS VLStockFecha CASCADE;
 CREATE VIEW VLStockFecha AS 
 	SELECT
 		ROW_NUMBER() OVER() AS id,
@@ -1416,7 +1399,8 @@ CREATE VIEW VLStockFecha AS
 		p.tipo_producto = 'P' AND
 		ps.stock <> 0
 	GROUP BY
-		ps.id_producto_id
+		p.id_familia_id, pf.nombre_producto_familia, p.id_modelo_id, pm.nombre_modelo, p.id_marca_id, px.nombre_producto_marca,
+		ps.id_producto_id, p.id_cai_id,pc.cai, p.medida, p.nombre_producto
 	HAVING
 		SUM(ps.stock) <> 0
 	ORDER BY
@@ -1426,6 +1410,7 @@ CREATE VIEW VLStockFecha AS
 -- Listado de Stock Único.
 -- Modelo: VLStockUnico
 -- ============================================
+DROP VIEW IF EXISTS VLStockUnico CASCADE;
 CREATE VIEW VLStockUnico AS 
 	SELECT
 		p.id_familia_id,
@@ -1450,7 +1435,9 @@ CREATE VIEW VLStockUnico AS
 	WHERE
 		ps.stock <> 0
 	GROUP BY
-		ps.id_producto_id
+		p.id_familia_id, pf.nombre_producto_familia, p.id_modelo_id, pm.nombre_modelo, p.id_marca_id, px.nombre_producto_marca,
+		ps.id_producto_id, p.nombre_producto, p.id_cai_id, pc.cai, p.medida
+
 	HAVING
 		SUM(ps.stock) <> 0;
 
@@ -1458,6 +1445,7 @@ CREATE VIEW VLStockUnico AS
 -- Reposición de Stock.
 -- Modelo: VLReposicionStock
 -- ============================================
+DROP VIEW IF EXISTS VLReposicionStock CASCADE;
 CREATE VIEW VLReposicionStock AS 
 	SELECT 1 AS dummy;
 
@@ -1465,6 +1453,7 @@ CREATE VIEW VLReposicionStock AS
 -- Movimiento Interno de Stock.
 -- Modelo: VLMovimientoInternoStock
 -- ============================================
+DROP VIEW IF EXISTS VLMovimientoInternoStock CASCADE;
 CREATE VIEW VLMovimientoInternoStock AS
 	SELECT
 		f.fecha_comprobante,
@@ -1485,12 +1474,13 @@ CREATE VIEW VLMovimientoInternoStock AS
 		INNER JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
 		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE
-		cv.interno = 1;
+		cv.interno;
 
 -- ============================================
 -- Stock por Cliente en Depósito.
 -- Modelo: VLStockCliente
 -- ============================================
+DROP VIEW IF EXISTS VLStockCliente CASCADE;
 CREATE VIEW VLStockCliente AS 
 	SELECT
 		f.id_cliente_id,
@@ -1518,6 +1508,7 @@ CREATE VIEW VLStockCliente AS
 -- Stock en Depósitos de Clientes.
 -- Modelo: VLStockDeposito
 -- ============================================
+DROP VIEW IF EXISTS VLStockDeposito CASCADE;
 CREATE VIEW VLStockDeposito AS
 	SELECT
 		p.id_familia_id,
@@ -1543,7 +1534,9 @@ CREATE VIEW VLStockDeposito AS
 	WHERE
 		sc.cantidad <> sc.retirado
 	GROUP BY
-		sc.id_producto_id
+		p.id_familia_id, pf.nombre_producto_familia, p.id_modelo_id, pm.nombre_modelo, p.id_marca_id, px.nombre_producto_marca,
+		sc.id_producto_id, p.nombre_producto, p.medida, pc.cai, f.id_sucursal_id
+
 	HAVING
 		SUM(sc.cantidad - sc.retirado) <> 0;
 
@@ -1551,6 +1544,7 @@ CREATE VIEW VLStockDeposito AS
 -- Ficha de Seguimiento de Stock por Código o CAI.
 -- Modelo: VLFichaSeguimientoStock
 -- ============================================
+DROP VIEW IF EXISTS VLFichaSeguimientoStock CASCADE;
 CREATE VIEW VLFichaSeguimientoStock AS 
 	SELECT
 		id_producto_id,
@@ -1640,6 +1634,7 @@ CREATE VIEW VLFichaSeguimientoStock AS
 -- Detalle de Compras por Proveedor.
 -- Modelo: VLDetalleCompraProveedor
 -- ============================================
+DROP VIEW IF EXISTS VLDetalleCompraProveedor CASCADE;
 CREATE VIEW VLDetalleCompraProveedor AS
 	SELECT
 		c.id_proveedor_id,
@@ -1678,6 +1673,7 @@ CREATE VIEW VLDetalleCompraProveedor AS
 -- Comprobantes Ingresados.
 -- Modelo: VLCompraIngresada
 -- ============================================
+DROP VIEW IF EXISTS VLCompraIngresada CASCADE;
 CREATE VIEW VLCompraIngresada AS
 	SELECT
 		c.fecha_comprobante,
@@ -1697,6 +1693,7 @@ CREATE VIEW VLCompraIngresada AS
 -- Stock Mínimo por CAI.
 -- Modelo: VLProductoMinimo
 -- ============================================
+DROP VIEW IF EXISTS VLProductoMinimo CASCADE;
 CREATE VIEW VLProductoMinimo AS 
 	SELECT
 		pm.id_cai_id,
@@ -1708,31 +1705,3 @@ CREATE VIEW VLProductoMinimo AS
 		producto_minimo pm
 		JOIN producto_cai pc ON pm.id_cai_id = pc.id_cai
 		JOIN producto_deposito d ON pm.id_deposito_id = d.id_producto_deposito;
-
--- ============================================
--- VERIFICACIÓN FINAL
--- ============================================
-DO $$
-DECLARE
-    vista RECORD;
-    total_vistas INTEGER := 0;
-BEGIN
-    RAISE NOTICE '==========================================';
-    RAISE NOTICE 'VERIFICACIÓN DE VISTAS CREADAS';
-    RAISE NOTICE '==========================================';
-    
-    FOR vista IN 
-        SELECT schemaname, viewname 
-        FROM pg_views 
-        WHERE schemaname = 'public' 
-        AND viewname LIKE 'VL%'
-        ORDER BY viewname
-    LOOP
-        total_vistas := total_vistas + 1;
-        RAISE NOTICE '✅ %', vista.viewname;
-    END LOOP;
-    
-    RAISE NOTICE '==========================================';
-    RAISE NOTICE 'Total de vistas creadas: %', total_vistas;
-    RAISE NOTICE '==========================================';
-END $$;

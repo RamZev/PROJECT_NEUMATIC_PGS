@@ -39,13 +39,12 @@ class SaldosClientesManager(models.Manager):
 		
 		#-- Se completa la consulta.
 		query += """
-		GROUP BY 
-			id_cliente_id, nombre_cliente, domicilio_cliente, nombre_localidad, 
-			codigo_postal, telefono_cliente, sub_cuenta
-		HAVING 
-			ROUND(SUM(total * (mult_saldo * 1.00)), 2) <> 0
-		ORDER BY
-			nombre_cliente
+			GROUP BY 
+				id_cliente_id, nombre_cliente, domicilio_cliente, nombre_localidad, codigo_postal, telefono_cliente, sub_cuenta, id_vendedor_id, nombre_vendedor
+			HAVING 
+				ROUND(SUM(total * (mult_saldo * 1.00)), 2) <> 0
+			ORDER BY
+				nombre_cliente
 		"""
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
@@ -69,7 +68,7 @@ class VLSaldosClientes(models.Model):
 	
 	class Meta:
 		managed = False  #-- No gestionamos la creación/edición de la vista (Ignorado para migraciones).
-		db_table = 'VLSaldosClientes'  #-- Nombre de la vista en la base de datos.
+		db_table = 'vlsaldosclientes'  #-- Nombre de la vista en la base de datos.
 		verbose_name = ('Saldos de Clientes')
 		verbose_name_plural = ('Saldos de Clientes')
 		ordering = ['nombre_cliente']
@@ -242,7 +241,7 @@ class VLResumenCtaCte(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLResumenCtaCte'
+		db_table = 'vlresumenctacte'
 		verbose_name = ('Resumen de Cta. Cte.')
 		verbose_name_plural = ('Resumen de Cta. Cte.')
 		ordering = ['razon_social']
@@ -296,7 +295,7 @@ class VLMercaderiaPorCliente(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLMercaderiaPorCliente'
+		db_table = 'vlmercaderiaporcliente'
 		verbose_name = ('Mercadería por Cliente')
 		verbose_name_plural = ('Mercadería por Cliente')
 		ordering = ['id_cliente_id', 'fecha_comprobante']
@@ -352,7 +351,7 @@ class VLRemitosClientes(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLRemitosClientes'
+		db_table = 'vlremitosclientes'
 		verbose_name = ('Remitos por Clientes')
 		verbose_name_plural = ('Remitos por Clientes')
 		ordering = ['id_cliente_id', 'fecha_comprobante', 'numero_comprobante']
@@ -393,7 +392,7 @@ class TotalRemitosClientesManager(models.Manager):
 			params.append(id_cliente)
 		
 		#-- Completar la consulta.
-		query += "GROUP BY id_cliente_id"
+		query += "GROUP BY id_cliente_id, fecha_comprobante, nombre_cliente, domicilio_cliente, codigo_postal, nombre_iva, cuit, telefono_cliente"
 	
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
 		query += " ORDER by nombre_cliente"
@@ -417,7 +416,7 @@ class VLTotalRemitosClientes(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLTotalRemitosClientes'
+		db_table = 'vltotalremitosclientes'
 		verbose_name = ('Totales de Remitos por Clientes')
 		verbose_name_plural = ('Totales de Remitos por Clientes')
 		ordering = ['nombre_cliente']
@@ -486,7 +485,7 @@ class VLVentaComproLocalidad(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLVentaComproLocalidad'
+		db_table = 'vlventacomprololocalidad'
 		verbose_name = ('Ventas por Localidad')
 		verbose_name_plural = ('Ventas por Localidad')
 		ordering = ['fecha_comprobante']
@@ -564,7 +563,7 @@ class VLVentaMostrador(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLVentaMostrador'
+		db_table = 'vlventamostrador'
 		verbose_name = ('Ventas por Mostrador')
 		verbose_name_plural = ('Ventas por Mostrador')
 		ordering = ['fecha_comprobante', 'numero_comprobante']
@@ -625,7 +624,7 @@ class VLVentaCompro(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLVentaCompro'
+		db_table = 'vlventacompro'
 		verbose_name = ('Ventas por Comprobantes')
 		verbose_name_plural = ('Ventas por Comprobantes')
 		ordering = ['comprobante']
@@ -689,7 +688,7 @@ class VLComprobantesVencidos(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLComprobantesVencidos'
+		db_table = 'vlcomprobantesvencidos'
 		verbose_name = ('Comprobantes Vencidos')
 		verbose_name_plural = ('Comprobantes Vencidos')
 		ordering = ['fecha_comprobante']
@@ -762,7 +761,7 @@ class VLRemitosPendientes(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLRemitosPendientes'
+		db_table = 'vlremitospendientes'
 		verbose_name = ('Remitos Pendientes')
 		verbose_name_plural = ('Remitos Pendientes')
 		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
@@ -819,7 +818,7 @@ class VLRemitosVendedor(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLRemitosVendedor'
+		db_table = 'vlremitosvendedor'
 		verbose_name = ('Remitos por Vendedor')
 		verbose_name_plural = ('Remitos por Vendedor')
 		ordering = ['nombre_cliente', 'fecha_comprobante', 'numero_comprobante']
@@ -839,8 +838,8 @@ class IVAVentasFULLManager(models.Manager):
 			FROM
 				VLIVAVentasFULL
 			WHERE
-			 	STRFTIME('%%Y', fecha_comprobante) = %s
-				AND STRFTIME('%%m', fecha_comprobante) = %s
+			 	EXTRACT(YEAR FROM fecha_comprobante) = %s
+				AND EXTRACT(MONTH FROM fecha_comprobante) = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -880,7 +879,7 @@ class VLIVAVentasFULL(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLIVAVentasFULL'
+		db_table = 'vlivaventasfull'
 		verbose_name = ('Libro de I.V.A. Ventas - Detalle')
 		verbose_name_plural = ('Libro de I.V.A. Ventas - Detalle')
 		ordering = ['fecha_comprobante', 'numero_comprobante']
@@ -896,18 +895,21 @@ class VLIVAVentasProvinciasManager(models.Manager):
 		#-- Se crea la consulta.
 		query = """
 			SELECT 
-				id_factura, 
+				ROW_NUMBER() OVER (ORDER BY nombre_provincia) as id_factura,
 				nombre_provincia,
 				ROUND(SUM(gravado), 2) AS gravado,
 				ROUND(SUM(exento), 2) AS exento,
 				ROUND(SUM(iva), 2) AS iva,
 				ROUND(SUM(percep_ib), 2) AS percep_ib,
-				ROUND(SUM(total), 2) AS total
+				ROUND(SUM(total), 2) AS total,
+				0 as id_provincia,					-- Valor por defecto
+				CURRENT_DATE as fecha_comprobante,	-- Fecha actual
+				0 as id_sucursal_id					-- Valor por defecto
 			FROM
 				VLIVAVentasProvincias
 			WHERE
-				STRFTIME('%%Y', fecha_comprobante) = %s
-				AND STRFTIME('%%m', fecha_comprobante) = %s
+				EXTRACT(YEAR FROM fecha_comprobante) = %s
+				AND EXTRACT(MONTH FROM fecha_comprobante) = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -944,7 +946,7 @@ class VLIVAVentasProvincias(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLIVAVentasProvincias'
+		db_table = 'vlivaventasprovincias'
 		verbose_name = ('Libro de I.V.A. Ventas - Totales por Provincias')
 		verbose_name_plural = ('Libro de I.V.A. Ventas - Totales por Provincias')
 		ordering = ['nombre_provincia']
@@ -960,19 +962,21 @@ class VLIVAVentasSitribManager(models.Manager):
 		#-- Se crea la consulta.
 		query = """
 			SELECT 
-				id_factura,
+				ROW_NUMBER() OVER (ORDER BY codigo_iva) as id_factura,
 				codigo_iva,
 				nombre_iva,
 				ROUND(SUM(gravado), 2) AS gravado, 
 				ROUND(SUM(exento), 2) AS exento, 
 				ROUND(SUM(iva), 2) AS iva, 
 				ROUND(SUM(percep_ib), 2) AS percep_ib, 
-				ROUND(SUM(total), 2) AS total
+				ROUND(SUM(total), 2) AS total,
+				CURRENT_DATE as fecha_comprobante,	-- Fecha actual
+				0 as id_sucursal_id					-- Valor por defecto
 			FROM
 				VLIVAVentasSitrib
 			WHERE
-			 	STRFTIME('%%Y', fecha_comprobante) = %s
-				AND STRFTIME('%%m', fecha_comprobante) = %s
+			 	EXTRACT(YEAR FROM fecha_comprobante) = %s
+				AND EXTRACT(MONTH FROM fecha_comprobante) = %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -984,7 +988,7 @@ class VLIVAVentasSitribManager(models.Manager):
 			params.append(id_sucursal)
 		
 		#-- Se completa la consulta.
-		query += " GROUP BY codigo_iva"
+		query += " GROUP BY codigo_iva, nombre_iva"
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
 		query += " ORDER by codigo_iva"
@@ -1009,7 +1013,7 @@ class VLIVAVentasSitrib(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLIVAVentasSitrib'
+		db_table = 'vlivaventassitrib'
 		verbose_name = ('Libro de I.V.A. Ventas - Totales para SITRIB')
 		verbose_name_plural = ('Libro de I.V.A. Ventas - Totales para SITRIB')
 		ordering = ['codigo_iva']
@@ -1032,17 +1036,18 @@ class VLPercepIBVendedorTotalesManager(models.Manager):
 		#-- Se crea la consulta con ORDER BY directo (no placeholder).
 		query = f"""
 			SELECT 
-				id_factura,
+				ROW_NUMBER() OVER (ORDER BY id_vendedor_id) as id_factura,
 				id_vendedor_id,
 				nombre_vendedor,
 				ROUND(SUM(neto), 2) AS neto, 
-				ROUND(SUM(percep_ib), 2) AS percep_ib
+				ROUND(SUM(percep_ib), 2) AS percep_ib,
+				CURRENT_DATE as fecha_comprobante	-- Fecha actual
 			FROM
 				VLPercepIBVendedorTotales
 			WHERE
 				fecha_comprobante BETWEEN %s AND %s
 			GROUP BY
-				id_vendedor_id
+				id_vendedor_id, nombre_vendedor
 			ORDER BY
 				{order_by}
 		"""
@@ -1066,7 +1071,7 @@ class VLPercepIBVendedorTotales(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLPercepIBVendedorTotales'
+		db_table = 'vlpercepibvendedortotales'
 		verbose_name = ('Percepciones por Vendedor - Totales')
 		verbose_name_plural = ('Percepciones por Vendedor - Totales')
 
@@ -1125,7 +1130,7 @@ class VLPercepIBVendedorDetallado(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLPercepIBVendedorDetallado'
+		db_table = 'vlpercepibvendedordetallado'
 		verbose_name = ('Percepciones por Vendedor - Detallado')
 		verbose_name_plural = ('Percepciones por Vendedor - Detallado')
 
@@ -1140,17 +1145,20 @@ class VLPercepIBSubcuentaTotalesManager(models.Manager):
 		#-- Base de la consulta SQL.
 		query = """
 			SELECT 
-				id_factura,
+				ROW_NUMBER() OVER (ORDER BY sub_cuenta) as id_factura,
 				sub_cuenta,
 				nombre_cliente_padre,
 				ROUND(SUM(neto), 2) AS neto, 
-				ROUND(SUM(percep_ib), 2) AS percep_ib
+				ROUND(SUM(percep_ib), 2) AS percep_ib,
+				CURRENT_DATE as fecha_comprobante,	-- Fecha actual
+			    0 AS id_cliente_id,
+    			'' AS nombre_cliente
 			FROM
 				VLPercepIBSubcuentaTotales
 			WHERE
 				fecha_comprobante BETWEEN %s AND %s
 			GROUP BY 
-				sub_cuenta
+				sub_cuenta, nombre_cliente_padre
 			ORDER by 
 				sub_cuenta
 		"""
@@ -1176,7 +1184,7 @@ class VLPercepIBSubcuentaTotales(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLPercepIBSubcuentaTotales'
+		db_table = 'vlpercepibsubcuentatotales'
 		verbose_name = ('Percepciones por Sub Cuentas - Totales')
 		verbose_name_plural = ('Percepciones por Sub Cuentas - Totales')
 		ordering = ['sub_cuenta']
@@ -1228,7 +1236,7 @@ class VLPercepIBSubcuentaDetallado(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLPercepIBSubcuentaDetallado'
+		db_table = 'vlpercepibsubcuentadetallado'
 		verbose_name = ('Percepciones por Sub Cuentas - Detallado')
 		verbose_name_plural = ('Percepciones por Sub Cuentas - Detallado')
 		ordering = ['sub_cuenta']
@@ -1311,7 +1319,7 @@ class VLComisionVendedor(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLComisionVendedor'
+		db_table = 'vlcomisionvendedor'
 		verbose_name = ('Comisión Según Facturación')
 		verbose_name_plural = ('Comisión Según Facturación')
 		# ordering = ['nombre_vendedor','fecha_comprobante','numero_comprobante']
@@ -1376,7 +1384,7 @@ class VLComisionOperario(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLComisionOperario'
+		db_table = 'vlcomisionoperario'
 		verbose_name = ('Comisiones a Operarios')
 		verbose_name_plural = ('Comisiones a Operarios')
 		ordering = ['nombre_operario', 'fecha_comprobante', 'numero_comprobante']
@@ -1449,7 +1457,7 @@ class VLPrecioDiferente(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLPrecioDiferente'
+		db_table = 'vlpreciodiferente'
 		verbose_name = ('Diferencias de Precios en Facturación')
 		verbose_name_plural = ('Diferencias de Precios en Facturación')
 		ordering = ['nombre_vendedor', 'fecha_comprobante', 'numero_comprobante']
@@ -1469,8 +1477,8 @@ class VentasResumenIBManager(models.Manager):
 			FROM 
 				VLVentasResumenIB
 			WHERE 
-				STRFTIME('%%Y', fecha_comprobante) = %s
-				AND STRFTIME('%%m', fecha_comprobante) = %s
+				EXTRACT(YEAR FROM fecha_comprobante) = %s
+				AND EXTRACT(MONTH FROM fecha_comprobante) = %s
 				AND suc_imp = %s
 		"""
 		
@@ -1495,7 +1503,7 @@ class VLVentasResumenIB(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLVentasResumenIB'
+		db_table = 'vlventasresumenib'
 		verbose_name = ('Resumen de Ventas por Provincias')
 		verbose_name_plural = ('Resumen de Ventas por Provincias')
 		ordering = ['fecha_comprobante']
@@ -1506,11 +1514,10 @@ class VLVentasResumenIB(models.Model):
 #-----------------------------------------------------------------------------
 class EstadisticasVentasManager(models.Manager):
 	
-	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_cliente=None):
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desde, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_cliente=None):
 		
-		query = """
-			SELECT 
-				id_factura,
+		select_columns = {
+			"Producto": """
 				id_producto_id,
 				cai,
 				nombre_producto,
@@ -1520,19 +1527,65 @@ class EstadisticasVentasManager(models.Manager):
 				id_modelo_id,
 				nombre_modelo,
 				id_marca_id,
-				nombre_producto_marca,
-				SUM(cantidad) AS cantidad, 
-				SUM(total) AS total,
-				id_cliente_id
+				nombre_producto_marca
+			""",
+			"Familia": """
+				id_familia_id,
+				nombre_producto_familia,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Modelo": """
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Marca": """
+				id_marca_id,
+				nombre_producto_marca
+			"""
+		}
+		
+		# query = """
+		# 	SELECT 
+		# 		ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
+		# 		id_producto_id,
+		# 		cai,
+		# 		nombre_producto,
+		# 		unidad,
+		# 		id_familia_id,
+		# 		nombre_producto_familia,
+		# 		id_modelo_id,
+		# 		nombre_modelo,
+		# 		id_marca_id,
+		# 		nombre_producto_marca,
+		# 		SUM(cantidad) AS cantidad,
+		# 		SUM(total) AS total,
+		# 		id_cliente_id
+		# 	FROM 
+		# 		VLEstadisticasVentas
+		# 	WHERE 
+		# 		fecha_comprobante BETWEEN %s AND %s
+		# 		AND id_marca_id BETWEEN %s AND %s
+		# """
+		
+        #-- Construir la consulta.
+		query = f"""
+			SELECT 
+				ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
+				{select_columns[agrupar]},
+				SUM(cantidad) AS cantidad,
+				SUM(total) AS total
 			FROM 
 				VLEstadisticasVentas
 			WHERE 
 				fecha_comprobante BETWEEN %s AND %s
 				AND id_marca_id BETWEEN %s AND %s
 		"""
-		
+			
 		#-- Se añaden parámetros.
-		params = [fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta]
+		params = [fecha_desde, fecha_hasta, id_marca_desde, id_marca_hasta]
 		
 		#-- Filtros adicionales.
 		if id_sucursal:
@@ -1543,16 +1596,19 @@ class EstadisticasVentasManager(models.Manager):
 			query += " AND id_cliente_id = %s"
 			params.append(id_cliente)
 		
-		match agrupar:
-			case "Producto":
-				query += " GROUP BY id_producto_id"
-			case "Familia":
-				query += " GROUP BY id_familia_id, id_marca_id"
-			case "Modelo":
-				query += " GROUP BY id_modelo_id, id_marca_id"
-				# query += " GROUP BY id_modelo_id"
-			case "Marca":
-				query += " GROUP BY id_marca_id"
+		# match agrupar:
+		# 	case "Producto":
+		# 		query += " GROUP BY id_producto_id"
+		# 	case "Familia":
+		# 		query += " GROUP BY id_familia_id, id_marca_id"
+		# 	case "Modelo":
+		# 		query += " GROUP BY id_modelo_id, id_marca_id"
+		# 		# query += " GROUP BY id_modelo_id"
+		# 	case "Marca":
+		# 		query += " GROUP BY id_marca_id"
+		
+		#-- Agregar GROUP BY.
+		query += f" GROUP BY {select_columns[agrupar]}"
 		
 		if mostrar:
 			match mostrar:
@@ -1583,7 +1639,7 @@ class VLEstadisticasVentas(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentas'
+		db_table = 'vlestadisticasventas'
 		verbose_name = ('Estadísticas de Ventas')
 		verbose_name_plural = ('Estadísticas de Ventas')
 
@@ -1595,19 +1651,60 @@ class EstadisticasVentasVendedorManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_vendedor=None):
 		
-		query = """
-			SELECT 
-				id_factura,
+		select_columns = {
+			"Producto": """
 				id_producto_id,
 				nombre_producto,
+				id_familia_id,
 				nombre_producto_familia,
+				id_modelo_id,
 				nombre_modelo,
-				nombre_producto_marca,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Familia": """
+				id_familia_id,
+				nombre_producto_familia,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Modelo": """
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Marca": """
+				id_marca_id,
+				nombre_producto_marca
+			"""
+		}
+		
+		# query = """
+		# 	SELECT 
+		# 		id_factura,
+		# 		id_producto_id,
+		# 		nombre_producto,
+		# 		nombre_producto_familia,
+		# 		nombre_modelo,
+		# 		nombre_producto_marca,
+		# 		SUM(cantidad) AS cantidad, 
+		# 		SUM(total) AS total
+		# 	FROM 
+		# 		VLEstadisticasVentasVendedor
+		# 	WHERE fecha_comprobante BETWEEN %s AND %s 
+		# 		AND id_marca_id BETWEEN %s AND %s
+		# """
+		query = f"""
+			SELECT 
+				ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
+				{select_columns[agrupar]},
 				SUM(cantidad) AS cantidad, 
 				SUM(total) AS total
 			FROM 
 				VLEstadisticasVentasVendedor
-			WHERE fecha_comprobante BETWEEN %s AND %s 
+			WHERE
+				fecha_comprobante BETWEEN %s AND %s 
 				AND id_marca_id BETWEEN %s AND %s
 		"""
 		
@@ -1623,15 +1720,18 @@ class EstadisticasVentasVendedorManager(models.Manager):
 			query += " AND id_vendedor_id = %s"
 			params.append(id_vendedor)
 		
-		match agrupar:
-			case "Producto":
-				query += " GROUP BY id_producto_id"
-			case "Familia":
-				query += " GROUP BY id_familia_id, id_marca_id"
-			case "Modelo":
-				query += " GROUP BY id_modelo_id, id_marca_id"
-			case "Marca":
-				query += " GROUP BY id_marca_id"
+		# match agrupar:
+		# 	case "Producto":
+		# 		query += " GROUP BY id_producto_id"
+		# 	case "Familia":
+		# 		query += " GROUP BY id_familia_id, id_marca_id"
+		# 	case "Modelo":
+		# 		query += " GROUP BY id_modelo_id, id_marca_id"
+		# 	case "Marca":
+		# 		query += " GROUP BY id_marca_id"
+		
+		#-- Agregar GROUP BY.
+		query += f" GROUP BY {select_columns[agrupar]}"
 		
 		if mostrar:
 			match mostrar:
@@ -1641,6 +1741,7 @@ class EstadisticasVentasVendedorManager(models.Manager):
 					query += " ORDER BY total DESC"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		print("Consulta SQL:", query)  # Debug: Imprimir la consulta SQL generada
 		return self.raw(query, params)
 
 
@@ -1661,7 +1762,7 @@ class VLEstadisticasVentasVendedor(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentasVendedor'
+		db_table = 'vlestadisticasventasvendedor'
 		verbose_name = ('Estadísticas de Ventas por Vendedor')
 		verbose_name_plural = ('Estadísticas de Ventas por Vendedor')
 
@@ -1676,19 +1777,81 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 		#-- Convertir el parámetro estadisticas a booleano.
 		estadisticas = estadisticas.lower() == 'true' if isinstance(estadisticas, str) else bool(estadisticas)
 		
-		query = """
-			SELECT 
-				ROW_NUMBER() OVER() AS id,
-				id_producto_id,
-				nombre_producto,
-				nombre_producto_familia,
-				nombre_modelo,
-				nombre_producto_marca,
+		select_columns = {
+			"Producto": """
+				id_sucursal_id,
 				id_vendedor_id,
 				nombre_vendedor,
 				id_cliente_id,
 				nombre_cliente,
-				SUM(cantidad) AS cantidad, 
+				id_producto_id,
+				nombre_producto,
+				id_familia_id,
+				nombre_producto_familia,
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Familia": """
+				id_sucursal_id,
+				id_vendedor_id,
+				nombre_vendedor,
+				id_cliente_id,
+				nombre_cliente,
+				id_familia_id,
+				nombre_producto_familia,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Modelo": """
+				id_sucursal_id,
+				id_vendedor_id,
+				nombre_vendedor,
+				id_cliente_id,
+				nombre_cliente,
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Marca": """
+				id_sucursal_id,
+				id_vendedor_id,
+				nombre_vendedor,
+				id_cliente_id,
+				nombre_cliente,
+				id_marca_id,
+				nombre_producto_marca
+			"""
+		}
+		
+		# query = """
+		# 	SELECT 
+		# 		ROW_NUMBER() OVER() AS id,
+		# 		id_producto_id,
+		# 		nombre_producto,
+		# 		nombre_producto_familia,
+		# 		nombre_modelo,
+		# 		nombre_producto_marca,
+		# 		id_vendedor_id,
+		# 		nombre_vendedor,
+		# 		id_cliente_id,
+		# 		nombre_cliente,
+		# 		SUM(cantidad) AS cantidad, 
+		# 		SUM(total) AS total
+		# 	FROM 
+		# 		VLEstadisticasVentasVendedorCliente
+		# 	WHERE 
+		# 		no_estadist = %s
+		# 	 	AND fecha_comprobante BETWEEN %s AND %s
+		# 		AND id_marca_id BETWEEN %s AND %s
+		# """
+		query = f"""
+			SELECT 
+				ROW_NUMBER() OVER() AS id,
+				{select_columns[agrupar]},
+				SUM(cantidad) AS cantidad,
 				SUM(total) AS total
 			FROM 
 				VLEstadisticasVentasVendedorCliente
@@ -1710,15 +1873,18 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 			query += " AND id_vendedor_id = %s"
 			params.append(id_vendedor)
 		
-		match agrupar:
-			case "Producto":
-				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_producto_id"
-			case "Familia":
-				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_familia_id, id_marca_id"
-			case "Modelo":
-				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_modelo_id, id_marca_id"
-			case "Marca":
-				query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_marca_id"
+		# match agrupar:
+		# 	case "Producto":
+		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_producto_id"
+		# 	case "Familia":
+		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_familia_id, id_marca_id"
+		# 	case "Modelo":
+		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_modelo_id, id_marca_id"
+		# 	case "Marca":
+		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_marca_id"
+		
+		#-- Agregar GROUP BY.
+		query += f" GROUP BY {select_columns[agrupar]}"
 		
 		query += " ORDER BY id_sucursal_id DESC, id_vendedor_id DESC, id_cliente_id DESC"
 		
@@ -1730,6 +1896,7 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 					query += ", total DESC"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		print("Consulta SQL:", query)  # Debug: Imprimir la consulta SQL generada
 		return self.raw(query, params)
 
 
@@ -1754,7 +1921,7 @@ class VLEstadisticasVentasVendedorCliente(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentasVendedorCliente'
+		db_table = 'vlestadisticasventasvendedorcliente'
 		verbose_name = ('Estadísticas de Ventas Vendedor Clientes')
 		verbose_name_plural = ('Estadísticas de Ventas Vendedor Clientes')
 
@@ -1838,7 +2005,7 @@ class VLEstadisticasSegunCondicion(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasSegunCondicion'
+		db_table = 'vlestadisticaseguncondicion'
 		verbose_name = ('Ventas Según Condición')
 		verbose_name_plural = ('Ventas Según Condición')
 
@@ -1901,7 +2068,7 @@ class VLEstadisticasVentasMarca(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentasMarca'
+		db_table = 'vlestadisticasventasmarca'
 		verbose_name = ('Estadísticas de Ventas por Marca y Artículo')
 		verbose_name_plural = ('Estadísticas de Ventas por Marca y Artículo')
 
@@ -1966,7 +2133,7 @@ class VLEstadisticasVentasMarcaVendedor(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentasMarcaVendedor'
+		db_table = 'vlestadisticasventasmarcavendedor'
 		verbose_name = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
 		verbose_name_plural = ('Estadísticas de Ventas por Marca y Familia por Vendedor')
 
@@ -2013,7 +2180,7 @@ class VLClienteUltimaVenta(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLClienteUltimaVenta'
+		db_table = 'vlclienteultimaventa'
 		verbose_name = ('Estadísticas de Clientes sin Ventas')
 		verbose_name_plural = ('Estadísticas de Clientes sin Ventas')
 
@@ -2105,7 +2272,7 @@ class VLEstadisticasVentasProvincia(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLEstadisticasVentasProvincia'
+		db_table = 'vlestadisticasventasprovincia'
 		verbose_name = ('Estadísticas de Ventas por Provincia')
 		verbose_name_plural = ('Estadísticas de Ventas por Provincia')
 
@@ -2167,7 +2334,7 @@ class VLVentaSinEstadistica(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'vlVentaSinEstadistica'
+		db_table = 'vlventasinestadistica'
 		verbose_name = ('Comprobantes sin Estadísticas')
 		verbose_name_plural = ('Comprobantes sin Estadísticas')
 
@@ -2236,7 +2403,7 @@ class VLTablaDinamicaVentas(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLTablaDinamicaVentas'
+		db_table = 'vltabladinamicaventas'
 		verbose_name = ('Tablas Dinámicas de Ventas - Ventas por Comprobantes')
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Ventas por Comprobantes')
 
@@ -2318,7 +2485,7 @@ class VLTablaDinamicaDetalleVentas(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLTablaDinamicaDetalleVentas'
+		db_table = 'vltabladinamicadetalleventas'
 		verbose_name = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Detalle de Ventas por Productos')
 
@@ -2398,7 +2565,7 @@ class VLTablaDinamicaEstadistica(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLTablaDinamicaEstadistica'
+		db_table = 'vltabladinamicaestadistica'
 		verbose_name = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
 		verbose_name_plural = ('Tablas Dinámicas de Ventas - Tablas para Estadísticas')
 
@@ -2495,7 +2662,7 @@ class VLLista(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLLista'
+		db_table = 'vllista'
 		verbose_name = ('Lista de Precios')
 		verbose_name_plural = ('Lista de Precios')
 
@@ -2577,7 +2744,7 @@ class VLListaRevendedor(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLListaRevendedor'
+		db_table = 'vllistarevendedor'
 		verbose_name = ('Lista de Precios a Revendedor')
 		verbose_name_plural = ('Lista de Precios a Revendedor')
 
@@ -2665,7 +2832,7 @@ class VLStockSucursal(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLStockSucursal'
+		db_table = 'vlstocksucursal'
 		verbose_name = ('Listado de Stock por Sucursal')
 		verbose_name_plural = ('Listado de Stock por Sucursal')
 
@@ -2901,7 +3068,7 @@ class VLStockGeneralSucursal(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLStockGeneralSucursal'
+		db_table = 'vlstockgeneralsucursal'
 		verbose_name = ('Stock General por Sucursal')
 		verbose_name_plural = ('Stock General por Sucursal')
 
@@ -2962,7 +3129,7 @@ class VLStockFecha(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLStockFecha'
+		db_table = 'vlstockfecha'
 		verbose_name = ('Listado de Stock a Fecha')
 		verbose_name_plural = ('Listado de Stock a Fecha')
 
@@ -3008,7 +3175,7 @@ class VLStockUnico(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLStockUnico'
+		db_table = 'vlstockunico'
 		verbose_name = ('Listado de Stock Único')
 		verbose_name_plural = ('Listado de Stock Único')
 
@@ -3040,11 +3207,11 @@ class VLReposicionStockManager(models.Manager):
 				p.segmento,
 				p.nombre_producto,
 				CASE 
-					WHEN pn.minimo THEN pn.minimo ELSE 0
+					WHEN pn.minimo is not null THEN pn.minimo ELSE 0
 				END AS minimo,
 				SUM(ps.stock) AS stock,
 				CASE
-					WHEN pn.minimo THEN pn.minimo - SUM(ps.stock) ELSE 0
+					WHEN pn.minimo is not null THEN pn.minimo - SUM(ps.stock) ELSE 0
 				END AS faltante,
 				{sucursal_columns}
 			FROM
@@ -3081,7 +3248,8 @@ class VLReposicionStockManager(models.Manager):
 					FROM producto_stock ps2
 					JOIN producto_deposito pd2 ON ps2.id_deposito_id = pd2.id_producto_deposito
 					WHERE pd2.id_sucursal_id = %s AND ps2.id_producto_id = p.id_producto
-					GROUP BY pd2.id_sucursal_id AND ps2.id_producto_id
+					--GROUP BY pd2.id_sucursal_id AND ps2.id_producto_id
+					GROUP BY pd2.id_sucursal_id, ps2.id_producto_id
 					HAVING SUM(ps2.stock) > 0
 				), 0) AS stock_suc_{sucursal_id}
 			""".format(sucursal_id=sucursal.id_sucursal)
@@ -3152,7 +3320,7 @@ class VLReposicionStock(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLReposicionStock'
+		db_table = 'vlreposicionstock'
 		verbose_name = ('Reposición de Stock')
 		verbose_name_plural = ('Reposición de Stock')
 
@@ -3207,7 +3375,7 @@ class VLMovimientoInternoStock(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLMovimientoInternoStock'
+		db_table = 'vlmovimientoinfernostock'
 		verbose_name = ('Movimiento Interno de Stock')
 		verbose_name_plural = ('Movimiento Interno de Stock')
 
@@ -3268,7 +3436,7 @@ class VLStockCliente(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLStockCliente'
+		db_table = 'vlstockcliente'
 		verbose_name = ('Stock por Clientes en Depósitos')
 		verbose_name_plural = ('Stock por Clientes en Depósitos')
 
@@ -3327,7 +3495,7 @@ class VLStockDeposito(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLStockDeposito'
+		db_table = 'vlstockdeposito'
 		verbose_name = ('Stock en Depósitos de Clientes')
 		verbose_name_plural = ('Stock en Depósitos de Clientes')
 
@@ -3404,7 +3572,7 @@ class VLFichaSeguimientoStock(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLFichaSeguimientoStock'
+		db_table = 'vlfichaseguimientostock'
 		verbose_name = ('Ficha de Seguimiento de Stock')
 		verbose_name_plural = ('Ficha de Seguimiento de Stock')
 
@@ -3475,7 +3643,7 @@ class VLDetalleCompraProveedor(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLDetalleCompraProveedor'
+		db_table = 'vldetallecompraproveedor'
 		verbose_name = ('Detalle de Compras por Proveedor')
 		verbose_name_plural = ('Detalle de Compras por Proveedor')
 
@@ -3532,7 +3700,7 @@ class VLCompraIngresada(models.Model):
 	
 	class Meta:
 		managed = False
-		db_table = 'VLCompraIngresada'
+		db_table = 'vlcompraingresada'
 		verbose_name = ('Comprobantes Ingresados')
 		verbose_name_plural = ('Comprobantes Ingresados')
 
@@ -3586,7 +3754,7 @@ class VLProductoMinimo(models.Model):
 
 	class Meta:
 		managed = False
-		db_table = 'VLProductoMinimo'
+		db_table = 'vlproductominimo'
 		verbose_name = ('Stock Mínimo por CAI')
 		verbose_name_plural = ('Stock Mínimo por CAI')
 
