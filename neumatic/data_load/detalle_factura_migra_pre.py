@@ -146,21 +146,11 @@ def cargar_datos_detalle_factura():
             operarios_cache.add(row[0])
     print(f"Operarios precargados: {len(operarios_cache)}")
 
-    # Precargar productos (directamente los IDs)
-    print("Precargando productos...")
-    productos_cache = set()
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT id_producto FROM producto")
-        for row in cursor.fetchall():
-            productos_cache.add(row[0])
-    print(f"Productos precargados: {len(productos_cache)}")
-
     batch_size = 5000
     detalles_batch = []
     registros_procesados = 0
     errores = 0
     contador_id = 1
-    productos_no_encontrados = set()
 
     for idx, record in enumerate(table, 1):
         if idx % 10000 == 0:
@@ -174,28 +164,17 @@ def cargar_datos_detalle_factura():
             codigo_raw = record.get('CODIGO')
             codigo_producto = safe_int(codigo_raw)
             
-            # El código del DBF es el mismo que id_producto
-            id_producto = None
-            if codigo_producto != 0:
-                if codigo_producto in productos_cache:
-                    id_producto = codigo_producto
-                else:
-                    if codigo_producto not in productos_no_encontrados:
-                        productos_no_encontrados.add(codigo_producto)
-                        if len(productos_no_encontrados) <= 10:
-                            logger.warning(f"Producto con ID {codigo_producto} no encontrado en la tabla producto")
-            
             id_operario = safe_int(record.get('OPERARIO'))
             if id_operario != 0 and id_operario not in operarios_cache:
                 id_operario = 0
 
             producto_venta = safe_str(codigo_raw)[:50] if codigo_raw else None
 
-            # Crear detalle con los valores correspondientes
+            # Crear detalle con valores por defecto siempre presentes
             detalle = DetalleFactura(
                 id_detalle_factura=contador_id,
                 id_factura_id=id_factura,
-                id_producto_id=id_producto,
+                id_producto_id=None,
                 codigo=codigo_producto if codigo_producto != 0 else None,
                 producto_venta=producto_venta,
                 cantidad=safe_decimal(record.get('CANTIDAD'), 'CANTIDAD', Decimal('0.00')),
@@ -240,9 +219,6 @@ def cargar_datos_detalle_factura():
     print(f"Registros procesados: {registros_procesados}")
     print(f"Errores: {errores}")
     print(f"Total en DBF: {total_registros}")
-    print(f"Productos NO encontrados: {len(productos_no_encontrados)}")
-    if productos_no_encontrados:
-        print(f"Ejemplos de IDs no encontrados: {list(productos_no_encontrados)[:10]}")
     print(f"Tiempo total: {int(mins)} min {int(secs)} seg")
     print(f"{'='*60}")
 
