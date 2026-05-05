@@ -11,8 +11,8 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 # Lista de scripts a ejecutar en orden
 SCRIPTS = [
     'actividad_migra.py',
-    'comprobante_venta_migra.py',
-    'comprobante_compra_migra.py',
+    #'comprobante_venta_migra.py',
+    #'comprobante_compra_migra.py',
     'moneda_migra.py',
     'provincia_migra.py',
     'localidad_migra.py',

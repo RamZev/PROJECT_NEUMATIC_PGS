@@ -10,11 +10,11 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 
 # Lista de scripts a ejecutar en orden
 SCRIPTS = [
-    'banco_migra.py',
-    'cuenta_banco_migra.py',
-    'tarjeta_migra.py',
-    'codigo_retencion_migra.py',
-    'concepto_banco_migra.py',
+    # 'banco_migra.py',
+    # 'cuenta_banco_migra.py',
+    # 'tarjeta_migra.py',
+    # 'codigo_retencion_migra.py',
+    # 'concepto_banco_migra.py',
     'cheque_recibo_migra.py',
     'tarjeta_recibo_migra.py',
     'retencion_recibo_migra.py',

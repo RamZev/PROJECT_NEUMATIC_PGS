@@ -75,17 +75,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'neumatic.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-# 		'NAME': path.join(BASE_DIR, 'data', 'db_neumatic.db'),
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': getenv('DB_ENGINE', 'django.db.backends.postgresql'),
