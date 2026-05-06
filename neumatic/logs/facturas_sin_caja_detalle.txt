@@ -1,1665 +1,1641 @@
 FACTURAS SIN CAJA ASIGNADA - DETALLE
 ================================================================================
-Fecha: 2026-05-05 17:00:05
+Fecha: 2026-05-06 17:59:05
 ================================================================================
 
-Factura ID: 1735369
+Factura ID: 1736954
 Comprobante: ND - 1
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: 13 DE AGOSTO SRL
 ----------------------------------------
-Factura ID: 1735370
+Factura ID: 1736955
 Comprobante: ND - 2
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE BROAST SRL
 ----------------------------------------
-Factura ID: 1735371
+Factura ID: 1736956
 Comprobante: ND - 3
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOS CERRILLOS S.A.
 ----------------------------------------
-Factura ID: 1735372
+Factura ID: 1736957
 Comprobante: ND - 4
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LA BARBA JORGE R., JOSE Y JORG
 ----------------------------------------
-Factura ID: 1735374
+Factura ID: 1736959
 Comprobante: ND - 6
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LONGONI OMAR
 ----------------------------------------
-Factura ID: 1735377
+Factura ID: 1736962
 Comprobante: ND - 9
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LAS NENAS SA
 ----------------------------------------
-Factura ID: 1735378
+Factura ID: 1736963
 Comprobante: ND - 10
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANEF SRL
 ----------------------------------------
-Factura ID: 1735379
+Factura ID: 1736964
 Comprobante: ND - 11
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HOJOBAR S.A.
 ----------------------------------------
-Factura ID: 1735383
+Factura ID: 1736968
 Comprobante: ND - 15
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HUMBERTO 1 CEREALES S.A.
 ----------------------------------------
-Factura ID: 1735384
+Factura ID: 1736969
 Comprobante: ND - 16
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SCHIMPF CLAUDIO
 ----------------------------------------
-Factura ID: 1735386
+Factura ID: 1736971
 Comprobante: ND - 18
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TECNOCROM S.A.
 ----------------------------------------
-Factura ID: 1735389
+Factura ID: 1736974
 Comprobante: ND - 21
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PARANA MEDIO S.R.L.
 ----------------------------------------
-Factura ID: 1735390
+Factura ID: 1736975
 Comprobante: ND - 22
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: OLIVERA HUGO ALEJANDRO
 ----------------------------------------
-Factura ID: 1735396
+Factura ID: 1736981
 Comprobante: ND - 28
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BERRA HEBER
 ----------------------------------------
-Factura ID: 1735397
+Factura ID: 1736982
 Comprobante: ND - 29
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ASOC MUTUAL SANCOR
 ----------------------------------------
-Factura ID: 1735399
+Factura ID: 1736984
 Comprobante: ND - 31
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ACANTILADOS SA
 ----------------------------------------
-Factura ID: 1735401
+Factura ID: 1736986
 Comprobante: ND - 33
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DISTRIBUIDORA COMERSUR SA
 ----------------------------------------
-Factura ID: 1735402
+Factura ID: 1736987
 Comprobante: ND - 34
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CASADEI ROBERTO
 ----------------------------------------
-Factura ID: 1735404
+Factura ID: 1736989
 Comprobante: ND - 36
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: STELLA JORGE
 ----------------------------------------
-Factura ID: 1735408
+Factura ID: 1736993
 Comprobante: ND - 40
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COOPERTIVA F.AGRIC GAN S JUSTO
 ----------------------------------------
-Factura ID: 1735409
+Factura ID: 1736994
 Comprobante: ND - 41
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RIBOLDI MATERIALES SA
 ----------------------------------------
-Factura ID: 1735413
+Factura ID: 1736998
 Comprobante: ND - 45
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735415
+Factura ID: 1737000
 Comprobante: ND - 47
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RUIZ MARCELO
 ----------------------------------------
-Factura ID: 1735416
+Factura ID: 1737001
 Comprobante: ND - 48
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SUCESION DE SABBIONE JUAN CARL
 ----------------------------------------
-Factura ID: 1735420
+Factura ID: 1737005
 Comprobante: ND - 52
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: APPENDINO GERARDO JORGE
 ----------------------------------------
-Factura ID: 1735422
+Factura ID: 1737007
 Comprobante: ND - 54
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DON AURELIO GRIONI SRL
 ----------------------------------------
-Factura ID: 1735423
+Factura ID: 1737008
 Comprobante: ND - 55
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735424
+Factura ID: 1737009
 Comprobante: ND - 56
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DELFINA SASIA DE MARCHISIO EH
 ----------------------------------------
-Factura ID: 1735425
+Factura ID: 1737010
 Comprobante: ND - 57
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: S.A. EST. LA PELADA GAN. Y COM
 ----------------------------------------
-Factura ID: 1735427
+Factura ID: 1737012
 Comprobante: ND - 59
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MIGUEMIL S.A
 ----------------------------------------
-Factura ID: 1735428
+Factura ID: 1737013
 Comprobante: ND - 60
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MUNICIPALIDAD DE SAN JUSTO
 ----------------------------------------
-Factura ID: 1735431
+Factura ID: 1737016
 Comprobante: ND - 63
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SASIA RAMIRO
 ----------------------------------------
-Factura ID: 1735432
+Factura ID: 1737017
 Comprobante: ND - 64
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ARNAUDO HERNAN DARIO
 ----------------------------------------
-Factura ID: 1735433
+Factura ID: 1737018
 Comprobante: ND - 65
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BONARDO CARLOS ALBERTO
 ----------------------------------------
-Factura ID: 1735434
+Factura ID: 1737019
 Comprobante: ND - 66
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ROSSO EDGARDO LUIS
 ----------------------------------------
-Factura ID: 1735435
+Factura ID: 1737020
 Comprobante: ND - 67
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FAGIOLI JOSE LUIS
 ----------------------------------------
-Factura ID: 1735436
+Factura ID: 1737021
 Comprobante: ND - 68
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGRONORTE SRL
 ----------------------------------------
-Factura ID: 1735437
+Factura ID: 1737022
 Comprobante: ND - 69
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARBONELL BERNARDO MARTIN
 ----------------------------------------
-Factura ID: 1735438
+Factura ID: 1737023
 Comprobante: ND - 70
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MICHELIN ARGENTINA SAIC Y F
 ----------------------------------------
-Factura ID: 1735439
+Factura ID: 1737024
 Comprobante: ND - 71
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CORTES LUIS MARCIANO
 ----------------------------------------
-Factura ID: 1735440
+Factura ID: 1737025
 Comprobante: ND - 72
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NORTE AGRO CORREDORASA
 ----------------------------------------
-Factura ID: 1735441
+Factura ID: 1737026
 Comprobante: ND - 73
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MARAPE S.A.
 ----------------------------------------
-Factura ID: 1735443
+Factura ID: 1737028
 Comprobante: ND - 75
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ESTAB. DON AVELINO SRL
 ----------------------------------------
-Factura ID: 1735445
+Factura ID: 1737030
 Comprobante: ND - 77
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PE¥ALBA EDGARDO
 ----------------------------------------
-Factura ID: 1735446
+Factura ID: 1737031
 Comprobante: ND - 78
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ALCARAZ RUBEN
 ----------------------------------------
-Factura ID: 1735450
+Factura ID: 1737035
 Comprobante: ND - 82
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SAN JUSTO S.A.
 ----------------------------------------
-Factura ID: 1735451
+Factura ID: 1737036
 Comprobante: ND - 83
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735453
+Factura ID: 1737038
 Comprobante: ND - 85
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735454
+Factura ID: 1737039
 Comprobante: ND - 86
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NEFLE ENRIQUE PEDRO
 ----------------------------------------
-Factura ID: 1735455
+Factura ID: 1737040
 Comprobante: ND - 87
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735456
+Factura ID: 1737041
 Comprobante: ND - 88
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DOMINGO PERETTI HE HIJOS SRL
 ----------------------------------------
-Factura ID: 1735459
+Factura ID: 1737044
 Comprobante: ND - 91
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735461
+Factura ID: 1737046
 Comprobante: ND - 93
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LEONE JORGE
 ----------------------------------------
-Factura ID: 1735464
+Factura ID: 1737049
 Comprobante: ND - 96
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LENARDUZZI DIEGO
 ----------------------------------------
-Factura ID: 1735465
+Factura ID: 1737050
 Comprobante: ND - 97
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOLER RUIZ GUILLERMO
 ----------------------------------------
-Factura ID: 1735466
-Comprobante: ND - 98
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: UNION AGR. DE AVELLANEDA C LTD
-----------------------------------------
-Factura ID: 1735468
+Factura ID: 1737053
 Comprobante: ND - 100
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FERNANDEZ MARIANO PABLO
 ----------------------------------------
-Factura ID: 1735470
+Factura ID: 1737055
 Comprobante: ND - 102
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: N/A
 ----------------------------------------
-Factura ID: 1735471
+Factura ID: 1737056
 Comprobante: ND - 103
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARBONELL MAXIMILIAMO F
 ----------------------------------------
-Factura ID: 1735473
+Factura ID: 1737058
 Comprobante: ND - 105
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FUTURO GAS SA
 ----------------------------------------
-Factura ID: 1735474
+Factura ID: 1737059
 Comprobante: ND - 106
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FAIN HNOS SERV S.R.L
 ----------------------------------------
-Factura ID: 1735475
+Factura ID: 1737060
 Comprobante: ND - 107
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PERETTI ROBERTO Y PERETTI LUCI
 ----------------------------------------
-Factura ID: 1735476
+Factura ID: 1737061
 Comprobante: ND - 108
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: A TODO COLOR S.R.L.
 ----------------------------------------
-Factura ID: 1735477
+Factura ID: 1737062
 Comprobante: ND - 109
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ANGELONI ALEJANDRO AGUSTIN
 ----------------------------------------
-Factura ID: 1735480
+Factura ID: 1737065
 Comprobante: ND - 112
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RIBOLDI SA
 ----------------------------------------
-Factura ID: 1735481
+Factura ID: 1737066
 Comprobante: ND - 113
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOLINA JOSE DANIEL
 ----------------------------------------
-Factura ID: 1735484
+Factura ID: 1737069
 Comprobante: ND - 116
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: METALURGICA GENOVESE SA
 ----------------------------------------
-Factura ID: 1735485
+Factura ID: 1737070
 Comprobante: ND - 117
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TOMATIS FLAVIO
 ----------------------------------------
-Factura ID: 1735487
+Factura ID: 1737072
 Comprobante: ND - 119
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SANIT SRL
 ----------------------------------------
-Factura ID: 1735488
+Factura ID: 1737073
 Comprobante: ND - 120
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LARRAURI CARLOS
 ----------------------------------------
-Factura ID: 1735489
+Factura ID: 1737074
 Comprobante: ND - 121
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LARRAURI SOFIA MA DE L INM.CON
 ----------------------------------------
-Factura ID: 1735491
+Factura ID: 1737076
 Comprobante: ND - 123
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FUSTER SERGIO DANIEL
 ----------------------------------------
-Factura ID: 1735497
+Factura ID: 1737082
 Comprobante: ND - 129
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SUC DE VERA RAFAEL OSCAR
 ----------------------------------------
-Factura ID: 1735500
+Factura ID: 1737085
 Comprobante: ND - 132
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FIRMAN ALDO HECTOR
 ----------------------------------------
-Factura ID: 1735501
+Factura ID: 1737086
 Comprobante: ND - 133
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SUCESION DE CUENCA OLEGARIA
 ----------------------------------------
-Factura ID: 1735502
+Factura ID: 1737087
 Comprobante: ND - 134
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SEIS MARIAS SA
 ----------------------------------------
-Factura ID: 1735504
+Factura ID: 1737089
 Comprobante: ND - 136
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGUIRRE OSCAR LUIS
 ----------------------------------------
-Factura ID: 1735506
+Factura ID: 1737091
 Comprobante: ND - 138
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COMAGRO SRL
 ----------------------------------------
-Factura ID: 1735507
+Factura ID: 1737092
 Comprobante: ND - 139
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SILVESTRE MARIANA
 ----------------------------------------
-Factura ID: 1735518
+Factura ID: 1737103
 Comprobante: ND - 150
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CIOTTI S.A.
 ----------------------------------------
-Factura ID: 1735520
+Factura ID: 1737105
 Comprobante: ND - 152
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NORWAN GROUP SRL
 ----------------------------------------
-Factura ID: 1735522
+Factura ID: 1737107
 Comprobante: ND - 154
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VALERIANI RAUL DIONISIO
 ----------------------------------------
-Factura ID: 1735523
+Factura ID: 1737108
 Comprobante: ND - 155
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SCHONFELD NORBERTO JOSE
 ----------------------------------------
-Factura ID: 1735524
+Factura ID: 1737109
 Comprobante: ND - 156
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGRONOMIA PAMPA SRL
 ----------------------------------------
-Factura ID: 1735527
+Factura ID: 1737112
 Comprobante: ND - 159
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGRO TRANSPTE  Y SERVICIOS SRL
 ----------------------------------------
-Factura ID: 1735528
+Factura ID: 1737113
 Comprobante: ND - 160
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SILVESTRE RAUL SEBASTIAN
 ----------------------------------------
-Factura ID: 1735531
+Factura ID: 1737116
 Comprobante: ND - 163
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AMIUN SA
 ----------------------------------------
-Factura ID: 1735533
+Factura ID: 1737118
 Comprobante: ND - 165
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LENARDUZZI MARCELO
 ----------------------------------------
-Factura ID: 1735535
+Factura ID: 1737120
 Comprobante: ND - 167
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ANDRES JUNCO SAS
 ----------------------------------------
-Factura ID: 1735536
+Factura ID: 1737121
 Comprobante: ND - 168
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EL QUERANDI SRL
 ----------------------------------------
-Factura ID: 1735539
+Factura ID: 1737124
 Comprobante: ND - 171
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GROSSO TRACTORES SA
 ----------------------------------------
-Factura ID: 1735540
+Factura ID: 1737125
 Comprobante: ND - 172
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PEDRO CLAUDIO JOSE
 ----------------------------------------
-Factura ID: 1735541
+Factura ID: 1737126
 Comprobante: ND - 173
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGROSERVICIOS SELMI SH
 ----------------------------------------
-Factura ID: 1735542
+Factura ID: 1737127
 Comprobante: ND - 174
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOZA IRMA
 ----------------------------------------
-Factura ID: 1735544
+Factura ID: 1737129
 Comprobante: ND - 176
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CORTESE CARLOS GUILLERMO
 ----------------------------------------
-Factura ID: 1735545
+Factura ID: 1737130
 Comprobante: ND - 177
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HAIDAR RODRIGO
 ----------------------------------------
-Factura ID: 1735547
+Factura ID: 1737132
 Comprobante: ND - 179
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TROTTI RODRIGO MATIAS
 ----------------------------------------
-Factura ID: 1735550
+Factura ID: 1737135
 Comprobante: ND - 182
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HERRLEIN LUCAS LEANDRO
 ----------------------------------------
-Factura ID: 1735552
+Factura ID: 1737137
 Comprobante: ND - 184
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FACCHINI EDGARDO
 ----------------------------------------
-Factura ID: 1735554
+Factura ID: 1737139
 Comprobante: ND - 186
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ROSARIO BUS SA
 ----------------------------------------
-Factura ID: 1735557
+Factura ID: 1737142
 Comprobante: ND - 189
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRUPO ALIAR
 ----------------------------------------
-Factura ID: 1735560
+Factura ID: 1737145
 Comprobante: ND - 192
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FIDEICOMISO GOMERIA LA ATOMICA
 ----------------------------------------
-Factura ID: 1735562
+Factura ID: 1737147
 Comprobante: ND - 194
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FABRELLO ROBERTO MARTIN
 ----------------------------------------
-Factura ID: 1735563
+Factura ID: 1737148
 Comprobante: ND - 195
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HARDFACING SRL
 ----------------------------------------
-Factura ID: 1735564
+Factura ID: 1737149
 Comprobante: ND - 196
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ACOSTA CINTYA VALERIA
 ----------------------------------------
-Factura ID: 1735565
+Factura ID: 1737150
 Comprobante: ND - 197
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FABRELLO JUAN CARLOS
 ----------------------------------------
-Factura ID: 1735566
+Factura ID: 1737151
 Comprobante: ND - 198
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TONIOLO CRISTIAN GERARDO
 ----------------------------------------
-Factura ID: 1735567
+Factura ID: 1737152
 Comprobante: ND - 199
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRUPO FERNANDEZ S.R.L.
 ----------------------------------------
-Factura ID: 1735569
+Factura ID: 1737154
 Comprobante: ND - 201
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SANCOR COOP SEG. LTDA -STA FE
 ----------------------------------------
-Factura ID: 1735571
+Factura ID: 1737156
 Comprobante: ND - 203
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HORMIGONES CONCEPCION SRL
 ----------------------------------------
-Factura ID: 1735575
+Factura ID: 1737160
 Comprobante: ND - 207
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COLIDIO MARIO RUBEN
 ----------------------------------------
-Factura ID: 1735577
+Factura ID: 1737162
 Comprobante: ND - 209
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CHARTIER NORMA
 ----------------------------------------
-Factura ID: 1735578
+Factura ID: 1737163
 Comprobante: ND - 210
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MANATINI LEANDRO DANIEL
 ----------------------------------------
-Factura ID: 1735580
+Factura ID: 1737165
 Comprobante: ND - 212
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EMPRESA LAGUNA PAIVA  SRL
 ----------------------------------------
-Factura ID: 1735581
+Factura ID: 1737166
 Comprobante: ND - 213
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARBONELL MARIANO MARTIN
 ----------------------------------------
-Factura ID: 1735582
+Factura ID: 1737167
 Comprobante: ND - 214
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PATT MARCELO
 ----------------------------------------
-Factura ID: 1735585
+Factura ID: 1737170
 Comprobante: ND - 217
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AUDICIO CLAUDIO
 ----------------------------------------
-Factura ID: 1735587
+Factura ID: 1737172
 Comprobante: ND - 219
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ZAMORA HECTOR RAUL
 ----------------------------------------
-Factura ID: 1735589
+Factura ID: 1737174
 Comprobante: ND - 221
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BERLI CLAUDIO
 ----------------------------------------
-Factura ID: 1735590
+Factura ID: 1737175
 Comprobante: ND - 222
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MUSTAFA BRAHIM ALFREDO
 ----------------------------------------
-Factura ID: 1735591
+Factura ID: 1737176
 Comprobante: ND - 223
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PERSOGLIA ALDO ERNESTO
 ----------------------------------------
-Factura ID: 1735592
+Factura ID: 1737177
 Comprobante: ND - 224
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: UBEDA MARCOS EXEQUIEL
 ----------------------------------------
-Factura ID: 1735596
+Factura ID: 1737181
 Comprobante: ND - 228
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CAPPELETTI ALDO JAVIER
 ----------------------------------------
-Factura ID: 1735597
+Factura ID: 1737182
 Comprobante: ND - 229
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE Y LOGISTICA PASTOR
 ----------------------------------------
-Factura ID: 1735598
+Factura ID: 1737183
 Comprobante: ND - 230
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NO UTILIZAR - VALTCHEFF JUAN M
 ----------------------------------------
-Factura ID: 1735600
+Factura ID: 1737185
 Comprobante: ND - 232
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VIA SERO SRL
 ----------------------------------------
-Factura ID: 1735601
+Factura ID: 1737186
 Comprobante: ND - 233
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RACINE MARCELO
 ----------------------------------------
-Factura ID: 1735602
+Factura ID: 1737187
 Comprobante: ND - 234
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FINLAR SA
 ----------------------------------------
-Factura ID: 1735603
-Comprobante: ND - 235
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: MARIA TOURS SA
-----------------------------------------
-Factura ID: 1735607
+Factura ID: 1737192
 Comprobante: ND - 239
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SERFATY MATIAS
 ----------------------------------------
-Factura ID: 1735608
+Factura ID: 1737193
 Comprobante: ND - 240
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BROUWER ARMANDO Y ARIEL SH
 ----------------------------------------
-Factura ID: 1735610
+Factura ID: 1737195
 Comprobante: ND - 242
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NATION LITORAL S.A
 ----------------------------------------
-Factura ID: 1735612
+Factura ID: 1737197
 Comprobante: ND - 244
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SAITA MARCELO
 ----------------------------------------
-Factura ID: 1735613
+Factura ID: 1737198
 Comprobante: ND - 245
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSTOTAL SA
 ----------------------------------------
-Factura ID: 1735616
+Factura ID: 1737201
 Comprobante: ND - 248
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TOURN FABIAN ANDRES
 ----------------------------------------
-Factura ID: 1735618
+Factura ID: 1737203
 Comprobante: ND - 250
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: POI MARIA CARLA
 ----------------------------------------
-Factura ID: 1735621
+Factura ID: 1737206
 Comprobante: ND - 253
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PETRO RAFAELA SRL
 ----------------------------------------
-Factura ID: 1735622
-Comprobante: ND - 254
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: PONCE MAXIMILIANO
-----------------------------------------
-Factura ID: 1735623
+Factura ID: 1737208
 Comprobante: ND - 255
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ARDISSONO AGROPECUARIA SA
 ----------------------------------------
-Factura ID: 1735624
+Factura ID: 1737209
 Comprobante: ND - 256
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VISPE Y GONZALEZ
 ----------------------------------------
-Factura ID: 1735625
+Factura ID: 1737210
 Comprobante: ND - 257
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HORMIMIX SRL
 ----------------------------------------
-Factura ID: 1735630
+Factura ID: 1737215
 Comprobante: ND - 262
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: O Y L VARIEDADES
 ----------------------------------------
-Factura ID: 1735635
+Factura ID: 1737220
 Comprobante: ND - 267
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CERAGIOLI MARIO ALBERTO
 ----------------------------------------
-Factura ID: 1735636
+Factura ID: 1737221
 Comprobante: ND - 268
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE JOTAS S.R.L.
 ----------------------------------------
-Factura ID: 1735637
+Factura ID: 1737222
 Comprobante: ND - 269
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TROMBOTO JUAN PABLO
 ----------------------------------------
-Factura ID: 1735638
+Factura ID: 1737223
 Comprobante: ND - 270
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RH AGROGANADERA S.A
 ----------------------------------------
-Factura ID: 1735643
+Factura ID: 1737228
 Comprobante: ND - 275
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOGISTICA TOSTADO SRL
 ----------------------------------------
-Factura ID: 1735646
+Factura ID: 1737231
 Comprobante: ND - 278
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SNAIDER E
 ----------------------------------------
-Factura ID: 1735647
+Factura ID: 1737232
 Comprobante: ND - 279
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TSCHANZ HNOS SA
 ----------------------------------------
-Factura ID: 1735649
+Factura ID: 1737234
 Comprobante: ND - 281
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CLADMA S.A.
 ----------------------------------------
-Factura ID: 1735650
+Factura ID: 1737235
 Comprobante: ND - 282
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DAVALLE CARLOS GERMAN
 ----------------------------------------
-Factura ID: 1735652
+Factura ID: 1737237
 Comprobante: ND - 284
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ZAPATA RUBEN
 ----------------------------------------
-Factura ID: 1735654
+Factura ID: 1737239
 Comprobante: ND - 286
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PENT MAURICIO
 ----------------------------------------
-Factura ID: 1735657
+Factura ID: 1737242
 Comprobante: ND - 289
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SATICH AGROPECUARIA
 ----------------------------------------
-Factura ID: 1735658
+Factura ID: 1737243
 Comprobante: ND - 290
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CESCUT HECTOR
 ----------------------------------------
-Factura ID: 1735659
+Factura ID: 1737244
 Comprobante: ND - 291
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FALCON AGUSTIN
 ----------------------------------------
-Factura ID: 1735660
+Factura ID: 1737245
 Comprobante: ND - 292
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GABRIEL ESTEBAN BRACCO
 ----------------------------------------
-Factura ID: 1735661
+Factura ID: 1737246
 Comprobante: ND - 293
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRAS AUTOMOTORES S.A
 ----------------------------------------
-Factura ID: 1735664
+Factura ID: 1737249
 Comprobante: ND - 296
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ARANDA HUGO
 ----------------------------------------
-Factura ID: 1735665
+Factura ID: 1737250
 Comprobante: ND - 297
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MARCIANO TOUR SRL
 ----------------------------------------
-Factura ID: 1735666
+Factura ID: 1737251
 Comprobante: ND - 298
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CRIOLANI ALFREDO E HIJOS SA
 ----------------------------------------
-Factura ID: 1735667
+Factura ID: 1737252
 Comprobante: ND - 299
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FIDEICOMISO SR
 ----------------------------------------
-Factura ID: 1735668
+Factura ID: 1737253
 Comprobante: ND - 300
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GOLJANEK JORGE ALBERTO
 ----------------------------------------
-Factura ID: 1735669
+Factura ID: 1737254
 Comprobante: ND - 301
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BAXPA SA
 ----------------------------------------
-Factura ID: 1735671
+Factura ID: 1737256
 Comprobante: ND - 303
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ELYMAR S.A
 ----------------------------------------
-Factura ID: 1735672
+Factura ID: 1737257
 Comprobante: ND - 304
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GREGORET RAUL
 ----------------------------------------
-Factura ID: 1735673
+Factura ID: 1737258
 Comprobante: ND - 305
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE CICCARELLI HNOS SA
 ----------------------------------------
-Factura ID: 1735680
+Factura ID: 1737265
 Comprobante: ND - 312
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ALBORNOZ YOLANDA BEATRIZ
 ----------------------------------------
-Factura ID: 1735681
+Factura ID: 1737266
 Comprobante: ND - 313
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BONIN EDGARDO RAUL
 ----------------------------------------
-Factura ID: 1735682
+Factura ID: 1737267
 Comprobante: ND - 314
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARO GONZALEZ MARIO OMAR
 ----------------------------------------
-Factura ID: 1735683
+Factura ID: 1737268
 Comprobante: ND - 315
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GOMEZ LUIS MARIANO
 ----------------------------------------
-Factura ID: 1735685
+Factura ID: 1737270
 Comprobante: ND - 317
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ZBRUN GABRIEL GERMAN
 ----------------------------------------
-Factura ID: 1735688
+Factura ID: 1737273
 Comprobante: ND - 320
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RUBEN CABRAL SRL
 ----------------------------------------
-Factura ID: 1735689
+Factura ID: 1737274
 Comprobante: ND - 321
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SPAHN OSCAR LUIS
 ----------------------------------------
-Factura ID: 1735691
+Factura ID: 1737276
 Comprobante: ND - 323
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LUDUE¥A GUSTAVO ALEJANDRO
 ----------------------------------------
-Factura ID: 1735692
+Factura ID: 1737277
 Comprobante: ND - 324
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KLOCKER NESTOR MARIO
 ----------------------------------------
-Factura ID: 1735693
+Factura ID: 1737278
 Comprobante: ND - 325
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MICHTRY RAFAEL
 ----------------------------------------
-Factura ID: 1735694
+Factura ID: 1737279
 Comprobante: ND - 326
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOSA CLAUDIO TIMOTEO RAUL
 ----------------------------------------
-Factura ID: 1735695
+Factura ID: 1737280
 Comprobante: ND - 327
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOLINOS CENTRO SRL
 ----------------------------------------
-Factura ID: 1735696
+Factura ID: 1737281
 Comprobante: ND - 328
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ALPES AUTOMOTORES S A
 ----------------------------------------
-Factura ID: 1735698
+Factura ID: 1737283
 Comprobante: ND - 330
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VARGAS SILVERIO ISMAEL Y VARGA
 ----------------------------------------
-Factura ID: 1735699
+Factura ID: 1737284
 Comprobante: ND - 331
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PIERUCCI ARIEL
 ----------------------------------------
-Factura ID: 1735702
+Factura ID: 1737287
 Comprobante: ND - 334
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FADEL S.A
 ----------------------------------------
-Factura ID: 1735703
+Factura ID: 1737288
 Comprobante: ND - 335
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FABRIZI MARIO SERGIO
 ----------------------------------------
-Factura ID: 1735704
+Factura ID: 1737289
 Comprobante: ND - 336
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SUAREZ ROSARIO
 ----------------------------------------
-Factura ID: 1735706
+Factura ID: 1737291
 Comprobante: ND - 338
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GOVERNO Y PERASSI SA
 ----------------------------------------
-Factura ID: 1735707
+Factura ID: 1737292
 Comprobante: ND - 339
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AUCAM AUTOMOTORES S.A.
 ----------------------------------------
-Factura ID: 1735708
+Factura ID: 1737293
 Comprobante: ND - 340
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ELEPRINT S.A. - CONSTRUMEX S.A
 ----------------------------------------
-Factura ID: 1735714
+Factura ID: 1737299
 Comprobante: ND - 346
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FERTIER SRL
 ----------------------------------------
-Factura ID: 1735715
+Factura ID: 1737300
 Comprobante: ND - 347
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COVINO PEDRO OSCAR
 ----------------------------------------
-Factura ID: 1735718
-Comprobante: ND - 350
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: URBASER ARG SA TRANSP OLIVOS S
-----------------------------------------
-Factura ID: 1735720
+Factura ID: 1737305
 Comprobante: ND - 352
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GODOY ANGEL ALBERTO
 ----------------------------------------
-Factura ID: 1735721
+Factura ID: 1737306
 Comprobante: ND - 353
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FAISAL JORGELINA
 ----------------------------------------
-Factura ID: 1735723
+Factura ID: 1737308
 Comprobante: ND - 355
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VALDEZ GUSTAVO
 ----------------------------------------
-Factura ID: 1735724
+Factura ID: 1737309
 Comprobante: ND - 356
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOLIVA NEUMATICOS SA
 ----------------------------------------
-Factura ID: 1735725
+Factura ID: 1737310
 Comprobante: ND - 357
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ISIDORI J WALTER ( NO USAR)
 ----------------------------------------
-Factura ID: 1735726
+Factura ID: 1737311
 Comprobante: ND - 358
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ISIDORI J. WALTER
 ----------------------------------------
-Factura ID: 1735727
+Factura ID: 1737312
 Comprobante: ND - 359
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: YAPUR ELIAS S.A
 ----------------------------------------
-Factura ID: 1735728
+Factura ID: 1737313
 Comprobante: ND - 360
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GALIZZI FLAVIO JOSE
 ----------------------------------------
-Factura ID: 1735729
+Factura ID: 1737314
 Comprobante: ND - 361
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EL NORTE S.A
 ----------------------------------------
-Factura ID: 1735730
+Factura ID: 1737315
 Comprobante: ND - 362
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRACSA REPUESTOS S.R.L.
 ----------------------------------------
-Factura ID: 1735731
+Factura ID: 1737316
 Comprobante: ND - 363
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GIGENA MARTIN ALBERTO
 ----------------------------------------
-Factura ID: 1735732
+Factura ID: 1737317
 Comprobante: ND - 364
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: JUAREZ FERNANDO CRISTIAN
 ----------------------------------------
-Factura ID: 1735733
+Factura ID: 1737318
 Comprobante: ND - 365
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: WIRTH HERNANDO ANDRES
 ----------------------------------------
-Factura ID: 1735734
+Factura ID: 1737319
 Comprobante: ND - 366
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ABUT TRANSPORTES SA
 ----------------------------------------
-Factura ID: 1735735
+Factura ID: 1737320
 Comprobante: ND - 367
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ECHAGUE CARLOS
 ----------------------------------------
-Factura ID: 1735736
+Factura ID: 1737321
 Comprobante: ND - 368
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GARCIA MATIAS JUAN
 ----------------------------------------
-Factura ID: 1735737
+Factura ID: 1737322
 Comprobante: ND - 369
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: OSTRE ORLANDO
 ----------------------------------------
-Factura ID: 1735739
+Factura ID: 1737324
 Comprobante: ND - 371
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LENARDUZZI JOAQUIN
 ----------------------------------------
-Factura ID: 1735741
+Factura ID: 1737326
 Comprobante: ND - 373
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LUCHES MARIA LUCIA
 ----------------------------------------
-Factura ID: 1735742
+Factura ID: 1737327
 Comprobante: ND - 374
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MAZZON ATILIO ORLANDO
 ----------------------------------------
-Factura ID: 1735743
+Factura ID: 1737328
 Comprobante: ND - 375
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PERALTA GERMAN AUGUSTO
 ----------------------------------------
-Factura ID: 1735746
+Factura ID: 1737331
 Comprobante: ND - 378
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LA GRINGA TRANSPORTES SRL
 ----------------------------------------
-Factura ID: 1735747
+Factura ID: 1737332
 Comprobante: ND - 379
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGRONOMIA PAMPA SRL
 ----------------------------------------
-Factura ID: 1735748
+Factura ID: 1737333
 Comprobante: ND - 380
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GIULIANO FABRICIO
 ----------------------------------------
-Factura ID: 1735751
+Factura ID: 1737336
 Comprobante: ND - 383
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: 3CAM SA
 ----------------------------------------
-Factura ID: 1735753
+Factura ID: 1737338
 Comprobante: ND - 385
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LENCIONI DAMIAN ALBERTO
 ----------------------------------------
-Factura ID: 1735755
+Factura ID: 1737340
 Comprobante: ND - 387
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGUILAR HECTOR
 ----------------------------------------
-Factura ID: 1735759
+Factura ID: 1737344
 Comprobante: ND - 391
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: UNION AGR. AVELLANEDA C LTD
 ----------------------------------------
-Factura ID: 1735760
+Factura ID: 1737345
 Comprobante: ND - 392
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GAMBINI ALEJANDRO JESUS
 ----------------------------------------
-Factura ID: 1735762
+Factura ID: 1737347
 Comprobante: ND - 394
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VAROLI FABIO DANIEL
 ----------------------------------------
-Factura ID: 1735763
+Factura ID: 1737348
 Comprobante: ND - 395
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KLERMONT GSR S.A.
 ----------------------------------------
-Factura ID: 1735764
+Factura ID: 1737349
 Comprobante: ND - 396
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NOEPLAST S.A.
 ----------------------------------------
-Factura ID: 1735765
+Factura ID: 1737350
 Comprobante: ND - 397
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SUCESION DE CUENCA OLEGARIA
 ----------------------------------------
-Factura ID: 1735769
+Factura ID: 1737354
 Comprobante: ND - 401
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CIA GRAL DE TRANSPORTE
 ----------------------------------------
-Factura ID: 1735771
+Factura ID: 1737356
 Comprobante: ND - 403
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LEZCANO ALDO SEBASTIAN
 ----------------------------------------
-Factura ID: 1735772
+Factura ID: 1737357
 Comprobante: ND - 404
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOLLOJA FERNANDO DAVID
 ----------------------------------------
-Factura ID: 1735777
+Factura ID: 1737362
 Comprobante: ND - 409
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AMERO PATRICIA ALEJANDRA
 ----------------------------------------
-Factura ID: 1735780
+Factura ID: 1737365
 Comprobante: ND - 412
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FONTANA MIGUEL
 ----------------------------------------
-Factura ID: 1735781
+Factura ID: 1737366
 Comprobante: ND - 413
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BALEAR S.A.
 ----------------------------------------
-Factura ID: 1735782
+Factura ID: 1737367
 Comprobante: ND - 414
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BELTRAME LILIANA ROSA
 ----------------------------------------
-Factura ID: 1735783
+Factura ID: 1737368
 Comprobante: ND - 415
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VIGAGRO S.A
 ----------------------------------------
-Factura ID: 1735785
+Factura ID: 1737370
 Comprobante: ND - 417
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GIUPPONI NORMA BEATRIZ
 ----------------------------------------
-Factura ID: 1735787
+Factura ID: 1737372
 Comprobante: ND - 419
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PEREZ SCHAIT NESTOR FRANCISCO
 ----------------------------------------
-Factura ID: 1735791
+Factura ID: 1737376
 Comprobante: ND - 423
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOULIER MARÖA GUILLERMINA
 ----------------------------------------
-Factura ID: 1735793
+Factura ID: 1737378
 Comprobante: ND - 425
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DRI GABRIEL RAMON
 ----------------------------------------
-Factura ID: 1735795
+Factura ID: 1737380
 Comprobante: ND - 427
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VELAZQUEZ SANTACRUZ JULIO CSA
 ----------------------------------------
-Factura ID: 1735798
+Factura ID: 1737383
 Comprobante: ND - 430
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GONZALEZ MANUEL ALFREDO
 ----------------------------------------
-Factura ID: 1735799
+Factura ID: 1737384
 Comprobante: ND - 431
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOLIS BASILIO. RODRUIGUEZ ERNE
 ----------------------------------------
-Factura ID: 1735801
+Factura ID: 1737386
 Comprobante: ND - 433
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BANCO DE LA NACION ARGENTINA
 ----------------------------------------
-Factura ID: 1735802
+Factura ID: 1737387
 Comprobante: ND - 434
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PAOLONI JUAN EDUARDO
 ----------------------------------------
-Factura ID: 1735803
+Factura ID: 1737388
 Comprobante: ND - 435
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TURISMO GATTI SRL
 ----------------------------------------
-Factura ID: 1735806
+Factura ID: 1737391
 Comprobante: ND - 438
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGRALE ARGENTINA SA
 ----------------------------------------
-Factura ID: 1735807
+Factura ID: 1737392
 Comprobante: ND - 439
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LUDIMAR SRL
 ----------------------------------------
-Factura ID: 1735809
+Factura ID: 1737394
 Comprobante: ND - 441
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: J.M.FALAVIGNA S.A
 ----------------------------------------
-Factura ID: 1735810
+Factura ID: 1737395
 Comprobante: ND - 442
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BERTOLINO FRANCISCO
 ----------------------------------------
-Factura ID: 1735812
+Factura ID: 1737397
 Comprobante: ND - 444
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RECAL SERVICIOS SAS
 ----------------------------------------
-Factura ID: 1735813
+Factura ID: 1737398
 Comprobante: ND - 445
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SPEED BUSINESS S.A.
 ----------------------------------------
-Factura ID: 1735814
+Factura ID: 1737399
 Comprobante: ND - 446
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FONTANETTO CARLOS ALBERTO
 ----------------------------------------
-Factura ID: 1735816
+Factura ID: 1737401
 Comprobante: ND - 448
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VIANCO JOSE
 ----------------------------------------
-Factura ID: 1735818
+Factura ID: 1737403
 Comprobante: ND - 450
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGRO FERDMAN S.R.L
 ----------------------------------------
-Factura ID: 1735825
+Factura ID: 1737410
 Comprobante: ND - 457
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SEITA SAMANTA
 ----------------------------------------
-Factura ID: 1735828
+Factura ID: 1737413
 Comprobante: ND - 460
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: JUAN PEDRO BONAVITA SRL
 ----------------------------------------
-Factura ID: 1735829
+Factura ID: 1737414
 Comprobante: ND - 461
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COGLIANO JOSE  LUIS
 ----------------------------------------
-Factura ID: 1735830
+Factura ID: 1737415
 Comprobante: ND - 462
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CULTIVOS AGRONEGOCIOS SAS
 ----------------------------------------
-Factura ID: 1735831
+Factura ID: 1737416
 Comprobante: ND - 463
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VANNEY LUCAS NICOLAS
 ----------------------------------------
-Factura ID: 1735832
+Factura ID: 1737417
 Comprobante: ND - 464
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BECERRA EDGARDO
 ----------------------------------------
-Factura ID: 1735836
+Factura ID: 1737421
 Comprobante: ND - 468
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FERNADEZ JAVIER
 ----------------------------------------
-Factura ID: 1735837
+Factura ID: 1737422
 Comprobante: ND - 469
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RODRIGUEZ FEDERICO LUIS
 ----------------------------------------
-Factura ID: 1735838
+Factura ID: 1737423
 Comprobante: ND - 470
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CHERVAZ E HIJO SRL
 ----------------------------------------
-Factura ID: 1735839
+Factura ID: 1737424
 Comprobante: ND - 471
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ZANNI EZEQUIEL
 ----------------------------------------
-Factura ID: 1735840
+Factura ID: 1737425
 Comprobante: ND - 472
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ALENCO S A I C
 ----------------------------------------
-Factura ID: 1735841
+Factura ID: 1737426
 Comprobante: ND - 473
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EXPRESO ARITO S A
 ----------------------------------------
-Factura ID: 1735842
+Factura ID: 1737427
 Comprobante: ND - 474
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DIETZ ANA MARIA
 ----------------------------------------
-Factura ID: 1735844
+Factura ID: 1737429
 Comprobante: ND - 476
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EMPRESA GENERAL URQUIZA S R L
 ----------------------------------------
-Factura ID: 1735845
+Factura ID: 1737430
 Comprobante: ND - 477
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NUEVA CHEVALLIER S.A.
 ----------------------------------------
-Factura ID: 1735848
+Factura ID: 1737433
 Comprobante: ND - 480
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EMPRESA ARGENTINA DE SERVICIOS
 ----------------------------------------
-Factura ID: 1735853
+Factura ID: 1737438
 Comprobante: ND - 485
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RENIERO RODRIGO
 ----------------------------------------
-Factura ID: 1735854
+Factura ID: 1737439
 Comprobante: ND - 486
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ABRANCHUK RUBEN DARIO
 ----------------------------------------
-Factura ID: 1735857
+Factura ID: 1737442
 Comprobante: ND - 489
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MAGEVA SRL
 ----------------------------------------
-Factura ID: 1735860
+Factura ID: 1737445
 Comprobante: ND - 492
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MARMIROLI LUIS ALFREDO
 ----------------------------------------
-Factura ID: 1735862
+Factura ID: 1737447
 Comprobante: ND - 494
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MPK LOGISTICA S.R.L. (NO USAR)
 ----------------------------------------
-Factura ID: 1735863
+Factura ID: 1737448
 Comprobante: ND - 495
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TROGNOT MARCELO FABIAN
 ----------------------------------------
-Factura ID: 1735865
+Factura ID: 1737450
 Comprobante: ND - 497
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VALENTI GUILLERMO RAUL
 ----------------------------------------
-Factura ID: 1735867
+Factura ID: 1737452
 Comprobante: ND - 499
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BANCO DE LA NACION ARGENTINA
 ----------------------------------------
-Factura ID: 1735870
+Factura ID: 1737455
 Comprobante: ND - 502
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ESTRUCTURAS METALICAS GAL - DI
 ----------------------------------------
-Factura ID: 1735874
+Factura ID: 1737459
 Comprobante: ND - 506
 Fecha: 2024-01-01
 Sucursal ID: 1
@@ -1724,6 +1700,12 @@ Comprobante: FF - 2600004784
 Fecha: 2024-01-10
 Sucursal ID: 7
 Cliente: CONSUMIDOR FINAL (RAFAELA)
+----------------------------------------
+Factura ID: 1500889
+Comprobante: FR - 2600021095
+Fecha: 2024-01-13
+Sucursal ID: 7
+Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1502300
 Comprobante: FR - 3700005937
@@ -1953,12 +1935,6 @@ Fecha: 2024-05-09
 Sucursal ID: 6
 Cliente: TRANEF SRL
 ----------------------------------------
-Factura ID: 1526398
-Comprobante: FF - 2600021888
-Fecha: 2024-05-11
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
 Factura ID: 1526400
 Comprobante: FR - 2600021889
 Fecha: 2024-05-11
@@ -2163,12 +2139,6 @@ Fecha: 2024-08-10
 Sucursal ID: 6
 Cliente: CINA DARIO
 ----------------------------------------
-Factura ID: 1553834
-Comprobante: FF - 2600022908
-Fecha: 2024-08-24
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
 Factura ID: 1553838
 Comprobante: FF - 2600022910
 Fecha: 2024-08-24
@@ -2294,12 +2264,6 @@ Comprobante: FF - 2600023666
 Fecha: 2024-11-02
 Sucursal ID: 7
 Cliente: PORTAL DEL NOA SRL
-----------------------------------------
-Factura ID: 1572291
-Comprobante: FF - 2600023667
-Fecha: 2024-11-02
-Sucursal ID: 7
-Cliente: BAUZA INGENIERIA S.R.L.
 ----------------------------------------
 Factura ID: 1572297
 Comprobante: FF - 2600023668
@@ -2547,12 +2511,6 @@ Fecha: 2024-12-07
 Sucursal ID: 7
 Cliente: MULLER ROBERTO CARLOS
 ----------------------------------------
-Factura ID: 1582939
-Comprobante: FF - 2600024141
-Fecha: 2024-12-07
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
 Factura ID: 1582961
 Comprobante: FR - 2600024143
 Fecha: 2024-12-07
@@ -2787,30 +2745,6 @@ Fecha: 2025-01-11
 Sucursal ID: 6
 Cliente: LOPEZ LEANDRO HERNAN
 ----------------------------------------
-Factura ID: 1594196
-Comprobante: FR - 3700008714
-Fecha: 2025-01-11
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
-Factura ID: 1594198
-Comprobante: FR - 3700008715
-Fecha: 2025-01-11
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
-Factura ID: 1594200
-Comprobante: FR - 3700008716
-Fecha: 2025-01-11
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
-Factura ID: 1594201
-Comprobante: FR - 3700008717
-Fecha: 2025-01-11
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
 Factura ID: 1595996
 Comprobante: FF - 4600000032
 Fecha: 2025-01-16
@@ -2894,18 +2828,6 @@ Comprobante: FF - 3700009016
 Fecha: 2025-02-08
 Sucursal ID: 6
 Cliente: FINLAR SA
-----------------------------------------
-Factura ID: 1605748
-Comprobante: FR - 3700009084
-Fecha: 2025-02-15
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
-Factura ID: 1605750
-Comprobante: FR - 3700009085
-Fecha: 2025-02-15
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
 ----------------------------------------
 Factura ID: 1605872
 Comprobante: FF - 3700009088
@@ -3002,6 +2924,12 @@ Comprobante: RB - 1000004268
 Fecha: 2025-02-20
 Sucursal ID: 10
 Cliente: NOVELLO GERARDO LUIS
+----------------------------------------
+Factura ID: 1607139
+Comprobante: FF - 4300007480
+Fecha: 2025-02-20
+Sucursal ID: 10
+Cliente: NARDONI MARTIN MARIO
 ----------------------------------------
 Factura ID: 1607152
 Comprobante: FF - 4300002210
@@ -3609,12 +3537,6 @@ Fecha: 2025-05-10
 Sucursal ID: 7
 Cliente: HARTMANN S.A.
 ----------------------------------------
-Factura ID: 1628446
-Comprobante: FF - 2600025900
-Fecha: 2025-05-10
-Sucursal ID: 7
-Cliente: BAUZA INGENIERIA S.R.L.
-----------------------------------------
 Factura ID: 1628454
 Comprobante: FF - 2600005742
 Fecha: 2025-05-10
@@ -3902,6 +3824,12 @@ Comprobante: FR - 2600026203
 Fecha: 2025-06-05
 Sucursal ID: 7
 Cliente: U¥AC RAFAEL HORACIO
+----------------------------------------
+Factura ID: 1636159
+Comprobante: FR - 2600026204
+Fecha: 2025-06-05
+Sucursal ID: 7
+Cliente: GIORDA HORACIO ANTONIO
 ----------------------------------------
 Factura ID: 1636160
 Comprobante: FR - 2600026205
@@ -4389,30 +4317,6 @@ Fecha: 2025-08-28
 Sucursal ID: 7
 Cliente: HARTMANN S.A.
 ----------------------------------------
-Factura ID: 1660496
-Comprobante: FF - 2600027079
-Fecha: 2025-08-28
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
-Factura ID: 1660498
-Comprobante: FF - 2600027080
-Fecha: 2025-08-28
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
-Factura ID: 1660504
-Comprobante: FF - 2600027081
-Fecha: 2025-08-28
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
-Factura ID: 1660508
-Comprobante: FF - 2600027082
-Fecha: 2025-08-28
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
 Factura ID: 1660511
 Comprobante: FF - 2600027083
 Fecha: 2025-08-28
@@ -4557,12 +4461,6 @@ Fecha: 2025-09-13
 Sucursal ID: 7
 Cliente: RUTA 34 S.R.L
 ----------------------------------------
-Factura ID: 1665082
-Comprobante: FF - 2600027260
-Fecha: 2025-09-13
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
 Factura ID: 1665098
 Comprobante: FF - 2600006023
 Fecha: 2025-09-13
@@ -4586,6 +4484,12 @@ Comprobante: FR - 2600027264
 Fecha: 2025-09-13
 Sucursal ID: 7
 Cliente: BOSETTI NEUMATICOS S.R.L.
+----------------------------------------
+Factura ID: 1665204
+Comprobante: FR - 2600027265
+Fecha: 2025-09-13
+Sucursal ID: 7
+Cliente: GIORDA HORACIO ANTONIO
 ----------------------------------------
 Factura ID: 1666679
 Comprobante: FR - 4600000180
@@ -4622,6 +4526,12 @@ Comprobante: FR - 2600027442
 Fecha: 2025-10-04
 Sucursal ID: 7
 Cliente: BONO NEUMATICOS S.A
+----------------------------------------
+Factura ID: 1670808
+Comprobante: FR - 2600027443
+Fecha: 2025-10-04
+Sucursal ID: 7
+Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1670886
 Comprobante: FF - 2600006085
@@ -4815,12 +4725,6 @@ Fecha: 2025-11-01
 Sucursal ID: 6
 Cliente: SFREDDA AGUSTIN NICOLAS
 ----------------------------------------
-Factura ID: 1678667
-Comprobante: FR - 3700010957
-Fecha: 2025-11-01
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
 Factura ID: 1678724
 Comprobante: FF - 2600006138
 Fecha: 2025-11-01
@@ -4839,23 +4743,11 @@ Fecha: 2025-11-01
 Sucursal ID: 7
 Cliente: MULLER ROBERTO CARLOS
 ----------------------------------------
-Factura ID: 1678763
-Comprobante: FF - 2600027720
-Fecha: 2025-11-01
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
 Factura ID: 1678765
 Comprobante: FF - 2600027721
 Fecha: 2025-11-01
 Sucursal ID: 7
 Cliente: HARTMANN S.A.
-----------------------------------------
-Factura ID: 1678770
-Comprobante: FF - 2600027722
-Fecha: 2025-11-01
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
 ----------------------------------------
 Factura ID: 1678928
 Comprobante: FR - 4600000206
@@ -4976,18 +4868,6 @@ Comprobante: FR - 4600000219
 Fecha: 2025-11-21
 Sucursal ID: 11
 Cliente: ARROYITO NEUMATICOS S.A.S.
-----------------------------------------
-Factura ID: 1684988
-Comprobante: FF - 2600027959
-Fecha: 2025-11-22
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
-----------------------------------------
-Factura ID: 1684992
-Comprobante: FF - 2600027960
-Fecha: 2025-11-22
-Sucursal ID: 7
-Cliente: MARIA TOURS SA
 ----------------------------------------
 Factura ID: 1685092
 Comprobante: FF - 2600006196
@@ -5235,12 +5115,6 @@ Fecha: 2026-01-10
 Sucursal ID: 8
 Cliente: ACOSTA LUIS CARLOS
 ----------------------------------------
-Factura ID: 1700111
-Comprobante: RB - 800028638
-Fecha: 2026-01-10
-Sucursal ID: 8
-Cliente: UNION AGR. DE AVELLANEDA C LTD
-----------------------------------------
 Factura ID: 1700113
 Comprobante: FR - 4600000249
 Fecha: 2026-01-10
@@ -5265,12 +5139,6 @@ Fecha: 2026-01-10
 Sucursal ID: 8
 Cliente: CONSUMIDOR FINAL (RQTA)
 ----------------------------------------
-Factura ID: 1700236
-Comprobante: RB - 800028642
-Fecha: 2026-01-10
-Sucursal ID: 8
-Cliente: CONSUMIDOR FINAL (RQTA)
-----------------------------------------
 Factura ID: 1700156
 Comprobante: FF - 2700026462
 Fecha: 2026-01-10
@@ -5291,6 +5159,12 @@ Cliente: DEL FABRO MARIO GABRIEL
 ----------------------------------------
 Factura ID: 1700235
 Comprobante: FF - 2700012645
+Fecha: 2026-01-10
+Sucursal ID: 8
+Cliente: CONSUMIDOR FINAL (RQTA)
+----------------------------------------
+Factura ID: 1700236
+Comprobante: RB - 800028642
 Fecha: 2026-01-10
 Sucursal ID: 8
 Cliente: CONSUMIDOR FINAL (RQTA)
@@ -5348,6 +5222,12 @@ Comprobante: FR - 4600000254
 Fecha: 2026-01-17
 Sucursal ID: 11
 Cliente: GIORIA NESTOR DANIEL
+----------------------------------------
+Factura ID: 1702852
+Comprobante: FR - 2600028639
+Fecha: 2026-01-17
+Sucursal ID: 7
+Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1702894
 Comprobante: FF - 2600028642
@@ -5973,12 +5853,6 @@ Fecha: 2026-04-10
 Sucursal ID: 11
 Cliente: BISCAISAQUI ARIEL GUSTAVO
 ----------------------------------------
-Factura ID: 1729529
-Comprobante: FR - 3700012087
-Fecha: 2026-04-11
-Sucursal ID: 6
-Cliente: NEUMATICOS NANO S. R. L.
-----------------------------------------
 Factura ID: 1729916
 Comprobante: FR - 4600000342
 Fecha: 2026-04-13
@@ -6153,41 +6027,101 @@ Fecha: 2026-04-25
 Sucursal ID: 6
 Cliente: JUNCO ANDRES SAS
 ----------------------------------------
+Factura ID: 1735477
+Comprobante: FR - 4600000374
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: TRANSPORTE GJB S.A.S.
+----------------------------------------
+Factura ID: 1735488
+Comprobante: FR - 4600000376
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: GOMERIA EL NORTE S.R.L.
+----------------------------------------
+Factura ID: 1735494
+Comprobante: FR - 4600000377
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: FANTINI RUBEN ARMANDO
+----------------------------------------
+Factura ID: 1735500
+Comprobante: FR - 4600000378
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: COMBUSTIBLE DANIELE S.A.
+----------------------------------------
+Factura ID: 1735505
+Comprobante: FR - 4600000379
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: FANTINI RUBEN ARMANDO
+----------------------------------------
+Factura ID: 1735519
+Comprobante: FR - 4600000380
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: MAIFER S.R.L.
+----------------------------------------
+Factura ID: 1735688
+Comprobante: CF - 4600000022
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: NEUROM S.A.S
+----------------------------------------
+Factura ID: 1735693
+Comprobante: CF - 4600000023
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: CORTS JUAN PABLO
+----------------------------------------
+Factura ID: 1735695
+Comprobante: CF - 4600000024
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: GOMERIA EL NORTE S.R.L.
+----------------------------------------
+Factura ID: 1735698
+Comprobante: FF - 4600000381
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: ANTONIO RINALDI S.R.L.
+----------------------------------------
+Factura ID: 1735739
+Comprobante: FR - 4600000382
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: PELLETTI SANTIAGO
+----------------------------------------
+Factura ID: 1735999
+Comprobante: FR - 3700012236
+Fecha: 2026-05-02
+Sucursal ID: 6
+Cliente: GABRIEL CORBANI
+----------------------------------------
+Factura ID: 1736608
+Comprobante: FR - 4600000385
+Fecha: 2026-05-05
+Sucursal ID: 11
+Cliente: COMBUSTIBLE DANIELE S.A.
+----------------------------------------
+Factura ID: 1736830
+Comprobante: FR - 4600000386
+Fecha: 2026-05-05
+Sucursal ID: 11
+Cliente: FERREYRA HUGO ENRIQUE
+----------------------------------------
 Factura ID: 1188046
 Comprobante: FF - 2200016127
 Fecha: 2019-12-09
 Sucursal ID: 2
 Cliente: ZINICOLA HUGO GERARDO
 ----------------------------------------
-Factura ID: 1158012
-Comprobante: FF - 2100017288
-Fecha: 2019-08-08
-Sucursal ID: 1
-Cliente: CUATRIN HECTOR
-----------------------------------------
-Factura ID: 1213622
-Comprobante: FF - 2100020970
-Fecha: 2020-03-03
-Sucursal ID: 1
-Cliente: CUATRIN HECTOR
-----------------------------------------
-Factura ID: 1176510
-Comprobante: FF - 2400005147
-Fecha: 2019-10-23
-Sucursal ID: 4
-Cliente: GALETTI GUSTAVO
-----------------------------------------
 Factura ID: 1213973
 Comprobante: FF - 2200009989
 Fecha: 2020-03-05
 Sucursal ID: 2
 Cliente: TRANSPORTE JOTAS S.R.L.
-----------------------------------------
-Factura ID: 1226800
-Comprobante: FF - 2100022212
-Fecha: 2020-05-29
-Sucursal ID: 1
-Cliente: CUATRIN HECTOR
 ----------------------------------------
 Factura ID: 1250375
 Comprobante: FF - 2100024264
@@ -6200,18 +6134,6 @@ Comprobante: FF - 2100025677
 Fecha: 2020-12-28
 Sucursal ID: 1
 Cliente: LAZZARONI MARCELO MIGUEL
-----------------------------------------
-Factura ID: 1289323
-Comprobante: FF - 2100027231
-Fecha: 2021-03-31
-Sucursal ID: 1
-Cliente: LEONE JORGE
-----------------------------------------
-Factura ID: 1292378
-Comprobante: FF - 2600014558
-Fecha: 2021-04-16
-Sucursal ID: 7
-Cliente: GRAZIANI GUILLERMO
 ----------------------------------------
 Factura ID: 1306500
 Comprobante: FF - 2200022202
@@ -6237,89 +6159,17 @@ Fecha: 2021-07-14
 Sucursal ID: 1
 Cliente: LEONE JORGE
 ----------------------------------------
-Factura ID: 1322377
-Comprobante: FF - 2200023095
-Fecha: 2021-09-13
-Sucursal ID: 2
-Cliente: TEGLIA EDGARDO DANIEL
-----------------------------------------
-Factura ID: 1325944
-Comprobante: FF - 2500006755
-Fecha: 2021-09-30
-Sucursal ID: 5
-Cliente: ANDREOLI JORGE LUIS
-----------------------------------------
 Factura ID: 1331735
 Comprobante: FF - 2100030746
 Fecha: 2021-10-30
 Sucursal ID: 1
 Cliente: FRANCHINO CARLOS OSCAR
 ----------------------------------------
-Factura ID: 1334391
-Comprobante: FF - 2200013378
-Fecha: 2021-11-11
-Sucursal ID: 2
-Cliente: VIDONI HERNAN DIEGO
-----------------------------------------
-Factura ID: 1336937
-Comprobante: FF - 2100031193
-Fecha: 2021-11-24
-Sucursal ID: 1
-Cliente: CARBONELL MAXIMILIAMO F
-----------------------------------------
-Factura ID: 1345141
-Comprobante: FF - 2100031840
-Fecha: 2021-12-28
-Sucursal ID: 1
-Cliente: CARBONELL MAXIMILIAMO F
-----------------------------------------
-Factura ID: 1345781
-Comprobante: FF - 2700012764
-Fecha: 2021-12-29
-Sucursal ID: 8
-Cliente: GOMEZ SARTOR MARIO ALBERTO
-----------------------------------------
-Factura ID: 1347329
-Comprobante: FF - 2300010306
-Fecha: 2022-01-05
-Sucursal ID: 3
-Cliente: CEPARO LUIS
-----------------------------------------
 Factura ID: 1347483
 Comprobante: FF - 2200013798
 Fecha: 2022-01-05
 Sucursal ID: 2
 Cliente: PANIAGUA DIEGO
-----------------------------------------
-Factura ID: 1351262
-Comprobante: FF - 2300010032
-Fecha: 2022-01-20
-Sucursal ID: 3
-Cliente: ALBERTO J MACUA
-----------------------------------------
-Factura ID: 1360232
-Comprobante: FF - 2100032999
-Fecha: 2022-02-23
-Sucursal ID: 1
-Cliente: MATHEY  SERGIO JAVIER
-----------------------------------------
-Factura ID: 1360588
-Comprobante: FF - 2500007480
-Fecha: 2022-02-24
-Sucursal ID: 5
-Cliente: LUTRI REINALDO
-----------------------------------------
-Factura ID: 1364417
-Comprobante: FF - 2300010908
-Fecha: 2022-03-15
-Sucursal ID: 3
-Cliente: VIOLA PABLO
-----------------------------------------
-Factura ID: 1364541
-Comprobante: FF - 2100033295
-Fecha: 2022-03-15
-Sucursal ID: 1
-Cliente: CARBONELL MARIANO MARTIN
 ----------------------------------------
 Factura ID: 1365100
 Comprobante: FF - 2100033341
@@ -6333,24 +6183,6 @@ Fecha: 2022-03-18
 Sucursal ID: 1
 Cliente: CARBONELL MARIANO MARTIN
 ----------------------------------------
-Factura ID: 1368728
-Comprobante: FF - 2200026040
-Fecha: 2022-04-05
-Sucursal ID: 2
-Cliente: MINISTERIO DE GOB. E INNOV. PU
-----------------------------------------
-Factura ID: 1368729
-Comprobante: FF - 2200026041
-Fecha: 2022-04-05
-Sucursal ID: 2
-Cliente: MINISTERIO DE GOB. E INNOV. PU
-----------------------------------------
-Factura ID: 1369439
-Comprobante: FF - 2200026080
-Fecha: 2022-04-07
-Sucursal ID: 2
-Cliente: TEGLIA EDGARDO DANIEL
-----------------------------------------
 Factura ID: 1372171
 Comprobante: FF - 2100033912
 Fecha: 2022-04-21
@@ -6362,42 +6194,6 @@ Comprobante: FF - 2100033913
 Fecha: 2022-04-21
 Sucursal ID: 1
 Cliente: LA MINGA SRL
-----------------------------------------
-Factura ID: 1372431
-Comprobante: FF - 2100033930
-Fecha: 2022-04-22
-Sucursal ID: 1
-Cliente: STELLA AGROPECUARIA SA
-----------------------------------------
-Factura ID: 1379625
-Comprobante: FF - 2100034512
-Fecha: 2022-05-26
-Sucursal ID: 1
-Cliente: CUATRIN HECTOR
-----------------------------------------
-Factura ID: 1385839
-Comprobante: FF - 2200015203
-Fecha: 2022-06-24
-Sucursal ID: 2
-Cliente: DELLA GHELFA MIGUEL ANGEL
-----------------------------------------
-Factura ID: 1386612
-Comprobante: FF - 2600017667
-Fecha: 2022-06-29
-Sucursal ID: 7
-Cliente: DE PHILIPPIS GERMAN WALTER
-----------------------------------------
-Factura ID: 1390257
-Comprobante: FF - 2300011615
-Fecha: 2022-07-14
-Sucursal ID: 3
-Cliente: BET GABRIEL JORGE
-----------------------------------------
-Factura ID: 1392435
-Comprobante: FF - 2200015420
-Fecha: 2022-07-25
-Sucursal ID: 2
-Cliente: INGECON SA
 ----------------------------------------
 Factura ID: 1396708
 Comprobante: FF - 2100035893
@@ -6411,113 +6207,11 @@ Fecha: 2022-09-09
 Sucursal ID: 4
 Cliente: CABALLERO EDUARDO
 ----------------------------------------
-Factura ID: 1402793
-Comprobante: FF - 2100036477
-Fecha: 2022-09-20
-Sucursal ID: 1
-Cliente: SAN JUSTO S.A.
-----------------------------------------
-Factura ID: 1403049
-Comprobante: FF - 2200028225
-Fecha: 2022-09-22
-Sucursal ID: 2
-Cliente: BRUSSINI MARIA VERONICA
-----------------------------------------
 Factura ID: 1407365
 Comprobante: FF - 2400009254
 Fecha: 2022-10-15
 Sucursal ID: 4
 Cliente: CABALLERO EDUARDO
-----------------------------------------
-Factura ID: 1408623
-Comprobante: FF - 2600018407
-Fecha: 2022-10-21
-Sucursal ID: 7
-Cliente: SCHLUND MARCELO
-----------------------------------------
-Factura ID: 1412632
-Comprobante: FF - 2500025424
-Fecha: 2022-11-10
-Sucursal ID: 5
-Cliente: BARBAGLIA MIGUEL ANGEL
-----------------------------------------
-Factura ID: 1413138
-Comprobante: FF - 2100037456
-Fecha: 2022-11-14
-Sucursal ID: 1
-Cliente: BURGI SOCIEDAD ANONIMA
-----------------------------------------
-Factura ID: 1416476
-Comprobante: FF - 2600004139
-Fecha: 2022-11-30
-Sucursal ID: 7
-Cliente: PEDRINI DANIEL
-----------------------------------------
-Factura ID: 1420012
-Comprobante: FF - 2100038088
-Fecha: 2022-12-20
-Sucursal ID: 1
-Cliente: METTINI LEONARDO
-----------------------------------------
-Factura ID: 1413258
-Comprobante: FF - 2600018528
-Fecha: 2022-11-14
-Sucursal ID: 7
-Cliente: PEREZ RUBEN EDGARDO
-----------------------------------------
-Factura ID: 1423530
-Comprobante: FF - 2100038391
-Fecha: 2023-01-03
-Sucursal ID: 1
-Cliente: ROSSO EDGARDO LUIS
-----------------------------------------
-Factura ID: 1421226
-Comprobante: FF - 2100038195
-Fecha: 2022-12-26
-Sucursal ID: 1
-Cliente: JARISZ ARNALDO PABLO
-----------------------------------------
-Factura ID: 1441160
-Comprobante: FF - 2100039793
-Fecha: 2023-03-17
-Sucursal ID: 1
-Cliente: SCHIEL HNOS
-----------------------------------------
-Factura ID: 1447891
-Comprobante: FF - 2200031132
-Fecha: 2023-04-20
-Sucursal ID: 2
-Cliente: CARINCI SERGIO FABIAN
-----------------------------------------
-Factura ID: 1449098
-Comprobante: FF - 2100040427
-Fecha: 2023-04-26
-Sucursal ID: 1
-Cliente: COLAGRO BANDERA S.A
-----------------------------------------
-Factura ID: 1451400
-Comprobante: FF - 2300013563
-Fecha: 2023-05-08
-Sucursal ID: 3
-Cliente: NU¥EZ MIHURA  BELISARIO
-----------------------------------------
-Factura ID: 1453566
-Comprobante: FF - 2100040786
-Fecha: 2023-05-17
-Sucursal ID: 1
-Cliente: OVIEDO MARIO JAVIER
-----------------------------------------
-Factura ID: 1456254
-Comprobante: FF - 2600004424
-Fecha: 2023-05-31
-Sucursal ID: 7
-Cliente: PSENDA PAULO
-----------------------------------------
-Factura ID: 1456458
-Comprobante: FF - 2200017581
-Fecha: 2023-06-01
-Sucursal ID: 2
-Cliente: SINDICATO LUZ Y FUERZA
 ----------------------------------------
 Factura ID: 1460276
 Comprobante: FF - 2200017719
@@ -6525,59 +6219,11 @@ Fecha: 2023-06-22
 Sucursal ID: 2
 Cliente: DON OSCAR SA
 ----------------------------------------
-Factura ID: 1460278
-Comprobante: FC - 2500000022
-Fecha: 2023-06-22
-Sucursal ID: 5
-Cliente: SEGUROS RIVADAVIA COOP LIMITAD
-----------------------------------------
 Factura ID: 1460449
 Comprobante: FF - 2500027890
 Fecha: 2023-06-22
 Sucursal ID: 5
 Cliente: SCALZO JUAN
-----------------------------------------
-Factura ID: 1460674
-Comprobante: FF - 2300013858
-Fecha: 2023-06-23
-Sucursal ID: 3
-Cliente: ARCULIS VALENTIN
-----------------------------------------
-Factura ID: 1461644
-Comprobante: FF - 2500027943
-Fecha: 2023-06-28
-Sucursal ID: 5
-Cliente: HARTMANN ERNESTO RENE
-----------------------------------------
-Factura ID: 1462872
-Comprobante: FF - 2100041522
-Fecha: 2023-07-04
-Sucursal ID: 1
-Cliente: CARBONELL MARIANO MARTIN
-----------------------------------------
-Factura ID: 1464344
-Comprobante: FF - 2700017423
-Fecha: 2023-07-10
-Sucursal ID: 8
-Cliente: BUYATTI VICTOR RUBEN
-----------------------------------------
-Factura ID: 1464455
-Comprobante: FF - 2100041657
-Fecha: 2023-07-11
-Sucursal ID: 1
-Cliente: OVIEDO MARIO JAVIER
-----------------------------------------
-Factura ID: 1465680
-Comprobante: FF - 2200032199
-Fecha: 2023-07-15
-Sucursal ID: 2
-Cliente: GATTI HUGO
-----------------------------------------
-Factura ID: 1467349
-Comprobante: FF - 2400024304
-Fecha: 2023-07-24
-Sucursal ID: 4
-Cliente: PRADOLINI GAS SRL
 ----------------------------------------
 Factura ID: 1468151
 Comprobante: FF - 2200017993
@@ -6585,59 +6231,11 @@ Fecha: 2023-07-27
 Sucursal ID: 2
 Cliente: DON OSCAR SA
 ----------------------------------------
-Factura ID: 1468352
-Comprobante: FF - 2100011726
-Fecha: 2023-07-28
-Sucursal ID: 1
-Cliente: COMUNA DE ANGELONI
-----------------------------------------
-Factura ID: 1468588
-Comprobante: FF - 2200018007
-Fecha: 2023-07-28
-Sucursal ID: 2
-Cliente: BAKA CORP SRL EN FORMACION
-----------------------------------------
-Factura ID: 1468967
-Comprobante: FF - 2100042067
-Fecha: 2023-07-31
-Sucursal ID: 1
-Cliente: DUARTE SILVIA G DE VILLALBA
-----------------------------------------
-Factura ID: 1470535
-Comprobante: FF - 2400024370
-Fecha: 2023-08-07
-Sucursal ID: 4
-Cliente: LOS ROBLES SA
-----------------------------------------
-Factura ID: 1471347
-Comprobante: FF - 4300000128
-Fecha: 2023-08-10
-Sucursal ID: 10
-Cliente: MEDINA ALEX SANTIAGO
-----------------------------------------
-Factura ID: 1473935
-Comprobante: FF - 2600020372
-Fecha: 2023-08-24
-Sucursal ID: 7
-Cliente: LOPEZ HUGO CARLOS
-----------------------------------------
 Factura ID: 1474522
 Comprobante: FF - 2700008548
 Fecha: 2023-08-28
 Sucursal ID: 8
 Cliente: DEHEZA JORGE
-----------------------------------------
-Factura ID: 1475074
-Comprobante: FF - 2100042593
-Fecha: 2023-08-31
-Sucursal ID: 1
-Cliente: LARRAURI SOFIA MA DE L INM.CON
-----------------------------------------
-Factura ID: 1475079
-Comprobante: FF - 2100042594
-Fecha: 2023-08-31
-Sucursal ID: 1
-Cliente: OVIEDO MARIO JAVIER
 ----------------------------------------
 Factura ID: 1475183
 Comprobante: FF - 2600020407
@@ -6645,137 +6243,11 @@ Fecha: 2023-08-31
 Sucursal ID: 7
 Cliente: PERINO RODOLFO VICENTE
 ----------------------------------------
-Factura ID: 1477300
-Comprobante: FF - 2300012148
-Fecha: 2023-09-11
-Sucursal ID: 3
-Cliente: LA JANE S.A.
-----------------------------------------
-Factura ID: 1477423
-Comprobante: FF - 2100042779
-Fecha: 2023-09-12
-Sucursal ID: 1
-Cliente: FERRERO MARIA CRISTINA
-----------------------------------------
 Factura ID: 1477521
 Comprobante: FF - 2600004593
 Fecha: 2023-09-12
 Sucursal ID: 7
 Cliente: FERRERO OMAR
-----------------------------------------
-Factura ID: 1478921
-Comprobante: FF - 2600020514
-Fecha: 2023-09-19
-Sucursal ID: 7
-Cliente: DECHIARA GABRIEL LUIS
-----------------------------------------
-Factura ID: 1479176
-Comprobante: FF - 2600020525
-Fecha: 2023-09-20
-Sucursal ID: 7
-Cliente: GRAZIANI GUILLERMO
-----------------------------------------
-Factura ID: 1479828
-Comprobante: FF - 2100043006
-Fecha: 2023-09-23
-Sucursal ID: 1
-Cliente: DUARTE SILVIA G DE VILLALBA
-----------------------------------------
-Factura ID: 1480603
-Comprobante: FF - 2300012207
-Fecha: 2023-09-27
-Sucursal ID: 3
-Cliente: FRANICEVICH MARCOS EMANUEL
-----------------------------------------
-Factura ID: 1481154
-Comprobante: FF - 2300012220
-Fecha: 2023-09-29
-Sucursal ID: 3
-Cliente: INSUMOS ENTRE RIOS S.A.
-----------------------------------------
-Factura ID: 1481352
-Comprobante: FF - 2100043146
-Fecha: 2023-09-29
-Sucursal ID: 1
-Cliente: DUARTE SILVIA G DE VILLALBA
-----------------------------------------
-Factura ID: 1481881
-Comprobante: FF - 2200033174
-Fecha: 2023-10-03
-Sucursal ID: 2
-Cliente: MONSALVO MARIO DAVID
-----------------------------------------
-Factura ID: 1482087
-Comprobante: FF - 2100043225
-Fecha: 2023-10-04
-Sucursal ID: 1
-Cliente: PERUSINI FEDERICO DARIO
-----------------------------------------
-Factura ID: 1483112
-Comprobante: FF - 2200018454
-Fecha: 2023-10-09
-Sucursal ID: 2
-Cliente: MOLINO VICTORIA S.A.
-----------------------------------------
-Factura ID: 1484007
-Comprobante: FF - 2300014646
-Fecha: 2023-10-12
-Sucursal ID: 3
-Cliente: ROMERO VEDOYA FRANCISCO JOSE
-----------------------------------------
-Factura ID: 1486124
-Comprobante: FF - 2200033458
-Fecha: 2023-10-26
-Sucursal ID: 2
-Cliente: GATTI HUGO
-----------------------------------------
-Factura ID: 1486204
-Comprobante: FF - 2600020712
-Fecha: 2023-10-26
-Sucursal ID: 7
-Cliente: TRACSA REPUESTOS S.R.L.
-----------------------------------------
-Factura ID: 1486432
-Comprobante: FF - 2200033487
-Fecha: 2023-10-27
-Sucursal ID: 2
-Cliente: GATTI HUGO
-----------------------------------------
-Factura ID: 1488593
-Comprobante: FF - 2300014791
-Fecha: 2023-11-09
-Sucursal ID: 3
-Cliente: BEVILACQUA MARIA CECILIA
-----------------------------------------
-Factura ID: 1488854
-Comprobante: FF - 2200033657
-Fecha: 2023-11-10
-Sucursal ID: 2
-Cliente: NUDEL JORGE
-----------------------------------------
-Factura ID: 1489091
-Comprobante: FF - 2600020766
-Fecha: 2023-11-11
-Sucursal ID: 7
-Cliente: SERVICIOS TARALLI SA
-----------------------------------------
-Factura ID: 1489230
-Comprobante: FF - 2200033681
-Fecha: 2023-11-13
-Sucursal ID: 2
-Cliente: SOEESIT SANTA FE
-----------------------------------------
-Factura ID: 1490231
-Comprobante: FF - 2400010980
-Fecha: 2023-11-17
-Sucursal ID: 4
-Cliente: GONZALEZ ANDREA
-----------------------------------------
-Factura ID: 1490808
-Comprobante: FF - 2200018715
-Fecha: 2023-11-22
-Sucursal ID: 2
-Cliente: SANCOR COOP SEG. LTDA -STA FE
 ----------------------------------------
 Factura ID: 1491073
 Comprobante: FF - 2300012356
@@ -6783,95 +6255,11 @@ Fecha: 2023-11-23
 Sucursal ID: 3
 Cliente: INSTITUTO AUTARQUICO PROVINCIA
 ----------------------------------------
-Factura ID: 1492708
-Comprobante: FF - 2100044150
-Fecha: 2023-11-30
-Sucursal ID: 1
-Cliente: FABBRO IVAR MARIANO
-----------------------------------------
-Factura ID: 1492753
-Comprobante: FF - 2700018546
-Fecha: 2023-12-01
-Sucursal ID: 8
-Cliente: RIO NEGRO SRL
-----------------------------------------
-Factura ID: 1492768
-Comprobante: FF - 2600020886
-Fecha: 2023-12-01
-Sucursal ID: 7
-Cliente: SANTILLO SERVICIOS SRL
-----------------------------------------
-Factura ID: 1492950
-Comprobante: FF - 2100044175
-Fecha: 2023-12-01
-Sucursal ID: 1
-Cliente: OVIEDO MARIO JAVIER
-----------------------------------------
-Factura ID: 1493472
-Comprobante: FF - 2400024793
-Fecha: 2023-12-05
-Sucursal ID: 4
-Cliente: GIANFELICI RICARDO ALBERTO
-----------------------------------------
-Factura ID: 1494004
-Comprobante: FF - 2200018822
-Fecha: 2023-12-07
-Sucursal ID: 2
-Cliente: LA COMERCIALIZADORA AGROPECUAR
-----------------------------------------
-Factura ID: 1495339
-Comprobante: FF - 2400024817
-Fecha: 2023-12-15
-Sucursal ID: 4
-Cliente: YANNO  GUSTAVO MIGUEL
-----------------------------------------
 Factura ID: 1495899
 Comprobante: FF - 2100044464
 Fecha: 2023-12-19
 Sucursal ID: 1
 Cliente: CARBONELL MAXIMILIAMO F
-----------------------------------------
-Factura ID: 1496075
-Comprobante: FF - 2400024829
-Fecha: 2023-12-20
-Sucursal ID: 4
-Cliente: YANNO  GUSTAVO MIGUEL
-----------------------------------------
-Factura ID: 1496372
-Comprobante: FF - 2300012422
-Fecha: 2023-12-21
-Sucursal ID: 3
-Cliente: INSUMOS ENTRE RIOS S.A.
-----------------------------------------
-Factura ID: 1497012
-Comprobante: FF - 2200034172
-Fecha: 2023-12-26
-Sucursal ID: 2
-Cliente: SOEESIT SANTA FE
-----------------------------------------
-Factura ID: 1497812
-Comprobante: FF - 2600004758
-Fecha: 2023-12-28
-Sucursal ID: 7
-Cliente: ASOC MUTUAL SANCOR
-----------------------------------------
-Factura ID: 1498112
-Comprobante: FF - 2700018745
-Fecha: 2023-12-29
-Sucursal ID: 8
-Cliente: FALCON AGUSTIN
-----------------------------------------
-Factura ID: 1498134
-Comprobante: FF - 2400024876
-Fecha: 2023-12-29
-Sucursal ID: 4
-Cliente: CYH CONSIG GANADERAS SH
-----------------------------------------
-Factura ID: 1498240
-Comprobante: FF - 2100044653
-Fecha: 2023-12-30
-Sucursal ID: 1
-Cliente: CHERVAZ E HIJO SRL
 ----------------------------------------
 Factura ID: 1634156
 Comprobante: RR - 1100000004
@@ -6897,1387 +6285,1411 @@ Fecha: 2026-03-27
 Sucursal ID: 11
 Cliente: BONFANTE HERNAN
 ----------------------------------------
-Factura ID: 1735373
+Factura ID: 1736958
 Comprobante: ND - 5
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EXPRESO SANTA ROSA S.A
 ----------------------------------------
-Factura ID: 1735375
+Factura ID: 1736960
 Comprobante: ND - 7
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LIMANSKY SA
 ----------------------------------------
-Factura ID: 1735376
+Factura ID: 1736961
 Comprobante: ND - 8
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SWEET SA
 ----------------------------------------
-Factura ID: 1735380
+Factura ID: 1736965
 Comprobante: ND - 12
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EL NORTE BIS S.R.L.
 ----------------------------------------
-Factura ID: 1735381
+Factura ID: 1736966
 Comprobante: ND - 13
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FEIJO RICARDO RUBEN
 ----------------------------------------
-Factura ID: 1735382
+Factura ID: 1736967
 Comprobante: ND - 14
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GALLEGO MANUEL
 ----------------------------------------
-Factura ID: 1735385
+Factura ID: 1736970
 Comprobante: ND - 17
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EXPRESO TRANSITAR S.A.
 ----------------------------------------
-Factura ID: 1735387
+Factura ID: 1736972
 Comprobante: ND - 19
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOSA RAUL
 ----------------------------------------
-Factura ID: 1735388
+Factura ID: 1736973
 Comprobante: ND - 20
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EXPRESO CHARRUA SA
 ----------------------------------------
-Factura ID: 1735391
+Factura ID: 1736976
 Comprobante: ND - 23
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PODER JUDICIAL
 ----------------------------------------
-Factura ID: 1735392
+Factura ID: 1736977
 Comprobante: ND - 24
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: OSCAR PRIOTTI E HIJOS SRL
 ----------------------------------------
-Factura ID: 1735393
+Factura ID: 1736978
 Comprobante: ND - 25
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOZANO DIEGO
 ----------------------------------------
-Factura ID: 1735394
+Factura ID: 1736979
 Comprobante: ND - 26
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOJICA ENRIQUE
 ----------------------------------------
-Factura ID: 1735395
+Factura ID: 1736980
 Comprobante: ND - 27
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ENRICI DARIO
 ----------------------------------------
-Factura ID: 1735398
+Factura ID: 1736983
 Comprobante: ND - 30
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CERUTTI RAUL FRANCISCO
 ----------------------------------------
-Factura ID: 1735400
+Factura ID: 1736985
 Comprobante: ND - 32
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PARRA FRANCISCO
 ----------------------------------------
-Factura ID: 1735403
+Factura ID: 1736988
 Comprobante: ND - 35
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CEJAS ANSELMO
 ----------------------------------------
-Factura ID: 1735405
+Factura ID: 1736990
 Comprobante: ND - 37
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: S.A.M.C.O DE SAN JUSTO
 ----------------------------------------
-Factura ID: 1735406
+Factura ID: 1736991
 Comprobante: ND - 38
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGENO ORLANDO E HIJOS SRL
 ----------------------------------------
-Factura ID: 1735407
+Factura ID: 1736992
 Comprobante: ND - 39
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MARIA E BOYERAS Y ELINOR L TAR
 ----------------------------------------
-Factura ID: 1735410
+Factura ID: 1736995
 Comprobante: ND - 42
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GUALINO RICARDO JOSE
 ----------------------------------------
-Factura ID: 1735411
+Factura ID: 1736996
 Comprobante: ND - 43
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CANAVESIO DANIEL
 ----------------------------------------
-Factura ID: 1735412
+Factura ID: 1736997
 Comprobante: ND - 44
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CANAVESIO VICTOR HUGO
 ----------------------------------------
-Factura ID: 1735414
+Factura ID: 1736999
 Comprobante: ND - 46
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ESTANCIA MARGINALES SA
 ----------------------------------------
-Factura ID: 1735417
+Factura ID: 1737002
 Comprobante: ND - 49
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CLUB COLON
 ----------------------------------------
-Factura ID: 1735418
+Factura ID: 1737003
 Comprobante: ND - 50
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ADECO AGROPECUARIA SA
 ----------------------------------------
-Factura ID: 1735419
+Factura ID: 1737004
 Comprobante: ND - 51
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CALIFORNIA SRL
 ----------------------------------------
-Factura ID: 1735421
+Factura ID: 1737006
 Comprobante: ND - 53
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARRARA GUSTAVO DANIEL
 ----------------------------------------
-Factura ID: 1735426
+Factura ID: 1737011
 Comprobante: ND - 58
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOS RETONOS S.A.
 ----------------------------------------
-Factura ID: 1735429
+Factura ID: 1737014
 Comprobante: ND - 61
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GUTIERREZ MARIO
 ----------------------------------------
-Factura ID: 1735430
+Factura ID: 1737015
 Comprobante: ND - 62
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARDELINO ALCIDES EDELIO
 ----------------------------------------
-Factura ID: 1735442
+Factura ID: 1737027
 Comprobante: ND - 74
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LA EGLE S.R.L.
 ----------------------------------------
-Factura ID: 1735444
+Factura ID: 1737029
 Comprobante: ND - 76
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ANTONIO EMILIO PASTOR E HIJOS
 ----------------------------------------
-Factura ID: 1735447
+Factura ID: 1737032
 Comprobante: ND - 79
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOSER LUIS
 ----------------------------------------
-Factura ID: 1735448
+Factura ID: 1737033
 Comprobante: ND - 80
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BARBAGLIA VIVIANA
 ----------------------------------------
-Factura ID: 1735449
+Factura ID: 1737034
 Comprobante: ND - 81
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CETTOUR ROBERTO Y MARIO
 ----------------------------------------
-Factura ID: 1735452
+Factura ID: 1737037
 Comprobante: ND - 84
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOLINA JUAN CARLOS
 ----------------------------------------
-Factura ID: 1735457
+Factura ID: 1737042
 Comprobante: ND - 89
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TIBALDO FERNANDO MARCOS
 ----------------------------------------
-Factura ID: 1735458
+Factura ID: 1737043
 Comprobante: ND - 90
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GONZALEZ JOSE LUIS
 ----------------------------------------
-Factura ID: 1735460
+Factura ID: 1737045
 Comprobante: ND - 92
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOPEZ HUGO
 ----------------------------------------
-Factura ID: 1735462
+Factura ID: 1737047
 Comprobante: ND - 94
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRANDOTTI JORGE
 ----------------------------------------
-Factura ID: 1735463
+Factura ID: 1737048
 Comprobante: ND - 95
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KUHN SERGIO  ANTONIO
 ----------------------------------------
-Factura ID: 1735467
+Factura ID: 1737051
+Comprobante: ND - 98
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: UNION AGR. DE AVELLANEDA C LTD
+----------------------------------------
+Factura ID: 1737052
 Comprobante: ND - 99
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE SNAIDER SRL
 ----------------------------------------
-Factura ID: 1735469
+Factura ID: 1737054
 Comprobante: ND - 101
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CIFRE DANILO ALBERTO
 ----------------------------------------
-Factura ID: 1735472
+Factura ID: 1737057
 Comprobante: ND - 104
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CHACO SERVICIOS S.A.
 ----------------------------------------
-Factura ID: 1735478
+Factura ID: 1737063
 Comprobante: ND - 110
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TOURNE Y TOURNE SA
 ----------------------------------------
-Factura ID: 1735479
+Factura ID: 1737064
 Comprobante: ND - 111
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GUTIERREZ MARTIN
 ----------------------------------------
-Factura ID: 1735482
+Factura ID: 1737067
 Comprobante: ND - 114
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PEREZ CURBELO HNOS SRL
 ----------------------------------------
-Factura ID: 1735483
+Factura ID: 1737068
 Comprobante: ND - 115
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGROPECUARIA LOS CORRALITOS SA
 ----------------------------------------
-Factura ID: 1735486
+Factura ID: 1737071
 Comprobante: ND - 118
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: JAVILA S.A.
 ----------------------------------------
-Factura ID: 1735490
+Factura ID: 1737075
 Comprobante: ND - 122
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LENARDUZZI EMILIANO
 ----------------------------------------
-Factura ID: 1735492
+Factura ID: 1737077
 Comprobante: ND - 124
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FOSSATTI JUAN PABLO
 ----------------------------------------
-Factura ID: 1735493
+Factura ID: 1737078
 Comprobante: ND - 125
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BRANCA MARGARITA ORTENCIA
 ----------------------------------------
-Factura ID: 1735494
+Factura ID: 1737079
 Comprobante: ND - 126
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COSTA HERMANOS SA
 ----------------------------------------
-Factura ID: 1735495
+Factura ID: 1737080
 Comprobante: ND - 127
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PROYECCION ELECTROLUZ SRL
 ----------------------------------------
-Factura ID: 1735496
+Factura ID: 1737081
 Comprobante: ND - 128
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SANCOR COOP DE SEG LTDA(S.J.)
 ----------------------------------------
-Factura ID: 1735498
+Factura ID: 1737083
 Comprobante: ND - 130
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LA SEGUNDA CLSG
 ----------------------------------------
-Factura ID: 1735499
+Factura ID: 1737084
 Comprobante: ND - 131
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GOMEZ CESAR
 ----------------------------------------
-Factura ID: 1735503
+Factura ID: 1737088
 Comprobante: ND - 135
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MONDINO MARTIN LORENZO
 ----------------------------------------
-Factura ID: 1735505
+Factura ID: 1737090
 Comprobante: ND - 137
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MAYORAZ JUAN ALFREDO
 ----------------------------------------
-Factura ID: 1735508
+Factura ID: 1737093
 Comprobante: ND - 140
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KAST SAMUEL ENRIQUE
 ----------------------------------------
-Factura ID: 1735509
+Factura ID: 1737094
 Comprobante: ND - 141
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DOVIS RICARDO RAUL
 ----------------------------------------
-Factura ID: 1735510
+Factura ID: 1737095
 Comprobante: ND - 142
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SNAIDER OSCAR ROBERTO
 ----------------------------------------
-Factura ID: 1735511
+Factura ID: 1737096
 Comprobante: ND - 143
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SNAIDER ROMELIO HUGO
 ----------------------------------------
-Factura ID: 1735512
+Factura ID: 1737097
 Comprobante: ND - 144
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ANGELONI HNOS
 ----------------------------------------
-Factura ID: 1735513
+Factura ID: 1737098
 Comprobante: ND - 145
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: METTAN JUAN CARLOS
 ----------------------------------------
-Factura ID: 1735514
+Factura ID: 1737099
 Comprobante: ND - 146
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MINISTERIO DE LA PRODUCCION
 ----------------------------------------
-Factura ID: 1735515
+Factura ID: 1737100
 Comprobante: ND - 147
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ROLLE DELIO MIGUEL Y RICARDO
 ----------------------------------------
-Factura ID: 1735516
+Factura ID: 1737101
 Comprobante: ND - 148
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GIORGIS GUILLERMO
 ----------------------------------------
-Factura ID: 1735517
+Factura ID: 1737102
 Comprobante: ND - 149
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SANCHEZ Y SANCHEZ
 ----------------------------------------
-Factura ID: 1735519
+Factura ID: 1737104
 Comprobante: ND - 151
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SARANTONELLI JUAN ARIEL MATIAS
 ----------------------------------------
-Factura ID: 1735521
+Factura ID: 1737106
 Comprobante: ND - 153
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SONZOGNI CARLOS ALBERTO
 ----------------------------------------
-Factura ID: 1735525
+Factura ID: 1737110
 Comprobante: ND - 157
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GEBHART CARLOS ALBERTO
 ----------------------------------------
-Factura ID: 1735526
+Factura ID: 1737111
 Comprobante: ND - 158
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: JUAN ZANETTI E HIJOS SRL
 ----------------------------------------
-Factura ID: 1735529
+Factura ID: 1737114
 Comprobante: ND - 161
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MONTI C., MONTI C. Y MONTI P.
 ----------------------------------------
-Factura ID: 1735530
+Factura ID: 1737115
 Comprobante: ND - 162
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PONTARELLI RODADOS SRL
 ----------------------------------------
-Factura ID: 1735532
+Factura ID: 1737117
 Comprobante: ND - 164
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: INDUSTRIAS AVICOLAS S A
 ----------------------------------------
-Factura ID: 1735534
+Factura ID: 1737119
 Comprobante: ND - 166
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NESTOR Y DIEGO HEIT SH
 ----------------------------------------
-Factura ID: 1735537
+Factura ID: 1737122
 Comprobante: ND - 169
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TAHIN S.A
 ----------------------------------------
-Factura ID: 1735538
+Factura ID: 1737123
 Comprobante: ND - 170
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CPQ SRL
 ----------------------------------------
-Factura ID: 1735543
+Factura ID: 1737128
 Comprobante: ND - 175
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CELLAURO SERGIO RAUL
 ----------------------------------------
-Factura ID: 1735546
+Factura ID: 1737131
 Comprobante: ND - 178
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GARCIA LUIS ALBERTO
 ----------------------------------------
-Factura ID: 1735548
+Factura ID: 1737133
 Comprobante: ND - 180
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PERONI ENZO P
 ----------------------------------------
-Factura ID: 1735549
+Factura ID: 1737134
 Comprobante: ND - 181
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RODA OLIMPIO RAMON
 ----------------------------------------
-Factura ID: 1735551
+Factura ID: 1737136
 Comprobante: ND - 183
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SILVA ALICIA LIDIA
 ----------------------------------------
-Factura ID: 1735553
+Factura ID: 1737138
 Comprobante: ND - 185
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RECO GAS SRL
 ----------------------------------------
-Factura ID: 1735555
+Factura ID: 1737140
 Comprobante: ND - 187
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BIANCHI ALDO LUIS
 ----------------------------------------
-Factura ID: 1735556
+Factura ID: 1737141
 Comprobante: ND - 188
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE DON OSVALDO SRL
 ----------------------------------------
-Factura ID: 1735558
+Factura ID: 1737143
 Comprobante: ND - 190
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GALIER ROSA
 ----------------------------------------
-Factura ID: 1735559
+Factura ID: 1737144
 Comprobante: ND - 191
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: IGLESIAS MARIANO
 ----------------------------------------
-Factura ID: 1735561
+Factura ID: 1737146
 Comprobante: ND - 193
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOS CORRALITOS SER SRL
 ----------------------------------------
-Factura ID: 1735568
+Factura ID: 1737153
 Comprobante: ND - 200
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CAPDEVILA ADOLFO EDUARDO
 ----------------------------------------
-Factura ID: 1735570
+Factura ID: 1737155
 Comprobante: ND - 202
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FARIOLI IGNACIO DEMETRIO
 ----------------------------------------
-Factura ID: 1735572
+Factura ID: 1737157
 Comprobante: ND - 204
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CRIPPA OMAR
 ----------------------------------------
-Factura ID: 1735573
+Factura ID: 1737158
 Comprobante: ND - 205
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOHAMED RAMON
 ----------------------------------------
-Factura ID: 1735574
+Factura ID: 1737159
 Comprobante: ND - 206
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: INECO SRL
 ----------------------------------------
-Factura ID: 1735576
+Factura ID: 1737161
 Comprobante: ND - 208
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MAIOCCO CEREALES SA
 ----------------------------------------
-Factura ID: 1735579
+Factura ID: 1737164
 Comprobante: ND - 211
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EMPRESA MONTE VERA SRL
 ----------------------------------------
-Factura ID: 1735583
+Factura ID: 1737168
 Comprobante: ND - 215
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRUPO EL PUENTE
 ----------------------------------------
-Factura ID: 1735584
+Factura ID: 1737169
 Comprobante: ND - 216
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: 3 JOTAS SA
 ----------------------------------------
-Factura ID: 1735586
+Factura ID: 1737171
 Comprobante: ND - 218
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRAVESANI ALFONSO RAMON
 ----------------------------------------
-Factura ID: 1735588
+Factura ID: 1737173
 Comprobante: ND - 220
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KINDERNECHT JUAN ANDRES
 ----------------------------------------
-Factura ID: 1735593
+Factura ID: 1737178
 Comprobante: ND - 225
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SCURATO MAURO FEDERICO
 ----------------------------------------
-Factura ID: 1735594
+Factura ID: 1737179
 Comprobante: ND - 226
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KINDERKNECHT FERNANDO
 ----------------------------------------
-Factura ID: 1735595
+Factura ID: 1737180
 Comprobante: ND - 227
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MORENO MARIO ALBERTO
 ----------------------------------------
-Factura ID: 1735599
+Factura ID: 1737184
 Comprobante: ND - 231
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE PERLETTI SA
 ----------------------------------------
-Factura ID: 1735604
+Factura ID: 1737188
+Comprobante: ND - 235
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: MARIA TOURS SA
+----------------------------------------
+Factura ID: 1737189
 Comprobante: ND - 236
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BUYATTI MARCELO
 ----------------------------------------
-Factura ID: 1735605
+Factura ID: 1737190
 Comprobante: ND - 237
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RIVOSECCHI PATRICIO I
 ----------------------------------------
-Factura ID: 1735606
+Factura ID: 1737191
 Comprobante: ND - 238
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FRAIRE JUAN ALBERTO
 ----------------------------------------
-Factura ID: 1735609
+Factura ID: 1737194
 Comprobante: ND - 241
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FRANZETTI PABLO ROBERTO
 ----------------------------------------
-Factura ID: 1735611
+Factura ID: 1737196
 Comprobante: ND - 243
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DIP DANIEL EUCLIDES
 ----------------------------------------
-Factura ID: 1735614
+Factura ID: 1737199
 Comprobante: ND - 246
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: INTEGRAL AGROPECUARIA SA
 ----------------------------------------
-Factura ID: 1735615
+Factura ID: 1737200
 Comprobante: ND - 247
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ALSINA JUAN CARLOS
 ----------------------------------------
-Factura ID: 1735617
+Factura ID: 1737202
 Comprobante: ND - 249
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BULEY ETSEL ZABINO PEDRO Y BUL
 ----------------------------------------
-Factura ID: 1735619
+Factura ID: 1737204
 Comprobante: ND - 251
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CERGNEUX LEONARDO C. Y CERGNEU
 ----------------------------------------
-Factura ID: 1735620
+Factura ID: 1737205
 Comprobante: ND - 252
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DELTACOM SA
 ----------------------------------------
-Factura ID: 1735626
+Factura ID: 1737207
+Comprobante: ND - 254
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: PONCE MAXIMILIANO
+----------------------------------------
+Factura ID: 1737211
 Comprobante: ND - 258
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTADORA LA PAMPEANA SA
 ----------------------------------------
-Factura ID: 1735627
+Factura ID: 1737212
 Comprobante: ND - 259
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE DELLEPIANE SA
 ----------------------------------------
-Factura ID: 1735628
+Factura ID: 1737213
 Comprobante: ND - 260
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOLTERMANN LEANDRO NICOLAS
 ----------------------------------------
-Factura ID: 1735629
+Factura ID: 1737214
 Comprobante: ND - 261
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RDA RENTING SA
 ----------------------------------------
-Factura ID: 1735631
+Factura ID: 1737216
 Comprobante: ND - 263
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TAGLIARINO OSCAR FELIPE
 ----------------------------------------
-Factura ID: 1735632
+Factura ID: 1737217
 Comprobante: ND - 264
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE DON JOAQUIN SRL
 ----------------------------------------
-Factura ID: 1735633
+Factura ID: 1737218
 Comprobante: ND - 265
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PONCE ROGELIO NICOLAS
 ----------------------------------------
-Factura ID: 1735634
+Factura ID: 1737219
 Comprobante: ND - 266
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ESTABLECIMIENTO DON ANGEL SRL
 ----------------------------------------
-Factura ID: 1735639
+Factura ID: 1737224
 Comprobante: ND - 271
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BONARDI M Y BONARDI L
 ----------------------------------------
-Factura ID: 1735640
+Factura ID: 1737225
 Comprobante: ND - 272
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TU RECREO S.R.L.
 ----------------------------------------
-Factura ID: 1735641
+Factura ID: 1737226
 Comprobante: ND - 273
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FREITES SEBASTIAN
 ----------------------------------------
-Factura ID: 1735642
+Factura ID: 1737227
 Comprobante: ND - 274
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CRUCCIANI MARIO
 ----------------------------------------
-Factura ID: 1735644
+Factura ID: 1737229
 Comprobante: ND - 276
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HERE¥U EMANUEL DIEGO
 ----------------------------------------
-Factura ID: 1735645
+Factura ID: 1737230
 Comprobante: ND - 277
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: REPRESENTACIONES NEA
 ----------------------------------------
-Factura ID: 1735648
+Factura ID: 1737233
 Comprobante: ND - 280
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NANDENU SRL
 ----------------------------------------
-Factura ID: 1735651
+Factura ID: 1737236
 Comprobante: ND - 283
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SUAREZ CLAUDIA
 ----------------------------------------
-Factura ID: 1735653
+Factura ID: 1737238
 Comprobante: ND - 285
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SARTORE MAURO DANIEL
 ----------------------------------------
-Factura ID: 1735655
+Factura ID: 1737240
 Comprobante: ND - 287
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE EL CORRECAMINOS S.R
 ----------------------------------------
-Factura ID: 1735656
+Factura ID: 1737241
 Comprobante: ND - 288
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AVILA JULIAN FERNANDO
 ----------------------------------------
-Factura ID: 1735662
+Factura ID: 1737247
 Comprobante: ND - 294
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ARCIDIACOMO JUAN PABLO
 ----------------------------------------
-Factura ID: 1735663
+Factura ID: 1737248
 Comprobante: ND - 295
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MENENDEZ GUILLERMO CARLOS
 ----------------------------------------
-Factura ID: 1735670
+Factura ID: 1737255
 Comprobante: ND - 302
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EL PRINCIPITO SA
 ----------------------------------------
-Factura ID: 1735674
+Factura ID: 1737259
 Comprobante: ND - 306
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: POZZO ELIACOPOULOS VICTORIA
 ----------------------------------------
-Factura ID: 1735675
+Factura ID: 1737260
 Comprobante: ND - 307
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DELLA LONGA RUBEN
 ----------------------------------------
-Factura ID: 1735676
+Factura ID: 1737261
 Comprobante: ND - 308
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: YABAT SRL
 ----------------------------------------
-Factura ID: 1735677
+Factura ID: 1737262
 Comprobante: ND - 309
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: A & C SOLUCIONES SA
 ----------------------------------------
-Factura ID: 1735678
+Factura ID: 1737263
 Comprobante: ND - 310
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BOLINI SILVIA ELENA
 ----------------------------------------
-Factura ID: 1735679
+Factura ID: 1737264
 Comprobante: ND - 311
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MIRST TRAVEL SRL
 ----------------------------------------
-Factura ID: 1735684
+Factura ID: 1737269
 Comprobante: ND - 316
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTADORA DE CAUDALES JUN
 ----------------------------------------
-Factura ID: 1735686
+Factura ID: 1737271
 Comprobante: ND - 318
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PARUCCI OSCAR ALBERTO
 ----------------------------------------
-Factura ID: 1735687
+Factura ID: 1737272
 Comprobante: ND - 319
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COLICELLI RUBEN OSCAR
 ----------------------------------------
-Factura ID: 1735690
+Factura ID: 1737275
 Comprobante: ND - 322
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: IBARGAS SRL
 ----------------------------------------
-Factura ID: 1735697
+Factura ID: 1737282
 Comprobante: ND - 329
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GOMEZ CRISTIAN MARCELO
 ----------------------------------------
-Factura ID: 1735700
+Factura ID: 1737285
 Comprobante: ND - 332
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EL PALOMAR S.A.
 ----------------------------------------
-Factura ID: 1735701
+Factura ID: 1737286
 Comprobante: ND - 333
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: STEINGART DIEGO MIGUEL
 ----------------------------------------
-Factura ID: 1735705
+Factura ID: 1737290
 Comprobante: ND - 337
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE BENCENY SRL
 ----------------------------------------
-Factura ID: 1735709
+Factura ID: 1737294
 Comprobante: ND - 341
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: OLIVERO GABRIEL ALEJANDRO
 ----------------------------------------
-Factura ID: 1735710
+Factura ID: 1737295
 Comprobante: ND - 342
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSPORTE PEDRO A PEREZ SRL
 ----------------------------------------
-Factura ID: 1735711
+Factura ID: 1737296
 Comprobante: ND - 343
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MACAMILI S.R.L
 ----------------------------------------
-Factura ID: 1735712
+Factura ID: 1737297
 Comprobante: ND - 344
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SINDICATO UNICO DE TRABAJADORE
 ----------------------------------------
-Factura ID: 1735713
+Factura ID: 1737298
 Comprobante: ND - 345
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AMTTAR
 ----------------------------------------
-Factura ID: 1735716
+Factura ID: 1737301
 Comprobante: ND - 348
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LUTRI MAXIMILIANO
 ----------------------------------------
-Factura ID: 1735717
+Factura ID: 1737302
 Comprobante: ND - 349
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AVILA EDUARDO NESTOR
 ----------------------------------------
-Factura ID: 1735719
+Factura ID: 1737303
+Comprobante: ND - 350
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: URBASER ARG SA TRANSP OLIVOS S
+----------------------------------------
+Factura ID: 1737304
 Comprobante: ND - 351
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MONTAJES INDUSTRIALES SRL
 ----------------------------------------
-Factura ID: 1735722
+Factura ID: 1737307
 Comprobante: ND - 354
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MASSIO S.A.
 ----------------------------------------
-Factura ID: 1735738
+Factura ID: 1737323
 Comprobante: ND - 370
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TRANSP RUIZ HNOS SRL
 ----------------------------------------
-Factura ID: 1735740
+Factura ID: 1737325
 Comprobante: ND - 372
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TOGANLLI AGUSTIN EDUARDO
 ----------------------------------------
-Factura ID: 1735744
+Factura ID: 1737329
 Comprobante: ND - 376
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CENTRO DE EMBALAJES SA
 ----------------------------------------
-Factura ID: 1735745
+Factura ID: 1737330
 Comprobante: ND - 377
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BERTOT METALMECANICA SRL
 ----------------------------------------
-Factura ID: 1735749
+Factura ID: 1737334
 Comprobante: ND - 381
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: STRADA DIEGO MATIAS
 ----------------------------------------
-Factura ID: 1735750
+Factura ID: 1737335
 Comprobante: ND - 382
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NARDI ANIBAL ENRIQUE
 ----------------------------------------
-Factura ID: 1735752
+Factura ID: 1737337
 Comprobante: ND - 384
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LABORATORIO QUIMECO SRL
 ----------------------------------------
-Factura ID: 1735754
+Factura ID: 1737339
 Comprobante: ND - 386
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: NAVARRO JORGE OMAR
 ----------------------------------------
-Factura ID: 1735756
+Factura ID: 1737341
 Comprobante: ND - 388
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BEKER GUSTAVO ADOLFO
 ----------------------------------------
-Factura ID: 1735757
+Factura ID: 1737342
 Comprobante: ND - 389
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PEPERMANS SERGIO ALBERTO
 ----------------------------------------
-Factura ID: 1735758
+Factura ID: 1737343
 Comprobante: ND - 390
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ORTIZ ZAVALLA MARIA
 ----------------------------------------
-Factura ID: 1735761
+Factura ID: 1737346
 Comprobante: ND - 393
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: QUIROS CARLOS SEBASTIAN
 ----------------------------------------
-Factura ID: 1735766
+Factura ID: 1737351
 Comprobante: ND - 398
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HERMANOS DELBINO SRL
 ----------------------------------------
-Factura ID: 1735767
+Factura ID: 1737352
 Comprobante: ND - 399
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DON RUTTI SRL
 ----------------------------------------
-Factura ID: 1735768
+Factura ID: 1737353
 Comprobante: ND - 400
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MINETTI NESTOR
 ----------------------------------------
-Factura ID: 1735770
+Factura ID: 1737355
 Comprobante: ND - 402
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PEREZ LIDYA ESTER
 ----------------------------------------
-Factura ID: 1735773
+Factura ID: 1737358
 Comprobante: ND - 405
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MOLINA LIDIA GLADIS
 ----------------------------------------
-Factura ID: 1735774
+Factura ID: 1737359
 Comprobante: ND - 406
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MORAGUEZ OMAR
 ----------------------------------------
-Factura ID: 1735775
+Factura ID: 1737360
 Comprobante: ND - 407
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRUPO FERNANDEZ S.R.L.
 ----------------------------------------
-Factura ID: 1735776
+Factura ID: 1737361
 Comprobante: ND - 408
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DAMBROS MARIA DE LOS ANGELESY
 ----------------------------------------
-Factura ID: 1735778
+Factura ID: 1737363
 Comprobante: ND - 410
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FLEURY JOSE LUIS
 ----------------------------------------
-Factura ID: 1735779
+Factura ID: 1737364
 Comprobante: ND - 411
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BARRERA HECTOR HUGO
 ----------------------------------------
-Factura ID: 1735784
+Factura ID: 1737369
 Comprobante: ND - 416
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: FERRARO GABRIEL Y CARLOS
 ----------------------------------------
-Factura ID: 1735786
+Factura ID: 1737371
 Comprobante: ND - 418
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: JUAREZ EDGARDO EMILIO
 ----------------------------------------
-Factura ID: 1735788
+Factura ID: 1737373
 Comprobante: ND - 420
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BERTOLACCINI CESAR
 ----------------------------------------
-Factura ID: 1735789
+Factura ID: 1737374
 Comprobante: ND - 421
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LINIERS LEONARDO
 ----------------------------------------
-Factura ID: 1735790
+Factura ID: 1737375
 Comprobante: ND - 422
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ESTABL DON AVELINO SRL
 ----------------------------------------
-Factura ID: 1735792
+Factura ID: 1737377
 Comprobante: ND - 424
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PIGLIAPOCO BRUNO ESEQUIEL
 ----------------------------------------
-Factura ID: 1735794
+Factura ID: 1737379
 Comprobante: ND - 426
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GORDO GERMAN GABRIEL
 ----------------------------------------
-Factura ID: 1735796
+Factura ID: 1737381
 Comprobante: ND - 428
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MANCINI JOSE
 ----------------------------------------
-Factura ID: 1735797
+Factura ID: 1737382
 Comprobante: ND - 429
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VERA JUAN CARLOS
 ----------------------------------------
-Factura ID: 1735800
+Factura ID: 1737385
 Comprobante: ND - 432
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LOS TRES HERMANOS SRL
 ----------------------------------------
-Factura ID: 1735804
+Factura ID: 1737389
 Comprobante: ND - 436
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RAMELLO ARIEL SEBASTIAN
 ----------------------------------------
-Factura ID: 1735805
+Factura ID: 1737390
 Comprobante: ND - 437
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SOSA CARLOS ANDRES
 ----------------------------------------
-Factura ID: 1735808
+Factura ID: 1737393
 Comprobante: ND - 440
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: IMPLEMENTOS AGRICOLAS R.J.S SR
 ----------------------------------------
-Factura ID: 1735811
+Factura ID: 1737396
 Comprobante: ND - 443
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BOEYKENS ESTELA PILAR
 ----------------------------------------
-Factura ID: 1735815
+Factura ID: 1737400
 Comprobante: ND - 447
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MARDO JUAN IGNACIO
 ----------------------------------------
-Factura ID: 1735817
+Factura ID: 1737402
 Comprobante: ND - 449
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: J.M.D TRANSPORTES S.R.L
 ----------------------------------------
-Factura ID: 1735819
+Factura ID: 1737404
 Comprobante: ND - 451
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BRESSAN GABRIEL ALCIDES
 ----------------------------------------
-Factura ID: 1735820
+Factura ID: 1737405
 Comprobante: ND - 452
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COCHERET JOSE LUIS
 ----------------------------------------
-Factura ID: 1735821
+Factura ID: 1737406
 Comprobante: ND - 453
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GRUPO ROSARINO DE TRASLADO SRL
 ----------------------------------------
-Factura ID: 1735822
+Factura ID: 1737407
 Comprobante: ND - 454
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SHUK SRL
 ----------------------------------------
-Factura ID: 1735823
+Factura ID: 1737408
 Comprobante: ND - 455
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ZEBALLOS JONATAN
 ----------------------------------------
-Factura ID: 1735824
+Factura ID: 1737409
 Comprobante: ND - 456
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MJC SERVICIOS AGROPECUARIOS S
 ----------------------------------------
-Factura ID: 1735826
+Factura ID: 1737411
 Comprobante: ND - 458
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: ASOC COOP ARGENTINA
 ----------------------------------------
-Factura ID: 1735827
+Factura ID: 1737412
 Comprobante: ND - 459
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: MEJIAS CRISTIAN
 ----------------------------------------
-Factura ID: 1735833
+Factura ID: 1737418
 Comprobante: ND - 465
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COOPERATIVA AGRICOLA GANADERA
 ----------------------------------------
-Factura ID: 1735834
+Factura ID: 1737419
 Comprobante: ND - 466
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SERO BIZ S.R.L
 ----------------------------------------
-Factura ID: 1735835
+Factura ID: 1737420
 Comprobante: ND - 467
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COOPERATIVA LA GANADERA GENERA
 ----------------------------------------
-Factura ID: 1735843
+Factura ID: 1737428
 Comprobante: ND - 475
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DERUDDER HERMANOS S R L
 ----------------------------------------
-Factura ID: 1735846
+Factura ID: 1737431
 Comprobante: ND - 478
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: LANGE DARIO EDGARDO
 ----------------------------------------
-Factura ID: 1735847
+Factura ID: 1737432
 Comprobante: ND - 479
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RODRIGUEZ FERNANDO LUIS
 ----------------------------------------
-Factura ID: 1735849
+Factura ID: 1737434
 Comprobante: ND - 481
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AMATO JOAQUIN JESUS
 ----------------------------------------
-Factura ID: 1735850
+Factura ID: 1737435
 Comprobante: ND - 482
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: EMPRESA DE TRANSPORTES SIERRAS
 ----------------------------------------
-Factura ID: 1735851
+Factura ID: 1737436
 Comprobante: ND - 483
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: DAVALOS ELIANA ELISABET
 ----------------------------------------
-Factura ID: 1735852
+Factura ID: 1737437
 Comprobante: ND - 484
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGUILAR ANALIA ALICIA DEL
 ----------------------------------------
-Factura ID: 1735855
+Factura ID: 1737440
 Comprobante: ND - 487
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BARBARESI MADERAS S.R.L.
 ----------------------------------------
-Factura ID: 1735856
+Factura ID: 1737441
 Comprobante: ND - 488
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: RESICOM INGENIERIA AMBIENTAL S
 ----------------------------------------
-Factura ID: 1735858
+Factura ID: 1737443
 Comprobante: ND - 490
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CHAVEZ ENZO
 ----------------------------------------
-Factura ID: 1735859
+Factura ID: 1737444
 Comprobante: ND - 491
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HOLOWIEF J HNOS SRL
 ----------------------------------------
-Factura ID: 1735861
+Factura ID: 1737446
 Comprobante: ND - 493
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PALACIOS MATIAS SEBASTIAN
 ----------------------------------------
-Factura ID: 1735864
+Factura ID: 1737449
 Comprobante: ND - 496
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: HILLIER CRISTIAN GABRIEL
 ----------------------------------------
-Factura ID: 1735866
+Factura ID: 1737451
 Comprobante: ND - 498
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GASTROENBA S.R.L
 ----------------------------------------
-Factura ID: 1735868
+Factura ID: 1737453
 Comprobante: ND - 500
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TEJERA RODRIGO SANTIAGO
 ----------------------------------------
-Factura ID: 1735869
+Factura ID: 1737454
 Comprobante: ND - 501
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: GONZALEZ MARCELO ANIBAL
 ----------------------------------------
-Factura ID: 1735871
+Factura ID: 1737456
 Comprobante: ND - 503
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PARISIER ANDRE
 ----------------------------------------
-Factura ID: 1735872
+Factura ID: 1737457
 Comprobante: ND - 504
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: VIOTTI OSCAR JOSE
 ----------------------------------------
-Factura ID: 1735873
+Factura ID: 1737458
 Comprobante: ND - 505
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CORTINA MARIO LUIS
 ----------------------------------------
-Factura ID: 1735875
+Factura ID: 1737460
 Comprobante: ND - 507
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PEDRO PAOLI SA
 ----------------------------------------
-Factura ID: 1735876
+Factura ID: 1737461
 Comprobante: ND - 508
 Fecha: 2024-01-01
 Sucursal ID: 1
@@ -8330,12 +7742,6 @@ Comprobante: FF - 2600021087
 Fecha: 2024-01-10
 Sucursal ID: 7
 Cliente: INOCENTI DAIANA SOLEDAD
-----------------------------------------
-Factura ID: 1500889
-Comprobante: FR - 2600021095
-Fecha: 2024-01-13
-Sucursal ID: 7
-Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1502439
 Comprobante: FF - 3700005938
@@ -8547,6 +7953,12 @@ Fecha: 2024-05-11
 Sucursal ID: 7
 Cliente: ALBERTO GERMAN EZEQUIEL
 ----------------------------------------
+Factura ID: 1526398
+Comprobante: FF - 2600021888
+Fecha: 2024-05-11
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
 Factura ID: 1526404
 Comprobante: FF - 2600021890
 Fecha: 2024-05-11
@@ -8667,6 +8079,12 @@ Fecha: 2024-08-24
 Sucursal ID: 7
 Cliente: PASSAMONTE COMERCIAL S.A
 ----------------------------------------
+Factura ID: 1553834
+Comprobante: FF - 2600022908
+Fecha: 2024-08-24
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
 Factura ID: 1553837
 Comprobante: FF - 2600022909
 Fecha: 2024-08-24
@@ -8726,6 +8144,12 @@ Comprobante: FR - 2600023541
 Fecha: 2024-10-24
 Sucursal ID: 7
 Cliente: RACCA NORBERTO JOSE
+----------------------------------------
+Factura ID: 1572291
+Comprobante: FF - 2600023667
+Fecha: 2024-11-02
+Sucursal ID: 7
+Cliente: BAUZA INGENIERIA S.R.L.
 ----------------------------------------
 Factura ID: 1574264
 Comprobante: CF - 2600001712
@@ -8853,6 +8277,12 @@ Fecha: 2024-12-07
 Sucursal ID: 7
 Cliente: HARTMANN - NO UTILIZAR
 ----------------------------------------
+Factura ID: 1582939
+Comprobante: FF - 2600024141
+Fecha: 2024-12-07
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
 Factura ID: 1582941
 Comprobante: FF - 2600024142
 Fecha: 2024-12-07
@@ -8955,6 +8385,30 @@ Fecha: 2025-01-10
 Sucursal ID: 11
 Cliente: INSE HNOS S.A.
 ----------------------------------------
+Factura ID: 1594196
+Comprobante: FR - 3700008714
+Fecha: 2025-01-11
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
+Factura ID: 1594198
+Comprobante: FR - 3700008715
+Fecha: 2025-01-11
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
+Factura ID: 1594200
+Comprobante: FR - 3700008716
+Fecha: 2025-01-11
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
+Factura ID: 1594201
+Comprobante: FR - 3700008717
+Fecha: 2025-01-11
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
 Factura ID: 1594246
 Comprobante: FF - 3700008718
 Fecha: 2025-01-11
@@ -9027,6 +8481,18 @@ Fecha: 2025-02-08
 Sucursal ID: 6
 Cliente: AGROSERVICIOS CAROLINI HNOS SR
 ----------------------------------------
+Factura ID: 1605748
+Comprobante: FR - 3700009084
+Fecha: 2025-02-15
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
+Factura ID: 1605750
+Comprobante: FR - 3700009085
+Fecha: 2025-02-15
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
 Factura ID: 1605759
 Comprobante: FF - 3700009086
 Fecha: 2025-02-15
@@ -9092,12 +8558,6 @@ Comprobante: RB - 1000004269
 Fecha: 2025-02-20
 Sucursal ID: 10
 Cliente: RODRIGUEZ LIDIA DEL ROSARIO
-----------------------------------------
-Factura ID: 1607139
-Comprobante: FF - 4300007480
-Fecha: 2025-02-20
-Sucursal ID: 10
-Cliente: NARDONI MARTIN MARIO
 ----------------------------------------
 Factura ID: 1607643
 Comprobante: FF - 3700009139
@@ -9429,6 +8889,12 @@ Fecha: 2025-05-10
 Sucursal ID: 7
 Cliente: WALTER DAVID ALBERTO
 ----------------------------------------
+Factura ID: 1628446
+Comprobante: FF - 2600025900
+Fecha: 2025-05-10
+Sucursal ID: 7
+Cliente: BAUZA INGENIERIA S.R.L.
+----------------------------------------
 Factura ID: 1628460
 Comprobante: FF - 2600005743
 Fecha: 2025-05-10
@@ -9590,12 +9056,6 @@ Comprobante: FR - 4600000123
 Fecha: 2025-06-04
 Sucursal ID: 11
 Cliente: GRUPO G SRL
-----------------------------------------
-Factura ID: 1636159
-Comprobante: FR - 2600026204
-Fecha: 2025-06-05
-Sucursal ID: 7
-Cliente: GIORDA HORACIO ANTONIO
 ----------------------------------------
 Factura ID: 1636190
 Comprobante: FF - 2600026208
@@ -9831,6 +9291,30 @@ Fecha: 2025-08-28
 Sucursal ID: 7
 Cliente: SANCOR COOP DE SEGUROS LTDA
 ----------------------------------------
+Factura ID: 1660496
+Comprobante: FF - 2600027079
+Fecha: 2025-08-28
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
+Factura ID: 1660498
+Comprobante: FF - 2600027080
+Fecha: 2025-08-28
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
+Factura ID: 1660504
+Comprobante: FF - 2600027081
+Fecha: 2025-08-28
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
+Factura ID: 1660508
+Comprobante: FF - 2600027082
+Fecha: 2025-08-28
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
 Factura ID: 1660569
 Comprobante: FR - 2600027085
 Fecha: 2025-08-28
@@ -9903,17 +9387,17 @@ Fecha: 2025-09-13
 Sucursal ID: 7
 Cliente: SANABRIA FACUNDO ISAIAS
 ----------------------------------------
+Factura ID: 1665082
+Comprobante: FF - 2600027260
+Fecha: 2025-09-13
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
 Factura ID: 1665095
 Comprobante: FF - 2600027262
 Fecha: 2025-09-13
 Sucursal ID: 7
 Cliente: WALTER DAVID ALBERTO
-----------------------------------------
-Factura ID: 1665204
-Comprobante: FR - 2600027265
-Fecha: 2025-09-13
-Sucursal ID: 7
-Cliente: GIORDA HORACIO ANTONIO
 ----------------------------------------
 Factura ID: 1666151
 Comprobante: FR - 4600000177
@@ -9974,12 +9458,6 @@ Comprobante: FR - 4600000186
 Fecha: 2025-10-02
 Sucursal ID: 11
 Cliente: BERTOLINI DANIEL ALBERTO
-----------------------------------------
-Factura ID: 1670808
-Comprobante: FR - 2600027443
-Fecha: 2025-10-04
-Sucursal ID: 7
-Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1672467
 Comprobante: FR - 4600000190
@@ -10047,6 +9525,12 @@ Fecha: 2025-10-28
 Sucursal ID: 11
 Cliente: SARANZ HUGO ALBERTO
 ----------------------------------------
+Factura ID: 1678667
+Comprobante: FR - 3700010957
+Fecha: 2025-11-01
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
 Factura ID: 1678718
 Comprobante: FF - 2600027717
 Fecha: 2025-11-01
@@ -10058,6 +9542,18 @@ Comprobante: FF - 2600027718
 Fecha: 2025-11-01
 Sucursal ID: 7
 Cliente: FLEURY JOSE LUIS
+----------------------------------------
+Factura ID: 1678763
+Comprobante: FF - 2600027720
+Fecha: 2025-11-01
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
+Factura ID: 1678770
+Comprobante: FF - 2600027722
+Fecha: 2025-11-01
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
 ----------------------------------------
 Factura ID: 1680707
 Comprobante: FF - 2600027789
@@ -10148,6 +9644,18 @@ Comprobante: FF - 2600027958
 Fecha: 2025-11-22
 Sucursal ID: 7
 Cliente: HOLLCAM SA
+----------------------------------------
+Factura ID: 1684988
+Comprobante: FF - 2600027959
+Fecha: 2025-11-22
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
+----------------------------------------
+Factura ID: 1684992
+Comprobante: FF - 2600027960
+Fecha: 2025-11-22
+Sucursal ID: 7
+Cliente: MARIA TOURS SA
 ----------------------------------------
 Factura ID: 1685008
 Comprobante: FF - 2600027961
@@ -10255,7 +9763,7 @@ Factura ID: 1691217
 Comprobante: FR - 4600000234
 Fecha: 2025-12-13
 Sucursal ID: 11
-Cliente: LOPEZ ADRIAN JULIO
+Cliente: *LOPEZ ADRIAN JULIO
 ----------------------------------------
 Factura ID: 1691263
 Comprobante: FR - 2600028168
@@ -10407,6 +9915,12 @@ Fecha: 2026-01-10
 Sucursal ID: 8
 Cliente: NEUMATICOS RUTA 11
 ----------------------------------------
+Factura ID: 1700111
+Comprobante: RB - 800028638
+Fecha: 2026-01-10
+Sucursal ID: 8
+Cliente: UNION AGR. DE AVELLANEDA C LTD
+----------------------------------------
 Factura ID: 1700117
 Comprobante: FF - 2700026460
 Fecha: 2026-01-10
@@ -10454,12 +9968,6 @@ Comprobante: FR - 4600000250
 Fecha: 2026-01-13
 Sucursal ID: 11
 Cliente: NEUMATICOS ARCE SRL
-----------------------------------------
-Factura ID: 1702852
-Comprobante: FR - 2600028639
-Fecha: 2026-01-17
-Sucursal ID: 7
-Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1702854
 Comprobante: FR - 2600028640
@@ -10519,7 +10027,7 @@ Factura ID: 1709906
 Comprobante: CF - 4600000016
 Fecha: 2026-02-05
 Sucursal ID: 11
-Cliente: LOPEZ ADRIAN JULIO
+Cliente: *LOPEZ ADRIAN JULIO
 ----------------------------------------
 Factura ID: 1710625
 Comprobante: FR - 3700011684
@@ -10791,6 +10299,12 @@ Fecha: 2026-04-10
 Sucursal ID: 11
 Cliente: NEUMATICOS ARCE SRL
 ----------------------------------------
+Factura ID: 1729529
+Comprobante: FR - 3700012087
+Fecha: 2026-04-11
+Sucursal ID: 6
+Cliente: NEUMATICOS NANO S. R. L.
+----------------------------------------
 Factura ID: 1729550
 Comprobante: FF - 3700012088
 Fecha: 2026-04-11
@@ -10881,59 +10395,41 @@ Fecha: 2026-04-25
 Sucursal ID: 11
 Cliente: COLOMBINI ROSA DEL CARMEN
 ----------------------------------------
-Factura ID: 1194224
-Comprobante: FF - 2300007527
-Fecha: 2019-12-30
-Sucursal ID: 3
-Cliente: TROSSERO TELMO JUAN MIGUEL
+Factura ID: 1735481
+Comprobante: FR - 4600000375
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: TOMASETTI DIEGO MARTIN
 ----------------------------------------
-Factura ID: 1118855
-Comprobante: FF - 2700002690
-Fecha: 2019-03-11
-Sucursal ID: 8
-Cliente: IBA¥EZ PABLO
+Factura ID: 1735685
+Comprobante: CF - 4600000021
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: LOPEZ ADRIAN JULIO
+----------------------------------------
+Factura ID: 1735791
+Comprobante: FR - 4600000383
+Fecha: 2026-04-30
+Sucursal ID: 11
+Cliente: ENCINA JORGE ALBERTO
+----------------------------------------
+Factura ID: 1735874
+Comprobante: FR - 3700012235
+Fecha: 2026-05-02
+Sucursal ID: 6
+Cliente: TRANSPORTE BERNARDI SRL
+----------------------------------------
+Factura ID: 1736016
+Comprobante: FR - 4600000384
+Fecha: 2026-05-02
+Sucursal ID: 11
+Cliente: DROVETTA ANALIA IRENE DEL VALL
 ----------------------------------------
 Factura ID: 1097572
 Comprobante: FF - 2100013310
 Fecha: 2018-12-27
 Sucursal ID: 1
 Cliente: PERALES GERMAN  FRANCISCO
-----------------------------------------
-Factura ID: 1230618
-Comprobante: FF - 2100005491
-Fecha: 2020-06-17
-Sucursal ID: 1
-Cliente: POZZI FABIAN OMAR
-----------------------------------------
-Factura ID: 1276362
-Comprobante: FF - 2400006686
-Fecha: 2021-02-01
-Sucursal ID: 4
-Cliente: FRANCO LEONARDO JAVIER
-----------------------------------------
-Factura ID: 1284165
-Comprobante: FF - 2400019863
-Fecha: 2021-03-08
-Sucursal ID: 4
-Cliente: ROTA SERGIO GERMAN
-----------------------------------------
-Factura ID: 1287259
-Comprobante: FF - 2400019950
-Fecha: 2021-03-22
-Sucursal ID: 4
-Cliente: ROTA SERGIO GERMAN
-----------------------------------------
-Factura ID: 1287537
-Comprobante: FF - 2400019961
-Fecha: 2021-03-23
-Sucursal ID: 4
-Cliente: ROTA SERGIO GERMAN
-----------------------------------------
-Factura ID: 1297648
-Comprobante: FF - 2100027951
-Fecha: 2021-05-13
-Sucursal ID: 1
-Cliente: AGENO ORLANDO E HIJOS SRL
 ----------------------------------------
 Factura ID: 1304461
 Comprobante: FF - 2200012494
@@ -10959,131 +10455,17 @@ Fecha: 2021-10-29
 Sucursal ID: 2
 Cliente: HUARE RUBEN DARIO
 ----------------------------------------
-Factura ID: 1333010
-Comprobante: FF - 2300009856
-Fecha: 2021-11-05
-Sucursal ID: 3
-Cliente: MOSCARDI PABLO C
-----------------------------------------
-Factura ID: 1335442
-Comprobante: FF - 2500006940
-Fecha: 2021-11-16
-Sucursal ID: 5
-Cliente: ESCOBAR MARIA ROSA
-----------------------------------------
-Factura ID: 1346176
-Comprobante: FF - 2600016355
-Fecha: 2021-12-30
-Sucursal ID: 7
-Cliente: JAIME JOSE LUIS
-----------------------------------------
-Factura ID: 1346179
-Comprobante: FF - 2600016357
-Fecha: 2021-12-30
-Sucursal ID: 7
-Cliente: JAIME JOSE LUIS
-----------------------------------------
-Factura ID: 1369766
-Comprobante: FF - 2200014584
-Fecha: 2022-04-08
-Sucursal ID: 2
-Cliente: NAZZI SANTIAGO
-----------------------------------------
-Factura ID: 1371813
-Comprobante: FF - 2500007696
-Fecha: 2022-04-20
-Sucursal ID: 5
-Cliente: IMSANT FABIAN
-----------------------------------------
-Factura ID: 1371982
-Comprobante: FF - 2600017149
-Fecha: 2022-04-20
-Sucursal ID: 7
-Cliente: MJC SERVICIOS AGROPECUARIOS S
-----------------------------------------
-Factura ID: 1371983
-Comprobante: FF - 2600017150
-Fecha: 2022-04-20
-Sucursal ID: 7
-Cliente: MJC SERVICIOS AGROPECUARIOS S
-----------------------------------------
-Factura ID: 1374524
-Comprobante: FF - 2500007745
-Fecha: 2022-05-03
-Sucursal ID: 5
-Cliente: IMSANT FABIAN
-----------------------------------------
-Factura ID: 1377187
-Comprobante: FF - 2300010570
-Fecha: 2022-05-13
-Sucursal ID: 3
-Cliente: LANDRA SERGIO JOSE
-----------------------------------------
 Factura ID: 1377524
 Comprobante: FF - 2100034344
 Fecha: 2022-05-16
 Sucursal ID: 1
 Cliente: PERALES GERMAN  FRANCISCO
 ----------------------------------------
-Factura ID: 1381037
-Comprobante: FF - 2100034670
-Fecha: 2022-06-02
-Sucursal ID: 1
-Cliente: PISERA DIEGO ANTONIO
-----------------------------------------
 Factura ID: 1381403
 Comprobante: FF - 2300011357
 Fecha: 2022-06-03
 Sucursal ID: 3
 Cliente: CURA MABEL
-----------------------------------------
-Factura ID: 1386370
-Comprobante: FF - 2400022717
-Fecha: 2022-06-28
-Sucursal ID: 4
-Cliente: RENOVA SA
-----------------------------------------
-Factura ID: 1386789
-Comprobante: FF - 2200015247
-Fecha: 2022-06-29
-Sucursal ID: 2
-Cliente: REUTEMANN CLAUDIA MARCELA
-----------------------------------------
-Factura ID: 1389045
-Comprobante: FF - 2400008911
-Fecha: 2022-07-08
-Sucursal ID: 4
-Cliente: VILLANUEVA CARLOS
-----------------------------------------
-Factura ID: 1389412
-Comprobante: FF - 2600017759
-Fecha: 2022-07-11
-Sucursal ID: 7
-Cliente: GP AGRO SA
-----------------------------------------
-Factura ID: 1397358
-Comprobante: FC - 2600000013
-Fecha: 2022-08-22
-Sucursal ID: 7
-Cliente: SANCOR COOP DE SEGUROS LTDA
-----------------------------------------
-Factura ID: 1398366
-Comprobante: FF - 2100036071
-Fecha: 2022-08-29
-Sucursal ID: 1
-Cliente: LAZZARONI ALDO ANGEL
-----------------------------------------
-Factura ID: 1398916
-Comprobante: FF - 2500008243
-Fecha: 2022-08-31
-Sucursal ID: 5
-Cliente: IMSANT FABIAN
-----------------------------------------
-Factura ID: 1416212
-Comprobante: FF - 2100037742
-Fecha: 2022-11-29
-Sucursal ID: 1
-Cliente: TOMATIS JUAN
 ----------------------------------------
 Factura ID: 1420276
 Comprobante: FF - 2100038114
@@ -11097,155 +10479,17 @@ Fecha: 2022-12-21
 Sucursal ID: 1
 Cliente: TRUCHET JOSE ANTONIO
 ----------------------------------------
-Factura ID: 1422379
-Comprobante: FF - 2100038285
-Fecha: 2022-12-29
-Sucursal ID: 1
-Cliente: CETTOUR ROBERTO Y MARIO
-----------------------------------------
-Factura ID: 1422411
-Comprobante: FF - 2200016503
-Fecha: 2022-12-29
-Sucursal ID: 2
-Cliente: ZAVAGNA DIEGO HERNAN
-----------------------------------------
-Factura ID: 1422540
-Comprobante: FF - 2600018843
-Fecha: 2022-12-29
-Sucursal ID: 7
-Cliente: STIEFEL ARTURO ANGEL
-----------------------------------------
-Factura ID: 1422577
-Comprobante: FF - 2200016512
-Fecha: 2022-12-29
-Sucursal ID: 2
-Cliente: BAUDINO RUBEN
-----------------------------------------
-Factura ID: 1422775
-Comprobante: FF - 2600018849
-Fecha: 2022-12-30
-Sucursal ID: 7
-Cliente: GAZZANO HERMANOS SH
-----------------------------------------
-Factura ID: 1428009
-Comprobante: FF - 2500008874
-Fecha: 2023-01-19
-Sucursal ID: 5
-Cliente: TRANGONI MARIO
-----------------------------------------
-Factura ID: 1428031
-Comprobante: FF - 2100038737
-Fecha: 2023-01-19
-Sucursal ID: 1
-Cliente: CARDELINO ALCIDES EDELIO
-----------------------------------------
-Factura ID: 1432732
-Comprobante: FF - 2200016824
-Fecha: 2023-02-08
-Sucursal ID: 2
-Cliente: COSSETTINI LEO ANGEL
-----------------------------------------
-Factura ID: 1439563
-Comprobante: FC - 2400000037
-Fecha: 2023-03-10
-Sucursal ID: 4
-Cliente: RENOVA SA
-----------------------------------------
-Factura ID: 1439579
-Comprobante: FF - 2400023744
-Fecha: 2023-03-10
-Sucursal ID: 4
-Cliente: ENCANTA S.A.
-----------------------------------------
-Factura ID: 1439968
-Comprobante: FF - 2600019326
-Fecha: 2023-03-13
-Sucursal ID: 7
-Cliente: MENENDEZ GUILLERMO CARLOS
-----------------------------------------
 Factura ID: 1447783
 Comprobante: FF - 2200017289
 Fecha: 2023-04-20
 Sucursal ID: 2
 Cliente: NEXUS S.R.L.
 ----------------------------------------
-Factura ID: 1448025
-Comprobante: FF - 2400010058
-Fecha: 2023-04-21
-Sucursal ID: 4
-Cliente: ALVAREZ JORGE MARIO
-----------------------------------------
-Factura ID: 1448041
-Comprobante: FF - 2400023896
-Fecha: 2023-04-21
-Sucursal ID: 4
-Cliente: ALVAREZ EMANUEL ANDRES
-----------------------------------------
-Factura ID: 1448860
-Comprobante: FF - 2100040406
-Fecha: 2023-04-25
-Sucursal ID: 1
-Cliente: KURTZ OSCAR ANDRES
-----------------------------------------
-Factura ID: 1449951
-Comprobante: FF - 2400023944
-Fecha: 2023-04-28
-Sucursal ID: 4
-Cliente: PIEDRA ROMERO NATALIO
-----------------------------------------
-Factura ID: 1452035
-Comprobante: FF - 2200017416
-Fecha: 2023-05-10
-Sucursal ID: 2
-Cliente: PASTORI HECTOR FRANCISCO
-----------------------------------------
-Factura ID: 1453952
-Comprobante: FF - 2200017484
-Fecha: 2023-05-18
-Sucursal ID: 2
-Cliente: CAMPI MONICA
-----------------------------------------
 Factura ID: 1454783
 Comprobante: FF - 2200031531
 Fecha: 2023-05-23
 Sucursal ID: 2
 Cliente: FLORES ENRIQUE
-----------------------------------------
-Factura ID: 1455559
-Comprobante: FF - 2400024055
-Fecha: 2023-05-29
-Sucursal ID: 4
-Cliente: ALVAREZ JORGE MARIO
-----------------------------------------
-Factura ID: 1455656
-Comprobante: FF - 2200017551
-Fecha: 2023-05-29
-Sucursal ID: 2
-Cliente: RUIZ DIEGO HERNAN
-----------------------------------------
-Factura ID: 1457972
-Comprobante: FF - 2200017635
-Fecha: 2023-06-08
-Sucursal ID: 2
-Cliente: BOR UR S.R.L.
-----------------------------------------
-Factura ID: 1458047
-Comprobante: FF - 2300011860
-Fecha: 2023-06-08
-Sucursal ID: 3
-Cliente: INDUSTRIAS AVICOLAS S A
-----------------------------------------
-Factura ID: 1458075
-Comprobante: FF - 2200017640
-Fecha: 2023-06-08
-Sucursal ID: 2
-Cliente: ARAGNO ARIEL GERMAN
-----------------------------------------
-Factura ID: 1458395
-Comprobante: FF - 2200017652
-Fecha: 2023-06-09
-Sucursal ID: 2
-Cliente: ARAGNO ARIEL GERMAN
 ----------------------------------------
 Factura ID: 1458681
 Comprobante: FF - 2200031758
@@ -11258,288 +10502,6 @@ Comprobante: FF - 2200017706
 Fecha: 2023-06-16
 Sucursal ID: 2
 Cliente: BARBARESI MADERAS S.R.L.
-----------------------------------------
-Factura ID: 1460762
-Comprobante: FF - 2200031910
-Fecha: 2023-06-23
-Sucursal ID: 2
-Cliente: VALIENTE RAMON ANTONIO
-----------------------------------------
-Factura ID: 1460834
-Comprobante: FF - 2400024167
-Fecha: 2023-06-24
-Sucursal ID: 4
-Cliente: PIEDRA ROMERO NATALIO
-----------------------------------------
-Factura ID: 1462222
-Comprobante: FF - 2200017798
-Fecha: 2023-06-30
-Sucursal ID: 2
-Cliente: ARAGNO ARIEL GERMAN
-----------------------------------------
-Factura ID: 1464338
-Comprobante: FF - 2300011964
-Fecha: 2023-07-10
-Sucursal ID: 3
-Cliente: TORTUL RICARDO DAMIAN
-----------------------------------------
-Factura ID: 1465095
-Comprobante: FF - 2300011974
-Fecha: 2023-07-13
-Sucursal ID: 3
-Cliente: PIACENZA NELSON DANILO
-----------------------------------------
-Factura ID: 1467836
-Comprobante: FF - 2100041966
-Fecha: 2023-07-26
-Sucursal ID: 1
-Cliente: GERMINARE EN FORMACION
-----------------------------------------
-Factura ID: 1467886
-Comprobante: FF - 4300000158
-Fecha: 2023-07-26
-Sucursal ID: 10
-Cliente: PATACCINI FEDERICO MARTIN
-----------------------------------------
-Factura ID: 1468736
-Comprobante: FF - 2200018012
-Fecha: 2023-07-29
-Sucursal ID: 2
-Cliente: PICATTO VERONICA MARIA
-----------------------------------------
-Factura ID: 1469582
-Comprobante: FF - 2100042130
-Fecha: 2023-08-02
-Sucursal ID: 1
-Cliente: TOMATIS JUAN
-----------------------------------------
-Factura ID: 1471472
-Comprobante: FF - 2400024390
-Fecha: 2023-08-11
-Sucursal ID: 4
-Cliente: TRANS ESTIBA SA
-----------------------------------------
-Factura ID: 1472474
-Comprobante: FF - 2200032614
-Fecha: 2023-08-16
-Sucursal ID: 2
-Cliente: BA¥OS HECTOR
-----------------------------------------
-Factura ID: 1473933
-Comprobante: FF - 2600020371
-Fecha: 2023-08-24
-Sucursal ID: 7
-Cliente: PAUCAR S.A.
-----------------------------------------
-Factura ID: 1474704
-Comprobante: FF - 2100042553
-Fecha: 2023-08-29
-Sucursal ID: 1
-Cliente: LAS TAPERITAS SA
-----------------------------------------
-Factura ID: 1474982
-Comprobante: FF - 2200018189
-Fecha: 2023-08-30
-Sucursal ID: 2
-Cliente: HIJO DE MIGUEL ABDALA S.A.
-----------------------------------------
-Factura ID: 1476346
-Comprobante: FF - 2200032864
-Fecha: 2023-09-06
-Sucursal ID: 2
-Cliente: FRANCIA RODRIGO PABLO
-----------------------------------------
-Factura ID: 1476349
-Comprobante: FF - 2200032865
-Fecha: 2023-09-06
-Sucursal ID: 2
-Cliente: ALTINA JESSICA
-----------------------------------------
-Factura ID: 1476984
-Comprobante: FF - 2200032904
-Fecha: 2023-09-09
-Sucursal ID: 2
-Cliente: NU¥EZ OSCAR LUIS
-----------------------------------------
-Factura ID: 1478282
-Comprobante: FF - 2400024518
-Fecha: 2023-09-15
-Sucursal ID: 4
-Cliente: TROSSERO ABRAHAM
-----------------------------------------
-Factura ID: 1478472
-Comprobante: FF - 2400010710
-Fecha: 2023-09-16
-Sucursal ID: 4
-Cliente: COLL AGUSTIN
-----------------------------------------
-Factura ID: 1480952
-Comprobante: FF - 2400024571
-Fecha: 2023-09-28
-Sucursal ID: 4
-Cliente: DISTRIBUIDORA GIUSOL SRL
-----------------------------------------
-Factura ID: 1480956
-Comprobante: FF - 2400010758
-Fecha: 2023-09-28
-Sucursal ID: 4
-Cliente: CAMPANINI MARTIN MIGUEL
-----------------------------------------
-Factura ID: 1481081
-Comprobante: FF - 2100043126
-Fecha: 2023-09-29
-Sucursal ID: 1
-Cliente: ARNAUDO ROBERTO
-----------------------------------------
-Factura ID: 1479948
-Comprobante: FF - 2200018345
-Fecha: 2023-09-25
-Sucursal ID: 2
-Cliente: BLANCHE RAUL
-----------------------------------------
-Factura ID: 1482373
-Comprobante: FF - 2200033210
-Fecha: 2023-10-05
-Sucursal ID: 2
-Cliente: LESCANO JAVIER
-----------------------------------------
-Factura ID: 1482865
-Comprobante: FF - 2200018448
-Fecha: 2023-10-07
-Sucursal ID: 2
-Cliente: RITTA POLLOS S.R.L.
-----------------------------------------
-Factura ID: 1482891
-Comprobante: FF - 2400010803
-Fecha: 2023-10-07
-Sucursal ID: 4
-Cliente: BERAJA SERGIO
-----------------------------------------
-Factura ID: 1483587
-Comprobante: FF - 2100012098
-Fecha: 2023-10-11
-Sucursal ID: 1
-Cliente: S.A.M.C.O DE SAN JUSTO
-----------------------------------------
-Factura ID: 1483588
-Comprobante: FF - 2100012099
-Fecha: 2023-10-11
-Sucursal ID: 1
-Cliente: S.A.M.C.O DE SAN JUSTO
-----------------------------------------
-Factura ID: 1485654
-Comprobante: FF - 2400010862
-Fecha: 2023-10-24
-Sucursal ID: 4
-Cliente: CAVIGLIA MIGUEL ANGEL
-----------------------------------------
-Factura ID: 1485996
-Comprobante: FF - 2100043544
-Fecha: 2023-10-25
-Sucursal ID: 1
-Cliente: CANAVESIO VICTOR HUGO
-----------------------------------------
-Factura ID: 1486075
-Comprobante: FF - 2400010881
-Fecha: 2023-10-25
-Sucursal ID: 4
-Cliente: PIERANTONI CESAR LUIS
-----------------------------------------
-Factura ID: 1486696
-Comprobante: FF - 2100043608
-Fecha: 2023-10-30
-Sucursal ID: 1
-Cliente: MEINARDI SEBASTIAN
-----------------------------------------
-Factura ID: 1487605
-Comprobante: FF - 2200033563
-Fecha: 2023-11-03
-Sucursal ID: 2
-Cliente: CARAFFA LINO
-----------------------------------------
-Factura ID: 1490002
-Comprobante: FF - 2400024730
-Fecha: 2023-11-16
-Sucursal ID: 4
-Cliente: MENUDENCIAS SUR SRL
-----------------------------------------
-Factura ID: 1490076
-Comprobante: FF - 2700008852
-Fecha: 2023-11-16
-Sucursal ID: 8
-Cliente: MOSCHEN CARLOS FABIAN
-----------------------------------------
-Factura ID: 1490477
-Comprobante: FF - 2600020807
-Fecha: 2023-11-18
-Sucursal ID: 7
-Cliente: RAUL ANDRES ENRICO
-----------------------------------------
-Factura ID: 1491551
-Comprobante: FF - 4300001486
-Fecha: 2023-11-25
-Sucursal ID: 10
-Cliente: RIO PARANA CARGAS SA
-----------------------------------------
-Factura ID: 1493683
-Comprobante: FF - 2200018810
-Fecha: 2023-12-06
-Sucursal ID: 2
-Cliente: GIMENEZ ROBERTO MARCELO
-----------------------------------------
-Factura ID: 1495571
-Comprobante: FF - 2100044426
-Fecha: 2023-12-16
-Sucursal ID: 1
-Cliente: MAZZARO GUSTAVO RAUL
-----------------------------------------
-Factura ID: 1495886
-Comprobante: FF - 2400024824
-Fecha: 2023-12-19
-Sucursal ID: 4
-Cliente: CURMONA SEBASTIAN
-----------------------------------------
-Factura ID: 1496120
-Comprobante: FF - 2200018902
-Fecha: 2023-12-20
-Sucursal ID: 2
-Cliente: TRANSPORTE ARIAS S A
-----------------------------------------
-Factura ID: 1496339
-Comprobante: FF - 2100044497
-Fecha: 2023-12-21
-Sucursal ID: 1
-Cliente: ARNAUDO ROBERTO
-----------------------------------------
-Factura ID: 1496470
-Comprobante: FF - 2100044505
-Fecha: 2023-12-21
-Sucursal ID: 1
-Cliente: SANCOR COOP DE SEG LTDA(S.J.)
-----------------------------------------
-Factura ID: 1497020
-Comprobante: FF - 2200034173
-Fecha: 2023-12-26
-Sucursal ID: 2
-Cliente: OGGIUNI WANDA
-----------------------------------------
-Factura ID: 1497472
-Comprobante: FF - 2100044598
-Fecha: 2023-12-27
-Sucursal ID: 1
-Cliente: GRUPO EL PUENTE
-----------------------------------------
-Factura ID: 1498011
-Comprobante: FF - 2400024872
-Fecha: 2023-12-29
-Sucursal ID: 4
-Cliente: PEDRO PAOLI SA
-----------------------------------------
-Factura ID: 1474980
-Comprobante: FF - 2200018188
-Fecha: 2023-08-30
-Sucursal ID: 2
-Cliente: HIJO DE MIGUEL ABDALA S.A.
 ----------------------------------------
 Factura ID: 1634152
 Comprobante: RR - 1100000002
@@ -11563,9 +10525,9 @@ Cliente: CHAVARINI FEDERICO
 ================================================================================
 RESUMEN DEL PROCESO
 ================================================================================
-Total facturas procesadas: 1926
+Total facturas procesadas: 1753
 Facturas actualizadas: 0
-Facturas sin caja encontrada: 1926
+Facturas sin caja encontrada: 1753
 Errores: 0
 Tiempo total: 0 min 0 seg
-Fecha finalización: 2026-05-05 17:00:05
+Fecha finalización: 2026-05-06 17:59:05

@@ -361,7 +361,7 @@ De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en SQL
 
 Cada vez que ejecute un script grabe los cambios
 
-**Scripts de Usuarios y Menú**
+**Scripts de Usuarios y Menú (user_menu.sql)**
 
 auth_group.sql
 
@@ -383,7 +383,7 @@ Estos scripts los debe generar desde la base de datos SQL
 
 Cuando lo haga, en el script usuarios_user.sql, **elimine** el primer insert (usuario admin)  
 
-**Scripts Complementarios**
+**Scripts Complementarios (complementos.sql)**
 
 actualiza_color_producto_estado.sql  
 
@@ -407,9 +407,14 @@ actualiza_cliente.sql
 
 **actualiza_ventas_null.sql**
 
-**actualiza_comprobante_venta.sql**
+**actualiza_comprobante_venta.sql** YA NO
 
-**actualiza_comprobante_compra.sql**
+**actualiza_comprobante_compra.sql** YA NO
+
+**Sincronización de secuencias de ID**
+
+sincro_maestros_id_seq.sql
+sincro_ventas_id_seq.sql
 
 **Al finalizar las migraciones:**
 
