@@ -46,7 +46,7 @@
 				<!-- Fila con los datos del Vendedor -->
 				<tr>
 					<td colspan="8" style="padding-top: 5px;">
-						<strong>Vendedor: [{{id_vendedor}}] {{ vendedor_data.vendedor }}</strong>
+						<strong>Vendedor: [{{id_vendedor|null_to_na}}] {{ vendedor_data.vendedor|default_if_none:"Sin Vendedor" }}</strong>
 					</td>
 				</tr>
 				

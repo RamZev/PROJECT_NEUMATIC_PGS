@@ -861,7 +861,7 @@ CREATE VIEW VLEstadisticasVentasVendedorCliente AS
 		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		JOIN vendedor v ON f.id_vendedor_id = v.id_vendedor
+		LEFT JOIN vendedor v ON f.id_vendedor_id = v.id_vendedor
 	WHERE 
 		df.id_producto_id <> 0
 		AND cv.mult_estadistica <> 0;

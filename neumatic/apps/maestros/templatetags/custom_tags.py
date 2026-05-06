@@ -185,3 +185,10 @@ def formatear_caja(numero_caja):
 	except (ValueError, TypeError, AttributeError):
 		#-- Devuelve el valor sin formatear si hay error.
 		return numero_caja
+
+
+@register.filter
+def null_to_na(value):
+	if value is None or str(value).lower() == 'null':
+		return 'N/A'
+	return value

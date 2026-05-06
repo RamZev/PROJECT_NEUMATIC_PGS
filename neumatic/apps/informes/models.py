@@ -94,7 +94,9 @@ class ResumenCtaCteManager(models.Manager):
 			WHERE
 				v.id_cliente_id = %s
 				AND v.fecha_comprobante < %s
-				AND v.condicion_comprobante = 2;
+				AND v.condicion_comprobante = 2
+			GROUP BY 
+				v.id_cliente_id;
 		"""
 		
 		#-- Ejecutar la consulta y extraer el valor.
@@ -1547,29 +1549,6 @@ class EstadisticasVentasManager(models.Manager):
 			"""
 		}
 		
-		# query = """
-		# 	SELECT 
-		# 		ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
-		# 		id_producto_id,
-		# 		cai,
-		# 		nombre_producto,
-		# 		unidad,
-		# 		id_familia_id,
-		# 		nombre_producto_familia,
-		# 		id_modelo_id,
-		# 		nombre_modelo,
-		# 		id_marca_id,
-		# 		nombre_producto_marca,
-		# 		SUM(cantidad) AS cantidad,
-		# 		SUM(total) AS total,
-		# 		id_cliente_id
-		# 	FROM 
-		# 		VLEstadisticasVentas
-		# 	WHERE 
-		# 		fecha_comprobante BETWEEN %s AND %s
-		# 		AND id_marca_id BETWEEN %s AND %s
-		# """
-		
         #-- Construir la consulta.
 		query = f"""
 			SELECT 
@@ -1595,17 +1574,6 @@ class EstadisticasVentasManager(models.Manager):
 		if id_cliente:
 			query += " AND id_cliente_id = %s"
 			params.append(id_cliente)
-		
-		# match agrupar:
-		# 	case "Producto":
-		# 		query += " GROUP BY id_producto_id"
-		# 	case "Familia":
-		# 		query += " GROUP BY id_familia_id, id_marca_id"
-		# 	case "Modelo":
-		# 		query += " GROUP BY id_modelo_id, id_marca_id"
-		# 		# query += " GROUP BY id_modelo_id"
-		# 	case "Marca":
-		# 		query += " GROUP BY id_marca_id"
 		
 		#-- Agregar GROUP BY.
 		query += f" GROUP BY {select_columns[agrupar]}"
@@ -1680,21 +1648,6 @@ class EstadisticasVentasVendedorManager(models.Manager):
 			"""
 		}
 		
-		# query = """
-		# 	SELECT 
-		# 		id_factura,
-		# 		id_producto_id,
-		# 		nombre_producto,
-		# 		nombre_producto_familia,
-		# 		nombre_modelo,
-		# 		nombre_producto_marca,
-		# 		SUM(cantidad) AS cantidad, 
-		# 		SUM(total) AS total
-		# 	FROM 
-		# 		VLEstadisticasVentasVendedor
-		# 	WHERE fecha_comprobante BETWEEN %s AND %s 
-		# 		AND id_marca_id BETWEEN %s AND %s
-		# """
 		query = f"""
 			SELECT 
 				ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
@@ -1720,16 +1673,6 @@ class EstadisticasVentasVendedorManager(models.Manager):
 			query += " AND id_vendedor_id = %s"
 			params.append(id_vendedor)
 		
-		# match agrupar:
-		# 	case "Producto":
-		# 		query += " GROUP BY id_producto_id"
-		# 	case "Familia":
-		# 		query += " GROUP BY id_familia_id, id_marca_id"
-		# 	case "Modelo":
-		# 		query += " GROUP BY id_modelo_id, id_marca_id"
-		# 	case "Marca":
-		# 		query += " GROUP BY id_marca_id"
-		
 		#-- Agregar GROUP BY.
 		query += f" GROUP BY {select_columns[agrupar]}"
 		
@@ -1741,7 +1684,6 @@ class EstadisticasVentasVendedorManager(models.Manager):
 					query += " ORDER BY total DESC"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
-		print("Consulta SQL:", query)  # Debug: Imprimir la consulta SQL generada
 		return self.raw(query, params)
 
 
@@ -1826,27 +1768,6 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 			"""
 		}
 		
-		# query = """
-		# 	SELECT 
-		# 		ROW_NUMBER() OVER() AS id,
-		# 		id_producto_id,
-		# 		nombre_producto,
-		# 		nombre_producto_familia,
-		# 		nombre_modelo,
-		# 		nombre_producto_marca,
-		# 		id_vendedor_id,
-		# 		nombre_vendedor,
-		# 		id_cliente_id,
-		# 		nombre_cliente,
-		# 		SUM(cantidad) AS cantidad, 
-		# 		SUM(total) AS total
-		# 	FROM 
-		# 		VLEstadisticasVentasVendedorCliente
-		# 	WHERE 
-		# 		no_estadist = %s
-		# 	 	AND fecha_comprobante BETWEEN %s AND %s
-		# 		AND id_marca_id BETWEEN %s AND %s
-		# """
 		query = f"""
 			SELECT 
 				ROW_NUMBER() OVER() AS id,
@@ -1873,16 +1794,6 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 			query += " AND id_vendedor_id = %s"
 			params.append(id_vendedor)
 		
-		# match agrupar:
-		# 	case "Producto":
-		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_producto_id"
-		# 	case "Familia":
-		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_familia_id, id_marca_id"
-		# 	case "Modelo":
-		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_modelo_id, id_marca_id"
-		# 	case "Marca":
-		# 		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_cliente_id, id_marca_id"
-		
 		#-- Agregar GROUP BY.
 		query += f" GROUP BY {select_columns[agrupar]}"
 		
@@ -1896,7 +1807,6 @@ class EstadisticasVentasVendedorClienteManager(models.Manager):
 					query += ", total DESC"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
-		print("Consulta SQL:", query)  # Debug: Imprimir la consulta SQL generada
 		return self.raw(query, params)
 
 
@@ -1932,14 +1842,40 @@ class VLEstadisticasVentasVendedorCliente(models.Model):
 class EstadisticasSegunCondicionManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, id_sucursal=None):
-		query = """
-			SELECT
-				ROW_NUMBER() OVER() AS id,
+		
+		select_columns = {
+			"Producto": """
+				id_familia_id,
 				nombre_producto_familia,
+				id_marca_id,
 				nombre_producto_marca,
+				id_modelo_id,
 				nombre_modelo,
 				id_producto_id,
-				nombre_producto,
+				nombre_producto
+			""",
+			"Familia": """
+				id_familia_id,
+				nombre_producto_familia,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Modelo": """
+				id_marca_id,
+				nombre_producto_marca,
+				id_modelo_id,
+				nombre_modelo
+			""",
+			"Marca": """
+				id_marca_id,
+				nombre_producto_marca
+			"""
+		}
+		
+		query = f"""
+			SELECT
+				ROW_NUMBER() OVER() AS id,
+				{select_columns[agrupar]},
 				SUM(CASE WHEN reventa = 'M' THEN cantidad ELSE 0 END) AS cantidad_m,
 				SUM(CASE WHEN reventa = 'M' THEN importe ELSE 0 END) AS importe_m,
 				SUM(CASE WHEN reventa = 'M' THEN costo ELSE 0 END) AS costo_m,
@@ -1967,18 +1903,17 @@ class EstadisticasSegunCondicionManager(models.Manager):
 			query += " AND id_sucursal_id = %s"
 			params.append(id_sucursal)
 		
-		match agrupar:
-			case "Producto":
-				query += " GROUP BY id_familia_id, id_modelo_id, id_producto_id"
-			case "Familia":
-				query += " GROUP BY id_familia_id, id_marca_id"
-			case "Modelo":
-				query += " GROUP BY id_marca_id, id_modelo_id"
-			case "Marca":
-				query += " GROUP BY id_marca_id"
+		#-- Agregar GROUP BY.
+		query += f" GROUP BY {select_columns[agrupar]}"
 		
-		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER by id_familia_id, id_marca_id, id_modelo_id, id_producto_id"
+		#-- Agregar el ordenamiento según el grupo.
+		ordenamiento = {
+			"Producto": "id_familia_id, id_marca_id, id_modelo_id, id_producto_id",
+			"Familia": "id_familia_id, id_marca_id",
+			"Modelo": "id_marca_id, id_modelo_id",
+			"Marca": "id_marca_id"
+		}
+		query += f" ORDER by {ordenamiento[agrupar]}"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)
@@ -2192,16 +2127,55 @@ class EstadisticasVentasProvinciaManager(models.Manager):
 	
 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desede, id_marca_hasta, agrupar, mostrar, id_vendedor, id_sucursal=None, id_provincia=None):
 		
-		query = """
-			SELECT 
-				ROW_NUMBER() OVER() AS id,
+		select_columns = {
+			"Producto": """
+				id_sucursal_id,
+				id_vendedor_id,
 				id_provincia,
 				nombre_provincia,
 				id_producto_id,
 				nombre_producto,
+				id_familia_id,
 				nombre_producto_familia,
+				id_modelo_id,
 				nombre_modelo,
-				nombre_producto_marca,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Familia": """
+				id_sucursal_id,
+				id_vendedor_id,
+				id_provincia,
+				nombre_provincia,
+				id_familia_id,
+				nombre_producto_familia,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Modelo": """
+				id_sucursal_id,
+				id_vendedor_id,
+				id_provincia,
+				nombre_provincia,
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Marca": """
+				id_sucursal_id,
+				id_vendedor_id,
+				id_provincia,
+				nombre_provincia,
+				id_marca_id,
+				nombre_producto_marca
+			"""
+		}
+		
+		query = f"""
+			SELECT 
+				ROW_NUMBER() OVER() AS id,
+				{select_columns[agrupar]},
 				SUM(cantidad) AS cantidad, 
 				SUM(total) AS total
 			FROM 
@@ -2224,22 +2198,10 @@ class EstadisticasVentasProvinciaManager(models.Manager):
 			query += " AND id_provincia = %s"
 			params.append(id_provincia)
 		
-		query += " GROUP BY id_sucursal_id, id_vendedor_id, id_provincia"
-		match agrupar:
-			case "Producto":
-				# query += " GROUP BY id_producto_id"
-				query += ", id_producto_id"
-			case "Familia":
-				# query += " GROUP BY id_familia_id, id_marca_id"
-				query += ", id_familia_id, id_marca_id"
-			case "Modelo":
-				# query += " GROUP BY id_modelo_id, id_marca_id"
-				# query += " GROUP BY id_modelo_id"
-				query += ", id_modelo_id"
-			case "Marca":
-				# query += " GROUP BY id_marca_id"
-				query += ", id_marca_id"
+		#-- Agregar GROUP BY.
+		query += f" GROUP BY {select_columns[agrupar]}"
 		
+		#-- Agregar ORDER BY.
 		query += " ORDER BY nombre_provincia"
 		
 		if mostrar:
@@ -3189,7 +3151,7 @@ class VLReposicionStockManager(models.Manager):
 		from django.db import connection
 		from collections import namedtuple
 		
-		#-- Construcción de la consulta base.
+		#-- Construcción de la consulta base con MIN/MAX para tomar un solo valor.
 		query = """
 			SELECT
 				ps.id_deposito_id,
@@ -3200,19 +3162,14 @@ class VLReposicionStockManager(models.Manager):
 				pm.nombre_modelo,
 				p.id_marca_id,
 				px.nombre_producto_marca,
-				ps.id_producto_id,
 				p.id_cai_id,
 				pc.cai,
-				p.medida,
-				p.segmento,
-				p.nombre_producto,
-				CASE 
-					WHEN pn.minimo is not null THEN pn.minimo ELSE 0
-				END AS minimo,
+				MIN(p.nombre_producto) AS nombre_producto,
+				MIN(p.medida) AS medida,
+				MIN(p.segmento) AS segmento,
+				SUM(pn.minimo) AS minimo,
 				SUM(ps.stock) AS stock,
-				CASE
-					WHEN pn.minimo is not null THEN pn.minimo - SUM(ps.stock) ELSE 0
-				END AS faltante,
+				SUM(pn.minimo) - SUM(ps.stock) AS faltante,
 				{sucursal_columns}
 			FROM
 				producto_stock ps
@@ -3228,34 +3185,44 @@ class VLReposicionStockManager(models.Manager):
 				AND pn.minimo <> 0
 				AND p.tipo_producto = 'P'
 				{filters}
-			GROUP by
-				pc.cai, ps.id_deposito_id
+			GROUP BY
+				ps.id_deposito_id, 
+				pd.nombre_producto_deposito, 
+				p.id_familia_id, 
+				pf.nombre_producto_familia,
+				p.id_modelo_id, 
+				pm.nombre_modelo, 
+				p.id_marca_id, 
+				px.nombre_producto_marca,
+				p.id_cai_id, 
+				pc.cai
 			HAVING
-				pn.minimo - SUM(ps.stock) > 0
-			ORDER by
-				p.id_familia_id, p.id_modelo_id, p.id_marca_id
+				SUM(pn.minimo) - SUM(ps.stock) > 0
+			ORDER BY
+				p.id_familia_id, 
+				p.id_modelo_id, 
+				p.id_marca_id
 		"""
 		
 		#-- Parámetros para la consulta.
 		params = []
 		sucursal_columns = []
 		
-		#-- Subconsultas para obtener stock por sucursal.
 		for sucursal in sucursales:
 			subquery = """
 				COALESCE((
 					SELECT SUM(ps2.stock)
 					FROM producto_stock ps2
 					JOIN producto_deposito pd2 ON ps2.id_deposito_id = pd2.id_producto_deposito
-					WHERE pd2.id_sucursal_id = %s AND ps2.id_producto_id = p.id_producto
-					--GROUP BY pd2.id_sucursal_id AND ps2.id_producto_id
-					GROUP BY pd2.id_sucursal_id, ps2.id_producto_id
-					HAVING SUM(ps2.stock) > 0
+					JOIN producto p2 ON ps2.id_producto_id = p2.id_producto
+					WHERE pd2.id_sucursal_id = %s 
+					AND p2.id_cai_id = p.id_cai_id
 				), 0) AS stock_suc_{sucursal_id}
 			""".format(sucursal_id=sucursal.id_sucursal)
 			
 			sucursal_columns.append(subquery)
 			params.append(sucursal.id_sucursal)
+		
 		
 		#-- Filtros principales.
 		conditions = ["ps.id_deposito_id = %s"]

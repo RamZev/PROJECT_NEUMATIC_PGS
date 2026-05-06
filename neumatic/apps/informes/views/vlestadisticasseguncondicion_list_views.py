@@ -390,8 +390,15 @@ class VLEstadisticasSegunCondicionInformeView(InformeFormView):
 				
 			case "Marca":
 				
+				#-- Inicializar grouped_data como una lista para almacenar el detalle
+				grouped_data = []
+				
 				#-- Acumular totales generales.
 				for obj in queryset_list:
+					#-- Agregar el objeto a la lista (estos son los datos que mostrará la plantilla)
+					grouped_data.append(obj)
+					
+					#-- Acumular totales generales.
 					tg_cantidad_m += obj['cantidad_m']
 					tg_importe_m += Decimal(str(obj['importe_m']))
 					tg_ganancia_m += Decimal(str(obj['ganancia_m']))
