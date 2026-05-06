@@ -335,7 +335,7 @@ def generar_pdf(contexto_reporte):
 	for vendedor_id, vendedor_data in contexto_reporte.get("objetos", {}).items():
 		
 		#-- Datos agrupado por Vendedor.
-		table_data.append([f"Vendedor: {vendedor_data['vendedor']}"] + blank_cols)
+		table_data.append([f"Vendedor: [{vendedor_id if vendedor_id != 'null' else 'N/A'}] {vendedor_data['vendedor'] if vendedor_data['vendedor'] else 'Sin Vendedor'}"] + blank_cols)
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
 		table_style_config.extend([

@@ -39,11 +39,11 @@
 		</thead>
 		<tbody>
 			
-			{% for vendedor_data in objetos.values %}
+			{% for id_vendedor, vendedor_data in objetos.items %}
 				<!-- Fila con los datos del Vendedor -->
 				<tr>
 					<td colspan="5" style="padding-top: 5px;">
-						<strong>Vendedor: {{ vendedor_data.vendedor }}</strong>
+						<strong>Vendedor: [{{id_vendedor|null_to_na}}] {{ vendedor_data.vendedor|default_if_none:"Sin Vendedor" }}</strong>
 					</td>
 				</tr>
 				

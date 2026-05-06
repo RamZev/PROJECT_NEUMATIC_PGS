@@ -127,14 +127,6 @@ def normalizar(nombre):
 	  or identifiers, preserving alphanumeric characters, underscore, hyphen and dot.
 	- This function is suitable for generating safe filenames, URL slugs for simple use-cases,
 	  or other identifiers where accents and special punctuation should be stripped.
-	Examples
-	--------
-	>>> normalizar('acción.png')
-	'accion.png'
-	>>> normalizar('España nombre.txt')
-	'Espana_nombre.txt'
-	>>> normalizar('perfíl-user@2025!.md')
-	'perfil-user2025.md'
 	"""
 	
 	#-- Normaliza los caracteres Unicode (descompone acentos en caracteres base + acento).
