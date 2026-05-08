@@ -187,3 +187,23 @@ Comparación de Reportes con VPN
 # 13 - Hay 42 registros en medidas_estados con id_cai_id en NULL.
 
 ##################################################################################################################################
+-- Script para eliminar registros duplicados en producto_stock (PostgreSQL):
+-- (También está stock_doble.prg en datafox)
+WITH a_eliminar AS (
+    SELECT 
+        id_producto_stock,
+        ROW_NUMBER() OVER (
+            PARTITION BY id_producto_id, id_deposito_id 
+            ORDER BY id_producto_stock
+        ) AS rn
+    FROM producto_stock
+)
+DELETE FROM producto_stock
+WHERE id_producto_stock IN (
+    SELECT id_producto_stock
+    FROM a_eliminar
+    WHERE rn > 1
+);
+
+-- Script para eliminar los registros con id_cai_id NULL en medidas_estados:
+DELETE FROM medidas_estados where id_cai_id is NULL

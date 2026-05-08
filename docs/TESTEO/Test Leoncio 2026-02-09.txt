@@ -138,9 +138,14 @@ Movimiento Interno.
 Remitos
 	1 - Permite modificar la letra del comprobante. Es correcto???
 	2 - Una vez creado el remito, al editarlo permite agregar más detalle. Al darle al botón "Actualizar" avisa que ya existe un docmprobante con ese número.
+	3 - Una vez creado el remito, permite eliminar detalle.
+	4 - Al entrar a elaborar/consultar debería estar desplegado el acordeón de Detalle.
+	5 - Se debe deshabilitar el botón "Actualizar".
 	
 Retenciones
-
+	1 - Una vez creada la Retención, se permite modificar sus datos?
+	2 - Comprobar que si se cambia el monto base de cálculo (Exento) si se pulsa enter se graba la retención pero no se actualiza el resultado en los campos.
+	3 - Permite guardar una retención sin el monto "Total C/Compra", es permitido?
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 - CAJA
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
