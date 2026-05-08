@@ -181,5 +181,6 @@ UPDATE detalle_factura SET act_stock=False WHERE act_stock is NULL;
 -- Script para actualizar el id_vendedor_id en cliente si es nulo.
 UPDATE cliente SET id_vendedor_id=1 WHERE id_vendedor_id is NULL;
 
-
+-- Script para eliminar los registros con id_cai_id NULL en medidas_estados:
+DELETE FROM medidas_estados where id_cai_id is NULL
 

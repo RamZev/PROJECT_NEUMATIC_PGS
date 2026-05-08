@@ -1,5 +1,5 @@
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: auth_group
 -- ============================================
 
@@ -15,7 +15,6 @@ INSERT INTO auth_group (id, name) VALUES (2, 'Puntos de Ventas');
 INSERT INTO auth_group (id, name) VALUES (3, 'Vendedores');
 INSERT INTO auth_group (id, name) VALUES (4, 'Encargado Sucursal');
 INSERT INTO auth_group (id, name) VALUES (5, 'Deposito');
-INSERT INTO auth_group (id, name) VALUES (6, 'Super');
 
 -- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
 SELECT setval(pg_get_serial_sequence('auth_group', 'id'), (SELECT MAX(id) FROM auth_group));
@@ -27,7 +26,7 @@ SELECT * FROM auth_group;
 SELECT currval(pg_get_serial_sequence('auth_group', 'id'));
 
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: auth_group_permissions
 -- ============================================
 
@@ -37,7 +36,8 @@ DELETE FROM auth_group_permissions;
 -- Resetear la secuencia (el próximo ID será 1)
 SELECT setval(pg_get_serial_sequence('auth_group_permissions', 'id'), 1, false);
 
--- Insertar registros (IDs 1-408 para grupo 1)
+-- Insertar registros (PostgreSQL permite inserción explícita de IDs sin SET IDENTITY_INSERT)
+-- Grupo 1: Administracion (IDs 1-100)
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1,1,1);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (2,1,2);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (3,1,3);
@@ -481,12 +481,20 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (438,2,3
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (439,2,31);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (440,2,32);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (441,2,33);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (442,2,34);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (443,2,35);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (444,2,36);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (445,2,37);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (446,2,38);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (447,2,39);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (448,2,40);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (449,2,41);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (450,2,42);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (451,2,43);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (452,2,44);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (453,2,45);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (454,2,46);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (455,2,47);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (456,2,48);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (457,2,49);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (458,2,50);
@@ -628,6 +636,9 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (593,2,1
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (594,2,186);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (595,2,187);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (596,2,188);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (597,2,189);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (598,2,190);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (599,2,191);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (600,2,192);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (601,2,193);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (602,2,194);
@@ -653,6 +664,14 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (621,2,2
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (622,2,214);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (623,2,215);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (624,2,216);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (625,2,217);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (626,2,218);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (627,2,219);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (628,2,220);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (629,2,221);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (630,2,222);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (631,2,223);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (632,2,224);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (633,2,225);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (634,2,226);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (635,2,227);
@@ -709,6 +728,10 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (685,2,2
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (686,2,278);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (687,2,279);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (688,2,280);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (689,2,281);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (690,2,282);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (691,2,283);
+INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (692,2,284);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (693,2,285);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (694,2,286);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (695,2,287);
@@ -833,12 +856,6 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (813,2,4
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (814,2,406);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (815,2,407);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (816,2,408);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1897,2,41);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1898,2,44);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1899,2,42);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1900,2,43);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1901,2,217);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1904,2,220);
 
 -- Grupo 3: Vendedores (IDs 817-1224)
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (817,3,1);
@@ -1467,10 +1484,6 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1437,4,
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1438,4,398);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1439,4,399);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1440,4,400);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1905,4,233);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1906,4,234);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1907,4,235);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1908,4,236);
 
 -- Grupo 5: Deposito (IDs 1441-1656)
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1441,5,21);
@@ -1690,219 +1703,8 @@ INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1654,5,
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1655,5,399);
 INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1656,5,400);
 
--- Grupo 6: Super (IDs 1657-...)
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1657,6,21);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1658,6,22);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1659,6,23);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1660,6,24);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1661,6,25);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1662,6,26);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1663,6,27);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1664,6,28);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1665,6,29);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1666,6,30);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1667,6,31);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1668,6,32);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1669,6,33);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1670,6,34);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1671,6,35);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1672,6,36);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1673,6,37);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1674,6,38);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1675,6,39);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1676,6,40);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1677,6,41);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1678,6,42);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1679,6,43);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1680,6,44);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1681,6,45);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1682,6,46);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1683,6,47);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1684,6,48);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1685,6,49);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1686,6,50);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1687,6,51);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1688,6,52);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1689,6,53);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1690,6,54);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1691,6,55);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1692,6,56);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1705,6,69);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1706,6,70);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1707,6,71);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1708,6,72);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1709,6,73);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1710,6,74);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1711,6,75);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1712,6,76);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1713,6,77);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1714,6,78);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1715,6,79);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1716,6,80);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1717,6,81);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1718,6,82);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1719,6,83);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1720,6,84);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1721,6,85);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1722,6,86);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1723,6,87);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1724,6,88);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1729,6,93);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1730,6,94);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1731,6,95);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1732,6,96);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1733,6,97);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1734,6,98);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1735,6,99);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1736,6,100);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1737,6,101);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1738,6,102);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1739,6,103);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1740,6,104);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1741,6,105);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1742,6,106);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1743,6,107);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1744,6,108);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1745,6,109);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1746,6,110);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1747,6,111);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1748,6,112);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1752,6,116);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1756,6,120);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1757,6,121);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1758,6,122);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1759,6,123);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1760,6,124);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1761,6,125);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1764,6,128);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1765,6,129);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1766,6,130);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1767,6,131);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1768,6,132);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1769,6,133);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1770,6,134);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1771,6,135);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1772,6,136);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1776,6,140);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1777,6,141);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1778,6,142);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1779,6,143);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1780,6,144);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1781,6,145);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1782,6,146);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1783,6,147);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1784,6,148);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1785,6,149);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1786,6,150);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1787,6,151);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1788,6,152);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1789,6,153);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1790,6,154);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1791,6,155);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1792,6,156);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1793,6,157);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1794,6,158);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1795,6,159);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1796,6,160);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1797,6,161);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1798,6,162);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1799,6,163);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1800,6,164);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1801,6,165);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1802,6,166);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1803,6,167);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1804,6,168);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1805,6,169);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1806,6,170);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1807,6,171);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1808,6,172);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1809,6,173);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1810,6,174);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1811,6,175);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1812,6,176);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1813,6,177);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1814,6,178);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1815,6,179);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1816,6,180);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1817,6,181);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1818,6,182);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1819,6,183);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1820,6,184);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1821,6,185);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1822,6,186);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1823,6,187);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1824,6,188);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1825,6,189);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1826,6,190);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1827,6,191);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1828,6,192);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1833,6,197);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1834,6,198);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1835,6,199);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1836,6,200);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1837,6,201);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1838,6,202);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1839,6,203);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1840,6,204);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1841,6,205);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1842,6,206);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1843,6,207);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1844,6,208);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1845,6,209);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1846,6,210);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1847,6,211);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1848,6,212);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1849,6,213);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1850,6,214);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1851,6,215);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1852,6,216);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1853,6,217);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1854,6,218);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1855,6,219);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1856,6,220);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1857,6,221);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1858,6,222);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1859,6,223);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1860,6,224);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1861,6,225);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1862,6,226);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1863,6,227);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1864,6,228);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1865,6,229);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1866,6,230);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1867,6,231);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1868,6,232);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1869,6,233);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1870,6,234);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1871,6,235);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1872,6,236);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1873,6,237);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1874,6,238);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1875,6,239);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1876,6,240);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1877,6,241);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1878,6,242);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1879,6,243);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1880,6,244);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1881,6,245);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1882,6,246);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1883,6,247);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1884,6,248);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1885,6,249);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1886,6,250);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1887,6,251);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1888,6,252);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1889,6,253);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1890,6,254);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1891,6,255);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1892,6,256);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1893,6,257);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1894,6,258);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1895,6,259);
-INSERT INTO auth_group_permissions (id, group_id, permission_id) VALUES (1896,6,260);
-
 -- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
-SELECT setval(pg_get_serial_sequence('auth_group_permissions', 'id'), (SELECT MAX(id) FROM auth_group_permissions));
+SELECT setval(pg_get_serial_sequence('auth_group_permissions', 'id'), 1656);
 
 -- Verificar
 SELECT * FROM auth_group_permissions;
@@ -1911,52 +1713,68 @@ SELECT * FROM auth_group_permissions;
 SELECT currval(pg_get_serial_sequence('auth_group_permissions', 'id'));
 
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: usuarios_user
--- Nota: Se omiten los campos extra que no existen en PostgreSQL
+-- Omitiendo el registro con ID 1 (admin)
 -- ============================================
 
 -- Eliminar datos existentes (opcional)
 -- DELETE FROM usuarios_user;
 
--- Resetear la secuencia (el próximo ID será según el máximo existente)
-SELECT setval(pg_get_serial_sequence('usuarios_user', 'id'), 1, false);
+-- Resetear la secuencia (el próximo ID será 2)
+SELECT setval(pg_get_serial_sequence('usuarios_user', 'id'), 2, false);
 
 -- Insertar registros (PostgreSQL permite inserción explícita de IDs)
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (3,'pbkdf2_sha256$870000$VxZxUdecBPWNbdOC2NT0O8$v+2pfRIJfBuYNid3z/yeQoHutMVLMS3kIVEOCaNDC94=','2025-10-31 21:31:20.829689',false,'juan','Juan','',false,true,'2025-10-30 01:20:56','123@gmail.com');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (4,'pbkdf2_sha256$870000$2FjwXmFRoOyPNKXGLMzfB7$ceZt+VBs4p2mZn3Y6il7yrc0KBKgTWy0e99vOYnBRNk=','2025-10-31 22:47:15.940314',false,'alberto','Alberto','García',false,true,'2025-10-30 01:25:10','albertogarcia@gmail.com');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (5,'pbkdf2_sha256$870000$l40YysYnE3ID1ZZIOPsfAj$Aaxjq1481WTHcFDe7lwbOFcCqFVgDv/WmURd/x7EAy0=','2025-10-31 22:31:58.343834',false,'maria','Maria','Diaz',false,true,'2025-10-31 21:51:50.381092','ramosric1410@gmail.com');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (6,'pbkdf2_sha256$870000$fFAOOQLUxTFUAHVmgZwaS4$t8OAdExznmrFxKq/bH8gChcYoqxkzMrtOJDsdZZqIzM=','2025-11-02 14:21:57.721893',false,'Federico','Federico','Camiletti',false,true,'2025-11-01 21:53:35.673835','fede@ndebona.com');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (7,'pbkdf2_sha256$870000$o7GYQGdqOXdFTLlh8Xxfh1$/pfISSbe28pBVBAqGH4e5wF7dnLOXBH6KTddMwiirRU=','2025-12-12 22:55:50.858369',false,'Francisco','Francisco','',false,true,'2025-11-02 13:58:45.399568','fran@ndebona.com');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (8,'pbkdf2_sha256$870000$rFndc2IRyHzrNeQdR2yu5S$EGptqcjIPvP58Omzva4wof9QTq4M+1FNLG2u0ug++so=','2026-04-20 14:08:18.539822',false,'soporte','','',false,true,'2026-04-08 15:13:12','encargado1@ndebona.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (9,'pbkdf2_sha256$870000$5Ogd0hL034f8kRStKPNsyZ$rAunufs164KVVAPF6TQLQdT5yXQtuxXW4nbqO3dIGHw=','2026-04-22 17:54:32.915741',false,'leandro.milessi','Leandro','Milessi',false,true,'2026-04-14 13:32:54.587710','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (10,'pbkdf2_sha256$870000$18DFCZePWuZG69V4xMP079$qPHm70BnjOW38NuhhJBbXl5aMaQNKENvQMBb/JEn3io=','2026-04-30 12:18:24.372461',false,'federico.camilletti','Federico','Camilletti',false,true,'2026-04-14 13:35:36.004415','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (11,'pbkdf2_sha256$870000$zl0DDjWL3zr5HjOy2fGZ8d$hYTQ95erANXtjNBd8z0q8EvC+Cu0r1hMxD2wjRZgUvg=','2026-04-28 14:07:02.859782',false,'ramon.mendez','Ramon','Mendez',false,true,'2026-04-14 13:36:17.167374','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (12,'pbkdf2_sha256$870000$3ytkQZkT3ob4MydDYZIxwg$XeEiSOBdw1mxJKsjqSVP6ynpUeGYeAaXshhcAmxDPmU=','2026-04-23 15:04:34.967821',false,'pablo.romero','Pablo','Romero',false,true,'2026-04-14 13:36:50.338411','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (13,'pbkdf2_sha256$870000$BVQXCuS4XTewrjG4ovfmkx$l6oPdzjpsmlimzv92Otwc80ABlSLNPrWPP19dq7F93o=','2026-05-07 16:16:56.733282',false,'fabiana.verrino','Fabiana','Verrino',false,true,'2026-04-14 13:39:38.735284','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (14,'pbkdf2_sha256$870000$0ZrvoN4dqpAfG9hhSd4sQT$vBXq4KaOyhHHOyed1XR+tVwhTm1RLSObipwjBXIYdgg=','2026-04-22 15:43:25.821207',false,'franco.moscatti','Franco','Moscatti',false,true,'2026-04-14 13:40:11.858039','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (15,'pbkdf2_sha256$870000$FbhPbtVAo80nlpfiqQpEZ8$18hXh2yHjFNIrby+mJeqEMpaerdOJOKnexAfHgOJ+40=','2026-04-14 14:19:03.586933',false,'david.ortiz','David','Ortiz',false,true,'2026-04-14 13:41:07.565852','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (16,'pbkdf2_sha256$870000$BrAUxnOuk77jfBryt3mPkt$NwqA2ijpRpGq5Ow1AehXsVgfkeSU1AgWbG8RMmRbz9Q=','2026-04-28 14:07:46.954630',false,'ivan.alemany','Ivan','Alemany',false,true,'2026-04-14 13:41:41.605780','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (17,'pbkdf2_sha256$870000$rNu5jdDlQqo8MPrmKEo1Op$RhCGyWPDl7qYmcbKXd0l76IzZy6pFPfo3TxVTw18vnM=','2026-04-29 12:07:15.850986',false,'francisco.strada','Francisco','Strada',false,true,'2026-04-14 13:42:33.505903','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (18,'pbkdf2_sha256$870000$wJ4V5uoEWwXdFB1pKYB03S$NLhLPGCljh/dbjEZqRuJRdxP9ghENIjrcOs60Rk9lug=','2026-04-27 15:18:00.867873',false,'luciano.cerutti','Luciano','Cerutti',false,true,'2026-04-14 15:28:21.694699','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (19,'pbkdf2_sha256$870000$M3uQWGLp2jLDfhe9e9ieLE$+wDwNgcmwC46GurhDjgPTFWndDC6kMO7TltXAfrR250=','2026-04-20 14:07:17.996915',false,'lucas.debona','Lucas','Debona',false,true,'2026-04-15 15:25:11.129646','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (20,'pbkdf2_sha256$870000$xQElZUBGHFK7ZR3oLCKZHA$u2bxQVhM4fqAk6/ox08ETbPNXGEahGODYpYiuKRJytw=','2026-04-28 18:25:31.388895',false,'yemel.gazze','Yemel','Gazze',false,true,'2026-04-15 15:25:59.756744','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (21,'pbkdf2_sha256$870000$vxC7MJCsdHM8dwFAHneriu$Jr9EunY5nWDOFmUbVcuBlCmW+0s7hwgUTfECmcem640=',NULL,false,'marcelo.paoloni','Marcelo','Paoloni',false,true,'2026-04-15 16:52:57.913914','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (22,'pbkdf2_sha256$870000$C38wtwaEnCPZ3N6rfjbXes$mK/9WQd/0vyRTQare4WHrnL/vTknZiSFIkWweI5fnwM=','2026-04-22 19:08:30.943225',false,'cesar.keller','Cesar','Keller',false,true,'2026-04-15 19:19:06.697582','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (23,'pbkdf2_sha256$870000$lYJ3h8IJE2S4jGQedFCoF3$Kx6FqiLvWLqCeTCQFLKUIulV9nb0pMLQ1mcNi8SkTfo=','2026-04-30 12:28:10.575710',false,'gonzalo.bustos','Gonzalo','Bustos',false,true,'2026-04-15 19:39:31.416751','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (24,'pbkdf2_sha256$870000$zepAfHwQFqUmH5xNTGbvOh$3T0wyn6w++Il20AT2Kg2rB16QSedXJxPhLveD5fOie8=','2026-04-16 15:13:21.566715',false,'marcelo.debona','Marcelo','Debona',false,true,'2026-04-16 14:57:11.172402','marcelodebona@ndeona.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (25,'pbkdf2_sha256$870000$qVfBPrggPbrt0pW3cc5oKF$elyy5vp/Jd5Gdy0RoPad8EErG7SPAsIjPjmzKfnDiM8=','2026-04-28 15:02:59.053664',false,'gustavo.cardelino','Gustavo','Cardelino',false,true,'2026-04-16 20:29:57.881345','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (26,'pbkdf2_sha256$870000$C4E8Wexzdc00bzsh5wcMZE$2L53F0fvp8B4EcDPqTbJGUtE/cNH1b8I6+erl2/IRwY=','2026-04-29 15:08:15.344710',false,'eliana.bosco','Eliana','Bosco',false,true,'2026-04-16 20:30:52.687152','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (27,'pbkdf2_sha256$870000$RH5APpPozFoHNfcRIBLfAy$+e4Q9LpzJ5kyjIDmKNqg3j2EX7gwRhGAgxVCMxuDanQ=','2026-04-29 12:33:34.259656',false,'cesar.bordessolles','Cesar','Bordessolles',false,true,'2026-04-16 20:32:18.700039','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (28,'pbkdf2_sha256$870000$6DH21UGU5RByPq8qsnJykv$KDwVs7e3OzviyE8vzixSN5VvUu3G+cVFbs4CEBmDDS4=','2026-04-28 14:44:17.122832',false,'jose.geambeau','Jose','Geambeau',false,true,'2026-04-16 20:37:02.298743','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (29,'pbkdf2_sha256$870000$zeZgRL1INFvYJvRGFRyqYK$d8t3H6BeHWa83MbwSSFBSMA5yiCGSt3amU8qIf11APY=','2026-04-24 13:22:40.604923',false,'mariano.saldarini','Mariano','Saldarini',false,true,'2026-04-16 20:38:24.795782','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (30,'pbkdf2_sha256$870000$DzK65bLgHg1JCgrNKVQB2o$RSQpBi7Yaqoe1cYmytRb0rVTlsBz0mcw2ZB3pgxJc2E=',NULL,false,'axel.zalazar','Axel','Zalazar',false,true,'2026-04-16 20:40:34.208579','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (31,'pbkdf2_sha256$870000$ffQ5nA4BjQtrKXI3ikXPNN$RbgAuGE45zE7wUML8pj8fCNVyzXmgeqBBelCf66m3hE=',NULL,false,'mirta.foglia','Mirta','Foglia',false,true,'2026-04-16 21:03:52.855853','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (32,'pbkdf2_sha256$870000$G7ftcK7UUebpqoJ4Cwvypr$wrKsEDKGtATjASGwneAYce1H9YbnqvR89DrBPeXLHLw=',NULL,false,'javier.schechtel','Javier','Schechtel',false,true,'2026-04-17 12:57:45.044818','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (33,'pbkdf2_sha256$870000$kDFd700gIQfVlgyedC9xtc$7Cr2i9n/lGWOiGi5eIkvR8v+tKm3hW0QcOLUgubpNhM=','2026-04-23 14:22:53.097856',false,'jonatan.benitez','Jonatan','Benitez',false,true,'2026-04-22 15:47:59.653028','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (34,'pbkdf2_sha256$870000$QZfAh8MzruKwqKcOoK6atQ$WjYf9z3omqIVXEUjMoRUKjZBjUmyy41jeqKf1GUjQzw=',NULL,false,'alejandro.vargas','Alejandro','Vargas',false,true,'2026-04-23 13:09:09.503115','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (35,'pbkdf2_sha256$870000$Ylrj361e7Gq2TTOPBWFNn5$k9RWNZcv0BK/+M2x/nLFq17G0Q80/edgVLDTFePN7m4=',NULL,false,'carla.baroni','Carla','Baroni',false,true,'2026-04-24 13:39:41.108073','soporte@maasoft.com.ar');
-INSERT INTO usuarios_user (id, password, last_login, is_superuser, username, first_name, last_name, is_staff, is_active, date_joined, email) VALUES (36,'pbkdf2_sha256$870000$2Nd59kxY60WaUJOWoi2XEP$FnsZh16Nrt2Czk7T/7udOytJoh0ij9Oj1uzzeBcmc7s=',NULL,false,'alejandro.barbero','Alejandro','Barbero',false,true,'2026-04-27 15:13:57.080950','soporte@maasoft.com.ar');
+
+-- Insertar registro ID 3 (juan)
+INSERT INTO usuarios_user (
+    id, password, last_login, is_superuser, username, first_name, last_name, 
+    is_staff, is_active, date_joined, email
+) VALUES (
+    3, 'pbkdf2_sha256$870000$VxZxUdecBPWNbdOC2NT0O8$v+2pfRIJfBuYNid3z/yeQoHutMVLMS3kIVEOCaNDC94=', 
+    '2025-10-31 21:31:20.829689', FALSE, 'juan', 'Juan', '', FALSE, TRUE, '2025-10-30 01:20:56', 
+    '123@gmail.com'
+);
+
+-- Insertar registro ID 4 (alberto)
+INSERT INTO usuarios_user (
+    id, password, last_login, is_superuser, username, first_name, last_name, 
+    is_staff, is_active, date_joined, email
+) VALUES (
+    4, 'pbkdf2_sha256$870000$2FjwXmFRoOyPNKXGLMzfB7$ceZt+VBs4p2mZn3Y6il7yrc0KBKgTWy0e99vOYnBRNk=', 
+    '2025-10-31 22:47:15.940314', FALSE, 'alberto', 'Alberto', 'García', FALSE, TRUE, '2025-10-30 01:25:10', 
+    'albertogarcia@gmail.com'
+);
+
+-- Insertar registro ID 5 (maria)
+INSERT INTO usuarios_user (
+    id, password, last_login, is_superuser, username, first_name, last_name, 
+    is_staff, is_active, date_joined, email
+) VALUES (
+    5, 'pbkdf2_sha256$870000$l40YysYnE3ID1ZZIOPsfAj$Aaxjq1481WTHcFDe7lwbOFcCqFVgDv/WmURd/x7EAy0=', 
+    '2025-10-31 22:31:58.343834', FALSE, 'maria', 'Maria', 'Diaz', FALSE, TRUE, '2025-10-31 21:51:50.381092', 
+    'ramosric1410@gmail.com'
+);
+
+-- Insertar registro ID 6 (Federico)
+INSERT INTO usuarios_user (
+    id, password, last_login, is_superuser, username, first_name, last_name, 
+    is_staff, is_active, date_joined, email
+) VALUES (
+    6, 'pbkdf2_sha256$870000$fFAOOQLUxTFUAHVmgZwaS4$t8OAdExznmrFxKq/bH8gChcYoqxkzMrtOJDsdZZqIzM=', 
+    '2025-11-02 14:21:57.721893', FALSE, 'Federico', 'Federico', 'Camiletti', FALSE, TRUE, '2025-11-01 21:53:35.673835', 
+    'fede@ndebona.com'
+);
+
+-- Insertar registro ID 7 (Francisco)
+INSERT INTO usuarios_user (
+    id, password, last_login, is_superuser, username, first_name, last_name, 
+    is_staff, is_active, date_joined, email
+) VALUES (
+    7, 'pbkdf2_sha256$870000$o7GYQGdqOXdFTLlh8Xxfh1$/pfISSbe28pBVBAqGH4e5wF7dnLOXBH6KTddMwiirRU=', 
+    '2025-12-12 22:55:50.858369', FALSE, 'Francisco', 'Francisco', '', FALSE, TRUE, '2025-11-02 13:58:45.399568', 
+    'fran@ndebona.com'
+);
 
 -- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
 SELECT setval(pg_get_serial_sequence('usuarios_user', 'id'), (SELECT MAX(id) FROM usuarios_user));
@@ -1968,7 +1786,7 @@ SELECT id, username, first_name, last_name, email, is_superuser, is_staff, is_ac
 SELECT currval(pg_get_serial_sequence('usuarios_user', 'id'));
 
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: usuarios_user_groups
 -- ============================================
 
@@ -1979,40 +1797,11 @@ DELETE FROM usuarios_user_groups;
 SELECT setval(pg_get_serial_sequence('usuarios_user_groups', 'id'), 1, false);
 
 -- Insertar registros (PostgreSQL permite inserción explícita de IDs)
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (1,3,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (2,4,1);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (3,5,3);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (4,6,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (5,7,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (7,9,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (8,10,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (9,11,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (10,12,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (11,13,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (12,14,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (13,16,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (14,17,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (16,18,4);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (19,20,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (20,21,5);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (21,22,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (22,23,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (25,15,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (26,8,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (28,24,6);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (29,19,1);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (30,25,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (31,26,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (32,27,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (33,28,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (34,29,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (35,30,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (36,33,2);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (37,34,5);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (38,35,1);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (39,31,1);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (40,36,5);
-INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (41,32,5);
+INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (1, 3, 2);
+INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (2, 4, 1);
+INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (3, 5, 3);
+INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (4, 6, 4);
+INSERT INTO usuarios_user_groups (id, user_id, group_id) VALUES (5, 7, 2);
 
 -- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
 SELECT setval(pg_get_serial_sequence('usuarios_user_groups', 'id'), (SELECT MAX(id) FROM usuarios_user_groups));
@@ -2024,7 +1813,7 @@ SELECT * FROM usuarios_user_groups;
 SELECT currval(pg_get_serial_sequence('usuarios_user_groups', 'id'));
 
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: menu_menuheading
 -- ============================================
 
@@ -2034,7 +1823,7 @@ DELETE FROM menu_menuheading;
 -- Resetear la secuencia (el próximo ID será 1)
 SELECT setval(pg_get_serial_sequence('menu_menuheading', 'id_menu_heading'), 1, false);
 
--- Insertar registros
+-- Insertar registros (PostgreSQL permite inserción explícita de IDs)
 INSERT INTO menu_menuheading (id_menu_heading, name, "order") VALUES (1, 'Archivos', 0);
 INSERT INTO menu_menuheading (id_menu_heading, name, "order") VALUES (2, 'Ventas', 1);
 INSERT INTO menu_menuheading (id_menu_heading, name, "order") VALUES (3, 'Compras', 3);
@@ -2054,7 +1843,7 @@ SELECT * FROM menu_menuheading;
 SELECT currval(pg_get_serial_sequence('menu_menuheading', 'id_menu_heading'));
 
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: menu_menuitem
 -- ============================================
 
@@ -2064,165 +1853,166 @@ DELETE FROM menu_menuitem;
 -- Resetear la secuencia (el próximo ID será 1)
 SELECT setval(pg_get_serial_sequence('menu_menuitem', 'id_menu_item'), 1, false);
 
--- Insertar registros
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (1, 'Comunes', '', '', '', true, 3, 1, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (2, 'Clientes', 'cliente_list', '', '', false, 0, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (3, 'Proveedores', 'proveedor_list', '', '', false, 1, NULL, 137);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (4, 'Productos', 'producto_list', '', '', false, 1, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (5, 'Vendedores', 'vendedor_list', '', '', false, 1, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (6, 'Empresa', 'empresa_list', '', '', false, 4, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (7, 'Sucursales', 'sucursal_list', '', '', false, 5, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (8, 'Números', 'numero_list', '', '', false, 4, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (9, 'Bancos', '', '', '', true, 4, 1, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (10, 'Actividad', 'actividad_list', '', '', false, 0, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (11, 'Depósitos', 'producto_deposito_list', '', '', false, 9, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (12, 'Familias', 'producto_familia_list', '', '', false, 2, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (13, 'Marca', 'producto_marca_list', '', '', false, 3, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (14, 'Modelos', 'producto_modelo_list', '', '', false, 4, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (15, 'CAI', 'producto_cai_list', '', '', false, 5, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (16, 'Estados Productos', 'producto_estado_list', '', '', false, 6, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (17, 'Estados de Productos por CAI', 'cai_estados_list', '', '', false, 7, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (18, 'Comprobantes de Ventas', 'comprobante_venta_list', '', '', false, 5, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (19, 'Comprobantes de Compras', 'comprobante_compra_list', '', '', false, 9, NULL, 137);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (20, 'Monedas', 'moneda_list', '', '', false, 10, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (21, 'Provincias', 'provincia_list', '', '', false, 11, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (22, 'Localidades', 'localidad_list', '', '', false, 12, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (23, 'Tipo Documento', 'tipo_documento_identidad_list', '', '', false, 13, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (24, 'Tipo IVA', 'tipo_iva_list', '', '', false, 14, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (25, 'Alícuotas IVA', 'alicuota_iva_list', '', '', false, 15, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (26, 'Tipo Percepción', 'tipo_percepcion_ib_list', '', '', false, 16, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (27, 'Tipo Retención', 'tipo_retencion_ib_list', '', '', false, 17, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (28, 'Operarios', 'operario_list', '', '', false, 6, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (29, 'Medios de Pagos', 'medio_pago_list', '', '', false, 8, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (30, 'Puntos de Venta', 'punto_venta_list', '', '', false, 9, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (31, 'Bancos Nacionales', 'banco_list', '', '', false, 21, NULL, 9);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (32, 'Cuentas de Bancos', 'cuenta_banco_list', '', '', false, 22, NULL, 9);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (33, 'Tarjetas', 'tarjeta_list', '', '', false, 23, NULL, 9);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (34, 'Códigos de Retención', 'codigo_retencion_list', '', '', false, 24, NULL, 1);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (35, 'Conceptos de Bancos', 'concepto_banco_list', '', '', false, 25, NULL, 9);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (36, 'Marketing Origen', 'marketing_origen_list', '', '', false, 10, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (37, 'Comprobante Electrónico', 'factura_list', '', '', false, 0, 2, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (38, 'Comprobante Manual', 'factura_manual_list', '', '', false, 1, 2, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (39, 'Recibo', 'recibo_list', '', '', false, 2, 2, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (40, 'Presupuesto', 'presupuesto_list', '', '', false, 3, 2, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (41, 'Movimiento Interno', 'movimiento_interno_list', '', '', false, 4, 2, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (42, 'Remitos', 'compra_list', '', '', false, 0, 3, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (43, 'Retenciones', 'compra_retencion_list', '', '', false, 1, 3, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (44, 'Comunes', '', '', '', true, 4, 4, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (45, 'Clientes', 'cliente_informe_list', '', '', false, 0, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (47, 'Productos', 'producto_informe_list', '', '', false, 0, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (48, 'Vendedores', 'vendedor_informe_list', '', '', false, 4, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (49, 'Empresa', '', '', '', false, 4, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (50, 'Sucursales', 'sucursal_informe_list', '', '', false, 5, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (51, 'Parámetros', '', '', '', false, 6, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (52, 'Números', '', '', '', false, 22, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (53, 'Productos', '', '', '', true, 2, 4, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (54, 'Actividades', 'actividad_informe_list', '', '', false, 0, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (55, 'Depósitos', 'productodeposito_informe_list', '', '', false, 9, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (56, 'Familias', 'productofamilia_informe_list', '', '', false, 3, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (57, 'Marcas', 'productomarca_informe_list', '', '', false, 4, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (58, 'Modelos', 'productomodelo_informe_list', '', '', false, 5, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (59, 'CAIs', 'productocai_informe_list', '', '', false, 6, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (60, 'Estados', 'productoestado_informe_list', '', '', false, 7, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (61, 'Comprobantes Ventas', 'comprobanteventa_informe_list', '', '', false, 20, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (63, 'Monedas', 'moneda_informe_list', '', '', false, 9, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (64, 'Provincias', 'provincia_informe_list', '', '', false, 10, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (65, 'Localidades', 'localidad_informe_list', '', '', false, 11, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (66, 'Tipos Documento', 'tipodocumentoidentidad_informe_list', '', '', false, 12, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (67, 'Tipos Iva', 'tipoiva_informe_list', '', '', false, 13, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (68, 'Alícuotas IVA', 'alicuotaiva_informe_list', '', '', false, 14, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (69, 'Tipos Percepción', 'tipopercepcionib_informe_list', '', '', false, 15, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (70, 'Tipos Retención', 'tiporetencionib_informe_list', '', '', false, 16, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (71, 'Operarios', 'operario_informe_list', '', '', false, 23, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (72, 'Medios de Pago', 'mediopago_informe_list', '', '', false, 24, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (73, 'Puntos de Venta', 'puntoventa_informe_list', '', '', false, 25, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (74, 'Bancos', 'banco_informe_list', '', '', false, 20, NULL, 140);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (75, 'Cuentas de Bancos', 'cuentabanco_informe_list', '', '', false, 21, NULL, 140);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (76, 'Tarjetas', 'tarjeta_informe_list', '', '', false, 22, NULL, 140);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (77, 'Códigos de Retención', 'codigoretencion_informe_list', '', '', false, 23, NULL, 44);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (78, 'Conceptos de Banco', 'conceptobanco_informe_list', '', '', false, 24, NULL, 140);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (79, 'Marketing Origen', 'marketingorigen_informe_list', '', '', false, 26, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (80, 'Ventas', '', '', '', true, 1, 4, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (81, 'Saldos de Clientes', 'vlsaldosclientes_informe_list', '', '', false, 1, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (82, 'Resumen de Cuenta Corriente', 'vlresumenctacte_informe_list', '', '', false, 2, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (83, 'Mercadería por Cliente', 'vlmercaderiaporcliente_informe_list', '', '', false, 3, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (84, 'Remitos por Cliente', 'vlremitosclientes_informe_list', '', '', false, 7, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (85, 'Totales de Remitos por Cliente', 'vltotalremitosclientes_informe_list', '', '', false, 8, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (86, 'Comprobantes de Ventas por Localidad', 'vlventacomprolocalidad_informe_list', '', '', false, 9, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (87, 'Ventas por Mostrador', 'vlventamostrador_informe_list', '', '', false, 10, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (88, 'Total de Ventas por Comprobantes', 'vlventacompro_informe_list', '', '', false, 11, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (89, 'Comprobantes Vencidos', 'vlcomprobantesvencidos_informe_list', '', '', false, 12, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (90, 'Remitos Pendientes', 'vlremitospendientes_informe_list', '', '', false, 13, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (91, 'Remitos por Vendedor', 'vlremitosvendedor_informe_list', '', '', false, 14, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (92, 'Libro I.V.A. Ventas', '', '', '', true, 16, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (93, 'Detallado', 'vlivaventasfull_informe_list', '', '', false, 0, NULL, 92);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (94, 'Totales por Provincia', 'vlivaventasprovincias_informe_list', '', '', false, 1, NULL, 92);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (95, 'Totales para SITRIB', 'vlivaventassitrib_informe_list', '', '', false, 2, NULL, 92);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (96, 'Percepciones por Vendedor', '', '', '', true, 17, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (97, 'Vendedores - Solo Totales', 'vlpercepibvendedortotales_informe_list', '', '', false, 0, NULL, 96);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (98, 'Vendedores - Detallado por Comprobantes', 'vlpercepibvendedordetallado_informe_list', '', '', false, 1, NULL, 96);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (99, 'Sub Cuentas - Solo Totales', 'vlpercepibsubcuentatotales_informe_list', '', '', false, 2, NULL, 96);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (100, 'Sub Cuentas - Detallado por Comprobantes', 'vlpercepibsubcuentadetallado_informe_list', '', '', false, 3, NULL, 96);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (101, 'Comisiones a Vendedores según Facturas', 'vlcomisionvendedor_informe_list', '', '', false, 18, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (102, 'Comisiones a Operarios', 'vlcomisionoperario_informe_list', '', '', false, 19, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (103, 'Diferencias de Precios en Facturación', 'vlpreciodiferente_informe_list', '', '', false, 21, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (104, 'Resumen de Ventas I. Brutos Mercadolibre', 'vlventasresumenib_informe_list', '', '', false, 15, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (106, 'Lista de Precios', 'vllista_informe_list', '', '', false, 1, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (107, 'Lista de Precios a Revendedores', 'vllistarevendedor_informe_list', '', '', false, 2, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (108, 'Listado de Stock por Sucursal', 'vlstocksucursal_informe_list', '', '', false, 0, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (109, 'Stock General por Sucursal', 'vlstockgeneralsucursal_informe_list', '', '', false, 1, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (110, 'Listado de Stock Único', 'vlstockunico_informe_list', '', '', false, 2, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (111, 'Reposición de Stock', 'vlreposicionstock_informe_list', '', '', false, 3, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (112, 'Actualizar Productos (Excel)', 'cargar_excel', 'proceso=actualizar', '', false, 0, 1, 138);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (113, 'Agregar nuevos Productos (Excel)', 'cargar_excel', 'proceso=agregar', '', false, 1, 1, 138);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (114, 'Estadísticas de Ventas', 'vlestadisticasventas_informe_list', '', '', false, 0, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (115, 'Estadísticas de Ventas Vendedores', 'vlestadisticasventasvendedor_informe_list', '', '', false, 1, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (116, 'Estadísticas de Ventas Vendedores Clientes', 'vlestadisticasventasvendedorcliente_informe_list', '', '', false, 2, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (117, 'Ventas de Productos Según Condición', 'vlestadisticasseguncondicion_informe_list', '', '', false, 3, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (118, 'Estadísticas de Ventas por Marca', 'vlestadisticasventasmarca_informe_list', '', '', false, 4, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (119, 'Estadísticas de Ventas por Marca-Vendedor', 'vlestadisticasventasmarcavendedor_informe_list', '', '', false, 5, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (120, 'Estadísticas de Clientes sin Movimiento', 'vlclienteultimaventa_informe_list', '', '', false, 6, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (121, 'Estadísticas de Ventas por Provincia', 'vlestadisticasventasprovincia_informe_list', '', '', false, 7, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (122, 'Comprobantes sin Estadísticas', 'vlventasinestadistica_informe_list', '', '', false, 8, 6, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (124, 'Ventas por Comprobantes', 'vltabladinamicaventas_informe_list', '', '', false, 0, 8, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (125, 'Detalle de Ventas por Productos', 'vltabladinamicadetalleventas_informe_list', '', '', false, 1, 8, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (126, 'Tablas para Estadísticas', 'vltabladinamicaestadistica_informe_list', '', '', false, 2, 8, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (131, 'Movimiento Interno de Stock', 'vlmovimientointernostock_informe_list', '', 'fas fa-book-open', false, 5, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (135, 'Ventas', '', '', '', true, 0, 1, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (136, 'Productos', '', '', '', true, 1, 1, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (137, 'Compras', '', '', '', true, 2, 1, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (138, 'Actualizaciones', '', '', '', true, 10, 1, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (140, 'Bancos', '', '', '', true, 5, 4, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (141, 'Stock', '', '', '', true, 11, 4, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (142, 'Compras', '', '', '', true, 0, 4, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (143, 'Detalle de Compras por Proveedor', 'vldetallecompraproveedor_informe_list', '', '', false, 2, NULL, 142);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (144, 'Comprobantes Ingresados', 'vlcompraingresada_informe_list', '', '', false, 3, NULL, 142);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (145, 'Stock por Clientes en Depósitos', 'vlstockcliente_informe_list', '', '', false, 6, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (146, 'Stock en Depósitos de Clientes', 'vlstockdeposito_informe_list', '', '', false, 7, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (147, 'Ficha de Seguimiento de Stock', 'vlfichaseguimientostock_informe_list', '', '', false, 4, NULL, 141);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (148, 'Comprobantes de Compra', 'comprobantecompra_informe_list', '', '', false, 0, NULL, 142);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (149, 'Proveedores', 'proveedor_informe_list', '', '', false, 1, NULL, 142);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (150, 'Caja', 'caja_list', '', '', false, 0, 9, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (151, 'Actualizar Estados de Productos', 'actualizar_estados_productos', '', '', false, 8, NULL, 136);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (152, 'Actualizar Mínimos por CAI', 'actualizar_minimo_cargar', '', '', false, 2, NULL, 138);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (153, 'Mínimos por CAI', 'vlproductominimo_informe_list', '', '', false, 10, NULL, 53);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (154, 'Movimientos de Caja', 'caja_detalle_list', '', '', false, 1, 9, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (155, 'Caja', '', '', '', true, 6, 4, NULL);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (156, 'Planilla de Caja', 'planillacaja_informe_list', '', '', false, 0, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (157, 'Egresos de Caja', 'egresoscaja_informe_list', '', '', false, 2, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (158, 'Detalle de Tarjetas Recibidas', 'tarjetarecibo_informe_list', '', '', false, 3, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (159, 'Detalle de Cupones por Fechas', 'cuponesfecha_informe_list', '', '', false, 4, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (160, 'Detalle de Cheques Recibidos', 'chequerecibo_informe_list', '', '', false, 5, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (161, 'Arqueo de Caja', 'cajaarqueo_informe_list', '', '', false, 1, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (162, 'Detalle de Comprobantes', 'detallecomprobantes_informe_list', '', '', false, 7, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (163, 'Detalle de Cheques por Fecha', 'chequesfecha_informe_list', '', '', false, 6, NULL, 155);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (166, 'Formas de Pago', 'forma_pago_list', '', '', false, 7, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (167, 'Descuento Vendedor', 'descuento_vendedor_list', '', '', false, 2, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (168, 'Descuento Revendedor', 'descuento_revendedor_list', '', '', false, 3, NULL, 135);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (169, 'Descuento Vendedor', 'descuentovendedor_informe_list', '', '', false, 5, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (170, 'Descuento Revendedor', 'descuentorevendedor_informe_list', '', '', false, 6, NULL, 80);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (171, 'Actualizar Estados de Productos por CAI', 'actualizar_estados_cargar', '', '', false, 3, NULL, 138);
-INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (175, 'Estados de Productos por CAI', 'caiestados_informe_list', '', '', false, 8, NULL, 53);
+-- Insertar registros (PostgreSQL permite inserción explícita de IDs)
+
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (1, 'Comunes', '', '', '', TRUE, 3, 1, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (2, 'Clientes', 'cliente_list', '', '', FALSE, 0, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (3, 'Proveedores', 'proveedor_list', '', '', FALSE, 1, NULL, 137);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (4, 'Productos', 'producto_list', '', '', FALSE, 1, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (5, 'Vendedores', 'vendedor_list', '', '', FALSE, 1, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (6, 'Empresa', 'empresa_list', '', '', FALSE, 4, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (7, 'Sucursales', 'sucursal_list', '', '', FALSE, 5, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (8, 'Números', 'numero_list', '', '', FALSE, 4, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (9, 'Bancos', '', '', '', TRUE, 4, 1, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (10, 'Actividad', 'actividad_list', '', '', FALSE, 0, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (11, 'Depósitos', 'producto_deposito_list', '', '', FALSE, 9, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (12, 'Familias', 'producto_familia_list', '', '', FALSE, 2, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (13, 'Marca', 'producto_marca_list', '', '', FALSE, 3, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (14, 'Modelos', 'producto_modelo_list', '', '', FALSE, 4, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (15, 'CAI', 'producto_cai_list', '', '', FALSE, 5, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (16, 'Estados Productos', 'producto_estado_list', '', '', FALSE, 6, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (17, 'Estados de Productos por CAI', 'cai_estados_list', '', '', FALSE, 7, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (18, 'Comprobantes de Ventas', 'comprobante_venta_list', '', '', FALSE, 5, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (19, 'Comprobantes de Compras', 'comprobante_compra_list', '', '', FALSE, 9, NULL, 137);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (20, 'Monedas', 'moneda_list', '', '', FALSE, 10, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (21, 'Provincias', 'provincia_list', '', '', FALSE, 11, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (22, 'Localidades', 'localidad_list', '', '', FALSE, 12, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (23, 'Tipo Documento', 'tipo_documento_identidad_list', '', '', FALSE, 13, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (24, 'Tipo IVA', 'tipo_iva_list', '', '', FALSE, 14, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (25, 'Alícuotas IVA', 'alicuota_iva_list', '', '', FALSE, 15, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (26, 'Tipo Percepción', 'tipo_percepcion_ib_list', '', '', FALSE, 16, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (27, 'Tipo Retención', 'tipo_retencion_ib_list', '', '', FALSE, 17, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (28, 'Operarios', 'operario_list', '', '', FALSE, 6, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (29, 'Medios de Pagos', 'medio_pago_list', '', '', FALSE, 8, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (30, 'Puntos de Venta', 'punto_venta_list', '', '', FALSE, 9, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (31, 'Bancos Nacionales', 'banco_list', '', '', FALSE, 21, NULL, 9);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (32, 'Cuentas de Bancos', 'cuenta_banco_list', '', '', FALSE, 22, NULL, 9);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (33, 'Tarjetas', 'tarjeta_list', '', '', FALSE, 23, NULL, 9);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (34, 'Códigos de Retención', 'codigo_retencion_list', '', '', FALSE, 24, NULL, 1);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (35, 'Conceptos de Bancos', 'concepto_banco_list', '', '', FALSE, 25, NULL, 9);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (36, 'Marketing Origen', 'marketing_origen_list', '', '', FALSE, 10, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (37, 'Comprobante Electrónico', 'factura_list', '', '', FALSE, 0, 2, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (38, 'Comprobante Manual', 'factura_manual_list', '', '', FALSE, 1, 2, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (39, 'Recibo', 'recibo_list', '', '', FALSE, 2, 2, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (40, 'Presupuesto', 'presupuesto_list', '', '', FALSE, 3, 2, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (41, 'Movimiento Interno', 'movimiento_interno_list', '', '', FALSE, 4, 2, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (42, 'Remitos', 'compra_list', '', '', FALSE, 0, 3, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (43, 'Retenciones', 'compra_retencion_list', '', '', FALSE, 1, 3, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (44, 'Comunes', '', '', '', TRUE, 4, 4, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (45, 'Clientes', 'cliente_informe_list', '', '', FALSE, 0, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (47, 'Productos', 'producto_informe_list', '', '', FALSE, 0, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (48, 'Vendedores', 'vendedor_informe_list', '', '', FALSE, 4, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (49, 'Empresa', '', '', '', FALSE, 4, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (50, 'Sucursales', 'sucursal_informe_list', '', '', FALSE, 5, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (51, 'Parámetros', '', '', '', FALSE, 6, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (52, 'Números', '', '', '', FALSE, 22, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (53, 'Productos', '', '', '', TRUE, 2, 4, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (54, 'Actividades', 'actividad_informe_list', '', '', FALSE, 0, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (55, 'Depósitos', 'productodeposito_informe_list', '', '', FALSE, 9, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (56, 'Familias', 'productofamilia_informe_list', '', '', FALSE, 3, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (57, 'Marcas', 'productomarca_informe_list', '', '', FALSE, 4, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (58, 'Modelos', 'productomodelo_informe_list', '', '', FALSE, 5, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (59, 'CAIs', 'productocai_informe_list', '', '', FALSE, 6, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (60, 'Estados', 'productoestado_informe_list', '', '', FALSE, 7, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (61, 'Comprobantes Ventas', 'comprobanteventa_informe_list', '', '', FALSE, 20, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (63, 'Monedas', 'moneda_informe_list', '', '', FALSE, 9, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (64, 'Provincias', 'provincia_informe_list', '', '', FALSE, 10, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (65, 'Localidades', 'localidad_informe_list', '', '', FALSE, 11, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (66, 'Tipos Documento', 'tipodocumentoidentidad_informe_list', '', '', FALSE, 12, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (67, 'Tipos Iva', 'tipoiva_informe_list', '', '', FALSE, 13, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (68, 'Alícuotas IVA', 'alicuotaiva_informe_list', '', '', FALSE, 14, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (69, 'Tipos Percepción', 'tipopercepcionib_informe_list', '', '', FALSE, 15, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (70, 'Tipos Retención', 'tiporetencionib_informe_list', '', '', FALSE, 16, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (71, 'Operarios', 'operario_informe_list', '', '', FALSE, 23, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (72, 'Medios de Pago', 'mediopago_informe_list', '', '', FALSE, 24, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (73, 'Puntos de Venta', 'puntoventa_informe_list', '', '', FALSE, 25, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (74, 'Bancos', 'banco_informe_list', '', '', FALSE, 20, NULL, 140);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (75, 'Cuentas de Bancos', 'cuentabanco_informe_list', '', '', FALSE, 21, NULL, 140);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (76, 'Tarjetas', 'tarjeta_informe_list', '', '', FALSE, 22, NULL, 140);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (77, 'Códigos de Retención', 'codigoretencion_informe_list', '', '', FALSE, 23, NULL, 44);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (78, 'Conceptos de Banco', 'conceptobanco_informe_list', '', '', FALSE, 24, NULL, 140);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (79, 'Marketing Origen', 'marketingorigen_informe_list', '', '', FALSE, 26, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (80, 'Ventas', '', '', '', TRUE, 1, 4, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (81, 'Saldos de Clientes', 'vlsaldosclientes_informe_list', '', '', FALSE, 1, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (82, 'Resumen de Cuenta Corriente', 'vlresumenctacte_informe_list', '', '', FALSE, 2, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (83, 'Mercadería por Cliente', 'vlmercaderiaporcliente_informe_list', '', '', FALSE, 3, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (84, 'Remitos por Cliente', 'vlremitosclientes_informe_list', '', '', FALSE, 7, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (85, 'Totales de Remitos por Cliente', 'vltotalremitosclientes_informe_list', '', '', FALSE, 8, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (86, 'Comprobantes de Ventas por Localidad', 'vlventacomprolocalidad_informe_list', '', '', FALSE, 9, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (87, 'Ventas por Mostrador', 'vlventamostrador_informe_list', '', '', FALSE, 10, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (88, 'Total de Ventas por Comprobantes', 'vlventacompro_informe_list', '', '', FALSE, 11, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (89, 'Comprobantes Vencidos', 'vlcomprobantesvencidos_informe_list', '', '', FALSE, 12, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (90, 'Remitos Pendientes', 'vlremitospendientes_informe_list', '', '', FALSE, 13, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (91, 'Remitos por Vendedor', 'vlremitosvendedor_informe_list', '', '', FALSE, 14, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (92, 'Libro I.V.A. Ventas', '', '', '', TRUE, 16, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (93, 'Detallado', 'vlivaventasfull_informe_list', '', '', FALSE, 0, NULL, 92);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (94, 'Totales por Provincia', 'vlivaventasprovincias_informe_list', '', '', FALSE, 1, NULL, 92);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (95, 'Totales para SITRIB', 'vlivaventassitrib_informe_list', '', '', FALSE, 2, NULL, 92);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (96, 'Percepciones por Vendedor', '', '', '', TRUE, 17, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (97, 'Vendedores - Solo Totales', 'vlpercepibvendedortotales_informe_list', '', '', FALSE, 0, NULL, 96);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (98, 'Vendedores - Detallado por Comprobantes', 'vlpercepibvendedordetallado_informe_list', '', '', FALSE, 1, NULL, 96);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (99, 'Sub Cuentas - Solo Totales', 'vlpercepibsubcuentatotales_informe_list', '', '', FALSE, 2, NULL, 96);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (100, 'Sub Cuentas - Detallado por Comprobantes', 'vlpercepibsubcuentadetallado_informe_list', '', '', FALSE, 3, NULL, 96);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (101, 'Comisiones a Vendedores según Facturas', 'vlcomisionvendedor_informe_list', '', '', FALSE, 18, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (102, 'Comisiones a Operarios', 'vlcomisionoperario_informe_list', '', '', FALSE, 19, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (103, 'Diferencias de Precios en Facturación', 'vlpreciodiferente_informe_list', '', '', FALSE, 21, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (104, 'Resumen de Ventas I. Brutos Mercadolibre', 'vlventasresumenib_informe_list', '', '', FALSE, 15, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (106, 'Lista de Precios', 'vllista_informe_list', '', '', FALSE, 1, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (107, 'Lista de Precios a Revendedores', 'vllistarevendedor_informe_list', '', '', FALSE, 2, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (108, 'Listado de Stock por Sucursal', 'vlstocksucursal_informe_list', '', '', FALSE, 0, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (109, 'Stock General por Sucursal', 'vlstockgeneralsucursal_informe_list', '', '', FALSE, 1, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (110, 'Listado de Stock Único', 'vlstockunico_informe_list', '', '', FALSE, 2, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (111, 'Reposición de Stock', 'vlreposicionstock_informe_list', '', '', FALSE, 3, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (112, 'Actualizar Productos (Excel)', 'cargar_excel', 'proceso=actualizar', '', FALSE, 0, 1, 138);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (113, 'Agregar nuevos Productos (Excel)', 'cargar_excel', 'proceso=agregar', '', FALSE, 1, 1, 138);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (114, 'Estadísticas de Ventas', 'vlestadisticasventas_informe_list', '', '', FALSE, 0, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (115, 'Estadísticas de Ventas Vendedores', 'vlestadisticasventasvendedor_informe_list', '', '', FALSE, 1, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (116, 'Estadísticas de Ventas Vendedores Clientes', 'vlestadisticasventasvendedorcliente_informe_list', '', '', FALSE, 2, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (117, 'Ventas de Productos Según Condición', 'vlestadisticasseguncondicion_informe_list', '', '', FALSE, 3, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (118, 'Estadísticas de Ventas por Marca', 'vlestadisticasventasmarca_informe_list', '', '', FALSE, 4, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (119, 'Estadísticas de Ventas por Marca-Vendedor', 'vlestadisticasventasmarcavendedor_informe_list', '', '', FALSE, 5, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (120, 'Estadísticas de Clientes sin Movimiento', 'vlclienteultimaventa_informe_list', '', '', FALSE, 6, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (121, 'Estadísticas de Ventas por Provincia', 'vlestadisticasventasprovincia_informe_list', '', '', FALSE, 7, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (122, 'Comprobantes sin Estadísticas', 'vlventasinestadistica_informe_list', '', '', FALSE, 8, 6, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (124, 'Ventas por Comprobantes', 'vltabladinamicaventas_informe_list', '', '', FALSE, 0, 8, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (125, 'Detalle de Ventas por Productos', 'vltabladinamicadetalleventas_informe_list', '', '', FALSE, 1, 8, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (126, 'Tablas para Estadísticas', 'vltabladinamicaestadistica_informe_list', '', '', FALSE, 2, 8, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (131, 'Movimiento Interno de Stock', 'vlmovimientointernostock_informe_list', '', 'fas fa-book-open', FALSE, 5, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (135, 'Ventas', '', '', '', TRUE, 0, 1, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (136, 'Productos', '', '', '', TRUE, 1, 1, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (137, 'Compras', '', '', '', TRUE, 2, 1, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (138, 'Actualizaciones', '', '', '', TRUE, 10, 1, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (140, 'Bancos', '', '', '', TRUE, 5, 4, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (141, 'Stock', '', '', '', TRUE, 11, 4, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (142, 'Compras', '', '', '', TRUE, 0, 4, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (143, 'Detalle de Compras por Proveedor', 'vldetallecompraproveedor_informe_list', '', '', FALSE, 2, NULL, 142);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (144, 'Comprobantes Ingresados', 'vlcompraingresada_informe_list', '', '', FALSE, 3, NULL, 142);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (145, 'Stock por Clientes en Depósitos', 'vlstockcliente_informe_list', '', '', FALSE, 6, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (146, 'Stock en Depósitos de Clientes', 'vlstockdeposito_informe_list', '', '', FALSE, 7, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (147, 'Ficha de Seguimiento de Stock', 'vlfichaseguimientostock_informe_list', '', '', FALSE, 4, NULL, 141);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (148, 'Comprobantes de Compra', 'comprobantecompra_informe_list', '', '', FALSE, 0, NULL, 142);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (149, 'Proveedores', 'proveedor_informe_list', '', '', FALSE, 1, NULL, 142);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (150, 'Caja', 'caja_list', '', '', FALSE, 0, 9, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (151, 'Actualizar Estados de Productos', 'actualizar_estados_productos', '', '', FALSE, 8, NULL, 136);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (152, 'Actualizar Mínimos por CAI', 'actualizar_minimo_cargar', '', '', FALSE, 2, NULL, 138);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (153, 'Mínimos por CAI', 'vlproductominimo_informe_list', '', '', FALSE, 10, NULL, 53);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (154, 'Movimientos de Caja', 'caja_detalle_list', '', '', FALSE, 1, 9, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (155, 'Caja', '', '', '', TRUE, 6, 4, NULL);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (156, 'Planilla de Caja', 'planillacaja_informe_list', '', '', FALSE, 0, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (157, 'Egresos de Caja', 'egresoscaja_informe_list', '', '', FALSE, 2, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (158, 'Detalle de Tarjetas Recibidas', 'tarjetarecibo_informe_list', '', '', FALSE, 3, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (159, 'Detalle de Cupones por Fechas', 'cuponesfecha_informe_list', '', '', FALSE, 4, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (160, 'Detalle de Cheques Recibidos', 'chequerecibo_informe_list', '', '', FALSE, 5, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (161, 'Arqueo de Caja', 'cajaarqueo_informe_list', '', '', FALSE, 1, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (162, 'Detalle de Comprobantes', 'detallecomprobantes_informe_list', '', '', FALSE, 7, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (163, 'Detalle de Cheques por Fecha', 'chequesfecha_informe_list', '', '', FALSE, 6, NULL, 155);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (166, 'Formas de Pago', 'forma_pago_list', '', '', FALSE, 7, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (167, 'Descuento Vendedor', 'descuento_vendedor_list', '', '', FALSE, 2, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (168, 'Descuento Revendedor', 'descuento_revendedor_list', '', '', FALSE, 3, NULL, 135);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (169, 'Descuento Vendedor', 'descuentovendedor_informe_list', '', '', FALSE, 5, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (170, 'Descuento Revendedor', 'descuentorevendedor_informe_list', '', '', FALSE, 6, NULL, 80);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (171, 'Actualizar Estados de Productos por CAI', 'actualizar_estados_cargar', '', '', FALSE, 3, NULL, 138);
+INSERT INTO menu_menuitem (id_menu_item, name, url_name, query_params, icon, is_collapse, "order", heading_id, parent_id) VALUES (175, 'Estados de Productos por CAI', 'caiestados_informe_list', '', '', FALSE, 8, NULL, 53);
 
 -- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
 SELECT setval(pg_get_serial_sequence('menu_menuitem', 'id_menu_item'), (SELECT MAX(id_menu_item) FROM menu_menuitem));
@@ -2237,7 +2027,7 @@ SELECT currval(pg_get_serial_sequence('menu_menuitem', 'id_menu_item'));
 SELECT id_menu_item, name, parent_id, heading_id, "order" FROM menu_menuitem ORDER BY id_menu_item LIMIT 10;
 
 -- ============================================
--- CONVERSIÓN DE SQLITE3 A POSTGRESQL
+-- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
 -- Tabla: menu_menuitem_groups
 -- ============================================
 
@@ -2257,8 +2047,11 @@ INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (9,7,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (10,28,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (11,37,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (12,37,2);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (13,2,2);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (18,10,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (19,10,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (20,22,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (21,22,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (22,21,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (23,20,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (24,23,1);
@@ -2266,7 +2059,9 @@ INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (25,24,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (26,25,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (27,26,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (28,27,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (29,2,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (30,8,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (31,8,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (32,18,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (33,29,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (34,30,1);
@@ -2282,9 +2077,12 @@ INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (43,15,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (44,16,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (45,17,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (46,31,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (47,31,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (48,32,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (49,33,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (50,33,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (51,35,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (52,3,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (53,19,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (54,37,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (56,38,1);
@@ -2296,6 +2094,9 @@ INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (61,40,2);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (62,40,3);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (63,40,4);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (64,41,1);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (65,41,2);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (66,41,4);
+INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (67,41,5);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (68,42,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (69,42,2);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (70,42,4);
@@ -2480,212 +2281,6 @@ INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (248,122,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (249,124,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (250,125,1);
 INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (251,126,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (252,155,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (253,155,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (254,155,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (255,155,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (256,156,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (257,156,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (258,156,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (259,156,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (260,161,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (261,161,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (262,161,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (263,161,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (264,157,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (265,157,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (266,157,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (267,157,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (268,158,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (269,158,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (270,158,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (271,158,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (272,159,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (273,159,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (274,159,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (275,159,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (276,160,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (277,160,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (278,160,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (279,160,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (280,163,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (281,163,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (282,163,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (283,163,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (284,162,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (285,162,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (286,162,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (287,162,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (288,150,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (289,150,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (290,150,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (291,150,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (292,154,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (293,154,2);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (294,154,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (295,154,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (296,8,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (297,2,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (298,5,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (299,167,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (300,168,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (301,28,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (302,166,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (303,29,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (304,30,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (305,36,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (306,4,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (307,12,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (308,13,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (309,14,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (310,15,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (311,16,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (312,17,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (313,151,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (314,11,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (315,112,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (316,113,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (317,152,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (318,171,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (319,137,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (320,3,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (321,19,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (322,10,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (323,6,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (324,7,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (325,20,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (326,21,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (327,22,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (328,23,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (329,24,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (330,25,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (331,26,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (332,27,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (333,34,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (334,31,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (335,32,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (336,33,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (337,35,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (338,37,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (339,38,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (340,39,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (341,40,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (342,41,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (343,148,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (344,149,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (345,143,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (346,144,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (347,45,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (348,81,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (349,82,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (350,83,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (351,48,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (352,169,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (353,170,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (354,84,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (355,104,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (356,91,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (357,90,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (358,89,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (359,88,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (360,87,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (361,93,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (362,94,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (363,95,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (364,97,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (365,98,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (366,99,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (367,100,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (368,101,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (369,102,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (370,61,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (371,103,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (372,52,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (373,71,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (374,72,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (375,73,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (376,79,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (377,47,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (378,106,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (379,107,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (380,56,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (381,57,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (382,58,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (383,59,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (384,60,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (385,175,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (386,55,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (387,153,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (388,108,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (389,109,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (390,110,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (391,111,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (392,147,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (393,131,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (394,145,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (395,146,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (396,54,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (397,49,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (398,50,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (399,51,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (400,63,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (401,64,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (402,65,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (403,66,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (404,67,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (405,68,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (406,69,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (407,70,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (408,77,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (409,74,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (410,75,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (411,76,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (412,78,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (413,156,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (414,161,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (415,157,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (416,158,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (417,159,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (418,160,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (419,163,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (420,162,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (421,42,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (422,43,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (423,150,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (424,154,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (425,114,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (426,115,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (427,116,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (428,117,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (429,118,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (430,119,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (431,120,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (432,121,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (433,122,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (434,124,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (435,125,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (436,126,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (437,137,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (438,88,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (439,147,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (440,145,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (441,146,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (442,142,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (443,142,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (444,142,6);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (445,142,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (446,148,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (447,148,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (448,148,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (449,149,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (450,149,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (451,149,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (452,143,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (453,143,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (454,143,5);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (455,144,1);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (456,144,4);
-INSERT INTO menu_menuitem_groups (id, menuitem_id, group_id) VALUES (457,144,5);
 
 -- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
 SELECT setval(pg_get_serial_sequence('menu_menuitem_groups', 'id'), (SELECT MAX(id) FROM menu_menuitem_groups));

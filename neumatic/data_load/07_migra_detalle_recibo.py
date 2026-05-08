@@ -1,4 +1,4 @@
-# neumatic\data_load\02_migra_producto.py
+# neumatic\data_load\07_migra_detalle_recibo.py
 import os
 import subprocess
 import sys
@@ -11,17 +11,12 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 
 # Lista de scripts a ejecutar en orden
 SCRIPTS = [
-    'producto_familia_migra.py',
-    'producto_modelo_migra.py',
-    'producto_deposito_migra.py',
-    'producto_marca_migra.py',
-    'producto_cai_migra.py',
-    'producto_estado_migra.py',
-    'medidas_estados_migra.py',
-    'producto_migra.py',
-    'producto_stock_migra.py',
-    'producto_minimo_migra.py',
-    'actualiza_producto_cai.py',
+    'detalle_recibo_migra.py',
+    'cheque_recibo_migra.py',
+    'tarjeta_recibo_migra.py',
+    'retencion_recibo_migra.py',
+    'deposito_recibo_migra.py',
+    'compensa_factura_migra.py'
     
 ]
 

@@ -1,6 +1,6 @@
 FACTURAS SIN CAJA ASIGNADA - DETALLE
 ================================================================================
-Fecha: 2026-05-06 17:59:05
+Fecha: 2026-05-08 17:38:25
 ================================================================================
 
 Factura ID: 1736954
@@ -207,12 +207,6 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: BONARDO CARLOS ALBERTO
 ----------------------------------------
-Factura ID: 1737019
-Comprobante: ND - 66
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: ROSSO EDGARDO LUIS
-----------------------------------------
 Factura ID: 1737020
 Comprobante: ND - 67
 Fecha: 2024-01-01
@@ -405,6 +399,12 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: TOMATIS FLAVIO
 ----------------------------------------
+Factura ID: 1737071
+Comprobante: ND - 118
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: JAVILA S.A.
+----------------------------------------
 Factura ID: 1737072
 Comprobante: ND - 119
 Fecha: 2024-01-01
@@ -471,6 +471,12 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: SILVESTRE MARIANA
 ----------------------------------------
+Factura ID: 1737094
+Comprobante: ND - 141
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: DOVIS RICARDO RAUL
+----------------------------------------
 Factura ID: 1737103
 Comprobante: ND - 150
 Fecha: 2024-01-01
@@ -518,6 +524,12 @@ Comprobante: ND - 163
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AMIUN SA
+----------------------------------------
+Factura ID: 1737117
+Comprobante: ND - 164
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: INDUSTRIAS AVICOLAS S A
 ----------------------------------------
 Factura ID: 1737118
 Comprobante: ND - 165
@@ -1125,6 +1137,12 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: COVINO PEDRO OSCAR
 ----------------------------------------
+Factura ID: 1737303
+Comprobante: ND - 350
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: URBASER ARG SA TRANSP OLIVOS S
+----------------------------------------
 Factura ID: 1737305
 Comprobante: ND - 352
 Fecha: 2024-01-01
@@ -1701,12 +1719,6 @@ Fecha: 2024-01-10
 Sucursal ID: 7
 Cliente: CONSUMIDOR FINAL (RAFAELA)
 ----------------------------------------
-Factura ID: 1500889
-Comprobante: FR - 2600021095
-Fecha: 2024-01-13
-Sucursal ID: 7
-Cliente: GONZALEZ HUGO
-----------------------------------------
 Factura ID: 1502300
 Comprobante: FR - 3700005937
 Fecha: 2024-01-20
@@ -1838,6 +1850,12 @@ Comprobante: FF - 3700006367
 Fecha: 2024-03-18
 Sucursal ID: 6
 Cliente: FINLAR SA
+----------------------------------------
+Factura ID: 1514556
+Comprobante: FR - 3700006368
+Fecha: 2024-03-18
+Sucursal ID: 6
+Cliente: LOS COCOS SRL
 ----------------------------------------
 Factura ID: 1514559
 Comprobante: FR - 3700006369
@@ -3417,6 +3435,12 @@ Fecha: 2025-04-05
 Sucursal ID: 7
 Cliente: ASSELBORN GERARDO Y CRISTIAN
 ----------------------------------------
+Factura ID: 1618839
+Comprobante: FF - 3700009470
+Fecha: 2025-04-05
+Sucursal ID: 6
+Cliente: LOS COCOS SRL
+----------------------------------------
 Factura ID: 1619044
 Comprobante: FR - 4600000087
 Fecha: 2025-04-07
@@ -3824,12 +3848,6 @@ Comprobante: FR - 2600026203
 Fecha: 2025-06-05
 Sucursal ID: 7
 Cliente: U¥AC RAFAEL HORACIO
-----------------------------------------
-Factura ID: 1636159
-Comprobante: FR - 2600026204
-Fecha: 2025-06-05
-Sucursal ID: 7
-Cliente: GIORDA HORACIO ANTONIO
 ----------------------------------------
 Factura ID: 1636160
 Comprobante: FR - 2600026205
@@ -4485,12 +4503,6 @@ Fecha: 2025-09-13
 Sucursal ID: 7
 Cliente: BOSETTI NEUMATICOS S.R.L.
 ----------------------------------------
-Factura ID: 1665204
-Comprobante: FR - 2600027265
-Fecha: 2025-09-13
-Sucursal ID: 7
-Cliente: GIORDA HORACIO ANTONIO
-----------------------------------------
 Factura ID: 1666679
 Comprobante: FR - 4600000180
 Fecha: 2025-09-19
@@ -4526,12 +4538,6 @@ Comprobante: FR - 2600027442
 Fecha: 2025-10-04
 Sucursal ID: 7
 Cliente: BONO NEUMATICOS S.A
-----------------------------------------
-Factura ID: 1670808
-Comprobante: FR - 2600027443
-Fecha: 2025-10-04
-Sucursal ID: 7
-Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1670886
 Comprobante: FF - 2600006085
@@ -5145,6 +5151,12 @@ Fecha: 2026-01-10
 Sucursal ID: 8
 Cliente: DON CIPRIANO S.A
 ----------------------------------------
+Factura ID: 1700206
+Comprobante: FR - 2700026463
+Fecha: 2026-01-10
+Sucursal ID: 8
+Cliente: JAVILA S.A.
+----------------------------------------
 Factura ID: 1700216
 Comprobante: FF - 2700026465
 Fecha: 2026-01-10
@@ -5222,12 +5234,6 @@ Comprobante: FR - 4600000254
 Fecha: 2026-01-17
 Sucursal ID: 11
 Cliente: GIORIA NESTOR DANIEL
-----------------------------------------
-Factura ID: 1702852
-Comprobante: FR - 2600028639
-Fecha: 2026-01-17
-Sucursal ID: 7
-Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1702894
 Comprobante: FF - 2600028642
@@ -6471,6 +6477,12 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: CARDELINO ALCIDES EDELIO
 ----------------------------------------
+Factura ID: 1737019
+Comprobante: ND - 66
+Fecha: 2024-01-01
+Sucursal ID: 1
+Cliente: ROSSO EDGARDO LUIS
+----------------------------------------
 Factura ID: 1737027
 Comprobante: ND - 74
 Fecha: 2024-01-01
@@ -6585,12 +6597,6 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AGROPECUARIA LOS CORRALITOS SA
 ----------------------------------------
-Factura ID: 1737071
-Comprobante: ND - 118
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: JAVILA S.A.
-----------------------------------------
 Factura ID: 1737075
 Comprobante: ND - 122
 Fecha: 2024-01-01
@@ -6656,12 +6662,6 @@ Comprobante: ND - 140
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: KAST SAMUEL ENRIQUE
-----------------------------------------
-Factura ID: 1737094
-Comprobante: ND - 141
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: DOVIS RICARDO RAUL
 ----------------------------------------
 Factura ID: 1737095
 Comprobante: ND - 142
@@ -6746,12 +6746,6 @@ Comprobante: ND - 162
 Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: PONTARELLI RODADOS SRL
-----------------------------------------
-Factura ID: 1737117
-Comprobante: ND - 164
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: INDUSTRIAS AVICOLAS S A
 ----------------------------------------
 Factura ID: 1737119
 Comprobante: ND - 166
@@ -7257,12 +7251,6 @@ Fecha: 2024-01-01
 Sucursal ID: 1
 Cliente: AVILA EDUARDO NESTOR
 ----------------------------------------
-Factura ID: 1737303
-Comprobante: ND - 350
-Fecha: 2024-01-01
-Sucursal ID: 1
-Cliente: URBASER ARG SA TRANSP OLIVOS S
-----------------------------------------
 Factura ID: 1737304
 Comprobante: ND - 351
 Fecha: 2024-01-01
@@ -7743,6 +7731,12 @@ Fecha: 2024-01-10
 Sucursal ID: 7
 Cliente: INOCENTI DAIANA SOLEDAD
 ----------------------------------------
+Factura ID: 1500889
+Comprobante: FR - 2600021095
+Fecha: 2024-01-13
+Sucursal ID: 7
+Cliente: GONZALEZ HUGO
+----------------------------------------
 Factura ID: 1502439
 Comprobante: FF - 3700005938
 Fecha: 2024-01-20
@@ -7856,12 +7850,6 @@ Comprobante: FR - 3700006365
 Fecha: 2024-03-18
 Sucursal ID: 6
 Cliente: COIHUE SRL
-----------------------------------------
-Factura ID: 1514556
-Comprobante: FR - 3700006368
-Fecha: 2024-03-18
-Sucursal ID: 6
-Cliente: LOS COCOS SRL
 ----------------------------------------
 Factura ID: 1514562
 Comprobante: FF - 3700006370
@@ -8847,12 +8835,6 @@ Fecha: 2025-04-05
 Sucursal ID: 11
 Cliente: KUNGIS NORMA BEATRIZ
 ----------------------------------------
-Factura ID: 1618839
-Comprobante: FF - 3700009470
-Fecha: 2025-04-05
-Sucursal ID: 6
-Cliente: LOS COCOS SRL
-----------------------------------------
 Factura ID: 1620951
 Comprobante: FF - 3700009534
 Fecha: 2025-04-12
@@ -9056,6 +9038,12 @@ Comprobante: FR - 4600000123
 Fecha: 2025-06-04
 Sucursal ID: 11
 Cliente: GRUPO G SRL
+----------------------------------------
+Factura ID: 1636159
+Comprobante: FR - 2600026204
+Fecha: 2025-06-05
+Sucursal ID: 7
+Cliente: GIORDA HORACIO ANTONIO
 ----------------------------------------
 Factura ID: 1636190
 Comprobante: FF - 2600026208
@@ -9399,6 +9387,12 @@ Fecha: 2025-09-13
 Sucursal ID: 7
 Cliente: WALTER DAVID ALBERTO
 ----------------------------------------
+Factura ID: 1665204
+Comprobante: FR - 2600027265
+Fecha: 2025-09-13
+Sucursal ID: 7
+Cliente: GIORDA HORACIO ANTONIO
+----------------------------------------
 Factura ID: 1666151
 Comprobante: FR - 4600000177
 Fecha: 2025-09-17
@@ -9458,6 +9452,12 @@ Comprobante: FR - 4600000186
 Fecha: 2025-10-02
 Sucursal ID: 11
 Cliente: BERTOLINI DANIEL ALBERTO
+----------------------------------------
+Factura ID: 1670808
+Comprobante: FR - 2600027443
+Fecha: 2025-10-04
+Sucursal ID: 7
+Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1672467
 Comprobante: FR - 4600000190
@@ -9945,12 +9945,6 @@ Fecha: 2026-01-10
 Sucursal ID: 8
 Cliente: LORENZINI MARIO
 ----------------------------------------
-Factura ID: 1700206
-Comprobante: FR - 2700026463
-Fecha: 2026-01-10
-Sucursal ID: 8
-Cliente: JAVILA S.A.
-----------------------------------------
 Factura ID: 1700207
 Comprobante: FR - 2700026464
 Fecha: 2026-01-10
@@ -9968,6 +9962,12 @@ Comprobante: FR - 4600000250
 Fecha: 2026-01-13
 Sucursal ID: 11
 Cliente: NEUMATICOS ARCE SRL
+----------------------------------------
+Factura ID: 1702852
+Comprobante: FR - 2600028639
+Fecha: 2026-01-17
+Sucursal ID: 7
+Cliente: GONZALEZ HUGO
 ----------------------------------------
 Factura ID: 1702854
 Comprobante: FR - 2600028640
@@ -10530,4 +10530,4 @@ Facturas actualizadas: 0
 Facturas sin caja encontrada: 1753
 Errores: 0
 Tiempo total: 0 min 0 seg
-Fecha finalización: 2026-05-06 17:59:05
+Fecha finalización: 2026-05-08 17:38:26

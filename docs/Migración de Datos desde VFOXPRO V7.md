@@ -12,6 +12,8 @@ Ejecutar los algoritmos de de deupración de la base datos de datos de VisualFox
 
 * **ajustes_new.prg**
 
+* **stock_doble.prg** (Nuevo)
+
 ## 1. Renombrar o Eliminar la base de datos de la carpeta
 
 \neumatic\data\db_neumatic.db
@@ -22,6 +24,8 @@ Crear el etorno virtual con:
 requirements.txt
 
 requirements_afip.txt
+
+Para el caso de PostgreSQL eliminar (force) la base de datos db_neumatic y volverla a crear
 
 ## 2. Eliminar los archivos de migraciones
 
@@ -351,11 +355,13 @@ python 01_migra_base.py
 python 02_migra_producto.py  
 python 03_migra_cliente.py  
 python 04_migra_factura.py  
-python 05_migra_recibo.py
+python 05_migra_base_recibo.py
 
 python 06_migra_compra.py
 
-python 07_migra_caja.py  
+python 07_migra_detalle_recibo.py
+
+python 08_migra_caja.py  
 
 De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en SQLite3, luego de abrir la BD neumatic.
 
@@ -407,11 +413,13 @@ actualiza_cliente.sql
 
 **actualiza_ventas_null.sql**
 
+**medidas_estados_sin_cai.sql** (Nuevo)
+
 **actualiza_comprobante_venta.sql** YA NO
 
 **actualiza_comprobante_compra.sql** YA NO
 
-**Sincronización de secuencias de ID**
+**Sincronización de secuencias de ID** (OJO)
 
 sincro_maestros_id_seq.sql
 sincro_ventas_id_seq.sql

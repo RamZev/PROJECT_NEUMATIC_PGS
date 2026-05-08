@@ -41,6 +41,14 @@ class DetalleRecibo(ModeloBaseGenerico):
 		blank=True,
 		default=0.00
 	)
+	saldo_factura = models.DecimalField(
+		verbose_name="Saldo",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.00
+	)
 	observaciones_recibo = models.CharField(
 		verbose_name="Observaciones", 
 		max_length=50,
