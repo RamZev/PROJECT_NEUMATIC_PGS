@@ -428,7 +428,7 @@ sincro_ventas_id_seq.sql
 
 Ejecute la actualización del superusuario (OBLIGATORIO)
 
-1. **actualiza_user.py** 
+1. **actualiza_user.py y actualiza_user2.py (usuarios_user.json)**, 
 
 2. Crear las vistas en la base de datos
    
