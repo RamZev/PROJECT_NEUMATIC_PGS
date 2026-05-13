@@ -1,4 +1,4 @@
-# neumatic\data_load\compensa_factura_migra.py
+# neumatic\data_load\efectivo_factura_migra.py
 import os
 import sys
 import django
@@ -30,8 +30,8 @@ def safe_decimal(value, default=0.0):
     except (ValueError, TypeError):
         return Decimal(str(default))
 
-def compensa_factura_migra():
-    print("Iniciando migración de compensa_factura...", flush=True)
+def efectivo_factura_migra():
+    print("Iniciando migración de efectivo...", flush=True)
     
     # Leer DBF completo a memoria
     dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'mediopagos.DBF')
@@ -43,7 +43,7 @@ def compensa_factura_migra():
     print(f"Total registros cargados en memoria: {total_registros}", flush=True)
     
     # Filtrar y procesar en memoria
-    print("Filtrando registros con FORMAPAGO=9...", flush=True)
+    print("Filtrando registros con FORMAPAGO=1...", flush=True)
     facturas_a_actualizar_dict = {}
     ids_facturas = []
     
@@ -55,7 +55,7 @@ def compensa_factura_migra():
         formapago = safe_int(record.get('FORMAPAGO'))
         idventa = safe_int(record.get('IDVENTA'))
         
-        if not (formapago == 9 and idventa > 0):
+        if not (formapago == 1 and idventa > 0):
             continue
         
         caja_numero = safe_int(record.get('CAJA'))
@@ -67,7 +67,7 @@ def compensa_factura_migra():
             'importe': importe
         }
     
-    print(f"Total de facturas a procesar (FORMAPAGO=9): {len(ids_facturas)}", flush=True)
+    print(f"Total de facturas a procesar (FORMAPAGO=1): {len(ids_facturas)}", flush=True)
     
     # Liberar memoria del DBF (opcional, ayuda al GC)
     del table
@@ -86,7 +86,7 @@ def compensa_factura_migra():
     print(f"Cajas cargadas: {len(cajas_cache)}", flush=True)
     
     # Archivo .tag
-    tag_file = os.path.join(BASE_DIR, 'data_load', 'compensa_no_encontradas.tag')
+    tag_file = os.path.join(BASE_DIR, 'data_load', 'efectivo_no_encontradas.tag')
     with open(tag_file, 'w', encoding='utf-8') as f:
         f.write("idventa\tcaja\timporte\n")
     
@@ -109,8 +109,8 @@ def compensa_factura_migra():
         if caja_obj:
             factura.id_caja = caja_obj
         
-        # Asignar compensa_factura
-        factura.compensa_factura = datos['importe']
+        # Asignar efectivo_recibo
+        factura.efectivo_recibo = datos['importe']
         facturas_para_actualizar.append(factura)
     
     print(f"Facturas a actualizar: {len(facturas_para_actualizar)}", flush=True)
@@ -126,7 +126,7 @@ def compensa_factura_migra():
     for i in range(0, len(facturas_para_actualizar), batch_size):
         bloque = facturas_para_actualizar[i:i+batch_size]
         with transaction.atomic():
-            Factura.objects.bulk_update(bloque, ['id_caja', 'compensa_factura'])
+            Factura.objects.bulk_update(bloque, ['id_caja', 'efectivo_recibo'])
         
         bloques_completados += 1
         total_actualizadas += len(bloque)
@@ -143,4 +143,4 @@ def compensa_factura_migra():
     print("="*50, flush=True)
 
 if __name__ == '__main__':
-    compensa_factura_migra()
+    efectivo_factura_migra()

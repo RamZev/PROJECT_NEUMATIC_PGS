@@ -166,11 +166,11 @@ def precargar_facturas():
     print("\nPrecargando facturas en memoria...")
     logging.info("Precargando facturas en memoria...")
     
-    # Diccionario para búsqueda por número de RECIBO (para id_factura)
-    facturas_por_recibo = {}
-    
-    # Diccionario para búsqueda por compro + letra + numero (para id_factura_cobrada)
+    # Diccionario para búsqueda por compro + letra + numero
     facturas_por_comprobante = {}
+    
+    # Diccionario para búsqueda por número de recibo (numero_comprobante)
+    facturas_por_recibo = {}
     
     # Cargar todas las facturas una sola vez
     todas_facturas = Factura.objects.all().values(
@@ -184,11 +184,7 @@ def precargar_facturas():
     print(f"Cargando {total_facturas:,} facturas...")
     
     for factura in todas_facturas:
-        # Clave para búsqueda por RECIBO (para id_factura)
-        if factura['numero_comprobante']:
-            facturas_por_recibo[factura['numero_comprobante']] = factura['id_factura']
-        
-        # Clave para búsqueda por compro+letra+numero (para id_factura_cobrada)
+        # Clave para búsqueda por compro+letra+numero
         if factura['compro'] and factura['letra_comprobante'] and factura['numero_comprobante']:
             clave_comprobante = (
                 factura['compro'].strip().upper(),
@@ -196,12 +192,16 @@ def precargar_facturas():
                 factura['numero_comprobante']
             )
             facturas_por_comprobante[clave_comprobante] = factura['id_factura']
+        
+        # Clave para búsqueda por recibo (numero_comprobante)
+        if factura['numero_comprobante']:
+            facturas_por_recibo[factura['numero_comprobante']] = factura['id_factura']
     
-    print(f"✅ Facturas precargadas - Por RECIBO: {len(facturas_por_recibo):,} facturas")
-    print(f"✅ Facturas precargadas - Por COMPROBANTE: {len(facturas_por_comprobante):,} facturas")
-    logging.info(f"Facturas precargadas - Recibo: {len(facturas_por_recibo)}, Comprobante: {len(facturas_por_comprobante)}")
+    print(f"✅ Facturas precargadas: {len(facturas_por_comprobante):,} para búsqueda por comprobante")
+    print(f"✅ Facturas precargadas: {len(facturas_por_recibo):,} para búsqueda por recibo")
+    logging.info(f"Facturas precargadas - Comprobante: {len(facturas_por_comprobante)}, Recibo: {len(facturas_por_recibo)}")
     
-    return facturas_por_recibo, facturas_por_comprobante
+    return facturas_por_comprobante, facturas_por_recibo
 
 def ejecutar_migracion():
     """Función principal de migración"""
@@ -213,8 +213,7 @@ def ejecutar_migracion():
     reset_detalle_recibo()
     
     # 2. Precargar facturas en memoria para búsqueda rápida
-    # IMPORTANTE: El orden ahora es (facturas_por_recibo, facturas_por_comprobante)
-    facturas_por_recibo, facturas_por_comprobante = precargar_facturas()
+    facturas_por_comprobante, facturas_por_recibo = precargar_facturas()
     
     # 3. Configuración de procesamiento por lotes
     dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'RECIBOS.DBF')
@@ -291,39 +290,34 @@ def ejecutar_migracion():
                 logging.warning(mensaje_error)
                 continue
             
-            # === LÓGICA CORREGIDA ===
-            # 1. Buscar id_factura basado en el campo RECIBO del DBF
-            id_factura = None
-            if recibo > 0:
-                id_factura = facturas_por_recibo.get(recibo)
-                if not id_factura:
-                    errores += 1
-                    mensaje_error = f"Fila {current_idx}: No se encontró Factura con RECIBO={recibo} (para id_factura)"
-                    errores_detalle.append(mensaje_error)
-                    logging.warning(mensaje_error)
-                    continue
-            else:
+            # Validar que los campos requeridos no estén vacíos
+            if not compro or not letra or numero == 0:
                 errores += 1
-                mensaje_error = f"Fila {current_idx}: RECIBO es 0 o inválido (RECIBO={recibo})"
+                mensaje_error = f"Fila {current_idx}: Campos incompletos - COMPRO='{compro}', LETRA='{letra}', NUMERO={numero}"
                 errores_detalle.append(mensaje_error)
                 logging.warning(mensaje_error)
                 continue
             
-            # 2. Buscar id_factura_cobrada basado en COMPRO + LETRA + NUMERO del DBF
-            id_factura_cobrada = None
-            if compro and letra and numero > 0:
-                clave_comprobante = (compro, letra, numero)
-                id_factura_cobrada = facturas_por_comprobante.get(clave_comprobante)
-                if not id_factura_cobrada:
-                    mensaje_error = f"Fila {current_idx}: No se encontró Factura Cobrada con COMPRO='{compro}', LETRA='{letra}', NUMERO={numero}"
-                    errores_detalle.append(mensaje_error)
-                    logging.warning(mensaje_error)
-                    # Continuamos aunque no se encuentre la factura cobrada (puede ser NULL)
-            else:
-                mensaje_error = f"Fila {current_idx}: Datos incompletos para factura cobrada - COMPRO='{compro}', LETRA='{letra}', NUMERO={numero}"
+            # Buscar id_factura (por compro + letra + numero)
+            clave_comprobante = (compro, letra, numero)
+            id_factura = facturas_por_comprobante.get(clave_comprobante)
+            
+            if not id_factura:
+                errores += 1
+                mensaje_error = f"Fila {current_idx}: No se encontró Factura con COMPRO='{compro}', LETRA='{letra}', NUMERO={numero}"
                 errores_detalle.append(mensaje_error)
                 logging.warning(mensaje_error)
-                # Continuamos aunque no se encuentre la factura cobrada
+                continue
+            
+            # Buscar id_factura_cobrada (por recibo)
+            id_factura_cobrada = None
+            if recibo > 0:
+                id_factura_cobrada = facturas_por_recibo.get(recibo)
+                if not id_factura_cobrada:
+                    mensaje_error = f"Fila {current_idx}: No se encontró Factura Cobrada con RECIBO={recibo}"
+                    errores_detalle.append(mensaje_error)
+                    logging.warning(mensaje_error)
+                    # Continuamos aunque no se encuentre la factura cobrada
             
             # Crear instancia de DetalleRecibo
             detalle_recibo = DetalleRecibo(
@@ -402,9 +396,6 @@ def ejecutar_migracion():
     print(f"📊 Total procesados: {total_creados + errores:,}/{total_dbf:,}")
     print(f"📈 Tasa de éxito: {(total_creados/total_dbf*100):.2f}%")
     print("=" * 60)
-    print("\n📌 NOTA: La lógica de migración ha sido CORREGIDA:")
-    print("   - id_factura → se obtiene del campo RECIBO del DBF")
-    print("   - id_factura_cobrada → se obtiene de COMPRO+LETRA+NUMERO del DBF")
     
     logging.info("=" * 60)
     logging.info(f"MIGRACIÓN COMPLETADA")

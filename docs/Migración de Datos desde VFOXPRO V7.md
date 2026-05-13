@@ -411,6 +411,8 @@ actualizar_camion_factura.sql
 
 actualiza_cliente.sql
 
+actualiza_factura_recibo.sql
+
 **actualiza_ventas_null.sql**
 
 **medidas_estados_sin_cai.sql** (Nuevo)
