@@ -428,6 +428,12 @@ class ConfigViews:
 			"csv": True
 		},
 	}
+	
+	#-- Niveles de jerarquía permitidos para ver la columna "costo" en el reporte.
+	nivel_permitido = ['A',]
+	
+	#-- Columnas que se deben ocultar para usuarios sin el nivel de jerarquía permitido.
+	cols_vetadas = ['costo',]
 
 
 class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
@@ -468,6 +474,13 @@ class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
 		fecha_hasta = cleaned_data.get('fecha_hasta')
 		comprobantes_impositivos = cleaned_data.get('comprobantes_impositivos', True)
 		
+		user = self.request.user
+		
+		#-- Si el usuario no tiene el nivel de jerarquía permitido, se elimina la columna "costo" del reporte.
+		if user.jerarquia not in ConfigViews.nivel_permitido:
+			for col in ConfigViews.cols_vetadas:
+				ConfigViews.table_info.pop(col, None)
+		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
 		param_left = {
@@ -490,6 +503,8 @@ class VLTablaDinamicaEstadisticaInformeView(InformeFormView):
 			"objetos": objetos_serializables,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
+			"jerarquia": user.jerarquia,
+			"nivel_permitido": ConfigViews.nivel_permitido,
 			'fecha_hora_reporte': fecha_hora_reporte,
 			'titulo': ConfigViews.report_title,
 			'css_url': static('css/reportes.css')

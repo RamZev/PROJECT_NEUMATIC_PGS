@@ -1,43 +1,14 @@
--- ============================================
--- FUNCIÓN AUXILIAR PARA FORMATEAR NÚMEROS DE COMPROBANTE
--- ============================================
-CREATE OR REPLACE FUNCTION format_comprobante(letra VARCHAR, numero BIGINT, formato VARCHAR DEFAULT 'completo')
-RETURNS VARCHAR AS $$
-DECLARE
-	numero_padded VARCHAR;
-	parte1 VARCHAR;
-	parte2 VARCHAR;
-BEGIN
-	numero_padded := LPAD(numero::TEXT, 12, '0');
-	
-	IF formato = 'completo' THEN
-		parte1 := SUBSTRING(numero_padded FROM 1 FOR 4);
-		parte2 := SUBSTRING(numero_padded FROM 5);
-		RETURN letra || ' ' || parte1 || '-' || parte2;
-	ELSIF formato = 'solo_numero' THEN
-		RETURN SUBSTRING(numero_padded FROM 1 FOR 4) || '-' || SUBSTRING(numero_padded FROM 5);
-	ELSE
-		RETURN numero_padded;
-	END IF;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+-- Scripts para crear las vistas SQL de Informes en la Base de Datos SQLite.
 
--- ============================================
--- FUNCIÓN AUXILIAR PARA JULIANDAY
--- ============================================
-CREATE OR REPLACE FUNCTION julianday(fecha DATE)
-RETURNS DECIMAL AS $$
-BEGIN
-	RETURN EXTRACT(EPOCH FROM fecha) / 86400.0 + 2440587.5;
-END;
-$$ LANGUAGE plpgsql IMMUTABLE;
+DROP VIEW IF EXISTS "main"."A";
+CREATE VIEW A AS SELECT "prueba";
 
--- ============================================
--- Saldos Clientes.
--- Modelo: VLSaldosClientes
--- ============================================
-DROP VIEW IF EXISTS VLSaldosClientes CASCADE;
-CREATE VIEW VLSaldosClientes AS 
+-- ---------------------------------------------------------------------------
+--  Saldos Clientes.
+--  Modelo: VLSaldosClientes
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLSaldosClientes";
+CREATE VIEW "VLSaldosClientes" AS 
 	SELECT 
 		f.id_cliente_id, 
 		f.fecha_comprobante, 
@@ -64,19 +35,20 @@ CREATE VIEW VLSaldosClientes AS
 		f.condicion_comprobante = 2
 		AND cv.mult_saldo <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Resumen Cuenta Corriente.
 -- Modelo: VLResumenCtaCte
--- ============================================
-DROP VIEW IF EXISTS VLResumenCtaCte CASCADE;
-CREATE VIEW VLResumenCtaCte AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLResumenCtaCte";
+CREATE VIEW "VLResumenCtaCte" AS 
 	SELECT 
 		f.id_cliente_id, 
 		c.nombre_cliente AS razon_social, 
 		cv.nombre_comprobante_venta, 
 		f.letra_comprobante, 
 		f.numero_comprobante, 
-		format_comprobante(f.letra_comprobante, f.numero_comprobante, 'completo') AS numero, 
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS numero, 
 		f.fecha_comprobante, 
 		f.remito,
 		f.condicion_comprobante, 
@@ -111,27 +83,28 @@ CREATE VIEW VLResumenCtaCte AS
 	ORDER BY
 		f.id_cliente_id, f.fecha_comprobante;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Mercadería por Cliente.
 -- Modelo: VLMercaderiaPorCliente
--- ============================================
-DROP VIEW IF EXISTS VLMercaderiaPorCliente CASCADE;
-CREATE VIEW VLMercaderiaPorCliente AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLMercaderiaPorCliente";
+CREATE VIEW "VLMercaderiaPorCliente" AS 
 	SELECT 
 	   f.id_cliente_id, 
 	   cv.nombre_comprobante_venta, 
 	   f.letra_comprobante, 
 	   f.numero_comprobante,
-	   format_comprobante(f.letra_comprobante, f.numero_comprobante, 'completo') AS numero, 
+	   (f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS numero, 
 	   f.fecha_comprobante, 
 	   COALESCE(m.nombre_producto_marca, '') AS nombre_producto_marca, 
 	   COALESCE(p.medida, '') AS medida, 
 	   df.id_producto_id, 
 	   COALESCE(p.nombre_producto, '') AS nombre_producto, 
-	   COALESCE(df.cantidad, 0.0)::DECIMAL AS cantidad, 
-	   COALESCE(df.precio, 0.0)::DECIMAL AS precio, 
-	   COALESCE(df.descuento, 0.0)::DECIMAL AS descuento, 
-	   COALESCE(df.total, 0.0)::DECIMAL AS total
+	   CAST(COALESCE(df.cantidad, 0.0) AS DECIMAL) AS cantidad, 
+	   CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio, 
+	   CAST(COALESCE(df.descuento, 0.0) AS DECIMAL) AS descuento, 
+	   CAST(COALESCE(df.total, 0.0) AS DECIMAL) AS total
 	FROM
 		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura 
@@ -139,12 +112,12 @@ CREATE VIEW VLMercaderiaPorCliente AS
 		JOIN producto p ON df.id_producto_id = p.id_producto 
 		LEFT JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca;
 
--- ============================================
+-- ---------------------------------------------------------------------------
 -- Remitos por Clientes.
 -- Modelo: VLRemitosClientes
--- ============================================
-DROP VIEW IF EXISTS VLRemitosClientes CASCADE;
-CREATE VIEW VLRemitosClientes AS
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLRemitosClientes";
+CREATE VIEW "VLRemitosClientes" AS
 	SELECT
 		f.id_cliente_id, 
 		cv.codigo_comprobante_venta, 
@@ -152,13 +125,13 @@ CREATE VIEW VLRemitosClientes AS
 		f.fecha_comprobante, 
 		f.letra_comprobante, 
 		f.numero_comprobante, 
-		format_comprobante(f.letra_comprobante, f.numero_comprobante, 'completo') AS numero, 
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS numero, 
 		p.nombre_producto, 
 		p.medida, 
-		COALESCE(df.cantidad, 0.0)::DECIMAL AS cantidad, 
-		COALESCE(df.precio, 0.0)::DECIMAL AS precio, 
-		COALESCE(df.descuento, 0.0)::DECIMAL AS descuento, 
-		COALESCE(df.total, 0.0)::DECIMAL * COALESCE(cv.mult_stock, 0.0)::DECIMAL * -1 AS total
+		CAST(COALESCE(df.cantidad, 0.0) AS DECIMAL) AS cantidad, 
+		CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio, 
+		CAST(COALESCE(df.descuento, 0.0) AS DECIMAL) AS descuento, 
+		CAST(COALESCE(df.total, 0.0) AS DECIMAL) * CAST(COALESCE(cv.mult_stock, 0.0) AS DECIMAL) * -1 AS total
 	FROM
 		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura
@@ -167,12 +140,13 @@ CREATE VIEW VLRemitosClientes AS
 	WHERE
 		cv.mult_venta = 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Total Remitos por Clientes.
 -- Modelo: VLTotalRemitosClientes
--- ============================================
-DROP VIEW IF EXISTS VLTotalRemitosClientes CASCADE;
-CREATE VIEW VLTotalRemitosClientes AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTotalRemitosClientes";
+CREATE VIEW "VLTotalRemitosClientes" AS 
 	SELECT 
 		f.id_cliente_id, 
 		f.fecha_comprobante, 
@@ -191,12 +165,13 @@ CREATE VIEW VLTotalRemitosClientes AS
 	WHERE
 		cv.mult_saldo = 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Ventas por Localidad.
 -- Modelo: VLVentaComproLocalidad
--- ============================================
-DROP VIEW IF EXISTS VLVentaComproLocalidad CASCADE;
-CREATE VIEW VLVentaComproLocalidad AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentaComproLocalidad";
+CREATE VIEW "VLVentaComproLocalidad" AS 
 	SELECT 
 		f.id_cliente_id,
 		f.id_sucursal_id,
@@ -208,12 +183,12 @@ CREATE VIEW VLVentaComproLocalidad AS
 		cv.codigo_comprobante_venta,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante, 
-		COALESCE(f.gravado, 0.0)::DECIMAL AS gravado,
-		COALESCE(f.exento, 0.0)::DECIMAL AS exento,
-		COALESCE(f.iva, 0.0)::DECIMAL AS iva,
-		COALESCE(f.percep_ib, 0.0)::DECIMAL AS percep_ib,
-		COALESCE(f.total, 0.0)::DECIMAL AS total,
+		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
+		CAST(COALESCE(f.gravado, 0.0) AS DECIMAL) AS gravado,
+		CAST(COALESCE(f.exento, 0.0) AS DECIMAL) AS exento,
+		CAST(COALESCE(f.iva, 0.0) AS DECIMAL) AS iva,
+		CAST(COALESCE(f.percep_ib, 0.0) AS DECIMAL) AS percep_ib,
+		CAST(COALESCE(f.total, 0.0) AS DECIMAL) AS total,
 		u.iniciales
 	FROM
 		factura f
@@ -223,19 +198,20 @@ CREATE VIEW VLVentaComproLocalidad AS
 	WHERE
 		cv.mult_venta <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Ventas por Mostrador.
 -- Modelo: VLVentaMostrador
--- ============================================
-DROP VIEW IF EXISTS VLVentaMostrador CASCADE;
-CREATE VIEW VLVentaMostrador AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentaMostrador";
+CREATE VIEW "VLVentaMostrador" AS 
 	SELECT 
 		df.id_detalle_factura,
 		cv.nombre_comprobante_venta,
 		cv.codigo_comprobante_venta,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
@@ -244,10 +220,10 @@ CREATE VIEW VLVentaMostrador AS
 		df.id_producto_id,
 		p.nombre_producto,
 		p.tipo_producto,
-		(df.reventa || ' ' || p.tipo_producto) AS rv_tp,
+		(df.reventa || " " || p.tipo_producto) AS rv_tp,
 		df.cantidad,
 		df.precio,
-		df.total * cv.mult_venta AS Total,
+		df.total*cv.mult_venta AS Total,
 		f.id_sucursal_id
 	FROM
 		detalle_factura df
@@ -256,20 +232,21 @@ CREATE VIEW VLVentaMostrador AS
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN producto p ON df.id_producto_id = p.id_producto
 	WHERE
-		cv.mult_venta <> 0 AND f.no_estadist = False;
+		cv.mult_venta <> 0 AND f.no_estadist <> True;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Ventas por Comprobantes.
 -- Modelo: VLVentaCompro
--- ============================================
-DROP VIEW IF EXISTS VLVentaCompro CASCADE;
-CREATE VIEW VLVentaCompro AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentaCompro";
+CREATE VIEW "VLVentaCompro" AS 
 	SELECT 
 		f.id_factura,
 		cv.nombre_comprobante_venta,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.condicion_comprobante,
 		CASE 
@@ -278,35 +255,36 @@ CREATE VIEW VLVentaCompro AS
 		END AS condicion,
 		f.id_cliente_id,
 		c.nombre_cliente,
-		f.gravado * cv.mult_venta as gravado,
-		f.iva * cv.mult_venta AS IVA,
-		f.percep_ib * cv.mult_venta AS percep_ib,
-		f.total * cv.mult_venta AS total,
+		f.gravado*cv.mult_venta as gravado,
+		f.iva*cv.mult_venta AS IVA,
+		f.percep_ib*cv.mult_venta AS percep_ib,
+		f.total*cv.mult_venta AS total,
 		f.id_sucursal_id
 	FROM
 		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Comprobantes Vencidos.
 -- Modelo: VLComprobantesVencidos
--- ============================================
-DROP VIEW IF EXISTS VLComprobantesVencidos CASCADE;
-CREATE VIEW VLComprobantesVencidos AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLComprobantesVencidos";
+CREATE VIEW "VLComprobantesVencidos" AS 
 	SELECT 
 		f.id_factura,
 		f.fecha_comprobante,
-		(julianday(CURRENT_DATE) - julianday(f.fecha_comprobante))::INTEGER AS dias_vencidos,
+		CAST(JULIANDAY(DATE('now')) - JULIANDAY(f.fecha_comprobante) AS INTEGER) AS dias_vencidos,
 		cv.codigo_comprobante_venta,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
-		f.total::NUMERIC * 1.0 AS total,
-		f.entrega::NUMERIC * 1.0 AS entrega,
-		ROUND((f.total - f.entrega)::NUMERIC, 2) * 1.0 AS saldo,
+		CAST(f.total AS NUMERIC)* 1.0 AS total,
+		CAST(f.entrega AS NUMERIC)* 1.0 AS entrega,
+		ROUND(CAST(f.total - f.entrega AS NUMERIC), 2) * 1.0 AS saldo,
 		f.id_vendedor_id,
 		f.id_sucursal_id
 	FROM
@@ -314,14 +292,15 @@ CREATE VIEW VLComprobantesVencidos AS
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE
-		f.estado = '';
+		f.estado = "";
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Remitos Pendientes.
 -- Modelo: VLRemitosPendientes
--- ============================================
-DROP VIEW IF EXISTS VLRemitosPendientes CASCADE;
-CREATE VIEW VLRemitosPendientes AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLRemitosPendientes";
+CREATE VIEW "VLRemitosPendientes" AS 
 	SELECT 
 		f.id_factura,
 		f.id_cliente_id,
@@ -330,14 +309,14 @@ CREATE VIEW VLRemitosPendientes AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		format_comprobante(f.letra_comprobante, f.numero_comprobante, 'completo') AS comprobante,
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		df.id_producto_id,
 		p.nombre_producto,
 		p.medida,
 		df.cantidad,
 		df.precio,
 		df.descuento,
-		df.total * cv.mult_stock * -1 AS total,
+		df.total*cv.mult_stock*-1 AS total,
 		f.id_vendedor_id,
 		f.id_sucursal_id AS id_sucursal_fac,
 		c.id_sucursal_id AS id_sucursal_cli
@@ -348,15 +327,16 @@ CREATE VIEW VLRemitosPendientes AS
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	WHERE
-		cv.mult_venta = 0 AND cv.remito
-		AND f.estado = '';
+		cv.mult_venta = 0 AND cv.remito = 1
+		AND f.estado = "";
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Remitos Vendedor.
 -- Modelo: VLRemitosVendedor
--- ============================================
-DROP VIEW IF EXISTS VLRemitosVendedor CASCADE;
-CREATE VIEW VLRemitosVendedor AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLRemitosVendedor";
+CREATE VIEW "VLRemitosVendedor" AS 
 	SELECT 
 		f.id_factura,
 		f.id_cliente_id,
@@ -365,14 +345,14 @@ CREATE VIEW VLRemitosVendedor AS
 		f.fecha_comprobante,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		format_comprobante(f.letra_comprobante, f.numero_comprobante, 'completo') AS comprobante,
+		(f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		df.id_producto_id,
 		p.nombre_producto,
 		p.medida,
 		df.cantidad,
 		df.precio,
 		df.descuento,
-		df.total * cv.mult_stock * -1 AS total,
+		df.total*cv.mult_stock*-1 AS total,
 		f.id_vendedor_id
 	FROM
 		detalle_factura df
@@ -383,28 +363,29 @@ CREATE VIEW VLRemitosVendedor AS
 	WHERE
 		cv.mult_venta = 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Libro I.V.A. Ventas - Detalle.
 -- Modelo: VLIVAVentasFULL
--- ============================================
-DROP VIEW IF EXISTS VLIVAVentasFULL CASCADE;
-CREATE VIEW VLIVAVentasFULL AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLIVAVentasFULL";
+CREATE VIEW "VLIVAVentasFULL" AS 
 	SELECT 
 		f.id_factura,
 		cv.nombre_comprobante_venta,
 		cv.codigo_comprobante_venta,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		c.nombre_cliente,
 		c.cuit,
 		ti.codigo_iva,
-		ROUND(f.gravado * cv.mult_venta, 2) * 1.0 AS gravado,
-		ROUND(f.exento * cv.mult_venta, 2) * 1.0 AS exento,
-		ROUND(f.iva * cv.mult_venta, 2) * 1.0 AS iva,
-		ROUND(f.percep_ib * cv.mult_venta, 2) * 1.0 AS percep_ib,
-		ROUND(f.total * cv.mult_venta, 2) * 1.0 AS total,
+		ROUND(f.gravado*cv.mult_venta, 2) * 1.0 AS gravado,
+		ROUND(f.exento*cv.mult_venta, 2) * 1.0 AS exento,
+		ROUND(f.iva*cv.mult_venta, 2) * 1.0 AS iva,
+		ROUND(f.percep_ib*cv.mult_venta, 2) * 1.0 AS percep_ib,
+		ROUND(f.total*cv.mult_venta, 2) * 1.0 AS total,
 		f.id_sucursal_id
 	FROM
 		factura f
@@ -414,23 +395,24 @@ CREATE VIEW VLIVAVentasFULL AS
 	WHERE
 		cv.libro_iva;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Libro I.V.A. Ventas - Totales por Provincias.
 -- Modelo: VLIVAVentasProvincias
--- ============================================
-DROP VIEW IF EXISTS VLIVAVentasProvincias CASCADE;
-CREATE VIEW VLIVAVentasProvincias AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLIVAVentasProvincias";
+CREATE VIEW "VLIVAVentasProvincias" AS 
 	SELECT 
 		f.id_factura,
 		p.id_provincia,
 		p.nombre_provincia,
 		f.fecha_comprobante,
-		ROUND(f.gravado * cv.mult_venta * 1.0, 2) AS gravado,
-		ROUND(f.exento * cv.mult_venta * 1.0, 2) AS exento,
-		ROUND(f.iva * cv.mult_venta * 1.0, 2) AS iva,
-		ROUND(f.percep_ib * cv.mult_venta * 1.0, 2) AS percep_ib,
-		ROUND(f.total * cv.mult_venta * 1.0, 2) AS total,
-		f.id_sucursal_id
+		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS gravado,
+		ROUND(f.exento*cv.mult_venta * 1.0, 2)  AS exento,
+		ROUND(f.iva*cv.mult_venta * 1.0, 2)  AS iva,
+		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2)  AS percep_ib,
+		ROUND(f.total*cv.mult_venta * 1.0, 2)  AS total,
+		f.id_sucursal_id AS id_sucursal_id
 	FROM
 		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
@@ -440,22 +422,23 @@ CREATE VIEW VLIVAVentasProvincias AS
 	WHERE
 		cv.libro_iva;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Libro I.V.A. Ventas - Totales para SITRIB.
--- Modelo: VLIVAVentasSitrib
--- ============================================
-DROP VIEW IF EXISTS VLIVAVentasSitrib CASCADE;
-CREATE VIEW VLIVAVentasSitrib AS 
+-- Modelo: VLIVAVentasProvincias
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLIVAVentasSitrib";
+CREATE VIEW "VLIVAVentasSitrib" AS 
 	SELECT 
 		f.id_factura,
 		f.fecha_comprobante,
 		ti.codigo_iva,
 		ti.nombre_iva,
-		ROUND(f.gravado * cv.mult_venta * 1.0, 2) AS gravado, 
-		ROUND(f.exento * cv.mult_venta * 1.0, 2) AS exento, 
-		ROUND(f.iva * cv.mult_venta * 1.0, 2) AS iva, 
-		ROUND(f.percep_ib * cv.mult_venta * 1.0, 2) AS percep_ib, 
-		ROUND(f.total * cv.mult_venta * 1.0, 2) AS total,
+		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS gravado, 
+		ROUND(f.exento*cv.mult_venta * 1.0, 2) AS exento, 
+		ROUND(f.iva*cv.mult_venta * 1.0, 2) AS iva, 
+		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2) AS percep_ib, 
+		ROUND(f.total*cv.mult_venta * 1.0, 2) AS total,
 		f.id_sucursal_id
 	FROM
 		factura f
@@ -467,19 +450,20 @@ CREATE VIEW VLIVAVentasSitrib AS
 	WHERE
 		cv.libro_iva;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Percepciones por Vendedor - Totales.
 -- Modelo: VLPercepIBVendedorTotales
--- ============================================
-DROP VIEW IF EXISTS VLPercepIBVendedorTotales CASCADE;
-CREATE VIEW VLPercepIBVendedorTotales AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBVendedorTotales";
+CREATE VIEW "VLPercepIBVendedorTotales" AS 
 	SELECT 
 		f.id_factura,
 		c.id_vendedor_id,
 		v.nombre_vendedor,
 		f.fecha_comprobante,
-		ROUND(f.gravado * cv.mult_venta * 1.0, 2) AS neto,
-		ROUND(f.percep_ib * cv.mult_venta * 1.0, 2) AS percep_ib
+		ROUND(f.gravado*cv.mult_venta * 1.0, 2) AS neto,
+		ROUND(f.percep_ib*cv.mult_venta * 1.0, 2) AS percep_ib
 	FROM
 		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
@@ -489,11 +473,12 @@ CREATE VIEW VLPercepIBVendedorTotales AS
 		f.percep_ib <> 0
 		AND cv.mult_venta <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Percepciones por Vendedor - Detallado.
 -- Modelo: VLPercepIBVendedorDetallado
--- ============================================
-DROP VIEW IF EXISTS VLPercepIBVendedorDetallado CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBVendedorDetallado";
 CREATE VIEW VLPercepIBVendedorDetallado AS
 	SELECT 
 		f.id_factura,
@@ -503,12 +488,12 @@ CREATE VIEW VLPercepIBVendedorDetallado AS
 		f.letra_comprobante,
 		f.numero_comprobante,
 		f.fecha_comprobante,
-		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.cuit,
-		f.gravado * cv.mult_venta AS neto,
-		f.percep_ib * cv.mult_venta AS percep_ib,
+		f.gravado*cv.mult_venta AS neto,
+		f.percep_ib*cv.mult_venta AS percep_ib,
 		f.no_estadist
 	FROM
 		factura f
@@ -519,12 +504,13 @@ CREATE VIEW VLPercepIBVendedorDetallado AS
 		f.percep_ib <> 0
 		AND cv.mult_venta <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Percepciones por Sub Cuenta - Totales.
 -- Modelo: VLPercepIBSubcuentaTotales
--- ============================================
-DROP VIEW IF EXISTS VLPercepIBSubcuentaTotales CASCADE;
-CREATE VIEW VLPercepIBSubcuentaTotales AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaTotales";
+CREATE VIEW "VLPercepIBSubcuentaTotales" AS 
 	SELECT 
 		f.id_factura,
 		f.fecha_comprobante,
@@ -543,12 +529,13 @@ CREATE VIEW VLPercepIBSubcuentaTotales AS
 		f.percep_ib <> 0
 		AND cv.mult_venta <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Percepciones por Sub Cuenta - Detallado.
 -- Modelo: VLPercepIBSubcuentaDetallado
--- ============================================
-DROP VIEW IF EXISTS VLPercepIBSubcuentaDetallado CASCADE;
-CREATE VIEW VLPercepIBSubcuentaDetallado AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPercepIBSubcuentaDetallado";
+CREATE VIEW "VLPercepIBSubcuentaDetallado" AS 
 	SELECT 
 		f.id_factura,
 		c.sub_cuenta,
@@ -557,12 +544,12 @@ CREATE VIEW VLPercepIBSubcuentaDetallado AS
 		f.letra_comprobante,
 		f.numero_comprobante,
 		f.fecha_comprobante,
-		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
 		c.cuit,
-		f.gravado * cv.mult_venta AS neto,
-		f.percep_ib * cv.mult_venta AS percep_ib,
+		f.gravado*cv.mult_venta AS neto,
+		f.percep_ib*cv.mult_venta AS percep_ib,
 		f.no_estadist
 	FROM
 		factura f
@@ -570,45 +557,45 @@ CREATE VIEW VLPercepIBSubcuentaDetallado AS
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		LEFT JOIN cliente p ON c.sub_cuenta = p.id_cliente
 	WHERE
-		f.percep_ib <> 0
-		AND cv.mult_venta <> 0
+		f.percep_ib<>0
+		AND cv.mult_venta<>0
 	GROUP BY
-		f.id_factura, c.sub_cuenta, nombre_cliente_padre, cv.codigo_comprobante_venta, f.letra_comprobante,
-		f.numero_comprobante, c.nombre_cliente, c.cuit, cv.mult_venta;
+		c.sub_cuenta, f.numero_comprobante;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Comisiones a Vendedores según Facturas.
 -- Modelo: VLComisionVendedor
--- ============================================
-DROP VIEW IF EXISTS VLComisionVendedor CASCADE;
-CREATE VIEW VLComisionVendedor AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLComisionVendedor";
+CREATE VIEW "VLComisionVendedor" AS 
 	SELECT 
 		f.id_factura,
-		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta|| '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
-		'' AS reventa,
+		"" AS reventa,
 		0 AS id_producto_id,
-		'' AS medida,
+		"" AS medida,
 		0 AS id_marca_id,
-		'' AS nombre_producto_marca,
+		"" AS nombre_producto_marca,
 		0 AS id_familia_id,
-		'' AS nombre_producto_familia,
+		"" AS nombre_producto_familia,
 		0 AS cantidad,
 		0 AS precio,
 		0 AS costo,
 		0 AS descuento,
-		ROUND(f.total / (((SELECT alicuota_iva FROM codigo_alicuota WHERE codigo_alicuota = '0005')/100.0)+1), 2) AS gravado,
+		ROUND(f.total/(((SELECT alicuota_iva FROM codigo_alicuota WHERE codigo_alicuota = "0005")/100.0)+1),2) AS gravado,
 		f.total,
 		0 AS no_estadist,
 		CASE
-			WHEN f.comision = 'C' THEN v.pje_camion
+			WHEN f.comision = "C" THEN v.pje_camion
 			ELSE v.pje_auto
 		END AS pje_comision,
 		c.id_vendedor_id,
 		v.nombre_vendedor,
-		'R' AS consulta
+		"R" AS consulta
 	FROM
 		factura f
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
@@ -617,15 +604,16 @@ CREATE VIEW VLComisionVendedor AS
 	WHERE
 		(f.compro = 'RC' OR f.compro = 'RB' OR f.compro = 'RE');
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Comisiones a Vendedores según Facturas (Detalle).
--- Modelo: VLComisionVendedorDetalle
--- ============================================
-DROP VIEW IF EXISTS VLComisionVendedorDetalle CASCADE;
-CREATE VIEW VLComisionVendedorDetalle AS 
+-- Modelo: VLComisionVendedor
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLComisionVendedorDetalle";
+CREATE VIEW "VLComisionVendedorDetalle" AS 
 	SELECT 
 		f.id_factura,
-		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cv.codigo_comprobante_venta || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
@@ -640,8 +628,8 @@ CREATE VIEW VLComisionVendedorDetalle AS
 		df.precio,
 		df.costo,
 		df.descuento,
-		df.gravado * cv.mult_comision AS gravado,
-		df.total * cv.mult_comision AS total,
+		df.gravado*cv.mult_comision AS gravado,
+		df.total*cv.mult_comision AS total,
 		f.no_estadist,
 		COALESCE(ROUND((SELECT 
 				dvc.comision_porcentaje
@@ -653,7 +641,7 @@ CREATE VIEW VLComisionVendedorDetalle AS
 			LIMIT 1), 2), 0) AS pje_comision,
 		c.id_vendedor_id,
 		v.nombre_vendedor,
-		'C' AS consulta
+		"C" AS consulta
 	FROM 
 		detalle_factura df
 		JOIN factura f ON df.id_factura_id = f.id_factura
@@ -664,15 +652,16 @@ CREATE VIEW VLComisionVendedorDetalle AS
 		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
 		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
 	WHERE 
-		cv.mult_comision <> 0
-		AND f.no_estadist = False;
+		cv.mult_comision<>0
+		AND f.no_estadist <> True;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Comisiones a Operarios.
 -- Modelo: VLComisionOperario
--- ============================================
-DROP VIEW IF EXISTS VLComisionOperario CASCADE;
-CREATE VIEW VLComisionOperario AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLComisionOperario";
+CREATE VIEW "VLComisionOperario" AS 
 	SELECT 
 		f.id_factura,
 		df.id_operario_id,
@@ -680,12 +669,12 @@ CREATE VIEW VLComisionOperario AS
 		f.compro,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		df.id_producto_id,
 		pf.nombre_producto_familia,
 		p.nombre_producto,
-		(df.total * cv.mult_estadistica) * 1.0 AS total,
+		(df.total*cv.mult_estadistica) * 1.0 AS total,
 		(pf.comision_operario) * 1.0 AS comision_operario,
 		ROUND(((df.total * cv.mult_estadistica) * pf.comision_operario) / 100.0, 2) AS monto_comision
 	FROM
@@ -699,18 +688,19 @@ CREATE VIEW VLComisionOperario AS
 		pf.comision_operario <> 0
 		AND cv.mult_estadistica <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Diferencias de Precios en Facturación.
 -- Modelo: VLPrecioDiferente
--- ============================================
-DROP VIEW IF EXISTS VLPrecioDiferente CASCADE;
-CREATE VIEW VLPrecioDiferente AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLPrecioDiferente";
+CREATE VIEW "VLPrecioDiferente" AS 
 	SELECT 
 		f.id_factura,
 		f.compro,
 		f.letra_comprobante,
 		f.numero_comprobante,
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		c.nombre_cliente,
@@ -721,7 +711,7 @@ CREATE VIEW VLPrecioDiferente AS
 		df.precio_lista,
 		(df.precio - df.precio_lista) * 1.0 AS diferencia,
 		df.descuento,
-		ROUND(p.precio * p.descuento / 100, 2) AS adicional,
+		ROUND(p.precio*p.descuento/100,2) AS adicional,
 		c.id_vendedor_id,
 		v.nombre_vendedor
 	FROM
@@ -734,18 +724,19 @@ CREATE VIEW VLPrecioDiferente AS
 		f.no_estadist = False
 		AND df.precio <> df.precio_lista;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Resumen de Ventas Ing. Brutos Mercadolibre.
 -- Modelo: VLVentasResumenIB
--- ============================================
-DROP VIEW IF EXISTS VLVentasResumenIB CASCADE;
-CREATE VIEW VLVentasResumenIB AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentasResumenIB";
+CREATE VIEW "VLVentasResumenIB" AS 
 	SELECT 
 		f.id_factura,
 		f.fecha_comprobante,
-		f.gravado * cv.mult_venta AS gravado,
-		f.iva * cv.mult_venta AS iva,
-		f.total * cv.mult_venta AS total,
+		f.gravado*cv.mult_venta AS gravado,
+		f.iva*cv.mult_venta AS iva,
+		f.total*cv.mult_venta AS total,
 		c.id_provincia_id,
 		p.nombre_provincia,
 		f.suc_imp
@@ -757,12 +748,13 @@ CREATE VIEW VLVentasResumenIB AS
 	WHERE
 		cv.libro_iva = True;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de Ventas.
 -- Modelo: VLEstadisticasVentas
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasVentas CASCADE;
-CREATE VIEW VLEstadisticasVentas AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentas";
+CREATE VIEW "VLEstadisticasVentas" AS 
 	SELECT 
 		f.id_factura, 
 		df.id_producto_id, 
@@ -775,8 +767,8 @@ CREATE VIEW VLEstadisticasVentas AS
 		pm.nombre_modelo,
 		p.id_marca_id,
 		m.nombre_producto_marca,
-		df.cantidad * cv.mult_estadistica AS cantidad,
-		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		f.id_sucursal_id
@@ -794,12 +786,13 @@ CREATE VIEW VLEstadisticasVentas AS
 		AND cv.mult_estadistica <> 0
 		AND f.no_estadist = False;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de Ventas Vendedor.
 -- Modelo: VLEstadisticasVentasVendedor
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasVentasVendedor CASCADE;
-CREATE VIEW VLEstadisticasVentasVendedor AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedor";
+CREATE VIEW "VLEstadisticasVentasVendedor" AS 
 	SELECT 
 		f.id_factura, 
 		df.id_producto_id, 
@@ -810,14 +803,14 @@ CREATE VIEW VLEstadisticasVentasVendedor AS
 		pm.nombre_modelo,
 		p.id_marca_id,
 		m.nombre_producto_marca,
-		df.cantidad * cv.mult_estadistica AS cantidad,
-		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
+		p.id_marca_id,
 		f.id_sucursal_id,
 		f.id_vendedor_id
 	FROM 
-		detalle_factura df 
-		JOIN factura f ON df.id_factura_id = f.id_factura
+		detalle_factura df JOIN factura f ON df.id_factura_id = f.id_factura
 		JOIN producto p ON df.id_producto_id = p.id_producto
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
@@ -828,12 +821,13 @@ CREATE VIEW VLEstadisticasVentasVendedor AS
 		AND cv.mult_estadistica <> 0
 		AND f.no_estadist = False;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de Ventas Vendedores Clientes.
 -- Modelo: VLEstadisticasVentasVendedorCliente
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasVentasVendedorCliente CASCADE;
-CREATE VIEW VLEstadisticasVentasVendedorCliente AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasVendedorCliente";
+CREATE VIEW "VLEstadisticasVentasVendedorCliente" AS 
 	SELECT 
 		df.id_producto_id,
 		p.nombre_producto,
@@ -843,8 +837,8 @@ CREATE VIEW VLEstadisticasVentasVendedorCliente AS
 		pm.nombre_modelo,
 		p.id_marca_id,
 		m.nombre_producto_marca,
-		df.cantidad * cv.mult_estadistica AS cantidad,
-		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_sucursal_id,
 		f.id_cliente_id,
@@ -861,17 +855,18 @@ CREATE VIEW VLEstadisticasVentasVendedorCliente AS
 		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
-		LEFT JOIN vendedor v ON f.id_vendedor_id = v.id_vendedor
+		JOIN vendedor v ON f.id_vendedor_id = v.id_vendedor
 	WHERE 
 		df.id_producto_id <> 0
 		AND cv.mult_estadistica <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Ventas de Productos según Condición.
 -- Modelo: VLEstadisticasSegunCondicion
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasSegunCondicion CASCADE;
-CREATE VIEW VLEstadisticasSegunCondicion AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasSegunCondicion";
+CREATE VIEW "VLEstadisticasSegunCondicion" AS 
 	SELECT
 		p.id_familia_id,
 		pf.nombre_producto_familia,
@@ -882,9 +877,9 @@ CREATE VIEW VLEstadisticasSegunCondicion AS
 		df.id_producto_id, 
 		p.nombre_producto,
 		df.reventa,
-		df.cantidad * cv.mult_estadistica AS cantidad,
-		ROUND(((df.precio + (df.precio * df.descuento / 100.0)) * df.cantidad) * cv.mult_estadistica, 2) AS importe,
-		df.costo * df.cantidad * cv.mult_estadistica AS costo,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		ROUND(((df.precio+(df.precio*df.descuento/100.0))*df.cantidad)*cv.mult_estadistica, 2) AS importe,
+		df.costo*df.cantidad*cv.mult_estadistica AS costo,
 		f.fecha_comprobante,
 		f.id_sucursal_id
 	FROM
@@ -899,14 +894,15 @@ CREATE VIEW VLEstadisticasSegunCondicion AS
 		f.no_estadist = False
 		AND cv.mult_estadistica <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de Ventas por Marcas.
 -- Modelo: VLEstadisticasVentasMarca
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasVentasMarca CASCADE;
-CREATE VIEW VLEstadisticasVentasMarca AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarca";
+CREATE VIEW "VLEstadisticasVentasMarca" AS 
 	SELECT
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		df.id_producto_id,
@@ -916,7 +912,7 @@ CREATE VIEW VLEstadisticasVentasMarca AS
 		df.precio,
 		df.descuento,
 		df.total,
-		df.precio * df.cantidad * cv.mult_estadistica AS compra,
+		df.precio*df.cantidad*cv.mult_estadistica AS compra,
 		f.id_sucursal_id,
 		p.id_marca_id,
 		pk.nombre_producto_marca,
@@ -934,25 +930,29 @@ CREATE VIEW VLEstadisticasVentasMarca AS
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
 		cv.mult_estadistica <> 0
-		AND f.no_estadist = False;
+		AND f.no_estadist <> True;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de Ventas por Marcas Vendedor.
 -- Modelo: VLEstadisticasVentasMarcaVendedor
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasVentasMarcaVendedor CASCADE;
-CREATE VIEW VLEstadisticasVentasMarcaVendedor AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasMarcaVendedor";
+CREATE VIEW "VLEstadisticasVentasMarcaVendedor" AS 
 	SELECT
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.fecha_comprobante,
 		f.id_cliente_id,
 		df.id_producto_id,
 		p.nombre_producto,
 		p.medida,
 		df.cantidad,
-		df.costo * cv.mult_stock * -1 AS precio,
+		df.costo*cv.mult_stock*-1 AS precio,    -- Original (doc. en DRIVE). Toma costo del detalle de factura.
+		--p.costo*cv.mult_stock*-1 AS precio,   -- Para que cuadre con el rep. de la VPN
 		df.descuento,
-		(df.costo * df.cantidad) * (1 + (df.descuento / 100.0)) * cv.mult_estadistica AS total,
+		--(df.costo+(df.costo*df.descuento/100.0))*df.cantidad*cv.mult_estadistica AS total,  -- Consulta original (doc. en DRIVE)
+		--(p.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',   -- Así cuadra con reportes de la VPN
+		(df.costo*df.cantidad)*(1+(df.descuento/100.0)) * cv.mult_estadistica  AS 'total',    -- Tomando costo del detalle de factura.
 		f.id_sucursal_id,
 		c.id_vendedor_id,
 		p.id_marca_id,
@@ -972,33 +972,35 @@ CREATE VIEW VLEstadisticasVentasMarcaVendedor AS
 		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 	WHERE
 		cv.mult_estadistica <> 0
-		AND f.no_estadist = False;
+		AND f.no_estadist <> True;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de clientes sin Ventas.
 -- Modelo: VLClienteUltimaVenta
--- ============================================
-DROP VIEW IF EXISTS VLClienteUltimaVenta CASCADE;
-CREATE VIEW VLClienteUltimaVenta AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLClienteUltimaVenta";
+CREATE VIEW "VLClienteUltimaVenta" AS 
 	SELECT 
 		f.id_cliente_id,
 		c.nombre_cliente,
-		MAX(f.fecha_comprobante) AS fecha_ultimo_comprobante,
+		MAX(f.fecha_comprobante) fecha_ultimo_comprobante,
 		f.id_vendedor_id
 	FROM
 		factura f
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 	GROUP BY
-		f.id_cliente_id, c.nombre_cliente, f.id_vendedor_id
+		f.id_cliente_id
 	ORDER BY
 		f.id_cliente_id;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Estadísticas de Ventas por Provincia.
 -- Modelo: VLEstadisticasVentasProvincia
--- ============================================
-DROP VIEW IF EXISTS VLEstadisticasVentasProvincia CASCADE;
-CREATE VIEW VLEstadisticasVentasProvincia AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLEstadisticasVentasProvincia";
+CREATE VIEW "VLEstadisticasVentasProvincia" AS 
 	SELECT 
 		f.id_factura,
 		df.id_producto_id,
@@ -1009,9 +1011,10 @@ CREATE VIEW VLEstadisticasVentasProvincia AS
 		pm.nombre_modelo,
 		p.id_marca_id,
 		m.nombre_producto_marca,
-		df.cantidad * cv.mult_estadistica AS cantidad,
-		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
+		df.cantidad*cv.mult_estadistica AS cantidad,
+		ROUND(((df.cantidad*df.precio)+(df.cantidad*df.precio*df.descuento/100.0))*cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
+		p.id_marca_id,
 		f.id_sucursal_id,
 		f.id_vendedor_id,
 		pr.id_provincia,
@@ -1031,15 +1034,16 @@ CREATE VIEW VLEstadisticasVentasProvincia AS
 		AND cv.mult_estadistica <> 0
 		AND f.no_estadist = False;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Comprobantes sin Estadísticas.
--- Modelo: VLVentaSinEstadistica
--- ============================================
-DROP VIEW IF EXISTS VLVentaSinEstadistica CASCADE;
-CREATE VIEW VLVentaSinEstadistica AS 
+-- Modelo: vlVentaSinEstadistica
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLVentaSinEstadistica";
+CREATE VIEW "VLVentaSinEstadistica" AS 
 	SELECT
 		f.fecha_comprobante, 
-		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante, 
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		f.id_cliente_id,
 		c.nombre_cliente,
 		f.total,
@@ -1056,12 +1060,13 @@ CREATE VIEW VLVentaSinEstadistica AS
 	WHERE
 		f.no_estadist = True;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Tablas Dinámicas de Ventas - Ventas por Comprobantes.
 -- Modelo: VLTablaDinamicaVentas
--- ============================================
-DROP VIEW IF EXISTS VLTablaDinamicaVentas CASCADE;
-CREATE VIEW VLTablaDinamicaVentas AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaVentas";
+CREATE VIEW "VLTablaDinamicaVentas" AS 
 	SELECT
 		s.nombre_sucursal,
 		cv.nombre_comprobante_venta,
@@ -1069,10 +1074,10 @@ CREATE VIEW VLTablaDinamicaVentas AS
 		f.letra_comprobante,
 		f.numero_comprobante,
 		CASE
-			WHEN f.remito IS NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
+			WHEN f.remito is NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
 			ELSE ''
-		END AS remito,
-		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante, 
+		END AS 'remito',
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		CASE f.condicion_comprobante
 			WHEN 1 THEN 'Contado'
 			WHEN 2 THEN 'Cta. Cte.'
@@ -1083,11 +1088,11 @@ CREATE VIEW VLTablaDinamicaVentas AS
 		ti.codigo_iva AS sitiva,
 		c.cuit,
 		c.mayorista,
-		f.gravado * cv.mult_venta AS gravado,
-		f.exento * cv.mult_venta AS exento,
-		f.iva * cv.mult_venta AS iva,
-		f.percep_ib * cv.mult_venta AS percepcion,
-		f.total * cv.mult_venta AS total,
+		f.gravado*cv.mult_venta AS gravado,
+		f.exento*cv.mult_venta AS exento,
+		f.iva*cv.mult_venta AS iva,
+		f.percep_ib*cv.mult_venta AS percepcion,
+		f.'total'*cv.mult_venta AS 'total',
 		f.no_estadist,
 		f.id_user_id,
 		c.codigo_postal,
@@ -1108,12 +1113,13 @@ CREATE VIEW VLTablaDinamicaVentas AS
 		LEFT JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
 		LEFT JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Tablas Dinámicas de Ventas - Detalle de Ventas por Productos.
 -- Modelo: VLTablaDinamicaDetalleVentas
--- ============================================
-DROP VIEW IF EXISTS VLTablaDinamicaDetalleVentas CASCADE;
-CREATE VIEW VLTablaDinamicaDetalleVentas AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaDetalleVentas";
+CREATE VIEW "VLTablaDinamicaDetalleVentas" AS 
 	SELECT
 		df.id_factura_id,
 		s.nombre_sucursal,
@@ -1122,10 +1128,10 @@ CREATE VIEW VLTablaDinamicaDetalleVentas AS
 		f.letra_comprobante,
 		f.numero_comprobante,
 		CASE
-			WHEN f.remito IS NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
+			WHEN f.remito is NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
 			ELSE ''
-		END AS remito,
-		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante, 
+		END AS 'remito',
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		CASE f.condicion_comprobante
 			WHEN 1 THEN 'Contado'
 			WHEN 2 THEN 'Cta. Cte.'
@@ -1143,15 +1149,15 @@ CREATE VIEW VLTablaDinamicaDetalleVentas AS
 		pm.nombre_producto_marca,
 		pf.nombre_producto_familia,
 		p.segmento,
-		df.cantidad * cv.mult_venta AS cantidad,
+		df.cantidad*cv.mult_venta AS cantidad,
 		df.costo,
 		df.precio,
 		df.descuento,
-		df.gravado * cv.mult_venta AS gravado,
-		df.no_gravado * cv.mult_venta AS no_gravado,
+		df.gravado*cv.mult_venta AS gravado,
+		df.no_gravado*cv.mult_venta AS no_gravado,
 		df.alic_iva,
-		df.iva * cv.mult_venta AS iva,
-		df.total * cv.mult_venta AS total,
+		df.iva*cv.mult_venta AS iva,
+		df.'total'*cv.mult_venta AS 'total',
 		f.no_estadist,
 		f.id_user_id,
 		c.codigo_postal,
@@ -1180,12 +1186,13 @@ CREATE VIEW VLTablaDinamicaDetalleVentas AS
 		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
 		JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Tablas Dinámicas de Ventas - Tablas para Estadísticas.
 -- Modelo: VLTablaDinamicaEstadistica
--- ============================================
-DROP VIEW IF EXISTS VLTablaDinamicaEstadistica CASCADE;
-CREATE VIEW VLTablaDinamicaEstadistica AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLTablaDinamicaEstadistica";
+CREATE VIEW "VLTablaDinamicaEstadistica" AS 
 	SELECT
 		df.id_factura_id,
 		s.nombre_sucursal,
@@ -1194,10 +1201,10 @@ CREATE VIEW VLTablaDinamicaEstadistica AS
 		f.letra_comprobante,
 		f.numero_comprobante,
 		CASE
-			WHEN f.remito IS NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
+			WHEN f.remito is NOT NULL AND f.remito != '' AND f.remito != '0000-00000000' THEN f.remito
 			ELSE ''
-		END AS remito,
-		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante, 
+		END AS 'remito',
+		(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante, 
 		CASE f.condicion_comprobante
 			WHEN 1 THEN 'Contado'
 			WHEN 2 THEN 'Cta. Cte.'
@@ -1215,15 +1222,15 @@ CREATE VIEW VLTablaDinamicaEstadistica AS
 		pm.nombre_producto_marca,
 		pf.nombre_producto_familia,
 		p.segmento,
-		df.cantidad * cv.mult_estadistica AS cantidad,
+		df.cantidad*cv.mult_estadistica AS cantidad,
 		df.costo,
 		df.precio,
 		df.descuento,
-		df.gravado * cv.mult_estadistica AS gravado,
-		df.no_gravado * cv.mult_estadistica AS no_gravado,
+		df.gravado*cv.mult_estadistica AS gravado,
+		df.no_gravado*cv.mult_estadistica AS no_gravado,
 		df.alic_iva,
-		df.iva * cv.mult_estadistica AS iva,
-		df.total * cv.mult_estadistica AS total,
+		df.iva*cv.mult_estadistica AS iva,
+		df.'total'*cv.mult_estadistica AS 'total',
 		f.no_estadist,
 		f.id_user_id,
 		c.codigo_postal,
@@ -1252,15 +1259,16 @@ CREATE VIEW VLTablaDinamicaEstadistica AS
 		JOIN tipo_iva ti ON c.id_tipo_iva_id = ti.id_tipo_iva
 		JOIN marketing_origen mo ON f.id_marketing_origen_id = mo.id_marketing_origen
 	WHERE
-		cv.mult_estadistica <> 0
-		AND f.no_estadist = False;
+		cv.mult_estadistica<>0
+		AND f.no_estadist=False;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Lista de Precios.
 -- Modelo: VLLista
--- ============================================
-DROP VIEW IF EXISTS VLLista CASCADE;
-CREATE VIEW VLLista AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLLista";
+CREATE VIEW "VLLista" AS 
 	SELECT
 		p.id_producto,
 		p.id_cai_id,
@@ -1300,12 +1308,13 @@ CREATE VIEW VLLista AS
 		LEFT JOIN producto_estado pe ON p.id_producto_estado_id = pe.id_producto_estado
 		LEFT JOIN codigo_alicuota ca ON p.id_alicuota_iva_id = ca.id_alicuota_iva;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Lista de Precios a Revendedor.
 -- Modelo: VLListaRevendedor
--- ============================================
-DROP VIEW IF EXISTS VLListaRevendedor CASCADE;
-CREATE VIEW VLListaRevendedor AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLListaRevendedor";
+CREATE VIEW "VLListaRevendedor" AS 
 	SELECT
 		p.id_familia_id,
 		pf.nombre_producto_familia,
@@ -1329,12 +1338,13 @@ CREATE VIEW VLListaRevendedor AS
 		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Listado de Stock por Sucursal.
 -- Modelo: VLStockSucursal
--- ============================================
-DROP VIEW IF EXISTS VLStockSucursal CASCADE;
-CREATE VIEW VLStockSucursal AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockSucursal";
+CREATE VIEW "VLStockSucursal" AS 
 	SELECT
 		p.id_familia_id,
 		pf.nombre_producto_familia,
@@ -1347,8 +1357,10 @@ CREATE VIEW VLStockSucursal AS
 		pc.cai,
 		p.medida,
 		p.nombre_producto,
+	--	p.precio,
 		ps.stock,
-		p.costo * ps.stock AS costo_inventario,
+	--	ps.minimo,
+		p.costo*ps.stock AS costo_inventario,
 		ps.id_deposito_id
 	FROM
 		producto_stock ps
@@ -1360,20 +1372,22 @@ CREATE VIEW VLStockSucursal AS
 	WHERE
 		ps.stock <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Stock General por Sucursal.
 -- Modelo: VLStockGeneralSucursal
--- ============================================
-DROP VIEW IF EXISTS VLStockGeneralSucursal CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockGeneralSucursal";
 CREATE VIEW VLStockGeneralSucursal AS 
 	SELECT 1 AS dummy;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Listado de Stock a Fecha.
 -- Modelo: VLStockFecha
--- ============================================
-DROP VIEW IF EXISTS VLStockFecha CASCADE;
-CREATE VIEW VLStockFecha AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockFecha";
+CREATE VIEW "VLStockFecha" AS 
 	SELECT
 		ROW_NUMBER() OVER() AS id,
 		p.id_familia_id,
@@ -1387,6 +1401,7 @@ CREATE VIEW VLStockFecha AS
 		pc.cai,
 		p.medida,
 		p.nombre_producto,
+	--	ps.minimo,
 		SUM(ps.stock) AS stock
 	FROM
 		producto_stock ps
@@ -1396,22 +1411,22 @@ CREATE VIEW VLStockFecha AS
 		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
-		p.tipo_producto = 'P' AND
+		p.tipo_producto = "P" AND
 		ps.stock <> 0
-	GROUP BY
-		p.id_familia_id, pf.nombre_producto_familia, p.id_modelo_id, pm.nombre_modelo, p.id_marca_id, px.nombre_producto_marca,
-		ps.id_producto_id, p.id_cai_id,pc.cai, p.medida, p.nombre_producto
+	GROUP by
+		ps.id_producto_id
 	HAVING
 		SUM(ps.stock) <> 0
-	ORDER BY
+	ORDER by
 		p.id_familia_id, p.id_modelo_id, p.id_marca_id, ps.id_producto_id;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Listado de Stock Único.
 -- Modelo: VLStockUnico
--- ============================================
-DROP VIEW IF EXISTS VLStockUnico CASCADE;
-CREATE VIEW VLStockUnico AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockUnico";
+CREATE VIEW "VLStockUnico" AS 
 	SELECT
 		p.id_familia_id,
 		pf.nombre_producto_familia,
@@ -1424,6 +1439,7 @@ CREATE VIEW VLStockUnico AS
 		pc.cai,
 		p.medida,
 		p.nombre_producto,
+	--	ps.minimo,
 		SUM(ps.stock) AS stock
 	FROM
 		producto_stock ps
@@ -1434,31 +1450,31 @@ CREATE VIEW VLStockUnico AS
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
 		ps.stock <> 0
-	GROUP BY
-		p.id_familia_id, pf.nombre_producto_familia, p.id_modelo_id, pm.nombre_modelo, p.id_marca_id, px.nombre_producto_marca,
-		ps.id_producto_id, p.nombre_producto, p.id_cai_id, pc.cai, p.medida
-
+	GROUP by
+		ps.id_producto_id
 	HAVING
 		SUM(ps.stock) <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Reposición de Stock.
--- Modelo: VLReposicionStock
--- ============================================
-DROP VIEW IF EXISTS VLReposicionStock CASCADE;
+-- Modelo: VLStockGeneralSucursal
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLReposicionStock";
 CREATE VIEW VLReposicionStock AS 
 	SELECT 1 AS dummy;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Movimiento Interno de Stock.
 -- Modelo: VLMovimientoInternoStock
--- ============================================
-DROP VIEW IF EXISTS VLMovimientoInternoStock CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLMovimientoInternoStock";
 CREATE VIEW VLMovimientoInternoStock AS
 	SELECT
 		f.fecha_comprobante,
 		f.numero_comprobante,
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 		f.observa_comprobante,
 		df.id_producto_id,
 		p.medida,
@@ -1474,13 +1490,14 @@ CREATE VIEW VLMovimientoInternoStock AS
 		INNER JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
 		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE
-		cv.interno;
+		cv.interno = 1;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Stock por Cliente en Depósito.
 -- Modelo: VLStockCliente
--- ============================================
-DROP VIEW IF EXISTS VLStockCliente CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockCliente";
 CREATE VIEW VLStockCliente AS 
 	SELECT
 		f.id_cliente_id,
@@ -1492,7 +1509,11 @@ CREATE VIEW VLStockCliente AS
 		sc.cantidad,
 		sc.retirado,
 		(sc.cantidad - sc.retirado) AS stock,
-		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5) || '  ' || TO_CHAR(f.fecha_comprobante, 'DD/MM/YYYY')) AS comprobante,
+		--f.compro,
+		--f.letra_comprobante,
+		--f.numero_comprobante,
+		--f.fecha_comprobante,
+		(f.compro || '  ' || f.letra_comprobante || '  ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5) || '  ' || strftime('%d/%m/%Y', f.fecha_comprobante)) AS comprobante,
 		f.id_sucursal_id,
 		f.id_vendedor_id
 	FROM
@@ -1504,11 +1525,12 @@ CREATE VIEW VLStockCliente AS
 	WHERE
 		sc.cantidad <> sc.retirado;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Stock en Depósitos de Clientes.
 -- Modelo: VLStockDeposito
--- ============================================
-DROP VIEW IF EXISTS VLStockDeposito CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLStockDeposito";
 CREATE VIEW VLStockDeposito AS
 	SELECT
 		p.id_familia_id,
@@ -1521,7 +1543,7 @@ CREATE VIEW VLStockDeposito AS
 		p.medida,
 		pc.cai,
 		p.nombre_producto,
-		SUM(sc.cantidad - sc.retirado) AS stock,
+		SUM(sc.cantidad-sc.retirado) AS stock,
 		f.id_sucursal_id
 	FROM
 		stock_cliente sc
@@ -1533,18 +1555,17 @@ CREATE VIEW VLStockDeposito AS
 		INNER JOIN factura f ON sc.id_factura_id = f.id_factura
 	WHERE
 		sc.cantidad <> sc.retirado
-	GROUP BY
-		p.id_familia_id, pf.nombre_producto_familia, p.id_modelo_id, pm.nombre_modelo, p.id_marca_id, px.nombre_producto_marca,
-		sc.id_producto_id, p.nombre_producto, p.medida, pc.cai, f.id_sucursal_id
-
+	GROUP by
+		sc.id_producto_id
 	HAVING
 		SUM(sc.cantidad - sc.retirado) <> 0;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Ficha de Seguimiento de Stock por Código o CAI.
 -- Modelo: VLFichaSeguimientoStock
--- ============================================
-DROP VIEW IF EXISTS VLFichaSeguimientoStock CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLFichaSeguimientoStock";
 CREATE VIEW VLFichaSeguimientoStock AS 
 	SELECT
 		id_producto_id,
@@ -1566,7 +1587,7 @@ CREATE VIEW VLFichaSeguimientoStock AS
 		id_deposito_id,
 		marca
 	FROM (
-		-- Consulta VENTAS
+		-- Consulta VENTAS.
 		SELECT
 			df.id_producto_id,
 			p.id_cai_id,
@@ -1576,10 +1597,10 @@ CREATE VIEW VLFichaSeguimientoStock AS
 			p.id_marca_id,
 			pm.nombre_producto_marca,
 			f.fecha_comprobante,
-			(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(f.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+			(f.compro || ' ' || f.letra_comprobante || ' ' || SUBSTR(printf('%012d', f.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', f.numero_comprobante), 5)) AS comprobante,
 			(df.cantidad * cv.mult_stock) AS cantidad,
-			COALESCE(df.precio, 0.0)::DECIMAL AS precio,
-			COALESCE(df.total, 0.0)::DECIMAL AS total,
+			CAST(COALESCE(df.precio, 0.0) AS DECIMAL) AS precio,
+			CAST(COALESCE(df.total, 0.0) AS DECIMAL) AS total,
 			f.id_cliente_id AS id_cliente_proveedor,
 			c.nombre_cliente AS nombre_cliente_proveedor,
 			f.no_estadist,
@@ -1599,8 +1620,8 @@ CREATE VIEW VLFichaSeguimientoStock AS
 		
 		UNION ALL
 		
-		-- Consulta COMPRAS
 		SELECT
+			-- Consulta COMPRAS.
 			dc.id_producto_id,
 			p.id_cai_id,
 			pc.cai,
@@ -1609,10 +1630,10 @@ CREATE VIEW VLFichaSeguimientoStock AS
 			p.id_marca_id,
 			pm.nombre_producto_marca,
 			c.fecha_comprobante,
-			(c.compro || ' ' || c.letra_comprobante || ' ' || SUBSTRING(LPAD(c.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(c.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+			(c.compro || ' ' || c.letra_comprobante || ' ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
 			(dc.cantidad * cc.mult_stock) AS cantidad,
-			COALESCE(dc.precio, 0.0)::DECIMAL AS precio,
-			COALESCE(dc.total, 0.0)::DECIMAL AS total, 
+			CAST(COALESCE(dc.precio, 0.0) AS DECIMAL) AS precio,
+			CAST(COALESCE(dc.total, 0.0) AS DECIMAL) AS total, 
 			c.id_proveedor_id AS id_cliente_proveedor,
 			pr.nombre_proveedor AS nombre_cliente_proveedor,
 			False AS no_estadist,
@@ -1628,18 +1649,22 @@ CREATE VIEW VLFichaSeguimientoStock AS
 			LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 		WHERE
 			cc.mult_stock <> 0
-	) AS consulta_unida;
+	);
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Detalle de Compras por Proveedor.
 -- Modelo: VLDetalleCompraProveedor
--- ============================================
-DROP VIEW IF EXISTS VLDetalleCompraProveedor CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLDetalleCompraProveedor";
 CREATE VIEW VLDetalleCompraProveedor AS
 	SELECT
 		c.id_proveedor_id,
 		pv.nombre_proveedor,
-		(cc.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTRING(LPAD(c.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(c.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		--c.compro,
+		--c.letra_comprobante,
+		--c.numero_comprobante,
+		(cc.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
 		c.fecha_comprobante,
 		p.id_cai_id,
 		pc.cai,
@@ -1669,17 +1694,21 @@ CREATE VIEW VLDetalleCompraProveedor AS
 		INNER JOIN producto_deposito pd ON c.id_deposito_id = pd.id_producto_deposito
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Comprobantes Ingresados.
 -- Modelo: VLCompraIngresada
--- ============================================
-DROP VIEW IF EXISTS VLCompraIngresada CASCADE;
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLCompraIngresada";
 CREATE VIEW VLCompraIngresada AS
 	SELECT
+		--c.compro,
+		--c.letra_comprobante,
+		--c.numero_comprobante,
 		c.fecha_comprobante,
 		cc.codigo_comprobante_compra,
 		cc.nombre_comprobante_compra,
-		(cc.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTRING(LPAD(c.numero_comprobante::TEXT, 12, '0'), 1, 4) || '-' || SUBSTRING(LPAD(c.numero_comprobante::TEXT, 12, '0'), 5)) AS comprobante,
+		(cc.codigo_comprobante_compra || '  ' || c.letra_comprobante || '  ' || SUBSTR(printf('%012d', c.numero_comprobante), 1, 4) || '-' || SUBSTR(printf('%012d', c.numero_comprobante), 5)) AS comprobante,
 		c.id_proveedor_id,
 		p.nombre_proveedor,
 		c.total,
@@ -1689,12 +1718,13 @@ CREATE VIEW VLCompraIngresada AS
 		INNER JOIN comprobante_compra cc ON c.id_comprobante_compra_id = cc.id_comprobante_compra
 		INNER JOIN proveedor p ON c.id_proveedor_id = p.id_proveedor;
 
--- ============================================
+
+-- ---------------------------------------------------------------------------
 -- Stock Mínimo por CAI.
 -- Modelo: VLProductoMinimo
--- ============================================
-DROP VIEW IF EXISTS VLProductoMinimo CASCADE;
-CREATE VIEW VLProductoMinimo AS 
+-- ---------------------------------------------------------------------------
+DROP VIEW IF EXISTS "main"."VLProductoMinimo";
+CREATE VIEW "VLProductoMinimo" AS 
 	SELECT
 		pm.id_cai_id,
 		pc.cai, 

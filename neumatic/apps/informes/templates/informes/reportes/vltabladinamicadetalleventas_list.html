@@ -36,7 +36,9 @@
 					<th>CAI</th>
 					<th>Descripción</th>
 					<th class="numeric" style="padding-right: 15px;">Cantidad</th>
-					<th class="numeric" style="padding-right: 15px;">Costo</th>
+					{% if jerarquia in nivel_permitido %}
+						<th class="numeric" style="padding-right: 15px;">Costo</th>
+					{% endif %}
 					<th class="numeric" style="padding-right: 15px;">Precio</th>
 					<th class="numeric" style="padding-right: 15px;">Descuento</th>
 					<th class="numeric" style="padding-right: 15px;">Gravado</th>
@@ -57,7 +59,9 @@
 						<td>{{ obj.cai|default_if_none:"" }}</td>
 						<td>{{ obj.nombre_producto }}</td>
 						<td class="numeric" style="padding-right: 15px;">{{ obj.cantidad|formato_es_ar }}</td>
-						<td class="numeric" style="padding-right: 15px;">{{ obj.costo|formato_es_ar }}</td>
+						{% if jerarquia in nivel_permitido %}
+							<td class="numeric" style="padding-right: 15px;">{{ obj.costo|formato_es_ar }}</td>
+						{% endif %}
 						<td class="numeric" style="padding-right: 15px;">{{ obj.precio|formato_es_ar }}</td>
 						<td class="numeric" style="padding-right: 15px;">{{ obj.descuento|formato_es_ar }}</td>
 						<td class="numeric" style="padding-right: 15px;">{{ obj.gravado|formato_es_ar }}</td>

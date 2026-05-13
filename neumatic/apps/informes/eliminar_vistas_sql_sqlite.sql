@@ -1,3 +1,5 @@
+-- Scripts para eliminar las vistas SQL de Informes en la Base de Datos SQLite. 
+
 DROP VIEW IF EXISTS "main"."A";
 DROP VIEW IF EXISTS "main"."VLSaldosClientes";
 DROP VIEW IF EXISTS "main"."VLResumenCtaCte";
