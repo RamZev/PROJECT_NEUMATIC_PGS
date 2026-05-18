@@ -11,24 +11,32 @@ from apps.usuarios.models import User
 
 
 class ModeloBaseGenerico(models.Model):
-	id_user = models.ForeignKey(User, on_delete=models.PROTECT, verbose_name="Usuario", null=True, blank=True, default=1)
-	usuario = models.CharField(max_length=20, null=True, blank=True)
-	estacion = models.CharField(max_length=20, null=True, blank=True)
-	fcontrol = models.CharField(max_length=22, null=True, blank=True)
-	
-	
-	class Meta:
-		abstract = True
-	
-	def save(self, *args, **kwargs):
-		
-		#-- Obtiene el nombre del equipo (estación) en Windows.
-		if not self.estacion:
-			self.estacion = socket.gethostname()
-		
-		#-- Obtiene la fecha y hora actual en el formato deseado.
-		if not self.fcontrol:
-			#-- Reemplaza con el formato deseado.
-			self.fcontrol = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-		
-		super(ModeloBaseGenerico, self).save(*args, **kwargs)
+    id_user = models.ForeignKey(
+        User, 
+        on_delete=models.PROTECT, 
+        verbose_name="Usuario Creador",
+        null=True, 
+        blank=True, 
+        default=1,
+        related_name='%(class)s_creados'
+    )
+    id_user_update = models.ForeignKey(
+        User, 
+        on_delete=models.PROTECT, 
+        verbose_name="Usuario Modificador", 
+        null=True, 
+        blank=True, 
+        related_name='%(class)s_modificados'
+    )
+    usuario = models.CharField(max_length=20, null=True, blank=True)
+    estacion = models.CharField(max_length=20, null=True, blank=True)
+    fcontrol = models.DateTimeField(auto_now_add=True, null=True, blank=True)  # Automático en creación
+    fcontrol2 = models.DateTimeField(auto_now=True, null=True, blank=True)     # Automático en actualización
+    
+    class Meta:
+        abstract = True
+    
+    def save(self, *args, **kwargs):
+        if not self.estacion:
+            self.estacion = socket.gethostname()
+        super().save(*args, **kwargs)
