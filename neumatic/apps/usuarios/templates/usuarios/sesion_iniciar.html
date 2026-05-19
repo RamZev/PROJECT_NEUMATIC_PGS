@@ -52,7 +52,20 @@
 	{% block maincomponent %}
 		
 		{% block principalcomponent %}
-			<!-- Login 9 - Bootstrap Brain Component -->
+			
+			{% comment %}
+			<!-- Limpiar messages que no son de login -->
+			{% if messages %}
+				<div class="alert alert-info alert-dismissible fade show">
+					{% for message in messages %}
+						<div class="alert alert-{{ message.tags }} mb-1">
+							{{ message }}
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+			{% endcomment %}
+			
 			<section class="py-3 py-md-5 py-xl-8">
 				<div class="container">
 					<div class="row gy-4 align-items-center">
@@ -138,7 +151,7 @@
 									<div class="row">
 										<div class="col-12">
 											<div class="d-flex gap-2 gap-md-4 flex-column flex-md-row justify-content-md-end mt-4">
-												<a href="#!" class="text-black">Olvidó su contraseña?</a>
+												<a href="{% url 'password_reset' %}" class="text-black">Olvidó su contraseña?</a>
 											</div>
 										</div>
 									</div>

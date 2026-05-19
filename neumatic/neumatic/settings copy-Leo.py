@@ -2,52 +2,27 @@
 import locale
 from pathlib import Path
 from dotenv import load_dotenv
-from os import path, getenv, makedirs
+from os import path, getenv
 
 #-- Cargar las variables de entorno del archivo .env
 load_dotenv()
 
-
-#-- Build paths inside the project like this: BASE_DIR / 'subdir'.
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-#-- Crear directorio de logs si no existe.
-LOGS_DIR = path.join(BASE_DIR, 'logs')
-if not path.exists(LOGS_DIR):
-	makedirs(LOGS_DIR, exist_ok=True)
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-
-#-- Detectar el entorno (development o production)
-ENVIRONMENT = getenv('ENVIRONMENT', 'development')
-
-
-#-- Quick-start development settings - unsuitable for production.
-#-- See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-#-- SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = getenv('SECRET_KEY')
 
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
 
-#-- SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = ENVIRONMENT == 'development'
+ALLOWED_HOSTS = []
 
-
-#-- Configuración de hosts permitidos según entorno.
-#-- Obtener hosts del .env y limpiar espacios en blanco.
-allowed_hosts_raw = getenv('ALLOWED_HOSTS', '')
-if allowed_hosts_raw:
-	#-- Limpiar espacios y separar por coma.
-	ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_raw.split(',') if host.strip()]
-else:
-	#-- Valores por defecto según entorno.
-	if ENVIRONMENT == 'production':
-		ALLOWED_HOSTS = []
-	else:
-		ALLOWED_HOSTS = ['localhost', '127.0.0.1']
-
-
-#-- Application definition.
+# Application definition
 
 INSTALLED_APPS = [
 	'django.contrib.admin',
@@ -81,7 +56,7 @@ TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
 		'DIRS': [
-			#-- Carpeta templates a nivel del proyecto
+			# Carpeta templates a nivel del proyecto
 			path.join(BASE_DIR, 'templates')    
 		],
 		'APP_DIRS': True,
@@ -102,16 +77,16 @@ WSGI_APPLICATION = 'neumatic.wsgi.application'
 
 DATABASES = {
 	'default': {
-		'ENGINE': getenv('DB_ENGINE'),
-		'NAME': getenv('DB_NAME'),
-		'USER': getenv('DB_USER'),
-		'PASSWORD': getenv('DB_PASSWORD'),
-		'HOST': getenv('DB_HOST'),
-		'PORT': getenv('DB_PORT'),
+		'ENGINE': getenv('DB_ENGINE', 'django.db.backends.postgresql'),
+		'NAME': getenv('DB_NAME', 'db_neumatic'),
+		'USER': getenv('DB_USER', 'postgres'),
+		'PASSWORD': getenv('DB_PASSWORD', ''),
+		'HOST': getenv('DB_HOST', 'localhost'),
+		'PORT': getenv('DB_PORT', '5432'),
 	}
 }
 
-#-- Password validation.
+# Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -130,13 +105,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-#-- Internationalization.
+# Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 LANGUAGE_CODE = 'es-ar'
+
 TIME_ZONE = 'America/Argentina/Buenos_Aires'
+
 USE_I18N = True  # Internacionalización.
 USE_TZ = True
+
 USE_L10N = True  # Localización.
 # USE_THOUSAND_SEPARATOR = True  #-- Activa el separador de miles. Cuidado porque formatea los IDs
 # DECIMAL_SEPARATOR = ','  # Fuerza la coma para decimales
@@ -144,40 +122,38 @@ USE_L10N = True  # Localización.
 # NUMBER_GROUPING = 3      # Agrupa de a 3 dígitos
 
 
-#-- Static files (CSS, JavaScript, Images).
+
+# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (path.join(BASE_DIR, 'static'),)
 STATIC_ROOT = path.join(BASE_DIR, 'staticfiles')
 
-#-- Archivos media.
+# Archivos media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = path.join(BASE_DIR, 'media')
 
-
-#-- Default primary key field type.
+# Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-#-- URL de redireccionamiento de la vista para iniciar sesión.
+# URL de redireccionamiento de la vista para iniciar sesión.
 LOGIN_URL = '/usuarios/sesion/iniciar/'
-
-#-- URL de redireccionamiento una vez logueado.
+# URL de redireccionamiento una vez logueado.
 LOGIN_REDIRECT_URL = '/'
-
-#-- URL de redireccionamiento al cerrar sesión.
+# URL de redireccionamiento al cerrar sesión.
 LOGOUT_REDIRECT_URL = '/usuarios/sesion/iniciar/'
 
-#-- Para evitar el "secuestro" de la sesión de usuario por JavaScript desde el front.
+# Para evitar el "secuestro" de la sesión de usuario por JavaScript desde el front.
 SESSION_COOKIE_HTTPONLY = True
 
-#-- La sesión del usuario se cierra al cerrar el navegador.
+# La sesión del usuario se cierra al cerrar el navegador.
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-#-- Modelo Usuario personalizado.
+# Modelo Usuario personalizado.
 AUTH_USER_MODEL = 'usuarios.User'
 
 
@@ -188,33 +164,37 @@ except locale.Error:
 	locale.setlocale(locale.LC_ALL, 'spanish')      # Windows como fallback
 
 
-# ============================================================================
-# CONFIGURACIÓN DE CORREO ELECTRÓNICO
-# ============================================================================
+#-- Datos para la configuración del correo electrónico.
 
-#-- Configuraciones comunes para ambos entornos (pueden ser sobreescritas por el .env según el entorno).
+#-- Detectar automáticamente si estamos en desarrollo o producción.
+ENVIRONMENT = getenv('ENVIRONMENT', 'desarrollo')
 
-#-- Backend de correo.
-EMAIL_BACKEND = getenv('EMAIL_BACKEND', None)
-
-#-- Dirección de correo desde la cual se enviarán los emails del sistema.
-DEFAULT_FROM_EMAIL = getenv('DEFAULT_FROM_EMAIL', None)
-
-#-- Prefijo para asuntos de correo (útil para identificar emails del sistema).
-EMAIL_SUBJECT_PREFIX=getenv('EMAIL_SUBJECT_PREFIX', None)
-
-#-- Tiempo de expiración del token de recuperación (24 horas, en segundos).
-PASSWORD_RESET_TIMEOUT = int(getenv('PASSWORD_RESET_TIMEOUT', 0))
-
-#-- Timeout para envío de emails (en segundos).
-EMAIL_TIMEOUT = int(getenv('EMAIL_TIMEOUT', 0))
-
-#-- Configuración según el entorno (development o production).
-if ENVIRONMENT == 'production' or ENVIRONMENT == 'development':
+if ENVIRONMENT == 'produccion':
 	#-- Configuración para producción.
-	EMAIL_HOST = getenv('EMAIL_HOST', None)
-	EMAIL_PORT = int(getenv('EMAIL_PORT', 0))
+	EMAIL_BACKEND = getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
+	EMAIL_HOST = getenv('EMAIL_HOST', 'smtp.gmail.com')
+	EMAIL_PORT = int(getenv('EMAIL_PORT', 587))
 	EMAIL_USE_TLS = getenv('EMAIL_USE_TLS', 'True') == 'True'
 	EMAIL_USE_SSL = getenv('EMAIL_USE_SSL', 'False') == 'True'
-	EMAIL_HOST_USER = getenv('EMAIL_HOST_USER', None)
-	EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD', None)
+	EMAIL_HOST_USER = getenv('EMAIL_HOST_USER')
+	EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
+	DEFAULT_FROM_EMAIL = getenv('DEFAULT_FROM_EMAIL')
+	
+	# Para emails con nombre personalizado
+	# DEFAULT_FROM_EMAIL = f"Sistema ERP <{EMAIL_HOST_USER}>"
+	
+	# Timeout para envío de emails (en segundos)
+	EMAIL_TIMEOUT = int(getenv('EMAIL_TIMEOUT', 30))
+else:
+	# Configuración para desarrollo (usa la consola)
+	EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+	DEFAULT_FROM_EMAIL = getenv('DEFAULT_FROM_EMAIL', 'sistema@desarrollo.local')
+
+#-- Configuración adicional para recuperación de contraseña.
+
+#-- Tiempo de expiración del token de recuperación (24 horas, en segundos).
+PASSWORD_RESET_TIMEOUT = 86400
+
+#-- Para evitar el envío de emails a direcciones no válidas.
+#-- Si está en True, el sistema no envía correos a direcciones que no existen.
+# EMAIL_SUBJECT_PREFIX = '[Sistema ERP] '  # Prefijo para asuntos de correo
