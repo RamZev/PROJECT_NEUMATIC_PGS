@@ -4,8 +4,6 @@ from django.db.models import Q
 from django.http import JsonResponse
 from django.db import transaction
 from django.db.models import ProtectedError
-from django.db import transaction, IntegrityError
-from django.contrib import messages
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -105,6 +103,7 @@ class MaestroListView(ListView):
 		return self.paginate_by
 
 
+
 class AuditoriaMixin:
     """Mixin para manejar correctamente la auditoría en creación y actualización"""
     
@@ -128,175 +127,124 @@ class AuditoriaMixin:
 
 @method_decorator(login_required, name='dispatch')
 class MaestroCreateView(AuditoriaMixin, PermissionRequiredMixin, CreateView):
-    list_view_name = None
-    
-    def form_valid(self, form):
-        user = self.request.user
-        
-        if not form.instance.pk:  # CREACIÓN
-            form.instance.id_user = user
-            form.instance.usuario = user.username
-        else:  # ACTUALIZACIÓN
-            form.instance.id_user_update = user
-        
-        try:
-            with transaction.atomic():
-                response = super().form_valid(form)
-                # Mensaje de éxito
-                messages.success(
-                    self.request, 
-                    f'✅ {self.model._meta.verbose_name} creado correctamente.'
-                )
-                return response
-        except Exception as e:
-            # Mensaje de error
-            messages.error(self.request, f'❌ Error al guardar: {str(e)}')
-            return redirect(self.list_view_name or 'home')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        context.update({
-            "accion": f"Crear {self.model._meta.verbose_name}",
-            "list_view_name": self.list_view_name,
-        })
-        
-        context['form'] = self.get_form()
-        context['requerimientos'] = obtener_requerimientos_modelo(self.model)
-        context['fecha'] = timezone.now()
-        
-        return context
-    
-    def handle_no_permission(self):
-        messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-        return redirect(self.list_view_name or 'home')
+	list_view_name = None
+	
+	# def form_valid(self, form):
+	# 	#-- Accede al usuario evaluado.
+	# 	user = self.request.user
+		
+	# 	#-- Asigna el usuario directamente en el modelo.
+	# 	form.instance.id_user = user
+	# 	form.instance.usuario = user.username
+		
+	# 	try:
+	# 		#-- Manejo de transacciones.
+	# 		with transaction.atomic():
+	# 			return super().form_valid(form)
+		
+	# 	except Exception as e:
+	# 		#-- Captura el error de transacción.
+	# 		context = self.get_context_data(form=form)
+	# 		context['transaction_error'] = str(e)
+	# 		return self.render_to_response(context)
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		
+		#-- Agregar datos comunes al contexto.
+		context.update({
+			"accion": f"Crear {self.model._meta.verbose_name}",
+			"list_view_name": self.list_view_name,
+		})
+		
+		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
+		context['form'] = self.get_form()
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
+		#-- Para pasar la fecha a la lista del maestro.
+		context['fecha'] = timezone.now()
+		
+		return context
+	
+	#-- Método que agrega mensaje cuando no tiene permiso de crear.
+	def handle_no_permission(self):
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name or 'home')
 
 
 @method_decorator(login_required, name='dispatch')
 class MaestroUpdateView(AuditoriaMixin, PermissionRequiredMixin, UpdateView):
-    list_view_name = None
-    
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        
-        if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
-            kwargs['user'] = self.request.user
-        
-        return kwargs
-    
-    def form_valid(self, form):
-        user = self.request.user
-        
-        if not form.instance.pk:  # CREACIÓN
-            form.instance.id_user = user
-            form.instance.usuario = user.username
-        else:  # ACTUALIZACIÓN
-            form.instance.id_user_update = user
-        
-        try:
-            with transaction.atomic():
-                response = super().form_valid(form)
-                # Mensaje de éxito
-                messages.success(
-                    self.request, 
-                    f'✅ {self.model._meta.verbose_name} actualizado correctamente.'
-                )
-                return response
-        except Exception as e:
-            # Mensaje de error
-            messages.error(self.request, f'❌ Error al actualizar: {str(e)}')
-            return redirect(self.list_view_name or 'home')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        registro = self.get_object()
-        
-        context.update({
-            "accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
-            "list_view_name": self.list_view_name,
-        })
-        
-        context['form'] = self.get_form()
-        context['requerimientos'] = obtener_requerimientos_modelo(self.model)
-        context['fecha'] = timezone.now()
-        
-        return context
-    
-    def handle_no_permission(self):
-        messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-        return redirect(self.list_view_name or 'home')
-    list_view_name = None
-    
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        
-        if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
-            kwargs['user'] = self.request.user
-        
-        return kwargs
-    
-    def form_valid(self, form):
-        user = self.request.user
-        
-        if not form.instance.pk:  # CREACIÓN
-            form.instance.id_user = user
-            form.instance.usuario = user.username
-        else:  # ACTUALIZACIÓN
-            form.instance.id_user_update = user
-        
-        try:
-            with transaction.atomic():
-                return super().form_valid(form)
-        except Exception as e:
-            # Mostrar mensaje de error
-            messages.error(self.request, f'❌ Error al actualizar: {str(e)}')
-            # Redirigir al listado
-            return redirect(self.list_view_name or 'home')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        registro = self.get_object()
-        
-        context.update({
-            "accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
-            "list_view_name": self.list_view_name,
-        })
-        
-        context['form'] = self.get_form()
-        context['requerimientos'] = obtener_requerimientos_modelo(self.model)
-        context['fecha'] = timezone.now()
-        
-        return context
-    
-    def handle_no_permission(self):
-        messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-        return redirect(self.list_view_name or 'home')
+	list_view_name = None
+	
+	def get_form_kwargs(self):
+		"""
+		Pasa los argumentos adicionales al formulario solo si son necesarios.
+		"""
+		kwargs = super().get_form_kwargs()
+		
+		#-- Verificar si el formulario soporta el argumento 'user'.
+		if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
+			kwargs['user'] = self.request.user  # Pasar el usuario autenticado al formulario
+		
+		return kwargs
+	
+	# def form_valid(self, form):
+	# 	#-- Accede al usuario evaluado.
+	# 	user = self.request.user
+		
+	# 	#-- Asigna el usuario directamente en el modelo.
+	# 	form.instance.id_user = user
+	# 	form.instance.usuario = user.username
+		
+	# 	return super().form_valid(form)
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		
+		#-- Obtener el objeto que se está editando.
+		registro = self.get_object()
+		
+		#-- Agregar información personalizada al contexto.
+		context.update({
+			"accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
+			"list_view_name": self.list_view_name,
+		})
+		
+		#-- Asegurarse de que el formulario en el contexto sea el mismo que se validó
+		context['form'] = self.get_form()
+		context['requerimientos'] = obtener_requerimientos_modelo(self.model)
+		
+		#-- Para pasar la fecha a la lista del maestro.
+		context['fecha'] = timezone.now()
+		
+		return context
+	
+	#-- Método que agrega mensaje cuando no tiene permiso de modificar.
+	def handle_no_permission(self):
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name or 'home')
 
 
 @method_decorator(login_required, name='dispatch')
 class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
-    list_view_name = None
-    
-    def handle_no_permission(self):
-        messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-        return redirect(self.list_view_name or 'home')
-    
-    def post(self, request, *args, **kwargs):
-        try:
-            with transaction.atomic():
-                return self.delete(request, *args, **kwargs)
-        except ProtectedError:
-            messages.error(request, 'No se puede eliminar el registro ya que está relacionado con otros.')
-            return redirect(self.success_url)
-        except IntegrityError as e:
-            # Capturar errores de integridad (PK duplicada en cascada, etc.)
-            messages.error(request, f'Error de integridad al eliminar: {str(e)}')
-            return redirect(self.success_url)
-        except Exception as e:
-            messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
-            return redirect(self.success_url)
+	list_view_name = None
+	
+	#-- Método que agrega mensaje cuando no tiene permiso de eliminar.
+	def handle_no_permission(self):
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name or 'home')
+	
+	def post(self, request, *args, **kwargs):
+		try:
+			with transaction.atomic():
+				return self.delete(request, *args, **kwargs)
+		except ProtectedError:
+			messages.error(request, 'No se puede eliminar el registro ya que está relacionado con otros.')
+			return redirect(self.success_url)
+		except Exception as e:
+			messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
+			return redirect(self.success_url)
+
 
 # ------------------------------------------------------------------------------------
 @method_decorator(login_required, name='dispatch')
