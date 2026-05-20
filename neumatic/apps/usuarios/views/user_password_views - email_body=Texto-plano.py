@@ -1,7 +1,6 @@
 # neumatic\apps\usuarios\views\user_password_views.py
 from django.contrib.auth.views import PasswordResetView, PasswordResetConfirmView
 from django.urls import reverse_lazy
-from django.contrib import messages
 from apps.usuarios.forms.password_reset_form import CustomPasswordResetForm
 
 

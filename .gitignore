@@ -19,3 +19,4 @@ certif/
 neumatic_20251125/
 *.log
 neumatic/xml_afiparca/
+*.env
