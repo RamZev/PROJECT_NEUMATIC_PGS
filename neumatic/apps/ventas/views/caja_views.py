@@ -344,7 +344,10 @@ class CajaCreateView(MaestroCreateView):
         
         # 10. GUARDAR
         try:
-            self.object = form.save()
+            # Llamar al padre para que asigne id_user, usuario y guarde
+            return super().form_valid(form)
+            
+            # self.object = form.save()
             
             # messages.success(
             #     self.request,
@@ -353,7 +356,7 @@ class CajaCreateView(MaestroCreateView):
             #     extra_tags='success'
             # )
             
-            return redirect(self.success_url)
+            # return redirect(self.success_url)
             
         except Exception as e:
             messages.error(self.request, f'Error al guardar la caja: {str(e)}')

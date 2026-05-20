@@ -220,7 +220,7 @@ class PlanillaCajaInformeView(InformeFormView):
 		caja_obj = Caja.objects.filter(numero_caja=caja).first()
 		
 		usuario_apertura_caja = format_user_display(caja_obj.id_user)
-		usuario_cierre_caja = format_user_display(caja_obj.id_usercierre)
+		usuario_cierre_caja = format_user_display(caja_obj.id_user_update) if caja_obj.caja_cerrada else "Caja Abierta"
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		
@@ -434,7 +434,7 @@ def generar_pdf(contexto_reporte):
 	cuerpo_resumen_data = [
 		["Tarjeta Crédito:", formato_argentino(resumen_montos.get("tarjeta_credito", 0) or 0), "Retenciones:", formato_argentino(resumen_montos.get("retenciones", 0) or 0)],
 		["Tarjeta Débito:", formato_argentino(resumen_montos.get("tarjeta_debito", 0) or 0), "Compensa Facturas:", formato_argentino(resumen_montos.get("compensa_facturas", 0) or 0)],
-		["Depósitos:", formato_argentino(resumen_montos.get("depositos", 0) or 0), "Mercado Pago:", formato_argentino(resumen_montos.get("mercado_pago", 0) or 0)],
+		["Transferencias/Depósitos:", formato_argentino(resumen_montos.get("depositos", 0) or 0), "Mercado Pago:", formato_argentino(resumen_montos.get("mercado_pago", 0) or 0)],
 		["Cheques:", formato_argentino(resumen_montos.get("cheques", 0) or 0), "Dólares:", formato_argentino(resumen_montos.get("dolares", 0) or 0)]
 	]
 	
