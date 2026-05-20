@@ -1086,40 +1086,6 @@
 		</div>
 	</div>
 
-	<!-- Modal simple para Nota de Crédito (NCR) -->
-	<div class="modal fade" id="autorizacionNcModal" tabindex="-1" aria-labelledby="autorizacionNcModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header text-white bg-warning py-2">
-					<h5 class="modal-title fs-6" id="autorizacionNcModalLabel">
-						<i class="bi bi-exclamation-triangle-fill me-2"></i>
-						Autorización Requerida - Nota de Crédito
-					</h5>
-					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<div class="alert alert-warning mb-3">
-						<i class="bi bi-shield-lock me-2"></i>
-						<strong>Nota de Crédito</strong><br>
-						Se requiere autorización de supervisor para emitir una Nota de Crédito.
-					</div>
-					<div class="mb-3">
-						<label for="codigoAutorizacionNc" class="form-label">Código de Autorización:</label>
-						<input type="password" class="form-control" id="codigoAutorizacionNc" autocomplete="off" required>
-						<div id="mensajeErrorNc" class="invalid-feedback"></div>
-					</div>
-				</div>
-				<div class="modal-footer py-2">
-					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
-						<i class="bi bi-x-circle-fill me-2"></i>Cancelar
-					</button>
-					<button type="button" class="btn btn-warning btn-sm" id="btnConfirmarNc">
-						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
-					</button>
-				</div>
-			</div>
-		</div>
-	</div>
 
 {% endblock modals %}
 
@@ -2600,100 +2566,6 @@
 			///
 			
 		});
-
-		// Función para detectar si el comprobante seleccionado es Nota de Crédito
-		function esNotaCredito() {
-			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
-			if (!comprobanteSelect || !comprobanteSelect.value) return false;
-			
-			const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
-			const tipoComprobante = tipoComprobanteDict[comprobanteSelect.value] || '';
-			return tipoComprobante === "NOTA DE CRÉDITO";
-		}
-		///
-		// Función para mostrar modal de autorización de Nota de Crédito
-		function mostrarModalAutorizacionNc(dataCliente, callback) {
-			const modalElement = document.getElementById('autorizacionNcModal');
-			const modal = new bootstrap.Modal(modalElement);
-			const btnConfirmar = document.getElementById('btnConfirmarNc');
-			const codigoInput = document.getElementById('codigoAutorizacionNc');
-			const mensajeError = document.getElementById('mensajeErrorNc');
-			
-			// Limpiar campos
-			codigoInput.value = '';
-			mensajeError.style.display = 'none';
-			codigoInput.classList.remove('is-invalid');
-			
-			// Remover evento anterior y clonar botón
-			const nuevoBtnConfirmar = btnConfirmar.cloneNode(true);
-			btnConfirmar.parentNode.replaceChild(nuevoBtnConfirmar, btnConfirmar);
-			
-			nuevoBtnConfirmar.onclick = function() {
-				const codigo = codigoInput.value.trim();
-				
-				if (!codigo) {
-					mensajeError.textContent = 'Ingrese el código de autorización';
-					mensajeError.style.display = 'block';
-					codigoInput.classList.add('is-invalid');
-					return;
-				}
-				
-				// Deshabilitar botón durante la validación
-				nuevoBtnConfirmar.disabled = true;
-				nuevoBtnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
-				
-				fetch('/ventas/valida-autorizacion/', {
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-						'X-CSRFToken': getCookie('csrftoken')
-					},
-					body: JSON.stringify({
-						codigo: codigo,
-						cliente_id: dataCliente.id_cliente,
-						sucursal_id: document.getElementById('id_id_sucursal').value,
-						fecha_comprobante: document.getElementById('id_fecha_comprobante').value
-					})
-				})
-				.then(response => response.json())
-				.then(authData => {
-					if (authData.valido) {
-						// Guardar ID de autorización
-						document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
-						modal.hide();
-						callback(true);
-					} else {
-						mensajeError.textContent = authData.mensaje || 'Código de autorización incorrecto';
-						mensajeError.style.display = 'block';
-						codigoInput.classList.add('is-invalid');
-						nuevoBtnConfirmar.disabled = false;
-						nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
-					}
-				})
-				.catch(error => {
-					console.error('Error:', error);
-					mensajeError.textContent = 'Error de conexión al validar';
-					mensajeError.style.display = 'block';
-					codigoInput.classList.add('is-invalid');
-					nuevoBtnConfirmar.disabled = false;
-					nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
-				});
-			};
-			
-			// Limpiar al cerrar el modal
-			modalElement.addEventListener('hidden.bs.modal', function onHidden() {
-				modalElement.removeEventListener('hidden.bs.modal', onHidden);
-				codigoInput.value = '';
-				mensajeError.style.display = 'none';
-				codigoInput.classList.remove('is-invalid');
-				if (callback && !document.getElementById('id_id_valida').value) {
-					callback(false);
-				}
-			}, { once: true });
-			
-			modal.show();
-		}		
-		///
 	</script>
 	
 	<script>
@@ -3221,22 +3093,6 @@
 							buscarClienteInput.focus();
 							return;
 						}
-
-						///-
-						// VERIFICAR NOTA DE CRÉDITO (NCR)
-						if (esNotaCredito()) {
-							mostrarModalAutorizacionNc(data, function(autorizada) {
-								if (autorizada) {
-									completarDatosCliente(data);
-								} else {
-									buscarClienteInput.value = '';
-									buscarClienteInput.focus();
-									document.getElementById('id_id_cliente').value = '';
-								}
-							});
-							return; // IMPORTANTE: Salir para no continuar
-						}
-						///-
 						
 						// Validar vencimientos de documentos
 						const clienteId = data.id_cliente;
@@ -3244,145 +3100,25 @@
 							fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
 							.then(response => response.json())
 							.then(vencimientoData => {
-								///
-								// Limpiar el campo buscar_cliente cuando se cierra el modal (ya sea por cancelar o por X)
-								const modalElement = document.getElementById('autorizacionModal');
-								modalElement.addEventListener('hidden.bs.modal', function () {
-									// Limpiar el campo de búsqueda de cliente
-									const buscarClienteInput = document.getElementById('buscar_cliente');
-									if (buscarClienteInput) {
-										buscarClienteInput.value = '';
-										buscarClienteInput.focus();
-									}
-									
-									// Limpiar también el campo oculto id_cliente por si acaso
-									const idClienteInput = document.getElementById('id_id_cliente');
-									if (idClienteInput) {
-										idClienteInput.value = '';
-									}
-									
-									// Limpiar campos del modal para la próxima vez
-									document.getElementById('codigoAutorizacion').value = '';
-									document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
-								});								
-								///
 								if (vencimientoData.requiere_autorizacion) {
-									// ========== MODAL DE AUTORIZACIÓN ==========
-									const autorizacionModal = new bootstrap.Modal(document.getElementById('autorizacionModal'));
-									const datosComprobante = vencimientoData.datos_comprobante || {};
+									// Mostrar alerta con los detalles del vencimiento
+									const comprobante = vencimientoData.datos_comprobante || {};
+									let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
+									mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
+									mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
+									mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
+									mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
+									mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
+									mensaje += `Contacte a un supervisor para autorización.`;
 									
-									// 1. Actualizar título del modal
-									document.getElementById('modalTitulo').innerHTML = `
-										<i class="bi bi-exclamation-triangle-fill me-2"></i>
-										Autorización Requerida - Documento Vencido
-									`;
-									
-									// 2. Actualizar mensaje principal
-									const mensajePrincipal = document.getElementById('mensajePrincipal');
-									mensajePrincipal.innerHTML = `
-										<div class="alert alert-warning mb-0">
-											<i class="bi bi-clock-history me-2"></i>
-											<strong>Cliente con documentos vencidos</strong><br>
-											El cliente <strong>${data.nombre || data.nombre_cliente}</strong> tiene documentos pendientes que requieren autorización de un supervisor.
-										</div>
-									`;
-									
-									// 3. Llenar datos del comprobante en el modal
-									document.getElementById('modalComprobante').textContent = 
-										`${datosComprobante.tipo_comprobante || 'N/A'}-${datosComprobante.letra_comprobante || 'N/A'}`;
-									document.getElementById('modalNumero').textContent = datosComprobante.numero_comprobante || 'N/A';
-									document.getElementById('modalFecha').textContent = datosComprobante.fecha_comprobante || 'N/A';
-									document.getElementById('modalDiasCredito').textContent = `${datosComprobante.dias_credito || 0} días`;
-									document.getElementById('modalVencimiento').textContent = datosComprobante.fecha_vencimiento || 'N/A';
-									
-									const diasVencidos = datosComprobante.dias_vencidos || 0;
-									const diasVencidosElement = document.getElementById('modalDiasVencidos');
-									diasVencidosElement.textContent = `${diasVencidos} días`;
-									if (diasVencidos > 0) {
-										diasVencidosElement.classList.add('text-danger', 'fw-bold');
-									}
-									
-									document.getElementById('modalMonto').textContent = 
-										`$${(datosComprobante.monto_pendiente || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
-									document.getElementById('modalVendedor').textContent = datosComprobante.vendedor || 'No asignado';
-									
-									// 4. Guardar datos del cliente
-									const clienteData = {
-										id_cliente: data.id_cliente,
-										cuit: data.cuit,
-										nombre: data.nombre,
-										direccion: data.direccion,
-										movil: data.movil,
-										email: data.email,
-										id_vendedor: data.id_vendedor,
-										nombre_vendedor: data.nombre_vendedor,
-										tipo_venta: data.tipo_venta,
-										condicion_venta: data.condicion_venta,
-										discrimina_iva: data.discrimina_iva,
-										vip: data.vip,
-										id_sucursal: data.id_sucursal
-									};
-									
-									// 5. Configurar botón de confirmación
-									const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
-									const nuevoBtnConfirmar = btnConfirmar.cloneNode(true);
-									btnConfirmar.parentNode.replaceChild(nuevoBtnConfirmar, btnConfirmar);
-									
-									nuevoBtnConfirmar.onclick = function() {
-										const codigo = document.getElementById('codigoAutorizacion').value.trim();
-										
-										if (!codigo) {
-											document.getElementById('mensajeErrorAutorizacion').textContent = 'Ingrese el código de autorización';
-											document.getElementById('mensajeErrorAutorizacion').style.display = 'block';
-											return;
-										}
-										
-										fetch('/ventas/valida-autorizacion/', {
-											method: 'POST',
-											headers: {
-												'Content-Type': 'application/json',
-												'X-CSRFToken': getCookie('csrftoken')
-											},
-											body: JSON.stringify({
-												codigo: codigo,
-												cliente_id: clienteData.id_cliente,
-												sucursal_id: document.getElementById('id_id_sucursal').value,
-												fecha_comprobante: document.getElementById('id_fecha_comprobante').value
-											})
-										})
-										.then(response => response.json())
-										.then(authData => {
-											if (authData.valido) {
-												document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
-												autorizacionModal.hide();
-												document.getElementById('codigoAutorizacion').value = '';
-												document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
-												completarDatosCliente(clienteData);
-											} else {
-												document.getElementById('mensajeErrorAutorizacion').textContent = 
-													authData.mensaje || 'Código de autorización incorrecto';
-												document.getElementById('mensajeErrorAutorizacion').style.display = 'block';
-											}
-										})
-										.catch(error => {
-											console.error('Error:', error);
-											document.getElementById('mensajeErrorAutorizacion').textContent = 'Error de conexión';
-											document.getElementById('mensajeErrorAutorizacion').style.display = 'block';
-										});
-									};
-									
-									// 6. Limpiar y mostrar modal
-									document.getElementById('codigoAutorizacion').value = '';
-									document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
-									autorizacionModal.show();
-									
-									return; // ← IMPORTANTE: Salir para no ejecutar el else
-									
+									alert(mensaje);
+									buscarClienteInput.value = '';
+									buscarClienteInput.focus();
+									return;
 								} else {
 									// Continuar con el flujo normal si no hay vencimientos
 									completarDatosCliente(data);
-								}								
-
+								}
 							})
 							.catch(error => {
 								console.error('Error validando vencimientos:', error);
