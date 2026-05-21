@@ -1292,7 +1292,9 @@ CREATE VIEW VLLista AS
 		p.descripcion_producto,
 		p.carrito,
 		p.obliga_operario,
-		p.iva_exento
+		p.iva_exento,
+		p.pts_premio,
+		p.pts_costo
 	FROM 
 		producto p
 		LEFT JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca

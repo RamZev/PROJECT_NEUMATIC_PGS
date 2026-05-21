@@ -66,6 +66,10 @@ class ProductoForm(CrudGenericForm):
 				forms.CheckboxInput(attrs={**formclasscheck}),
 			'obliga_operario': 
 				forms.CheckboxInput(attrs={**formclasscheck}),
+			'pts_premio': 
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99999}),
+			'pts_costo': 
+				forms.NumberInput(attrs={**formclasstext, 'min': 0, 'max': 99999}),
 		}
 	
 	

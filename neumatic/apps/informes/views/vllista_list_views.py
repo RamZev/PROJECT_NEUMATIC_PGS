@@ -272,6 +272,21 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"pts_premio": {
+			"label": "Pts. premio",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"pts_costo": {
+			"label": "Pts. costo",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		
 	}
 
 

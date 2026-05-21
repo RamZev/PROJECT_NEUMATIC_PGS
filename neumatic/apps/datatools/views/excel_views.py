@@ -1093,6 +1093,11 @@ def obtener_especificaciones_campo(campo_obj):
 			'pattern': r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$|^$',
 			'mensaje': 'Número positivo con hasta 13 dígitos y 2 decimales'
 		})
+	elif campo_obj.name in ['minimo', 'pts_premio', 'pts_costo']:
+		especificaciones.update({
+			'pattern': r'^(0|[1-9]\d{0,4})?$|^$',
+			'mensaje': 'Número entero positivo con hasta 5 dígitos'
+		})
 	
 	return especificaciones
 

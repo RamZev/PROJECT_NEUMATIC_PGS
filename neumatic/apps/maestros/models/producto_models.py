@@ -166,6 +166,18 @@ class Producto(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	pts_premio = models.IntegerField(
+		verbose_name="Pts. premio",
+		null=True,
+		blank=True,
+		default=0
+	)
+	pts_costo = models.IntegerField(
+		verbose_name="Pts. costo",
+		null=True,
+		blank=True,
+		default=0
+	)
 	
 	class Meta:
 		db_table = 'producto'
@@ -245,6 +257,12 @@ class Producto(ModeloBaseGenerico):
 		
 		if not re.match(r'^(0|[1-9]\d{0,13})(\.\d{1,2})?$|^$', descuento_str):
 			errors.update({'descuento': 'El valor debe ser positivo, con hasta 13 dígitos enteros y hasta 2 decimales, o estar en blanco o cero.'})
+		
+		if self.pts_premio is not None and (self.pts_premio < 0 or self.pts_premio > 99999):
+			errors.update({'pts_premio': 'El valor de Pts. premio debe ser un número entero entre 0 y 99999.'})
+		
+		if self.pts_costo is not None and (self.pts_costo < 0 or self.pts_costo > 99999):
+			errors.update({'pts_costo': 'El valor de Pts. costo debe ser un número entero entre 0 y 99999.'})
 		
 		if errors:
 			raise ValidationError(errors)
