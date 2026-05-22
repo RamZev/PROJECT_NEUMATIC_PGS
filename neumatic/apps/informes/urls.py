@@ -109,6 +109,7 @@ from apps.informes.views.cajaarqueo_list_views import *
 from apps.informes.views.detallecomprobantes_list_views import *
 from apps.informes.views.planillacaja_list_views import *
 from apps.informes.views.chequesfecha_list_views import *
+from apps.informes.views.caja_deposito_list_views import *
 
 
 #-- Otras rutas.
@@ -1213,6 +1214,18 @@ urlpatterns = [
 		 name="chequesfecha_vista_excel"),
 	path("chequesfecha/vista-csv/", chequesfecha_vista_csv, 
 		 name="chequesfecha_vista_csv"),
+	
+	#-- Detalle de Depósitos.
+	path('caja_deposito_informe/', CajaDepositoInformeView.as_view(), 
+		 name='caja_deposito_informe_list'),
+	path('caja_deposito/vista-preliminar/', caja_deposito_vista_pantalla, 
+		 name="caja_deposito_vista_pantalla"),
+	path("caja_deposito/vista-pdf/", caja_deposito_vista_pdf, 
+		 name="caja_deposito_vista_pdf"),
+	path("caja_deposito/vista-excel/", caja_deposito_vista_excel, 
+		 name="caja_deposito_vista_excel"),
+	path("caja_deposito/vista-csv/", caja_deposito_vista_csv, 
+		 name="caja_deposito_vista_csv"),
 	
 	
 	
