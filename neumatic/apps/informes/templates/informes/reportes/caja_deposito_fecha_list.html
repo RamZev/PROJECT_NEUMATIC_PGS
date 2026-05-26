@@ -1,0 +1,98 @@
+<!-- neumatic\apps\informes\templates\informes\reportes\caja_deposito_fecha_list.html -->
+
+{% extends 'informes/reportes/base_reportes.html' %}
+{% load static %}
+{% load custom_tags %}
+
+<!-- Bloque Header ------------------------------------------------------------------------- -->
+
+<!-- Contenido Inferior Izquierdo -->
+{% block header_bottom_left %}
+	{% for param, valor in parametros_i.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Contenido Inferior Derecho -->
+{% block header_bottom_right %}
+	{% for param, valor in parametros_d.items %}
+		<p class="compact-line-spacing"><strong>{{ param }}:</strong> {{ valor }}</p>
+	{% endfor %}
+{% endblock %}
+
+<!-- Bloque Content ------------------------------------------------------------------------ -->
+
+{% block content %}
+	<br>
+	<table style="max-width: 80%; margin: auto;">
+		
+		<thead>
+			<tr>
+				<th></th>
+				<th>Fecha</th>
+				<th>Concepto</th>
+				<th>Detalle</th>
+				<th>Comprobante</th>
+				<th class="numeric" style="padding-right: 15px">Importe</th>
+			</tr>
+		</thead>
+		
+		<tbody>
+			
+			{% for caja, datos_caja in objetos.items %}
+				<!-- Caja -->
+				<tr>
+					<td colspan="6" style="padding-top: 5px;">
+						<strong>CAJA: {{ caja|formatear_caja }} [{{ datos_caja.fecha_caja|date:"d/m/Y" }}] [{{ datos_caja.operador_caja }}]</strong>
+					</td>
+				</tr>
+				
+				<!-- Banco -->
+				{% for banco, datos_banco in datos_caja.banco.items %}
+					<tr>
+						<td></td>
+						<td colspan="5" style="padding-top: 5px;">
+							<strong>Banco: {{ banco }} </strong>
+						</td>
+					</tr>
+					
+					<!-- Depósitos -->
+					{% for deposito in datos_banco.depositos %}
+						<tr>
+							<td></td>
+							<td>{{ deposito.fecha_deposito|date:"d/m/Y" }}</td>
+							<td >{{ deposito.id_concepto_banco__nombre_concepto_banco }}</td>
+							<td >{{ deposito.detalle_deposito }}</td>
+							<td style="white-space: pre;">{{ deposito.comprobante_completo }}</td>
+							<td class="numeric">{{ deposito.importe_deposito|formato_es_ar }}</td>
+						</tr>
+					{% endfor %}
+					<!-- Total por Banco -->
+					<tr>
+						<td colspan="5" style="text-align: right;"><strong>Total Banco {{ banco }}:</strong></td>
+						<td class="numeric"><strong>{{ datos_banco.subtotal_banco|formato_es_ar }}</strong></td>
+					</tr>
+					
+				{% endfor %}
+					
+				<!-- Total por Caja -->
+				<tr>
+					<td colspan="5" style="text-align: right;"><strong>Total Caja {{ caja|formatear_caja }}:</strong></td>
+					<td class="numeric"><strong>{{ datos_caja.subtotal_caja|formato_es_ar }}</strong></td>
+				</tr>
+				
+				<tr>
+					<td colspan="6"><hr></td>
+				</tr>
+				
+			{% endfor %}
+			<!-- Total General -->
+			<tr>
+				<td colspan="5" style="text-align: right;"><strong>Total General:</strong></td>
+				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
+			</tr>			
+			
+		</tbody>
+	</table>
+	
+{% endblock content %}

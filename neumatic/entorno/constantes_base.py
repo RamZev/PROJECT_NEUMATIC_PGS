@@ -187,3 +187,9 @@ TIPO_NUMERACION = [
 	(2, 'Automática Sistema'),
 	(3, 'Automática ARCA'),
 ]
+
+FILTRO_CONDICION_VENTA = [
+	(1, 'Contado'),
+	(2, 'Cuenta Corriente'),
+	(0, 'Ambos'),
+]

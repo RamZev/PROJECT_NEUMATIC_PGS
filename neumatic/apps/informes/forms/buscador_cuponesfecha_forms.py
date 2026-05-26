@@ -35,8 +35,8 @@ class BuscadorCuponesFechaForm(InformesGenericForm):
 		user = kwargs.pop('user', None)
 		super().__init__(*args, **kwargs)
 		
-		#-- Si la jerarquía del usuario es diferente a 'A' asiganar su sucural.
-		if user and user.jerarquia != "A":
+		#-- Si la jerarquía del usuario es diferente a 'A' o no es superusuario, asignar su sucursal.
+		if user and user.jerarquia != "A" and not user.is_superuser:
 			#-- Fijar el campo sucursal del usuario.
 			self.fields['sucursal'].initial = user.id_sucursal
 			

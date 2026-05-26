@@ -1,13 +1,13 @@
-# neumatic\apps\informes\forms\buscador_vlresumenctacte_forms.py
+# neumatic\apps\informes\forms\buscador_vlresumenctactevendedor_forms.py
 from django import forms
 from datetime import date
 from .informes_generics_forms import InformesGenericForm
-from apps.maestros.models.cliente_models import Cliente
+from apps.maestros.models.vendedor_models import Vendedor
 from diseno_base.diseno_bootstrap import formclassselect, formclassdate, formclasscheck, formclasstext
 from entorno.constantes_base import FILTRO_CONDICION_VENTA
 
 
-class BuscadorResumenCtaCteForm(InformesGenericForm):
+class BuscadorResumenCtaCteVendedorForm(InformesGenericForm):
 	resumen_pendiente = forms.BooleanField(
 		label="Resumen de Cuenta Pendiente",
 		required=False,
@@ -29,15 +29,10 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 		label="Hasta Fecha",
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate}),
 	)
-	id_cliente = forms.IntegerField(
-		label="Cód. Cliente",
-		required=True,
-		widget=forms.NumberInput(attrs={**formclasstext})
-	)
-	nombre_cliente = forms.CharField(
-		label="Cliente",
-		required=False,
-		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
+	vendedor = forms.ModelChoiceField(
+		queryset=Vendedor.objects.filter(estatus_vendedor=True), 
+		label="Vendedor",
+		widget=forms.Select(attrs={**formclassselect})
 	)
 	observaciones = forms.CharField(
 		label="Leyenda",
@@ -66,7 +61,6 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 		cleaned_data = super().clean()
 		
 		resumen_pendiente = cleaned_data.get('resumen_pendiente')
-		id_cliente = cleaned_data.get("id_cliente")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
@@ -81,16 +75,6 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 			
 			if fecha_desde and fecha_hasta and fecha_desde > fecha_hasta:
 				self.add_error("fecha_hasta", "La fecha hasta no puede ser anterior a la fecha desde.")
-		
-		#-- Validar que se haya indicado un cliente solo si hay datos enviados.
-		if not id_cliente:
-			self.add_error("id_cliente", "Debe indicar un Código de Cliente.")
-		
-		if id_cliente:
-			try:
-				cliente = Cliente.objects.get(id_cliente=id_cliente)
-			except Cliente.DoesNotExist:
-				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
 		
 		return cleaned_data
 	

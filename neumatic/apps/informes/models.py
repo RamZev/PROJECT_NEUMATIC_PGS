@@ -87,16 +87,16 @@ class ResumenCtaCteManager(models.Manager):
 		#-- Se crea la consulta.
 		query = """
 			SELECT 
-				v.id_cliente_id, 
-				COALESCE(ROUND(SUM(v.total * 1.0), 2), 0.00) AS saldo_anterior 
+				id_cliente_id, 
+				COALESCE(ROUND(SUM(total * 1.0), 2), 0.00) AS saldo_anterior 
 			FROM
-				VLResumenCtaCte v 
+				VLResumenCtaCte
 			WHERE
-				v.id_cliente_id = %s
-				AND v.fecha_comprobante < %s
-				AND v.condicion_comprobante = 2
+				id_cliente_id = %s
+				AND fecha_comprobante < %s
+				AND condicion_comprobante = 2
 			GROUP BY 
-				v.id_cliente_id;
+				id_cliente_id;
 		"""
 		
 		#-- Ejecutar la consulta y extraer el valor.
@@ -116,30 +116,31 @@ class ResumenCtaCteManager(models.Manager):
 		#-- Se crea la consulta.
 		query = """
 			SELECT 
-				v.id_cliente_id, 
-				v.razon_social, 
-				v.nombre_comprobante_venta, 
-				v.letra_comprobante, 
-				v.numero_comprobante, 
-				v.numero, 
-				v.fecha_comprobante, 
-				v.remito, 
-				v.condicion_comprobante, 
-				v.condicion, 
-				v.total, 
-				v.entrega, 
-				v.debe, 
-				v.haber,
-				(v.debe + v.haber) AS saldo_movimiento,
-				v.intereses,
-				v.marca,
-				v.no_estadist
+				id_cliente_id, 
+				razon_social, 
+				nombre_comprobante_venta, 
+				letra_comprobante, 
+				numero_comprobante, 
+				numero, 
+				fecha_comprobante, 
+				remito, 
+				condicion_comprobante, 
+				condicion, 
+				total, 
+				entrega, 
+				debe, 
+				haber,
+				(debe + haber) AS saldo_movimiento,
+				intereses,
+				marca,
+				no_estadist,
+				id_vendedor_id
 			FROM
-				VLResumenCtaCte v
+				VLResumenCtaCte
 			WHERE
-				v.id_cliente_id = %s
-				AND v.total <> v.entrega
-				AND v.condicion_comprobante = 2
+				id_cliente_id = %s
+				AND total <> entrega
+				AND condicion_comprobante = 2
 		"""
 		
 		#-- Se añaden parámetros.
@@ -170,33 +171,34 @@ class ResumenCtaCteManager(models.Manager):
 		#-- Se crea la consulta.
 		query = """
 			SELECT 
-				v.id_cliente_id, 
-				v.razon_social, 
-				v.nombre_comprobante_venta, 
-				v.letra_comprobante, 
-				v.numero_comprobante, 
-				v.numero, 
-				v.fecha_comprobante, 
-				v.remito, 
-				v.condicion_comprobante, 
-				v.condicion, 
-				v.total, 
-				v.entrega, 
-				v.debe, 
-				v.haber,
+				id_cliente_id, 
+				razon_social, 
+				nombre_comprobante_venta, 
+				letra_comprobante, 
+				numero_comprobante, 
+				numero, 
+				fecha_comprobante, 
+				remito, 
+				condicion_comprobante, 
+				condicion, 
+				total, 
+				entrega, 
+				debe, 
+				haber,
 				CASE
-					WHEN v.condicion_comprobante = 2 THEN (v.debe + v.haber)
+					WHEN condicion_comprobante = 2 THEN (debe + haber)
 					ELSE 0
 				END AS saldo_movimiento,
-				v.intereses,
-				v.marca,
-				v.no_estadist
+				intereses,
+				marca,
+				no_estadist,
+				id_vendedor_id
 			FROM
-				VLResumenCtaCte v
+				VLResumenCtaCte
 			WHERE
-				v.id_cliente_id = %s 
-				AND v.fecha_comprobante BETWEEN %s AND %s 
-				AND v.condicion_comprobante BETWEEN %s AND %s
+				id_cliente_id = %s 
+				AND fecha_comprobante BETWEEN %s AND %s 
+				AND condicion_comprobante BETWEEN %s AND %s
 		"""
 		
 		#-- Se añaden parámetros.
@@ -221,6 +223,72 @@ class ResumenCtaCteManager(models.Manager):
 			resultados.append(item)
 		
 		return resultados
+
+	def obtener_resumen_cta_cte_vendedor(self, id_vendedor, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
+		""" Determina el Resumen de Cuenta Corriente de los cliente y período determinados de un vendedor específico. """
+		
+		from decimal import Decimal
+		
+		#-- Obtener el saldo anterior.
+		# saldo_anterior = self.obtener_saldo_anterior(id_cliente, fecha_desde)
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT 
+				id_cliente_id, 
+				razon_social, 
+				nombre_comprobante_venta, 
+				letra_comprobante, 
+				numero_comprobante, 
+				numero, 
+				fecha_comprobante, 
+				remito, 
+				condicion_comprobante, 
+				condicion, 
+				total, 
+				entrega, 
+				debe, 
+				haber,
+				CASE
+					WHEN condicion_comprobante = 2 THEN (debe + haber)
+					ELSE 0
+				END AS saldo_movimiento,
+				intereses,
+				marca,
+				no_estadist,
+				id_vendedor_id
+			FROM
+				VLResumenCtaCte
+			WHERE
+				id_vendedor_id = %s 
+				AND fecha_comprobante BETWEEN %s AND %s 
+				AND condicion_comprobante BETWEEN %s AND %s
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_vendedor, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2]
+		
+		#-- Se ejecuta la consulta.
+		resultados_raw = self.raw(query, params)
+		
+		return resultados_raw
+		
+		# #-- Calcular saldo acumulado en Python.
+		# resultados = []
+		# saldo_acumulado = saldo_anterior
+		# 
+		# for item in resultados_raw:
+		# 	#-- Convertir saldo_movimiento a Decimal.
+		# 	saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
+		# 	
+		# 	#-- Acumular.
+		# 	saldo_acumulado += saldo_movimiento
+		# 	
+		# 	#-- Asignar el saldo acumulado al objeto.
+		# 	item.saldo_acumulado = saldo_acumulado
+		# 	resultados.append(item)
+		# 
+		# return resultados
 
 
 class VLResumenCtaCte(models.Model):

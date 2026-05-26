@@ -44,6 +44,7 @@ from .views.caiestados_list_views import *
 #- Lote 1:
 from apps.informes.views.vlsaldosclientes_list_views import *
 from apps.informes.views.vlresumenctacte_list_views import *
+from apps.informes.views.vlresumenctactevendedor_list_views import *
 from apps.informes.views.vlmercaderiaporcliente_list_views import *
 from apps.informes.views.vlremitosclientes_list_views import *
 from apps.informes.views.vltotalremitosclientes_list_views import *
@@ -110,7 +111,7 @@ from apps.informes.views.detallecomprobantes_list_views import *
 from apps.informes.views.planillacaja_list_views import *
 from apps.informes.views.chequesfecha_list_views import *
 from apps.informes.views.caja_deposito_list_views import *
-
+from apps.informes.views.caja_deposito_fecha_list_views import *
 
 #-- Otras rutas.
 from apps.maestros.views.consulta_views_maestros import filtrar_localidad
@@ -566,6 +567,18 @@ urlpatterns = [
 		 name="vlresumenctacte_vista_excel"),
 	path("vlresumenctacte/vista-csv/", vlresumenctacte_vista_csv, 
 		 name="vlresumenctacte_vista_csv"),
+	
+	#-- VL Resumen Cuenta Corriente Vendedor.
+	path('vlresumenctactevendedor_informe/', VLResumenCtaCteVendedorInformeView.as_view(), 
+		 name='vlresumenctactevendedor_informe_list'),
+	path('vlresumenctactevendedor/vista-preliminar/', vlresumenctactevendedor_vista_pantalla, 
+		 name="vlresumenctactevendedor_vista_pantalla"),
+	path("vlresumenctactevendedor/vista-pdf/", vlresumenctactevendedor_vista_pdf, 
+		 name="vlresumenctactevendedor_vista_pdf"),	
+	path("vlresumenctactevendedor/vista-excel/", vlresumenctactevendedor_vista_excel, 
+		 name="vlresumenctactevendedor_vista_excel"),
+	path("vlresumenctactevendedor/vista-csv/", vlresumenctactevendedor_vista_csv, 
+		 name="vlresumenctactevendedor_vista_csv"),
 	
 	#-- VL Mercadería por Cliente.
 	path('vlmercaderiaporcliente_informe/', VLMercaderiaPorClienteInformeView.as_view(), 
@@ -1226,6 +1239,18 @@ urlpatterns = [
 		 name="caja_deposito_vista_excel"),
 	path("caja_deposito/vista-csv/", caja_deposito_vista_csv, 
 		 name="caja_deposito_vista_csv"),
+	
+	#-- Detalle de Depósitos por fecha.
+	path('caja_deposito_fecha_informe/', CajaDepositoFechaInformeView.as_view(), 
+		 name='caja_deposito_fecha_informe_list'),
+	path('caja_deposito_fecha/vista-preliminar/', caja_deposito_fecha_vista_pantalla, 
+		 name="caja_deposito_fecha_vista_pantalla"),
+	path("caja_deposito_fecha/vista-pdf/", caja_deposito_fecha_vista_pdf, 
+		 name="caja_deposito_fecha_vista_pdf"),
+	path("caja_deposito_fecha/vista-excel/", caja_deposito_fecha_vista_excel, 
+		 name="caja_deposito_fecha_vista_excel"),
+	path("caja_deposito_fecha/vista-csv/", caja_deposito_fecha_vista_csv, 
+		 name="caja_deposito_fecha_vista_csv"),
 	
 	
 	

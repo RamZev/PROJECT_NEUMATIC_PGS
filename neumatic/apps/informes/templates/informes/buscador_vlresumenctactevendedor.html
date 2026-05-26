@@ -1,0 +1,45 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlresumenctactevendedor.html -->
+ 
+<div class="row">
+	
+	<div class="col-md-12">
+		{{ form.resumen_pendiente }}
+		<label for="{{ form.resumen_pendiente.id_for_label }}">
+			{{ form.resumen_pendiente.label }}
+		</label>
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.condicion_venta.label }}
+		{{ form.condicion_venta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.fecha_desde.label }}
+		{{ form.fecha_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.fecha_hasta.label }}
+		{{ form.fecha_hasta }}
+	</div>
+	
+	<div class="col-md-6">
+		{{ form.vendedor.label }}
+		{{ form.vendedor }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-12">
+		{{ form.observaciones.label }}
+		{{ form.observaciones }}
+	</div>
+	
+</div>

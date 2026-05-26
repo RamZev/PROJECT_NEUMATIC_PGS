@@ -103,7 +103,8 @@ CREATE VIEW VLResumenCtaCte AS
 		CASE
 			WHEN f.no_estadist THEN 'S'
 			ELSE ''
-		END AS no_estadist
+		END AS no_estadist,
+		c.id_vendedor_id
 	FROM
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente

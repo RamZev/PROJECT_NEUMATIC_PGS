@@ -1,4 +1,4 @@
-# neumatic\apps\informes\forms\buscador_chequesfecha_forms.py
+# neumatic\apps\informes\forms\buscador_caja_deposito_fecha_forms.py
 from django import forms
 from datetime import date
 
@@ -7,7 +7,7 @@ from apps.maestros.models.sucursal_models import Sucursal
 from diseno_base.diseno_bootstrap import (formclassselect, formclassdate)
 
 
-class BuscadorChequesFechaForm(InformesGenericForm):
+class BuscadorCajaDepositoFechaForm(InformesGenericForm):
 
 	sucursal = forms.ModelChoiceField(
 		queryset=Sucursal.objects.filter(estatus_sucursal=True), 
@@ -18,12 +18,13 @@ class BuscadorChequesFechaForm(InformesGenericForm):
 	fecha_desde = forms.DateField(
 		required=False, 
 		label="Desde Fecha",
-		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+		widget=forms.TextInput(attrs={'type':'date', 'title': 'Fecha de la Caja desde.', **formclassdate}),
+		
 	)
 	fecha_hasta = forms.DateField(
 		required=False, 
 		label="Hasta Fecha",
-		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
+		widget=forms.TextInput(attrs={'type':'date', 'title': 'Fecha de la Caja hasta.', **formclassdate})
 	)
 	
 	def __init__(self, *args, **kwargs):

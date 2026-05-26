@@ -26,7 +26,7 @@ class BuscadorSaldosClientesForm(InformesGenericForm):
 		widget=forms.TextInput(attrs={'type':'date', **formclassdate})
 	)
 	vendedor = forms.ModelChoiceField(
-		queryset=Vendedor.objects.all(), 
+		queryset=Vendedor.objects.filter(estatus_vendedor=True),
 		required=False,
 		label="Vendedor",
 		widget=forms.Select(attrs={**formclassselect})

@@ -172,6 +172,24 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"id_factura__id_sucursal__id_sucursal": {
+			"label": "ID Sucursal",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+		},
+		"id_factura__id_sucursal__nombre_sucursal": {
+			"label": "Sucursal",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True,
+		},
 	}
 
 
@@ -195,7 +213,8 @@ class ChequesFechaInformeView(InformeFormView):
 		fecha_hasta = cleaned_data.get("fecha_hasta")
 		
 		queryset = ChequeRecibo.objects.select_related(
-			'id_factura_id_caja',
+			'id_factura',
+			'id_factura__id_caja',
 			'id_factura__id_comprobante_venta',
 			'id_banco',
 			'id_factura__id_caja__id_user'
@@ -230,6 +249,7 @@ class ChequesFechaInformeView(InformeFormView):
 		).values(
 			'id_factura__id_caja__numero_caja',
 			'id_factura__id_caja__fecha_caja',
+			'id_factura__id_caja__id_user__iniciales',
 			'codigo_banco',
 			'id_banco__nombre_banco',
 			'sucursal',
@@ -239,7 +259,8 @@ class ChequesFechaInformeView(InformeFormView):
 			'importe_cheque',
 			'comprobante_completo',
 			'electronico',
-			'id_factura__id_caja__id_user__iniciales'
+			'id_factura__id_sucursal__id_sucursal',
+			'id_factura__id_sucursal__nombre_sucursal',
 		).order_by(
 			'id_factura__id_caja__fecha_caja',
 			'id_factura__id_caja__numero_caja',

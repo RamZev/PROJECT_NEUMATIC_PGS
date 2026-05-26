@@ -470,15 +470,17 @@ def caja_deposito_vista_csv(request):
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
 	
+	titulo_reporte = "Detalle de Depositos por caja"
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
 		table_info=headers_titles,
-		report_title=ConfigViews.report_title
+		report_title=titulo_reporte
 	)
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{titulo_reporte}.csv"'
 	
 	return response

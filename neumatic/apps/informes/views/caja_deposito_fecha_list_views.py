@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\cuponesfecha_list_views.py
+# neumatic\apps\informes\views\caja_deposito_fecha_list_views.py
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -14,8 +14,8 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.ventas.models.recibo_models import TarjetaRecibo
-from ..forms.buscador_cuponesfecha_forms import BuscadorCuponesFechaForm
+from apps.ventas.models.recibo_models import DepositoRecibo
+from ..forms.buscador_caja_deposito_fecha_forms import BuscadorCajaDepositoFechaForm
 from utils.utils import deserializar_datos, normalizar, format_date, formato_argentino
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -23,20 +23,20 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Detalle de Tarjetas por fecha"
+	report_title = "Detalle de Depositos/Transferencias por fecha"
 	
 	#-- Modelo.
-	model = TarjetaRecibo
+	# model = ChequeRecibo
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorCuponesFechaForm
+	form_class = BuscadorCajaDepositoFechaForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
 	
 	#-- Nombre del modelo en minúsculas.
 	# model_string = model.__name__.lower()
-	model_string = "cuponesfecha"
+	model_string = "caja_deposito_fecha"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -60,8 +60,7 @@ class ConfigViews:
 	url_csv = f"{model_string}_vista_csv"
 	
 	#-- Plantilla Vista Preliminar Pantalla.
-	# reporte_pantalla = f"informes/reportes/{model_string}_list.html"
-	reporte_pantalla = f"informes/reportes/tarjetarecibo_list.html"
+	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
@@ -72,27 +71,45 @@ class ConfigViews:
 			"date_format": None,
 			"pdf": False,
 			"excel": True,
-			"csv": True,
+			"csv": True
 		},
-		"id_tarjeta": {
-			"label": "Cód. Tarjeta",
-			"col_width_pdf": 60,
+		"id_factura__id_caja__fecha_caja": {
+			"label": "Fecha Caja",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_factura__id_caja__id_user__iniciales": {
+			"label": "Usuario",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_cuenta_banco__id_banco": {
+			"label": "ID Banco",
+			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": False,
 			"excel": True,
 			"csv": True,
 		},
-		"id_tarjeta__nombre_tarjeta": {
-			"label": "Tarjeta",
-			"col_width_pdf": 70,
+		"id_cuenta_banco__id_banco__nombre_banco": {
+			"label": "Banco",
+			"col_width_pdf": 0,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": False,
 			"excel": True,
 			"csv": True,
 		},
-		"id_factura__fecha_comprobante": {
+		"fecha_deposito": {
 			"label": "Fecha",
 			"col_width_pdf": 50,
 			"pdf_paragraph": False,
@@ -101,27 +118,27 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"cupon": {
-			"label": "Cupón",
-			"col_width_pdf": 50,
+		"id_concepto_banco": {
+			"label": "ID Concepto",
+			"col_width_pdf": 0,
+			"pdf_paragraph": False,
+			"date_format": None,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_concepto_banco__nombre_concepto_banco": {
+			"label": "Concepto",
+			"col_width_pdf": 130,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"lote": {
-			"label": "Lote",
-			"col_width_pdf": 50,
-			"pdf_paragraph": False,
-			"date_format": None,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"cuotas": {
-			"label": "Cuotas",
-			"col_width_pdf": 50,
+		"detalle_deposito": {
+			"label": "Detalle",
+			"col_width_pdf": 100,
 			"pdf_paragraph": False,
 			"date_format": None,
 			"pdf": True,
@@ -137,7 +154,7 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"importe_tarjeta": {
+		"importe_deposito": {
 			"label": "Importe",
 			"col_width_pdf": 80,
 			"pdf_paragraph": False,
@@ -167,7 +184,7 @@ class ConfigViews:
 	}
 
 
-class CuponesFechaInformeView(InformeFormView):
+class CajaDepositoFechaInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -182,19 +199,19 @@ class CuponesFechaInformeView(InformeFormView):
 	}
 	
 	def obtener_queryset(self, cleaned_data):
+		sucursal = cleaned_data.get("sucursal")
 		fecha_desde = cleaned_data.get("fecha_desde")
 		fecha_hasta = cleaned_data.get("fecha_hasta")
-		sucursal = cleaned_data.get("sucursal")
 		
-		#-- Iniciar el queryset.
-		queryset = TarjetaRecibo.objects.select_related(
-			'id_tarjeta',
+		queryset = DepositoRecibo.objects.select_related(
 			'id_factura',
 			'id_factura__id_caja',
-			'id_user'
+			'id_factura__id_comprobante_venta',
+			'id_factura__id_caja__id_user',
+			'id_cuenta_banco',
+			'id_concepto_banco',
 		).filter(
-			#--Aplicar filtros obligatorios.
-			id_factura__fecha_comprobante__range=(fecha_desde, fecha_hasta)
+			id_factura__id_caja__fecha_caja__range=(fecha_desde, fecha_hasta)
 		)
 		
 		#-- Aplicar filtros opcionales.
@@ -203,7 +220,6 @@ class CuponesFechaInformeView(InformeFormView):
 				id_factura__id_sucursal=sucursal
 			)
 		
-		#-- Anotaciones para el formato del comprobante.
 		queryset = queryset.annotate(
 			#-- Convertir número a texto con ceros.
 			numero_texto=LPad(
@@ -222,17 +238,24 @@ class CuponesFechaInformeView(InformeFormView):
 			)
 		).values(
 			'id_factura__id_caja__numero_caja',
-			'id_factura__fecha_comprobante',
-			'cupon',
-			'lote',
-			'cuotas',
+			'id_factura__id_caja__fecha_caja',
+			'id_factura__id_caja__id_user__iniciales',
+			'id_cuenta_banco__id_banco',
+			'id_cuenta_banco__id_banco__nombre_banco',
+			'id_concepto_banco',
+			'id_concepto_banco__nombre_concepto_banco',
 			'comprobante_completo',
-			'importe_tarjeta',
-			'id_tarjeta',
-			'id_tarjeta__nombre_tarjeta',
+			'fecha_deposito',
+			'importe_deposito',
+			'detalle_deposito',
 			'id_factura__id_sucursal__id_sucursal',
 			'id_factura__id_sucursal__nombre_sucursal',
-		).order_by('id_tarjeta','comprobante_completo')
+		).order_by(
+			'id_factura__id_caja__fecha_caja',
+			'id_factura__id_caja__numero_caja',
+			'id_cuenta_banco__id_banco__nombre_banco',
+			'comprobante_completo'
+		)
 		
 		return list(queryset)
 		
@@ -252,24 +275,40 @@ class CuponesFechaInformeView(InformeFormView):
 		param_left = {}
 		param_right = {
 			"Sucursal": f"[{sucursal.id_sucursal}] {sucursal.nombre_sucursal}" if sucursal else "Todas",
-			"Fecha desde": fecha_desde.strftime("%d/%m/%Y") if fecha_desde else "N/A",
-			"Fecha hasta": fecha_hasta.strftime("%d/%m/%Y") if fecha_hasta else "N/A",
+			"Fecha Desde": fecha_desde.strftime("%d/%m/%Y") if fecha_desde else "N/A",
+			"Fecha Hasta": fecha_hasta.strftime("%d/%m/%Y") if fecha_hasta else "N/A",
 		}
 		
 		# **************************************************
 		
 		datos_estructurados = {}
 		total_general = 0.0
-		for item in queryset:
-			tarjeta = item['id_tarjeta__nombre_tarjeta']
-			if tarjeta not in datos_estructurados:
-				datos_estructurados[tarjeta] = {
-					'cupones': [],
-					'subtotal': 0.0
+		
+		for registro in queryset:
+			numero_caja = registro['id_factura__id_caja__numero_caja']
+			fecha_caja = registro['id_factura__id_caja__fecha_caja']
+			operador_caja = registro['id_factura__id_caja__id_user__iniciales']
+			banco = registro['id_cuenta_banco__id_banco__nombre_banco']
+			
+			if numero_caja not in datos_estructurados:
+				datos_estructurados[numero_caja] = {
+					'fecha_caja': fecha_caja,
+					'operador_caja': operador_caja,
+					'subtotal_caja': 0.0,
+					'banco': {},
 				}
-			datos_estructurados[tarjeta]['cupones'].append(item)
-			datos_estructurados[tarjeta]['subtotal'] += float(item['importe_tarjeta'] or 0.0)
-			total_general += float(item['importe_tarjeta'] or 0.0)
+			
+			if banco not in datos_estructurados[numero_caja]['banco']:
+				datos_estructurados[numero_caja]['banco'][banco] = {
+					'depositos': [],
+					'subtotal_banco': 0.0
+				}
+			
+			importe_deposito = float(registro['importe_deposito'] or 0.0)
+			datos_estructurados[numero_caja]['banco'][banco]['depositos'].append(registro)
+			datos_estructurados[numero_caja]['banco'][banco]['subtotal_banco'] += importe_deposito
+			datos_estructurados[numero_caja]['subtotal_caja'] += importe_deposito
+			total_general += importe_deposito
 		
 		# **************************************************
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
@@ -292,7 +331,7 @@ class CuponesFechaInformeView(InformeFormView):
 		return context
 
 
-def cuponesfecha_vista_pantalla(request):
+def caja_deposito_fecha_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -309,7 +348,7 @@ def cuponesfecha_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def cuponesfecha_vista_pdf(request):
+def caja_deposito_fecha_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -351,7 +390,7 @@ class CustomPDFGenerator(PDFGenerator):
 
 def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
-	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=7)
+	generator = CustomPDFGenerator(contexto_reporte, pagesize=portrait(A4), body_font_size=8)
 	
 	#-- Construir datos de la tabla:
 	
@@ -367,20 +406,20 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Estilos específicos adicionales iniciales de la tabla.
 	table_style_config = [
-		('ALIGN', (2,0), (4,-1), 'RIGHT'),
-		('ALIGN', (6,0), (6,-1), 'RIGHT'),
+		('ALIGN', (-1,0), (-1,-1), 'RIGHT'),
 	]
 	
 	#-- Contador de filas (empezamos en 1 porque la 0 es el header).
+	objetos = contexto_reporte.get("objetos", {})
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	
-	for tarjeta, datos in contexto_reporte.get("objetos", []).items():
-		#-- Datos agrupado por Tarjeta.
+	for caja, datos_caja in objetos.items():
+		#-- Fila de agrupación por Caja.
+		caja_formateada = f"{caja.zfill(8)[:2]}-{caja.zfill(8)[2:]}"
 		table_data.append([
-			f"Tarjeta: {tarjeta.upper()}",
-			"", "", "", "", "", ""
+			f"CAJA : {caja_formateada}  [{format_date(datos_caja['fecha_caja'])}]  [{datos_caja['operador_caja']}]",
+			"", "", "", "", ""
 		])
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
@@ -391,54 +430,81 @@ def generar_pdf(contexto_reporte):
 		
 		current_row += 1
 		
-		#-- Agregar filas del detalle.
-		for cupon in datos['cupones']:
+		#-- Datos agrupados por Banco.
+		for banco, datos_banco in datos_caja['banco'].items():
 			table_data.append([
-				'',
-				format_date(cupon['id_factura__fecha_comprobante']),
-				cupon['cupon'],
-				cupon['lote'],
-				cupon['cuotas'],
-				cupon['comprobante_completo'],
-				formato_argentino(cupon['importe_tarjeta']),
+				"",
+				f"Banco: {banco}",
+				"", "", "", ""
 			])
+			
+			#-- Aplicar estilos a la fila de agrupación (fila actual).
+			table_style_config.extend([
+				('SPAN', (1,current_row), (-1,current_row)),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
+			])
+			
+			current_row += 1
+			
+			#-- Agregar filas del detalle.
+			for deposito in datos_banco['depositos']:
+				table_data.append([
+					'',
+					format_date(deposito['fecha_deposito']),
+					deposito['id_concepto_banco__nombre_concepto_banco'],
+					deposito['detalle_deposito'],
+					deposito['comprobante_completo'],
+					formato_argentino(deposito['importe_deposito']),
+				])
+				current_row += 1
+			
+			#-- Fila Total por Banco.
+			table_data.append([f"Total Banco {banco}:", "", "", "", "", formato_argentino(datos_banco['subtotal_banco'])])
+			
+			#-- Aplicar estilos a la fila de total (fila actual).
+			table_style_config.extend([
+				('SPAN', (0,current_row), (4,current_row)),
+				('ALIGN', (0,current_row), (4,current_row), 'RIGHT'),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
+				# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			])
+			
 			current_row += 1
 		
-		#-- Fila Total por Tarjeta.
-		table_data.append([f"Total Tarjeta {tarjeta.upper()}:", "", "", "", "", "", formato_argentino(datos['subtotal'])])
+		#-- Total por Caja.
+		table_data.append([f"Total Caja {caja_formateada}:", "", "", "", "", formato_argentino(datos_caja['subtotal_caja'])])
 		
 		#-- Aplicar estilos a la fila de total (fila actual).
 		table_style_config.extend([
+			('SPAN', (0,current_row), (4,current_row)),
+			('ALIGN', (0,current_row), (4,current_row), 'RIGHT'),
 			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-			('SPAN', (0,current_row), (-2,current_row)),
-			('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
 			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 		])
-		
 		current_row += 1
 		
 		#-- Fila divisoria.
-		table_data.append(["", "", "", "", "", "", ""])
+		table_data.append(["", "", "", "", "", ""])
 		table_style_config.append(
 			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.gray),
 		)
 		current_row += 1
 	
 	#-- Fila Total General.
-	table_data.append(["Total General:", "", "", "", "", "",  formato_argentino(contexto_reporte.get('total_general'))])
+	table_data.append(["Total General:", "", "", "", "", formato_argentino(contexto_reporte.get('total_general'))])
 	
 	#-- Aplicar estilos a la fila de total (fila actual).
 	table_style_config.extend([
+		('SPAN', (0,current_row), (4,current_row)),
+		('ALIGN', (0,current_row), (4,current_row), 'RIGHT'),
 		('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold'),
-		('SPAN', (0,current_row), (-2,current_row)),
-		('ALIGN', (0,current_row), (-1,current_row), 'RIGHT'),
 		# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
 	])
 	
-	return generator.generate(table_data, col_widths, table_style_config)
+	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def cuponesfecha_vista_excel(request):
+def caja_deposito_fecha_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -452,17 +518,19 @@ def cuponesfecha_vista_excel(request):
 	# ---------------------------------------------
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = CuponesFechaInformeView()
+	view_instance = CajaDepositoFechaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['excel']}
 	
+	titulo_reporte = "Detalle de Depositos por fecha"
+	
 	helper = ExportHelper(
 		queryset=queryset,
 		table_info=headers_titles,
-		report_title=ConfigViews.report_title
+		report_title=titulo_reporte
 	)
 	excel_data = helper.export_to_excel()
 	
@@ -471,12 +539,12 @@ def cuponesfecha_vista_excel(request):
 		content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 	)
 	#-- Inline permite visualizarlo en el navegador si el navegador lo soporta.
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.xlsx"'
+	response["Content-Disposition"] = f'inline; filename="{titulo_reporte}.xlsx"'
 	
 	return response
 
 
-def cuponesfecha_vista_csv(request):
+def caja_deposito_fecha_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
@@ -489,22 +557,24 @@ def cuponesfecha_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = CuponesFechaInformeView()
+	view_instance = CajaDepositoFechaInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: ConfigViews.table_info[field] for field in ConfigViews.table_info if ConfigViews.table_info[field]['csv']}
 	
+	titulo_reporte = "Detalle de Depositos por fecha"
+	
 	#-- Usar el helper para exportar a CSV.
 	helper = ExportHelper(
 		queryset=queryset,
 		table_info=headers_titles,
-		report_title=ConfigViews.report_title
+		report_title=titulo_reporte
 	)
 	csv_data = helper.export_to_csv()
 	
 	response = HttpResponse(csv_data, content_type="text/csv; charset=utf-8")
-	response["Content-Disposition"] = f'inline; filename="{ConfigViews.report_title}.csv"'
+	response["Content-Disposition"] = f'inline; filename="{titulo_reporte}.csv"'
 	
 	return response
