@@ -87,6 +87,13 @@ class ClienteForm(CrudGenericForm):
 				forms.TextInput(attrs={'type':'date', **formclassdate, 'readonly': True}),
 			'cliente_empresa': 
 				forms.Select(attrs={**formclassselect}),
+			'limite_credito':
+				forms.NumberInput(attrs={
+					**formclasstext,
+					'min': 0,
+					'max': 9999999999999.99
+				}),
+				
 		}
 	
 	def __init__(self, *args, **kwargs):
