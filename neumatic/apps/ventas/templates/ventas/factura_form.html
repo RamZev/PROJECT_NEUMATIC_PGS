@@ -3225,16 +3225,21 @@
 						///-
 						// VERIFICAR NOTA DE CRÉDITO (NCR)
 						if (esNotaCredito()) {
+							// CASO 1: Nota de Crédito
 							mostrarModalAutorizacionNc(data, function(autorizada) {
 								if (autorizada) {
-									completarDatosCliente(data);
+									completarDatosCliente(data);  // ✅ Siempre completar datos
 								} else {
+									// Canceló - limpiar
+									alert("No autorizó!");
 									buscarClienteInput.value = '';
 									buscarClienteInput.focus();
 									document.getElementById('id_id_cliente').value = '';
+									return;
 								}
 							});
-							return; // IMPORTANTE: Salir para no continuar
+						} else {
+							alert("No es nota de Crédito!");
 						}
 						///-
 						

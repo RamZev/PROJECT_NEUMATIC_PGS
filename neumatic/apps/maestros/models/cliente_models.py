@@ -215,6 +215,13 @@ class Cliente(ModeloBaseGenerico):
 		null=True,
 		choices=SI_NO
 	)
+	limite_credito = models.DecimalField(
+		verbose_name="Límite de Crédito",
+		max_digits=14,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
 	
 	class Meta:
 		db_table = 'cliente'

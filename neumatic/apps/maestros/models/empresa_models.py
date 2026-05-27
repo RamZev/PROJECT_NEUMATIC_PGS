@@ -217,6 +217,20 @@ class Empresa(ModeloBaseGenerico):
 		default=0.00,
 		blank=True
 	)
+	creditomay = models.DecimalField(
+		verbose_name="Crédito Mayorista",
+		max_digits=14,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
+	creditomin = models.DecimalField(
+		verbose_name="Crédito Minorista",
+		max_digits=14,
+		decimal_places=2,
+		default=0.00,
+		blank=True
+	)
 	
 	class Meta:
 		db_table = 'empresa'

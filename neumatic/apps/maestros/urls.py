@@ -52,6 +52,7 @@ from .views.consulta_views_maestros import filtrar_localidad
 from .views.consulta_views_maestros import verificar_codigo_postal
 from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
 from .views.actualizar_producto_estado_views import ActualizarEstadosProductosView
+from .views.select2_views import buscar_cliente_select2
 
 urlpatterns = [
 	#-- Tablas:
@@ -316,4 +317,7 @@ urlpatterns = [
 	#-- URLs para carga de certificados.
 	path('empresa/cargar-certificado/', CargarCertificadoView.as_view(), name='cargar_certificado'),
 	path('empresa/cargar-clave/', CargarClaveView.as_view(), name='cargar_clave'),
+    
+	#-- URL PARA SELECT2 - BÚSQUEDA DE CLIENTES
+    path('buscar-cliente-select2/', buscar_cliente_select2, name='buscar_cliente_select2'),
 ]
