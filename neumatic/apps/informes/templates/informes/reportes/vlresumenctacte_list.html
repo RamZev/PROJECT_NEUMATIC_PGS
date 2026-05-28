@@ -52,17 +52,7 @@
 					<td>{{ obj.numero }}</td>
 					<td>{{ obj.fecha_comprobante|date:"d/m/Y" }}</td>
 					<td>{{ obj.remito }}</td>
-					
-					<td>
-						{% if obj.condicion_comprobante == 1 %}
-							Contado
-						{% elif obj.condicion_comprobante == 2 %}
-							Cta. Cte.
-						{% else %}
-							Desconocido
-						{% endif%}
-					</td>
-					
+					<td>{{ obj.condicion }}</td>
 					<td class="numeric">{{ obj.debe|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.haber|formato_es_ar }}</td>
 					<td class="numeric">{{ obj.saldo_acumulado|formato_es_ar }}</td>

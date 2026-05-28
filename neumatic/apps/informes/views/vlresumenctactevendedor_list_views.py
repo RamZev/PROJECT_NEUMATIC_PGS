@@ -67,6 +67,20 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"id_cliente_id": {
+			"label": "ID Cliente",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"razon_social": {
+			"label": "Razón Social",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"nombre_comprobante_venta": {
 			"label": "Comprobante",
 			"col_width_pdf": 100,
@@ -137,8 +151,15 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
-		"id_vendedor_id": {
+			"id_vendedor_id": {
 			"label": "ID Vendedor",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_vendedor": {
+			"label": "Nombre Vendedor",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
@@ -169,12 +190,15 @@ class VLResumenCtaCteVendedorInformeView(InformeFormView):
 		vendedor = cleaned_data.get('vendedor', None)
 		
 		if resumen_pendiente:
-			queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(vendedor.id_vendedor)
+			queryset, total_general = VLResumenCtaCte.objects.obtener_fact_pendientes_vendedor(vendedor.id_vendedor)
 		else:
 			if condicion_venta == "0":
-				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta, 1, 2)
+				queryset, total_general = VLResumenCtaCte.objects.obtener_resumen_cta_cte_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta, 1, 2)
 			else:
-				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
+				queryset, total_general = VLResumenCtaCte.objects.obtener_resumen_cta_cte_vendedor(vendedor.id_vendedor, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
+			
+		#-- Guardar el total general como atributo de la instancia para su uso posterior.
+		self.total_general = total_general
 		
 		return queryset
 	
@@ -194,8 +218,6 @@ class VLResumenCtaCteVendedorInformeView(InformeFormView):
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")		
 		
-		saldo_anterior = 0
-		
 		param_left = {
 			"Vendedor": f"[{vendedor.id_vendedor}] {vendedor.nombre_vendedor}" if vendedor else None
 		}
@@ -207,12 +229,12 @@ class VLResumenCtaCteVendedorInformeView(InformeFormView):
 			#-- Plantilla Vista Preliminar Pantalla.
 			ConfigViews.reporte_pantalla = 'informes/reportes/vlfacturas_pendientes_vendedor_list.html'
 			
-			param_left["Tipo"] = "Resumen de Cuenta Pendiente"
+			param_left["Tipo Reporte"] = "Resumen de Cuenta Pendiente"
 		else:
 			#-- Reporte Resumen de Cuenta Corriente.
 			
 			#-- Plantilla Vista Preliminar Pantalla.
-			ConfigViews.reporte_pantalla = 'informes/reportes/vlresumenctacte_vendedor_list.html'
+			ConfigViews.reporte_pantalla = 'informes/reportes/vlresumenctactevendedor_list.html'
 			
 			cond_vta = {
 				"0": "Ambos",
@@ -224,45 +246,53 @@ class VLResumenCtaCteVendedorInformeView(InformeFormView):
 			param_right["Desde"] = fecha_desde.strftime("%d/%m/%Y")
 			param_right["Hasta"] = fecha_hasta.strftime("%d/%m/%Y")
 			
-			
-			#-- Determinar Saldo Anterior.
-			# saldo_anterior = VLResumenCtaCte.objects.obtener_saldo_anterior(id_cliente, fecha_desde)
-			
-		#-- Obtener el saldo total desde el último registro del queryset.
-		saldo_total = queryset[-1].saldo_acumulado if queryset else 0
+		#------------------------------------------------------------------------------
+		grouped_data = {}
 		
-		#-- Calcular la sumatoria de los intereses.
-		intereses_total = sum(item.intereses for item in queryset)
-		
-		#-- Serialización eficiente con lista por comprensión.
-		objetos_serializables = [
-			{
-				'nombre_comprobante_venta': item.nombre_comprobante_venta,
-				'numero_comprobante': item.numero_comprobante,
-				'numero': item.numero,
-				'fecha_comprobante': item.fecha_comprobante,
-				'remito': item.remito,
-				'condicion_comprobante': item.condicion_comprobante,
-				'condicion': item.condicion,
-				'total': float(item.total),
-				'entrega': float(item.entrega),
-				'debe': float(item.debe),
-				'haber': float(item.haber),
-				'saldo_acumulado': float(item.saldo_acumulado),
-				'intereses': float(item.intereses),
-				'marca': item.marca,
-				'no_estadist': item.no_estadist
+		for obj in queryset:
+			#-- Agrupar por Cliente.
+			cliente = obj.razon_social
+			if cliente not in grouped_data:
+				grouped_data[cliente] = {
+					'cliente_id': obj.id_cliente_id,
+					'datos': [],
+				}
+			
+			#-- Serializar cada objeto en un diccionario plano.
+			obj_serializado = {
+				'nombre_comprobante_venta': obj.nombre_comprobante_venta,
+				'numero_comprobante': obj.numero_comprobante,
+				'numero': obj.numero,
+				'fecha_comprobante': obj.fecha_comprobante,
+				'remito': obj.remito,
+				'condicion_comprobante': obj.condicion_comprobante,
+				'condicion': obj.condicion,
+				'total': float(obj.total),
+				'entrega': float(obj.entrega),
+				'debe': float(obj.debe),
+				'haber': float(obj.haber),
+				'saldo_acumulado': float(obj.saldo_acumulado),
+				'intereses': float(obj.intereses),
+				'marca': obj.marca,
+				'no_estadist': obj.no_estadist,
+				'saldo_anterior': float(obj.saldo_anterior),
 			}
-			for item in queryset
-		]
+			
+			#-- Añadir el detalle al grupo.
+			grouped_data[cliente]["datos"].append(obj_serializado)
+			
+			#-- Acumular el total por cliente usando el saldo acumulado del último registro de cada cliente.
+			grouped_data[cliente]["total_cliente"] = float(obj.saldo_acumulado)
+		
+		#-- Usar el total_general guardado.
+		total_general = getattr(self, 'total_general', float('0.00'))
 		
 		# ------------------------------------------------------------------------------
 		#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 		return {
-			"objetos": objetos_serializables,
-			'intereses_total': intereses_total,
-			'total_general': saldo_total + intereses_total,
-			"saldo_anterior": saldo_anterior,
+			"objetos": grouped_data,
+			'intereses_total': 0.0,
+			'total_general': float(total_general),
 			'observaciones': observaciones,
 			"parametros_i": param_left,
 			"parametros_d": param_right,
@@ -346,9 +376,10 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Construir datos de la tabla:
 	headers = [
+		("", 10),
 		("Comprobante", 100),
-		("Número", 75),
-		("Fehca", 50),
+		("Número", 65),
+		("Fecha", 45),
 		("Remito", 60)
 	]
 	
@@ -358,12 +389,12 @@ def generar_pdf(contexto_reporte):
 			("Entrega", 70),
 			("Saldo", 70),
 			("Intereses",70),
-			("",10),
-			("",10),
+			("",5),
+			("",5),
 		])
 		#-- Estilos específicos adicionales iniciales de la tabla.
 		table_style_config = [
-			('ALIGN', (4,0), (-1,-1), 'RIGHT'),
+			('ALIGN', (5,0), (-1,-1), 'RIGHT'),
 		]
 	else:
 		headers.extend([
@@ -371,12 +402,12 @@ def generar_pdf(contexto_reporte):
 			("Debe", 70),
 			("Haber", 70),
 			("Saldo", 70),
-			("",10),
-			("",10),
+			("",5),
+			("",5),
 		])
 		#-- Estilos específicos adicionales iniciales de la tabla.
 		table_style_config = [
-			('ALIGN', (5,0), (-1,-1), 'RIGHT'),
+			('ALIGN', (6,0), (-1,-1), 'RIGHT'),
 		]
 	
 	#-- Extraer Títulos de las columnas de la tabla (headers).
@@ -391,79 +422,122 @@ def generar_pdf(contexto_reporte):
 	current_row = 1
 	
 	#-- Agregar los datos a la tabla.
-	if resumen_pendiente:
-		#-- Agregar filas del detalle.
-		for obj in contexto_reporte['objetos']:
-			table_data.append([
-				obj['nombre_comprobante_venta'],
-				obj['numero'],
-				format_date(obj['fecha_comprobante']),
-				obj['remito'],
-				formato_argentino(obj['total']),
-				formato_argentino(obj['entrega']),
-				formato_argentino(obj['saldo_acumulado']),
-				formato_argentino(obj['intereses']),
-				obj['marca'],
-				obj['no_estadist']
-			])
-			
-			current_row += 1
 	
-	else:
-		#-- Agregar Saldo Anterior.
-		table_data.append([
-			"", "", "", "", "", "", "Saldo Anterior:",
-			formato_argentino(contexto_reporte['saldo_anterior']),
-			"",
-			""
-		])
+	for cliente, cliente_data in contexto_reporte.get("objetos", {}).items():
+		
+		#-- Datos agrupado por Cliente.
+		table_data.append([f"Cliente: [{cliente_data['cliente_id']}] {cliente}", "", "", "", "", "", "", "", "", "", ""])
 		
 		#-- Aplicar estilos a la fila de agrupación (fila actual).
 		table_style_config.extend([
+			('SPAN', (0,current_row), (-1,current_row)),
 			('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 		])
 		
 		current_row += 1
-		
-		#-- Agregar filas del detalle.
-		for obj in contexto_reporte['objetos']:
+	
+		if resumen_pendiente:
+			
+			#-- Agregar filas del detalle.
+			for dato in cliente_data['datos']:
+				table_data.append([
+					'',
+					dato['nombre_comprobante_venta'],
+					dato['numero'],
+					format_date(dato['fecha_comprobante']),
+					dato['remito'],
+					formato_argentino(dato['total']),
+					formato_argentino(dato['entrega']),
+					formato_argentino(dato['saldo_acumulado']),
+					formato_argentino(dato['intereses']),
+					dato['marca'],
+					dato['no_estadist']
+				])
+				
+				current_row += 1
+			
+		else:
+			#-- Agregar Saldo Anterior.
 			table_data.append([
-				obj['nombre_comprobante_venta'],
-				obj['numero'],
-				format_date(obj['fecha_comprobante']),
-				obj['remito'],
-				'Contado' if obj['condicion_comprobante'] == 1 else 'Cta. Cte.',
-				formato_argentino(obj['debe']),
-				formato_argentino(obj['haber']),
-				formato_argentino(obj['saldo_acumulado']),
-				obj['marca'],
-				obj['no_estadist']
+				"", "", "", "", "", "", "", 
+				"Saldo Anterior:",
+				formato_argentino(cliente_data['datos'][0]['saldo_anterior']),
+				"",	""
+			])
+			
+			#-- Aplicar estilos a la fila de agrupación (fila actual).
+			table_style_config.extend([
+				# ('SPAN', (0,current_row), (-1,current_row)),
+				('FONTNAME', (0,current_row), (-1,current_row), 'Helvetica-Bold')
 			])
 			
 			current_row += 1
+			
+			#-- Agregar filas del detalle.
+			for dato in cliente_data['datos']:
+				table_data.append([
+					'',
+					dato['nombre_comprobante_venta'],
+					dato['numero'],
+					format_date(dato['fecha_comprobante']),
+					dato['remito'],
+					dato['condicion'],
+					formato_argentino(dato['debe']),
+					formato_argentino(dato['haber']),
+					formato_argentino(dato['saldo_acumulado']),
+					dato['marca'],
+					dato['no_estadist']
+				])
+				
+				current_row += 1
+		
+		#-- Fila Total Intereses.
+		table_data.append(
+			[
+				"", "", "", "", "", "", "",
+				"Total Intereses:", 
+				formato_argentino(contexto_reporte['intereses_total']),
+				"",
+				""
+			]
+		)
+		
+		#-- Aplicar estilos a la fila actual.
+		table_style_config.extend([
+			('ALIGN', (5,-current_row), (-1,current_row), 'RIGHT'),
+			('FONTNAME', (5,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
 	
-	#-- Fila Total Intereses.
-	table_data.append(
-		["", "", "", "", "", "", "Total Intereses:", 
-			formato_argentino(contexto_reporte['intereses_total']),
-			"",
-			""
-		]
-	)
-	
-	#-- Aplicar estilos a la fila actual.
-	table_style_config.extend([
-		('ALIGN', (6,-current_row), (-1,current_row), 'RIGHT'),
-		('FONTNAME', (6,current_row), (-1,current_row), 'Helvetica-Bold'),
-		('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
-		# ('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),
-	])
-	
-	current_row += 1
+		#-- Fila Total Cliente.
+		table_data.append(
+			[
+				"", "", "", "", "", "", "",
+				f"Total Cliente: {cliente}:", 
+				formato_argentino(cliente_data['total_cliente']),
+				"",
+				""
+			]
+		)
+		
+		#-- Aplicar estilos a la fila actual.
+		table_style_config.extend([
+			('ALIGN', (5,-current_row), (-1,current_row), 'RIGHT'),
+			('FONTNAME', (5,current_row), (-1,current_row), 'Helvetica-Bold'),
+			# ('LINEABOVE', (0,current_row), (-1,current_row), 0.5, colors.black),
+			('LINEBELOW', (0,current_row), (-1,current_row), 0.5, colors.black),
+		])
+		
+		current_row += 1
 	
 	#-- Fila Total General.
 	table_data.append(
-		["", "", "", "", "", "", "Total General:", 
+		[
+			"", "", "", "", "", "", "", 
+			"Total General:", 
 			formato_argentino(contexto_reporte['total_general']),
 			"",
 			""
@@ -472,20 +546,20 @@ def generar_pdf(contexto_reporte):
 	
 	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([
-		('ALIGN', (6,current_row), (-1,current_row), 'RIGHT'),
-		('FONTNAME', (6,current_row), (-1,current_row), 'Helvetica-Bold'),
+		('ALIGN', (5,current_row), (-1,current_row), 'RIGHT'),
+		('FONTNAME', (5,current_row), (-1,current_row), 'Helvetica-Bold'),
 		# ('LINEABOVE', (0,-2), (-1,-2), 0.5, colors.black),
 	])
 	
 	current_row += 1
 	
 	#-- Fila divisoria.
-	table_data.append(["", "", "", "", "", "", "", "", "", ""])
+	table_data.append(["", "", "", "", "", "", "", "", "", "", ""])
 	
 	current_row += 1
 	
 	#-- Observaciones (Título).
-	table_data.append(["Observaciones:", "", "", "", "", "", "", "", "", ""])
+	table_data.append(["Observaciones:", "", "", "", "", "", "", "", "", "", ""])
 	
 	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([
@@ -496,7 +570,7 @@ def generar_pdf(contexto_reporte):
 	current_row += 1
 	
 	#-- Observaciones (Contenido).
-	table_data.append([Paragraph(str(contexto_reporte['observaciones']), generator.styles['CellStyle']), "", "", "", "", "", "", "", "", ""])
+	table_data.append([Paragraph(str(contexto_reporte['observaciones']), generator.styles['CellStyle']), "", "", "", "", "", "", "", "", "", ""])
 	
 	#-- Aplicar estilos a la fila actual.
 	table_style_config.extend([

@@ -104,15 +104,15 @@ CREATE VIEW VLResumenCtaCte AS
 			WHEN f.no_estadist THEN 'S'
 			ELSE ''
 		END AS no_estadist,
-		c.id_vendedor_id
+		c.id_vendedor_id,
+		v.nombre_vendedor
 	FROM
 		factura f 
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
 	WHERE
-		cv.mult_saldo <> 0
-	ORDER BY
-		f.id_cliente_id, f.fecha_comprobante;
+		cv.mult_saldo <> 0;
 
 -- ============================================
 -- Mercadería por Cliente.

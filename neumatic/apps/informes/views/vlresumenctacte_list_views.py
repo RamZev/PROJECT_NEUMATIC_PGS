@@ -163,12 +163,12 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		id_cliente = cleaned_data.get('id_cliente', None)
 		
 		if resumen_pendiente:
-			queryset = VLResumenCtaCte.objects.obtener_fact_pendientes(id_cliente)
+			queryset = VLResumenCtaCte.objects.obtener_fact_pendientes_cliente(id_cliente)
 		else:
 			if condicion_venta == "0":
-				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(id_cliente, fecha_desde, fecha_hasta, 1, 2)
+				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte_cliente(id_cliente, fecha_desde, fecha_hasta, 1, 2)
 			else:
-				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte(id_cliente, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
+				queryset = VLResumenCtaCte.objects.obtener_resumen_cta_cte_cliente(id_cliente, fecha_desde, fecha_hasta, condicion_venta, condicion_venta)
 		
 		return queryset
 	
@@ -206,7 +206,7 @@ class VLResumenCtaCteInformeView(InformeFormView):
 			#-- Plantilla Vista Preliminar Pantalla.
 			ConfigViews.reporte_pantalla = 'informes/reportes/vlfacturas_pendientes_list.html'
 			
-			param_right["Tipo"] = "Resumen de Cuenta Pendiente"
+			param_right["Tipo Reporte"] = "Resumen de Cuenta Pendiente"
 		else:
 			#-- Reporte Resumen de Cuenta Corriente.
 			

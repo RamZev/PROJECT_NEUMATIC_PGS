@@ -1,4 +1,4 @@
-<!-- neumatic\apps\informes\templates\informes\reportes\vlresumenctactevendedor_list.html -->
+<!-- neumatic\apps\informes\templates\informes\reportes\vlfacturas_pendientes_vendedor_list.html -->
 
 {% extends 'informes/reportes/base_reportes.html' %}
 {% load static %}
@@ -31,11 +31,10 @@
 				<th>Número</th>
 				<th>Fecha</th>
 				<th>Remito</th>
-				<th>Cond. Venta</th>
-				<th class="numeric">Debe</th>
-				<th class="numeric">Haber</th>
+				<th class="numeric">Total Comp.</th>
+				<th class="numeric">Entrega</th>
 				<th class="numeric">Saldo</th>
-				<th></th>
+				<th class="numeric">Intereses</th>
 				<th></th>
 			</tr>
 		</thead>
@@ -44,17 +43,11 @@
 			{% for cliente, cliente_data in objetos.items %}
 				<!-- Fila con los datos del Cliente -->
 				<tr>
-					<td colspan="11" style="padding-top: 5px;">
+					<td colspan="10" style="padding-top: 5px;">
 						<strong>Cliente: [{{cliente_data.cliente_id}}] {{ cliente }}</strong>
 					</td>
 				</tr>
 				
-				<tr>
-					<td class="numeric" colspan="8"><strong>Saldo anterior:</strong></td>
-					<td class="numeric"><strong>{{ cliente_data.datos.0.saldo_anterior|formato_es_ar }}</strong></td>
-					<td></td>
-					<td></td>
-				</tr>
 				{% for dato in cliente_data.datos %}
 					<tr>
 						<td></td>
@@ -62,40 +55,35 @@
 						<td>{{ dato.numero }}</td>
 						<td>{{ dato.fecha_comprobante|date:"d/m/Y" }}</td>
 						<td>{{ dato.remito }}</td>
-						<td> {{ dato.condicion }}</td>
-						<td class="numeric">{{ dato.debe|formato_es_ar }}</td>
-						<td class="numeric">{{ dato.haber|formato_es_ar }}</td>
+						<td class="numeric">{{ dato.total|formato_es_ar }}</td>
+						<td class="numeric">{{ dato.entrega|formato_es_ar }}</td>
 						<td class="numeric">{{ dato.saldo_acumulado|formato_es_ar }}</td>
+						<td class="numeric">{{ dato.intereses|formato_es_ar }}</td>
 						<td>{{ dato.marca }}</td>
-						<td>{{ dato.no_estadist }}</td>
 					</tr>
 				{% endfor %}
+				
 				<tr>
 					<td class="numeric" colspan="8"><strong>Total Intereses:</strong></td>
 					<td class="numeric"><strong>{{ intereses_total|formato_es_ar }}</strong></td>
-					<td></td>
 					<td></td>
 				</tr>
 				<tr>
 					<td class="numeric" colspan="8"><strong>Total Cliente {{ cliente }}:</strong></td>
 					<td class="numeric"><strong>{{ cliente_data.total_cliente|formato_es_ar }}</strong></td>
 					<td></td>
-					<td></td>
 				</tr>
 				
 				<tr>
-					<td colspan="11"><hr></td>
+					<td colspan="10"><hr></td>
 				</tr>
 				
 			{% endfor %}
-			
 			<tr>
 				<td class="numeric" colspan="8"><strong>Total General:</strong></td>
 				<td class="numeric"><strong>{{ total_general|formato_es_ar }}</strong></td>
 				<td></td>
-				<td></td>
 			</tr>
-			
 		</tbody>
 	</table>
 	<p><strong>Observaciones:</strong> {{ observaciones }}</p>

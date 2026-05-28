@@ -108,8 +108,8 @@ class ResumenCtaCteManager(models.Manager):
 		
 		return Decimal('0.00')
 		
-	def obtener_fact_pendientes(self, id_cliente):
-		""" Se determina los comprobantes pendientes de un cliente determinado. """
+	def obtener_fact_pendientes_cliente(self, id_cliente):
+		""" Se obtienen los comprobantes pendientes de un cliente determinado. """
 		
 		from decimal import Decimal
 		
@@ -134,13 +134,16 @@ class ResumenCtaCteManager(models.Manager):
 				intereses,
 				marca,
 				no_estadist,
-				id_vendedor_id
+				id_vendedor_id,
+				nombre_vendedor
 			FROM
 				VLResumenCtaCte
 			WHERE
 				id_cliente_id = %s
 				AND total <> entrega
 				AND condicion_comprobante = 2
+			ORDER BY
+				id_cliente_id, fecha_comprobante
 		"""
 		
 		#-- Se añaden parámetros.
@@ -160,7 +163,84 @@ class ResumenCtaCteManager(models.Manager):
 		
 		return resultados
 	
-	def obtener_resumen_cta_cte(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
+	def obtener_fact_pendientes_vendedor(self, id_vendedor):
+		""" Se obtienen los comprobantes pendientes de los clientes de un vendedor determinado. """
+		
+		from decimal import Decimal
+		
+		#-- Se crea la consulta.
+		query = """
+			SELECT 
+				id_cliente_id, 
+				razon_social, 
+				nombre_comprobante_venta, 
+				letra_comprobante, 
+				numero_comprobante, 
+				numero, 
+				fecha_comprobante, 
+				remito, 
+				condicion_comprobante, 
+				condicion, 
+				total, 
+				entrega, 
+				debe, 
+				haber,
+				(total - entrega) AS saldo_movimiento,
+				intereses,
+				marca,
+				no_estadist,
+				id_vendedor_id,
+				nombre_vendedor
+			FROM
+				VLResumenCtaCte
+			WHERE
+				id_vendedor_id = %s
+				AND total <> entrega
+				AND condicion_comprobante = 2
+			ORDER BY
+				id_cliente_id, fecha_comprobante
+		"""
+		
+		#-- Se añaden parámetros.
+		params = [id_vendedor]
+		
+		#-- Se ejecuta la consulta.
+		resultados_raw = self.raw(query, params)
+		
+		#-- Calcular saldo acumulado en Python.
+		resultados = []
+		cliente_actual = None
+		saldo_acumulado_cliente = Decimal('0.00')
+		total_general = Decimal('0.00')
+		
+		for item in resultados_raw:
+			#-- Cambio de cliente: reiniciar acumuladores y obtener nuevo saldo anterior.
+			if item.id_cliente_id != cliente_actual:
+				if cliente_actual is not None:
+					#-- Al cambiar de cliente, agregar el total de ese cliente al total general
+					total_general += saldo_acumulado_cliente
+				
+				cliente_actual = item.id_cliente_id
+				saldo_acumulado_cliente = Decimal('0.00')
+			
+			#-- Convertir saldo_movimiento a Decimal.
+			saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
+			
+			#-- Acumular.
+			saldo_acumulado_cliente += saldo_movimiento
+			
+			#-- Asignar el saldo acumulado al objeto.
+			item.saldo_acumulado = saldo_acumulado_cliente
+			item.saldo_anterior = Decimal('0.00')  #-- Para mantener la consistencia con el método de resumen por cliente.
+			resultados.append(item)
+		
+		#-- No olvidar agregar el último cliente
+		if cliente_actual is not None:
+			total_general += saldo_acumulado_cliente
+		
+		return resultados, total_general
+	
+	def obtener_resumen_cta_cte_cliente(self, id_cliente, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
 		""" Determina el Resumen de Cuenta Corriente de un cliente y período determinados. """
 		
 		from decimal import Decimal
@@ -192,13 +272,16 @@ class ResumenCtaCteManager(models.Manager):
 				intereses,
 				marca,
 				no_estadist,
-				id_vendedor_id
+				id_vendedor_id,
+				nombre_vendedor
 			FROM
 				VLResumenCtaCte
 			WHERE
 				id_cliente_id = %s 
 				AND fecha_comprobante BETWEEN %s AND %s 
 				AND condicion_comprobante BETWEEN %s AND %s
+			ORDER BY
+				id_cliente_id, fecha_comprobante
 		"""
 		
 		#-- Se añaden parámetros.
@@ -225,12 +308,13 @@ class ResumenCtaCteManager(models.Manager):
 		return resultados
 
 	def obtener_resumen_cta_cte_vendedor(self, id_vendedor, fecha_desde, fecha_hasta, condicion_venta1, condicion_venta2):
-		""" Determina el Resumen de Cuenta Corriente de los cliente y período determinados de un vendedor específico. """
+		""" Determina el Resumen de Cuenta Corriente de los clientes y período determinados de un vendedor específico. 
+			
+			Returns:
+				tuple: (lista_resultados, total_general)
+		"""
 		
 		from decimal import Decimal
-		
-		#-- Obtener el saldo anterior.
-		# saldo_anterior = self.obtener_saldo_anterior(id_cliente, fecha_desde)
 		
 		#-- Se crea la consulta.
 		query = """
@@ -256,13 +340,16 @@ class ResumenCtaCteManager(models.Manager):
 				intereses,
 				marca,
 				no_estadist,
-				id_vendedor_id
+				id_vendedor_id,
+				nombre_vendedor
 			FROM
 				VLResumenCtaCte
 			WHERE
 				id_vendedor_id = %s 
 				AND fecha_comprobante BETWEEN %s AND %s 
 				AND condicion_comprobante BETWEEN %s AND %s
+			ORDER BY
+				id_cliente_id, fecha_comprobante
 		"""
 		
 		#-- Se añaden parámetros.
@@ -271,24 +358,41 @@ class ResumenCtaCteManager(models.Manager):
 		#-- Se ejecuta la consulta.
 		resultados_raw = self.raw(query, params)
 		
-		return resultados_raw
+		#-- Calcular saldo acumulado en Python.
+		resultados = []
+		cliente_actual = None
+		saldo_anterior_cliente = Decimal('0.00')
+		saldo_acumulado_cliente = Decimal('0.00')
+		total_general = Decimal('0.00')
 		
-		# #-- Calcular saldo acumulado en Python.
-		# resultados = []
-		# saldo_acumulado = saldo_anterior
-		# 
-		# for item in resultados_raw:
-		# 	#-- Convertir saldo_movimiento a Decimal.
-		# 	saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
-		# 	
-		# 	#-- Acumular.
-		# 	saldo_acumulado += saldo_movimiento
-		# 	
-		# 	#-- Asignar el saldo acumulado al objeto.
-		# 	item.saldo_acumulado = saldo_acumulado
-		# 	resultados.append(item)
-		# 
-		# return resultados
+		for item in resultados_raw:
+			#-- Cambio de cliente: reiniciar acumuladores y obtener nuevo saldo anterior.
+			if item.id_cliente_id != cliente_actual:
+				if cliente_actual is not None:
+					#-- Al cambiar de cliente, agregar el total de ese cliente al total general
+					total_general += saldo_acumulado_cliente
+				
+				cliente_actual = item.id_cliente_id
+				#-- Obtener el saldo anterior para este cliente.
+				saldo_anterior_cliente = self.obtener_saldo_anterior(cliente_actual, fecha_desde)
+				saldo_acumulado_cliente = saldo_anterior_cliente
+			
+			#-- Convertir saldo_movimiento a Decimal.
+			saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
+			
+			#-- Acumular.
+			saldo_acumulado_cliente += saldo_movimiento
+			
+			#-- Asignar el saldo acumulado al objeto.
+			item.saldo_acumulado = saldo_acumulado_cliente
+			item.saldo_anterior = saldo_anterior_cliente
+			resultados.append(item)
+		
+		#-- No olvidar agregar el último cliente
+		if cliente_actual is not None:
+			total_general += saldo_acumulado_cliente
+		
+		return resultados, total_general
 
 
 class VLResumenCtaCte(models.Model):
