@@ -6,7 +6,8 @@ window.addEventListener('DOMContentLoaded', event => {
 	// Funcionalidad para Manejo de campos(inputs) decimales.
 	// ---------------------------------------------------------------------------
 	
-	const decimalInputs = document.querySelectorAll('.decimal-input');
+	//const decimalInputs = document.querySelectorAll('.decimal-input');
+	const decimalInputs = document.querySelectorAll('.decimal-input:not(#id_limite_credito)');
 	if (decimalInputs) {
 		decimalInputs.forEach(input => {
 			let numericValue = '0';

@@ -8,7 +8,7 @@ from apps.maestros.models.base_models import ProductoCai
 
 
 #-- Buscar un cliente por su id.
-def buscar_cliente_id(request):
+def buscar_cliente_id_inf(request):
 	id_cliente = request.GET.get('id_cliente', '')
 	
 	if id_cliente:

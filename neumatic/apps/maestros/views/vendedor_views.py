@@ -140,7 +140,7 @@ class VendedorDeleteView (MaestroDeleteView):
 	permission_required = ConfigViews.permission_delete
 
 
-# --- NUEVA VISTA PARA EL MODAL (AJAX) ---
+#--- VISTA PARA EL MODAL (AJAX) ---
 def get_descuentos_columna(request, columna):
 	"""
 	Vista que devuelve una lista de descuentos (Marca, Familia, Descuento)
@@ -156,13 +156,13 @@ def get_descuentos_columna(request, columna):
 		return JsonResponse({'error': 'Número de columna fuera de rango (1-25)'}, status=400)
 	
 	try:
-		# Filtramos los registros donde la columna específica NO sea nula.
-		# Usamos __isnull=False para excluir los que están vacíos.
+		#-- Filtramos los registros donde la columna específica NO sea nula.
+		#-- Usamos __isnull=False para excluir los que están vacíos.
 		filtro = {f"{columna}__isnull": False}
-		# Excluimos también los que sean 0.00 si no queremos mostrarlos.
+		#-- Excluimos también los que sean 0.00 si no queremos mostrarlos.
 		# filtro = {f"{columna}__gt": 0} 
 		
-		# Construimos la consulta dinámicamente
+		#-- Construimos la consulta dinámicamente.
 		descuentos = DescuentoVendedor.objects.filter(**filtro).annotate(
 			marca_nombre=F('id_marca__nombre_producto_marca'),
 			familia_nombre=F('id_familia__nombre_producto_familia')
@@ -172,7 +172,7 @@ def get_descuentos_columna(request, columna):
 			descuento_valor=F(columna)
 		).order_by('marca_nombre', 'familia_nombre')
 		
-		# Convertir el QuerySet a una lista para que sea serializable a JSON y aplicar formato a los valores de descuento.
+		#-- Convertir el QuerySet a una lista para que sea serializable a JSON y aplicar formato a los valores de descuento.
 		data = list(descuentos)
 		
 		#-- Aplicar el filtro formato_es_ar a cada valor de descuento.

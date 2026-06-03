@@ -48,8 +48,12 @@ from .views.numero_views import *
 from .views.valida_views import *
 
 #-- Otras rutas.
-from .views.consulta_views_maestros import filtrar_localidad
-from .views.consulta_views_maestros import verificar_codigo_postal
+from .views.consulta_views_maestros import (
+	filtrar_localidad,
+	verificar_codigo_postal,
+	obtener_parametros_empresa,
+	obtener_tipo_venta_vendedor,
+)
 from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
 from .views.actualizar_producto_estado_views import ActualizarEstadosProductosView
 from .views.select2_views import buscar_cliente_select2
@@ -313,6 +317,10 @@ urlpatterns = [
 	path('api/cai/<int:pk>/datos/', CAIDatosAPIView.as_view(), name='cai-datos-api'),
 	path('actualizar-estados-productos/', ActualizarEstadosProductosView.as_view(), name='actualizar_estados_productos'),
 	path('get-descuentos-columna/<str:columna>/', get_descuentos_columna, name='get_descuentos_columna'),
+	
+	#-- Nuevas URLs para la funcionalidad de límite de crédito.
+	path('obtener-parametros-empresa/', obtener_parametros_empresa, name='obtener_parametros_empresa'),
+	path('obtener-tipo-venta-vendedor/', obtener_tipo_venta_vendedor, name='obtener_tipo_venta_vendedor'),
 	
 	#-- URLs para carga de certificados.
 	path('empresa/cargar-certificado/', CargarCertificadoView.as_view(), name='cargar_certificado'),

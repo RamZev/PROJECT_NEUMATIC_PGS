@@ -81,10 +81,8 @@ def buscar_cuit_view(request):
 #-- Vista que busca cliente por el id suministrado.
 def buscar_cliente_id_view(request):
 	id_cliente = request.GET.get('id_cliente', None)
-	
 	if id_cliente and id_cliente.isdigit():
 		cliente = buscar_cliente_id(id_cliente)
-		print(f"{cliente = }")
 		if cliente:
 			data = {
 				'existe': True,
