@@ -330,7 +330,6 @@ class Cliente(ModeloBaseGenerico):
 		- Si condición es Contado: siempre forzar a 0 y no permitir modificación manual
 		- Si condición es Cta. Cte.: respetar límite manual si existe, sino calcular automático
 		"""
-		
 		#-- Forzar a cero si se cumplen las condiciones.
 		if self.condicion_venta == 1 or (self.limite_credito is not None and self.limite_credito < 0) or self.limite_credito is None:
 			self.limite_credito = 0
