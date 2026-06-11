@@ -251,6 +251,7 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
             messages.error(request, f'Ocurrió un error inesperado al intentar eliminar: {str(e)}')
             return redirect(self.success_url)
 
+
 # ------------------------------------------------------------------------------------
 @method_decorator(login_required, name='dispatch')
 class GenericDetailView(DetailView):

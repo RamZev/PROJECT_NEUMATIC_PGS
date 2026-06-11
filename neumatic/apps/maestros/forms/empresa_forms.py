@@ -10,6 +10,7 @@ from diseno_base.diseno_bootstrap import (
 	formclasstext,
 	formclassselect,
 	formclassdate,
+	formclassnumb
 )
 
 
@@ -196,17 +197,9 @@ class EmpresaForm(CrudGenericForm):
 					'max': 99.99
 				}),
 			'creditomay':
-				forms.NumberInput(attrs={
-					**formclasstext,
-					'min': 0,
-					'max': 9999999999999.99
-				}),
+				forms.TextInput(attrs={**formclassnumb,}),
 			'creditomin':
-				forms.NumberInput(attrs={
-					**formclasstext,
-					'min': 0,
-					'max': 9999999999999.99
-				}),
+				forms.TextInput(attrs={**formclassnumb,}),
 		}
 	
 	def __init__(self, *args, **kwargs):

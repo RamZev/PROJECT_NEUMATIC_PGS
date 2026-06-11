@@ -218,14 +218,14 @@ class Empresa(ModeloBaseGenerico):
 		blank=True
 	)
 	creditomay = models.DecimalField(
-		verbose_name="Crédito Mayorista",
+		verbose_name="Crédito Reventa",
 		max_digits=14,
 		decimal_places=2,
 		default=0.00,
 		blank=True
 	)
 	creditomin = models.DecimalField(
-		verbose_name="Crédito Minorista",
+		verbose_name="Crédito Mostrador",
 		max_digits=14,
 		decimal_places=2,
 		default=0.00,
@@ -341,6 +341,12 @@ class Empresa(ModeloBaseGenerico):
 		
 		if not re.match(r'^-?(0|[1-9]\d{0,1})(\.\d{1,2})?$', descuento_maximo_str):
 			errors.update({'descuento_maximo': 'El valor debe ser un número negativo o positivo, con hasta 2 dígitos enteros y hasta 2 decimales o cero.'})
+		
+		if self.creditomay is not None and self.creditomay < 0:
+			errors.update({'creditomay': 'El crédito mayorista no puede ser negativo.'})
+		
+		if self.creditomin is not None and self.creditomin < 0:
+			errors.update({'creditomin': 'El crédito minorista no puede ser negativo.'})
 		
 		if errors:
 			raise ValidationError(errors)

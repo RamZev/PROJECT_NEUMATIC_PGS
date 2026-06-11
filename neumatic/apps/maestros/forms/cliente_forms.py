@@ -6,7 +6,8 @@ from ..models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import(
 	formclasstext,
 	formclassselect,
-	formclassdate
+	formclassdate,
+	formclassnumb
 )
 
 
@@ -87,13 +88,14 @@ class ClienteForm(CrudGenericForm):
 				forms.TextInput(attrs={'type':'date', **formclassdate, 'readonly': True}),
 			'cliente_empresa': 
 				forms.Select(attrs={**formclassselect}),
+			# 'limite_credito':
+			# 	forms.NumberInput(attrs={
+			# 		**formclasstext,
+			# 		'min': 0,
+			# 		'max': 9999999999999.99
+			# 	}),
 			'limite_credito':
-				forms.NumberInput(attrs={
-					**formclasstext,
-					'min': 0,
-					'max': 9999999999999.99
-				}),
-				
+				forms.TextInput(attrs={**formclassnumb}),
 		}
 	
 	def __init__(self, *args, **kwargs):
@@ -153,7 +155,18 @@ class ClienteForm(CrudGenericForm):
 				if campo in self.fields:
 					self.fields[campo].widget.attrs['readonly'] = True
 					self.fields[campo].required = False  # Evitar validaciones innecesarias			
-		
+	
+		#-- Configurar el campo limite_credito según la condición de venta.
+		instance = kwargs.get('instance')
+		if instance and instance.pk:
+			if instance.condicion_venta == 1:  #-- Contado.
+				self.fields['limite_credito'].widget.attrs['readonly'] = True
+				self.fields['limite_credito'].widget.attrs['class'] += ' bg-light'
+				self.fields['limite_credito'].help_text = 'Automático - No editable para clientes Contado'
+			elif hasattr(instance, '_limite_es_manual') and instance._limite_es_manual:
+				self.fields['limite_credito'].widget.attrs['class'] += ' bg-warning bg-opacity-25'
+				self.fields['limite_credito'].help_text = '⚠️ Valor asignado manualmente'
+	
 	def clean(self):
 		cleaned_data = super().clean()
 		#-- Asignar automáticamente id_sucursal si el formulario está en modo edición.

@@ -595,6 +595,465 @@
 				});
 			}
 			
+			// *******************************************************
+			// Funcionalidad para el límite de crédito
+			// *******************************************************
+			
+			const condicionVentaSelect = document.getElementById("id_condicion_venta");
+			const vendedorSelect = document.getElementById("id_id_vendedor");
+			const subCuentaInput = document.getElementById("id_sub_cuenta");
+			const limiteCreditoInput = document.getElementById("id_limite_credito");
+			
+			// Variables para tracking
+			let esLimiteManual = false;
+			let actualizando = false;
+			
+			// Función para obtener el valor numérico desde el input
+			function obtenerValorNumericoInput() {
+				if (!limiteCreditoInput) return 0;
+				let valor = limiteCreditoInput.value;
+				if (!valor) return 0;
+				
+				// Separar parte entera y decimal
+				let partes = valor.split(',');
+				let parteEntera = partes[0];
+				let parteDecimal = partes[1] || '00';
+				
+				// Eliminar puntos de miles de la parte entera
+				let enteroSinPuntos = parteEntera.replace(/\./g, '');
+				
+				// Reconstruir el número con punto decimal
+				let numeroConPunto = enteroSinPuntos + '.' + parteDecimal;
+				let numero = parseFloat(numeroConPunto);
+				
+				return isNaN(numero) ? 0 : numero;
+			}
+			
+			// Función para formatear el valor en el input
+			function formatearLimiteCredito() {
+				if (!limiteCreditoInput || limiteCreditoInput.readOnly) return;
+				
+				let valor = limiteCreditoInput.value;
+				if (!valor) {
+					limiteCreditoInput.value = '0,00';
+					return;
+				}
+				
+				// Separar la parte entera de la decimal
+				let partes = valor.split('.');
+				let parteEntera = partes[0];
+				let parteDecimal = partes[1] || '00';
+				
+				// Eliminar SOLO los puntos de miles de la parte entera (no tocar el punto decimal)
+				let enteroSinPuntos = parteEntera.replace(/\./g, '');
+				
+				// Reconstruir el número
+				let numeroLimpio = enteroSinPuntos + '.' + parteDecimal;
+				let numero = parseFloat(numeroLimpio);
+				
+				if (isNaN(numero)) {
+					limiteCreditoInput.value = '0,00';
+					return;
+				}
+				
+				// Formatear con separadores de miles y coma decimal
+				let formateado = numero.toLocaleString('es-AR', {
+					minimumFractionDigits: 2,
+					maximumFractionDigits: 2
+				});
+				
+				if (limiteCreditoInput.value !== formateado) {
+					limiteCreditoInput.value = formateado;
+				}
+			}
+			
+			// Función para asignar valor (sin formato)
+			function asignarValorInput(valorNumerico) {
+				if (!limiteCreditoInput) return;
+				
+				// IMPORTANTE: Asegurar que el valor sea un número y no esté siendo interpretado mal
+				let valorReal = parseFloat(valorNumerico);
+				
+				// Si el valor es demasiado grande (más de 1 millón) y parece tener decimales incorrectos
+				// Esto puede pasar si el valor vino multiplicado por 100
+				if (valorReal > 1000000 && valorReal % 1 !== 0) {
+					console.warn("Posible valor con decimales incorrectos:", valorReal);
+				}
+				
+				const estabaReadOnly = limiteCreditoInput.readOnly;
+				
+				if (estabaReadOnly) {
+					limiteCreditoInput.readOnly = false;
+				}
+				
+				// Asegurar que el valor tenga 2 decimales, pero sin perder la magnitud
+				let valorConDecimales = valorReal.toFixed(2);
+				
+				limiteCreditoInput.value = valorConDecimales;
+				
+				// Aplicar formato
+				formatearLimiteCredito();
+				
+				if (estabaReadOnly) {
+					limiteCreditoInput.readOnly = true;
+				}
+			}
+			
+			// Función para obtener parámetros de empresa
+			async function obtenerParametrosEmpresa() {
+				try {
+					const response = await fetch("{% url 'obtener_parametros_empresa' %}");
+					const data = await response.json();
+					return {
+						creditomay: parseFloat(data.creditomay || 0),
+						creditomin: parseFloat(data.creditomin || 0)
+					};
+				} catch (error) {
+					console.error("Error al obtener parámetros:", error);
+					return { creditomay: 0, creditomin: 0 };
+				}
+			}
+			
+			// Función para obtener tipo_venta del vendedor
+			async function obtenerTipoVentaVendedor(vendedorId) {
+				if (!vendedorId) return null;
+				try {
+					const response = await fetch(`{% url 'obtener_tipo_venta_vendedor' %}?vendedor_id=${vendedorId}`);
+					const data = await response.json();
+					return data.tipo_venta;
+				} catch (error) {
+					console.error("Error al obtener tipo_venta:", error);
+					return null;
+				}
+			}
+			
+			// Calcular límite automático
+			async function calcularLimiteAutomatico() {
+				const condicionVenta = parseInt(condicionVentaSelect?.value || 1);
+				
+				if (condicionVenta === 1) return 0;
+				
+				if (condicionVenta === 2) {
+					const subCuenta = subCuentaInput?.value?.trim();
+					const tieneSubCuenta = subCuenta && parseInt(subCuenta) > 0;
+					const params = await obtenerParametrosEmpresa();
+					
+					if (tieneSubCuenta) {
+						return params.creditomay;
+					}
+					
+					const vendedorId = vendedorSelect?.value;
+					
+					if (vendedorId) {
+						const tipoVenta = await obtenerTipoVentaVendedor(vendedorId);
+						
+						if (tipoVenta === 'R') {
+							return params.creditomay;
+						}
+						if (tipoVenta === 'M' || tipoVenta === 'E') {
+							return params.creditomin;
+						}
+					}
+				}
+				return null;
+			}
+			
+			// Mostrar modal de confirmación
+			function mostrarModalConfirmacion(limiteActual, limiteAutomatico, callback) {
+				let modal = document.getElementById('confirmLimiteModal');
+				if (!modal) {
+					modal = document.createElement('div');
+					modal.id = 'confirmLimiteModal';
+					modal.className = 'modal fade';
+					modal.tabIndex = '-1';
+					modal.innerHTML = `
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header text-bg-warning">
+									<h5 class="modal-title">⚠️ Cambio en el Límite de Crédito</h5>
+									<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+								</div>
+								<div class="modal-body">
+									<p>Según los parámetros actuales, el límite de crédito debería cambiar de <strong>$<span id="limiteActual"></span></strong> a <strong>$<span id="limiteAutomatico"></span></strong>.</p>
+									<p class="mt-2">¿Desea aplicar el cambio automático o mantener el valor actual?</p>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mantener Manual</button>
+									<button type="button" class="btn btn-primary" id="aplicarAutomaticoBtn">Aplicar Automático</button>
+								</div>
+							</div>
+						</div>
+					`;
+					document.body.appendChild(modal);
+				}
+				
+				const formatear = (v) => v.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+				document.getElementById('limiteActual').textContent = formatear(limiteActual);
+				document.getElementById('limiteAutomatico').textContent = formatear(limiteAutomatico);
+				
+				const modalInstance = new bootstrap.Modal(modal);
+				const aplicarBtn = document.getElementById('aplicarAutomaticoBtn');
+				
+				const handleAplicar = () => {
+					modalInstance.hide();
+					callback(true);
+					aplicarBtn.removeEventListener('click', handleAplicar);
+				};
+				
+				modal.addEventListener('hidden.bs.modal', function onHidden() {
+					callback(false);
+					modal.removeEventListener('hidden.bs.modal', onHidden);
+					aplicarBtn.removeEventListener('click', handleAplicar);
+				}, { once: true });
+				
+				aplicarBtn.addEventListener('click', handleAplicar);
+				modalInstance.show();
+			}
+			
+			// Función principal
+			let envioActivo = false;
+			
+			async function actualizarLimiteCredito() {
+				// No hacer nada si se está enviando el formulario
+				if (envioActivo || actualizando) return;
+				actualizando = true;
+				
+				try {
+					const condicionVenta = parseInt(condicionVentaSelect?.value || 1);
+					const limiteActual = obtenerValorNumericoInput();
+					// Caso Contado: forzar a 0 y readonly
+					if (condicionVenta === 1) {
+						if (limiteCreditoInput) {
+							asignarValorInput(0);
+							limiteCreditoInput.readOnly = true;
+							limiteCreditoInput.classList.add('bg-light');
+							limiteCreditoInput.classList.remove('bg-warning', 'bg-opacity-25');
+							limiteCreditoInput.title = 'Automático - No editable para clientes Contado';
+						}
+						esLimiteManual = false;
+						actualizando = false;
+						return;
+					}
+					
+					// Caso Cta. Cte.: habilitar edición
+					if (limiteCreditoInput) {
+						limiteCreditoInput.readOnly = false;
+						limiteCreditoInput.classList.remove('bg-light');
+						limiteCreditoInput.title = '';
+					}
+					
+					const limiteAutomatico = await calcularLimiteAutomatico();
+					if (limiteAutomatico !== null) {
+						const diferencia = Math.abs(limiteActual - limiteAutomatico);
+						const umbral = 0.01;
+						
+						// SOLO mostrar modal si hay diferencia Y no es manual Y el valor no es 0 (inicial) Y el formulario no se está enviando
+						if (diferencia > umbral && !esLimiteManual && !envioActivo) {
+							// Evitar múltiples modales
+							if (document.getElementById('confirmLimiteModal')?.classList?.contains('show')) {
+								actualizando = false;
+								return;
+							}
+							
+							mostrarModalConfirmacion(limiteActual, limiteAutomatico, (aplicar) => {
+								if (aplicar) {
+									asignarValorInput(limiteAutomatico);
+									esLimiteManual = false;
+									if (limiteCreditoInput) {
+										limiteCreditoInput.classList.remove('bg-warning', 'bg-opacity-25');
+									}
+								} else {
+									esLimiteManual = true;
+									if (limiteCreditoInput) {
+										limiteCreditoInput.classList.add('bg-warning', 'bg-opacity-25');
+										limiteCreditoInput.title = '⚠️ Valor asignado manualmente';
+									}
+								}
+							});
+						}
+					}
+				} catch (error) {
+					console.error("Error al actualizar límite:", error);
+				} finally {
+					actualizando = false;
+				}
+			}
+			
+			// Detectar modificación manual del usuario
+			function onLimiteManualChange() {
+				if (actualizando) return;
+				
+				if (limiteCreditoInput && !limiteCreditoInput.readOnly) {
+					const condicion = parseInt(condicionVentaSelect?.value || 1);
+					if (condicion === 2) {
+						esLimiteManual = true;
+						limiteCreditoInput.classList.add('bg-warning', 'bg-opacity-25');
+						limiteCreditoInput.title = '⚠️ Valor asignado manualmente';
+					}
+				}
+			}
+			
+			// Mostrar mensaje de información
+			function mostrarMensajeInfo() {
+				if (document.querySelector('.toast-info')) return;
+				
+				const toastHTML = `
+					<div class="toast align-items-center text-bg-info border-0 position-fixed bottom-0 end-0 m-3 toast-info" role="alert" style="z-index: 1100;">
+						<div class="d-flex">
+							<div class="toast-body">
+								El límite de crédito fue asignado manualmente. 
+								<button type="button" class="btn btn-sm btn-light ms-2" id="recalcularBtn">recalcular</button>
+							</div>
+							<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+						</div>
+					</div>
+				`;
+				
+				document.body.insertAdjacentHTML('beforeend', toastHTML);
+				const toastElement = document.querySelector('.toast-info');
+				const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
+				
+				const recalcularBtn = document.getElementById('recalcularBtn');
+				if (recalcularBtn) {
+					recalcularBtn.addEventListener('click', () => {
+						esLimiteManual = false;
+						toast.hide();
+						actualizarLimiteCredito();
+					});
+				}
+				
+				toast.show();
+				toastElement.addEventListener('hidden.bs.toast', () => toastElement.remove());
+			}
+
+			// Registrar event listeners
+			function registrarEventListeners() {
+				const condicion = document.getElementById("id_condicion_venta");
+				const vendedor = document.getElementById("id_id_vendedor");
+				const subCuenta = document.getElementById("id_sub_cuenta");
+				const limite = document.getElementById("id_limite_credito");
+				
+				if (condicion) {
+					condicion.removeEventListener('change', actualizarLimiteCredito);
+					condicion.addEventListener('change', () => {
+						esLimiteManual = false;
+						actualizarLimiteCredito();
+					});
+				}
+				
+				if (vendedor) {
+					vendedor.removeEventListener('change', () => {});
+					vendedor.addEventListener('change', () => {
+						if (!esLimiteManual) {
+							actualizarLimiteCredito();
+						} else {
+							mostrarMensajeInfo();
+						}
+					});
+				}
+				
+				if (subCuenta) {
+					subCuenta.removeEventListener('change', () => {});
+					subCuenta.addEventListener('change', () => {
+						if (!esLimiteManual) {
+							actualizarLimiteCredito();
+						} else {
+							mostrarMensajeInfo();
+						}
+					});
+				}
+				
+				if (limite) {
+					limite.removeEventListener('input', onLimiteManualChange);
+					limite.removeEventListener('blur', formatearLimiteCredito);
+					limite.removeEventListener('focus', () => {});
+					
+					limite.addEventListener('input', onLimiteManualChange);
+					limite.addEventListener('blur', formatearLimiteCredito);
+					
+					// Al hacer focus, mostrar el valor sin formato para editar
+					limite.addEventListener('focus', function() {
+						if (this.readOnly) return;
+						let valorNumerico = obtenerValorNumericoInput();
+						this.value = valorNumerico.toFixed(2);
+					});
+				}
+			}
+			
+			// Inicializar estado inicial
+			function inicializarEstadoInicial() {
+				const condicion = parseInt(condicionVentaSelect?.value || 1);
+				
+				if (limiteCreditoInput) {
+					if (condicion === 1) {
+						asignarValorInput(0);
+						limiteCreditoInput.readOnly = true;
+						limiteCreditoInput.classList.add('bg-light');
+						limiteCreditoInput.title = 'Automático - No editable para clientes Contado';
+					} else {
+						// Asegurar formato al cargar
+						formatearLimiteCredito();
+					}
+				}
+			}
+			
+			// Inicializar todo
+			setTimeout(() => {
+				registrarEventListeners();
+				inicializarEstadoInicial();
+				actualizarLimiteCredito();
+			}, 100);
+			
+			// *******************************************************
+			// Manejar el envío del formulario
+			// *******************************************************
+			
+			const formulario = document.querySelector('form');
+			
+			if (formulario) {
+				formulario.addEventListener('submit', function(e) {
+					// Activar bandera para evitar modales durante el envío
+					envioActivo = true;
+					
+					if (limiteCreditoInput) {
+						// Obtener el valor numérico real
+						let valorNumerico = obtenerValorNumericoInput();
+						
+						// Crear un campo oculto con el valor numérico
+						let hiddenInput = document.createElement('input');
+						hiddenInput.type = 'hidden';
+						hiddenInput.name = 'limite_credito';
+						hiddenInput.value = valorNumerico.toFixed(2);
+						
+						// Deshabilitar el campo original para que no se envíe
+						limiteCreditoInput.disabled = true;
+						
+						// Agregar el campo oculto al formulario
+						formulario.appendChild(hiddenInput);
+						
+						// Guardar referencia para limpiar después (necesario si hay validación fallida)
+						formulario._hiddenLimiteCredito = hiddenInput;
+					}
+				});
+				
+				// Restaurar después del envío (útil si la validación falla y la página no recarga)
+				// Esto no interfiere con el envío normal porque después de un submit exitoso,
+				// la página recarga y el evento pageshow se dispara con un nuevo DOM
+				window.addEventListener('pageshow', function() {
+					// Restaurar el campo original si estaba deshabilitado
+					if (limiteCreditoInput && limiteCreditoInput.disabled) {
+						limiteCreditoInput.disabled = false;
+					}
+					// Limpiar el campo oculto si existe
+					if (formulario && formulario._hiddenLimiteCredito) {
+						formulario._hiddenLimiteCredito.remove();
+						formulario._hiddenLimiteCredito = null;
+					}
+					// Restablecer la bandera
+					envioActivo = false;
+				});
+			}
+		
 		});
 	</script>
 {% endblock script %}

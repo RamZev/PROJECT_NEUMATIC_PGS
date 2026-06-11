@@ -1,6 +1,8 @@
 <!-- neumatic\apps\maestros\templates\maestros\empresa_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
+{% load custom_tags %}
+
 <!-- -------------------------------------------------------------------- -->
 {% block maincomponent %}
 	{% block principalcomponent %}
@@ -430,7 +432,8 @@
 													</div>
 												</div>
 
-												<div class="row">
+												{% comment %} <div class="row align-items-end"> {% endcomment %}
+												<div class="row align-items-center">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0" for="{{ form.creditomay.id_for_label }}">
 															{{ form.creditomay.label }}
@@ -442,6 +445,12 @@
 															{{ form.creditomin.label }}
 														</label>
 														{{ form.creditomin }}
+													</div>
+													<div class="col-md-2">
+														<button type="button" class="btn btn-primary mt-2" id="btnActualizarLimites" 
+																style="white-space: nowrap;">
+															<i class="bi bi-arrow-repeat"></i> Actualizar créditos
+														</button>
 													</div>
 												</div>
 											</div>
@@ -473,6 +482,71 @@
 	
 	<!-- Modal para mostrar los requerimientos de los campos -->
 	{% include 'maestros/modal_fields_requirements.html' %}
+	
+	<!-- Modal de confirmación -->
+	<div class="modal fade" id="confirmActualizarModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header bg-warning">
+					<h5 class="modal-title">
+						<i class="bi bi-exclamation-triangle"></i> Confirmar actualización
+					</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body">
+					<p>Esta acción actualizará el campo <strong>límite de crédito</strong> de todos los clientes con condición de venta <strong>"Cuenta Corriente"</strong> según las siguientes reglas:</p>
+					<ul>
+						<li><strong>Clientes con subcuenta:</strong> se les asignará el valor de <strong>Crédito Reventa</strong> (<span id="creditomayConfirmacion">{{ form.creditomay.value|formato_es_ar }}</span>) si es mayor a su límite actual.</li>
+						<li><strong>Clientes sin subcuenta (Vendedor Reventa):</strong> se les asignará el valor de <strong>Crédito Reventa</strong> (<span id="creditomayConfirmacion2">{{ form.creditomay.value|formato_es_ar }}</span>) si es mayor a su límite actual</li>
+						<li><strong>Clientes sin subcuenta (Vendedor Mostrador o E-Commerce):</strong> se les asignará el valor de <strong>Crédito Mostrador</strong> (<span id="creditominConfirmacion">{{ form.creditomin.value|formato_es_ar }}</span>) si es mayor a su límite actual</li>
+					</ul>
+					<p class="mb-0 text-danger"><strong>¿Desea continuar?</strong></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+					<button type="button" class="btn btn-primary" id="confirmarActualizarBtn">
+						<i class="bi bi-check-lg"></i> Sí, actualizar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal de resultado -->
+	<div class="modal fade" id="resultadoModal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<div class="d-flex align-items-center gap-2">
+						<span id="resultadoModalIcon"></span>
+						<h5 class="modal-title" id="resultadoModalTitle"></h5>
+					</div>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body" id="resultadoModalBody">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal de progreso con spinner -->
+	<div class="modal fade" id="progresoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-body text-center py-5">
+					<div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+						<span class="visually-hidden">Cargando...</span>
+					</div>
+					<h5 class="mb-2">Procesando Actualización</h5>
+					<p class="text-muted mb-0">Actualizando los límites de crédito de los clientes...</p>
+					<p class="text-muted small mt-2">Por favor, espere. Este proceso puede tomar unos segundos.</p>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock modals %}
 
 <!-- Block script -------------------------------------------------------- -->
@@ -897,5 +971,201 @@
 				eliminarLogoFlag.value = '';
 			}
 		});
+		
+		//-- ============================================================
+		//-- FUNCIONALIDAD ACTUALIZACIÓN MASIVA DE LÍMITES DE CRÉDITO
+		//-- ============================================================
+		
+		// Declarar variables globales para los modales y asegurar su correcto manejo
+		let confirmModalInstance = null;
+		let resultadoModalInstance = null;
+		let progresoModalElement = null;
+		
+		// Función para formatear números en formato argentino
+		function formatearNumero(valor, decimales = 2) {
+			const texto = typeof valor === 'string' ? valor.trim() : valor;
+			let numero;
+			
+			if (typeof texto === 'string') {
+				numero = Number(texto.replace(/\./g, '').replace(/,/g, '.'));
+			} else {
+				numero = Number(texto);
+			}
+			
+			if (texto === null || texto === undefined || Number.isNaN(numero)) {
+				return decimales === 0 ? '0' : '0,00';
+			}
+			
+			return new Intl.NumberFormat('es-AR', {
+				minimumFractionDigits: decimales,
+				maximumFractionDigits: decimales
+			}).format(numero);
+		}
+		
+		// Función para ejecutar la actualización
+		async function ejecutarActualizacionLimites() {
+			const btn = document.getElementById('btnActualizarLimites');
+			const originalHtml = btn.innerHTML;
+			
+			// 1. Cerrar modal de confirmación de forma segura
+			if (confirmModalInstance) {
+				confirmModalInstance.hide();
+			}
+			
+			// 2. Mostrar el modal de progreso y registrar el tiempo de inicio
+			showProgresoModal();
+			const startTime = Date.now();
+
+			// Deshabilitar botón y mostrar loading
+			btn.disabled = true;
+			btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Actualizando...';
+			
+			try {
+				const response = await fetch('{% url "actualizar_limites_clientes" %}', {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': getCookie('csrftoken')
+					}
+				});
+				
+				const data = await response.json();
+				
+				// SOLUCIÓN AL CONGELAMIENTO: Garantizar un tiempo mínimo visible (600ms) 
+				// para asegurar que la animación de apertura de Bootstrap termine antes de cerrarlo
+				const elapsedTime = Date.now() - startTime;
+				if (elapsedTime < 600) {
+					await new Promise(resolve => setTimeout(resolve, 600 - elapsedTime));
+				}
+				
+				// 3. Cerrar el modal de progreso
+				hideProgresoModal();
+				
+				// SOLUCIÓN A COLISIÓN: Esperar 350ms a que el modal de progreso desaparezca por completo
+				// junto con su fondo oscuro antes de intentar abrir el de resultados.
+				await new Promise(resolve => setTimeout(resolve, 350));
+				
+				if (data.success) {
+					
+					// Formatear los montos para mostrar
+					const creditomayFormateado = formatearNumero(data.creditomay, 2);
+					const creditominFormateado = formatearNumero(data.creditomin, 2);
+					const totalClientesFormateado = formatearNumero(data.total, 0);
+					const actualizadosFormateado = formatearNumero(data.actualizados, 0);
+					
+					if (data.actualizados === 0) {
+						mostrarModalResultado(
+							'info',
+							'Sin cambios',
+							`No se encontraron clientes para actualizar.<br>
+							<strong>Resumen:</strong><br>
+							• Total clientes Cta. Cte.: ${totalClientesFormateado}<br>
+							• Crédito Reventa: ${creditomayFormateado}<br>
+							• Crédito Mostrador: ${creditominFormateado}<br><br>
+							<em>Los límites se actualizan solo cuando el nuevo valor es mayor al existente.</em>`
+							
+						);
+					} else {
+						mostrarModalResultado(
+							'success',
+							'Actualización completada',
+							`<strong>Se actualizaron ${actualizadosFormateado} de ${totalClientesFormateado} clientes</strong><br><br>
+							<strong>Valores aplicados:</strong><br>
+							• Crédito Reventa: ${creditomayFormateado}<br>
+							• Crédito Mostrador: ${creditominFormateado}<br><br>
+							Los límites se actualizaron solo cuando el nuevo valor era mayor al existente.`
+						);
+					}
+				} else {
+					mostrarModalResultado(
+						'error',
+						'Error',
+						data.error || 'Ocurrió un error al actualizar los límites.'
+					);
+				}
+			} catch (error) {
+				console.error('Error:', error);
+				
+				// Asegurar el cumplimiento del tiempo mínimo también en caso de error de red
+				const elapsedTime = Date.now() - startTime;
+				if (elapsedTime < 600) {
+					await new Promise(resolve => setTimeout(resolve, 600 - elapsedTime));
+				}
+				hideProgresoModal();
+				await new Promise(resolve => setTimeout(resolve, 350));
+				
+				mostrarModalResultado(
+					'error',
+					'Error de conexión',
+					'No se pudo conectar con el servidor. Intente nuevamente.'
+				);
+			} finally {
+				btn.disabled = false;
+				btn.innerHTML = originalHtml;
+			}
+		}
+		
+		// Función para mostrar modal de resultado
+		function mostrarModalResultado(tipo, titulo, mensaje) {
+			const modal = document.getElementById('resultadoModal');
+			const modalTitle = document.getElementById('resultadoModalTitle');
+			const modalBody = document.getElementById('resultadoModalBody');
+			const modalIcon = document.getElementById('resultadoModalIcon');
+			
+			if (tipo === 'success') {
+				modalTitle.className = 'modal-title text-success';
+				modalIcon.innerHTML = '<i class="bi bi-check-circle-fill text-success fs-3"></i>';
+			} else if (tipo === 'error') {
+				modalTitle.className = 'modal-title text-danger';
+				modalIcon.innerHTML = '<i class="bi bi-x-circle-fill text-danger fs-3"></i>';
+			} else {
+				modalTitle.className = 'modal-title text-info';
+				modalIcon.innerHTML = '<i class="bi bi-info-circle-fill text-info fs-3"></i>';
+			}
+			
+			modalTitle.innerHTML = titulo;
+			modalBody.innerHTML = mensaje;
+			
+			// Inicializar y mostrar de manera persistente con la API de Bootstrap
+			resultadoModalInstance = bootstrap.Modal.getOrCreateInstance(modal);
+			resultadoModalInstance.show();
+		}
+		
+		// Helpers para el modal de progreso usando getOrCreateInstance
+		function showProgresoModal() {
+			if (progresoModalElement) {
+				bootstrap.Modal.getOrCreateInstance(progresoModalElement).show();
+			}
+		}
+		
+		function hideProgresoModal() {
+			if (progresoModalElement) {
+				bootstrap.Modal.getOrCreateInstance(progresoModalElement).hide();
+			}
+		}
+		
+		// Inicialización de eventos una vez que el DOM está completamente cargado
+		document.addEventListener("DOMContentLoaded", function () {
+			// Asignar el elemento de progreso globalmente
+			progresoModalElement = document.getElementById('progresoModal');
+			
+			// Inicializar la instancia del modal de confirmación
+			const confirmModalElement = document.getElementById('confirmActualizarModal');
+			if (confirmModalElement) {
+				confirmModalInstance = bootstrap.Modal.getOrCreateInstance(confirmModalElement);
+			}
+
+			// Evento para abrir el modal de confirmación
+			document.getElementById('btnActualizarLimites')?.addEventListener('click', function() {
+				if (confirmModalInstance) {
+					confirmModalInstance.show();
+				}
+			});
+			
+			// Evento al pulsar "Sí, actualizar"
+			document.getElementById('confirmarActualizarBtn')?.addEventListener('click', function() {
+				ejecutarActualizacionLimites();
+			});
+		});
+		
 	</script>
 {% endblock script %}

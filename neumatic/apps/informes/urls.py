@@ -1256,7 +1256,7 @@ urlpatterns = [
 	
 	#-- Otras rutas.
 	path('filtrar-localidad/', filtrar_localidad, name='filtrar_localidad'),
-	path('buscar/cliente/id/', buscar_cliente_id, name='buscar_cliente_id'),
+	path('buscar/cliente/id/', buscar_cliente_id_inf, name='buscar_cliente_id_inf'),
 	path('buscar/cliente/', buscar_cliente, name='buscar_cliente'),
 	
 	path('buscar/producto/id/', buscar_producto_por_id, name='buscar_producto_por_id'),

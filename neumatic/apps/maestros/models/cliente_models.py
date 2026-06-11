@@ -4,7 +4,7 @@ from django.core.exceptions import ValidationError
 from datetime import date
 import re
 
-from utils.validator.validaciones import validar_cuit, buscar_cliente_id
+from utils.validator.validaciones import validar_cuit #, buscar_cliente_id
 from .base_gen_models import ModeloBaseGenerico
 from .base_models import (Actividad, Localidad, Provincia, TipoIva, 
 						  TipoDocumentoIdentidad, TipoPercepcionIb)
@@ -81,7 +81,8 @@ class Cliente(ModeloBaseGenerico):
 	condicion_venta = models.IntegerField(
 		verbose_name="Condición Venta*",
 		default=True,
-		choices=CONDICION_VENTA
+		choices=CONDICION_VENTA,
+		db_index=True
 	)
 	telefono_cliente = models.CharField(
 		verbose_name="Teléfono*",
@@ -177,7 +178,7 @@ class Cliente(ModeloBaseGenerico):
 		choices=SI_NO
 	)
 	sub_cuenta = models.IntegerField(
-		verbose_name="Código",
+		verbose_name="Sub Cuenta",
 		null=True,
 		blank=True
 	)
@@ -241,7 +242,6 @@ class Cliente(ModeloBaseGenerico):
 		#-- Convertir a string los valores de los campos previo a la validación.
 		telefono_str = str(self.telefono_cliente) if self.telefono_cliente else ''
 		movil_cliente_str = str(self.movil_cliente) if self.movil_cliente else ''
-		sub_cuenta_str = str(self.sub_cuenta) if self.sub_cuenta else ''
 		
 		if getattr(self, 'id_tipo_documento_identidad', None) is not None:
 			nombre_doc = self.id_tipo_documento_identidad.nombre_documento_identidad.lower()
@@ -272,17 +272,76 @@ class Cliente(ModeloBaseGenerico):
 		if movil_cliente_str and not re.match(r'^\+?\d[\d ]{0,14}$', movil_cliente_str):
 			errors.update({'movil_cliente': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 15, el signo +, espacios o vacío.'})
 		
-		if sub_cuenta_str and not re.match(r'^\d{0,6}$', sub_cuenta_str):
-			errors.update({'sub_cuenta': 'Debe indicar sólo dígitos numéricos positivos, mínimo 1 y máximo 6.'})
-		elif sub_cuenta_str and not buscar_cliente_id(self.sub_cuenta):
-			errors.update({'sub_cuenta': 'No existe un cliente con la Sub Cuenta indicada.'})
-		
 		if not self.id_vendedor:
 			errors.update({'id_vendedor': 'Debe seleccionar un Vendedor.'})
+		
+		if self.limite_credito is not None and self.limite_credito < 0:
+			errors.update({'limite_credito': 'El límite de crédito no puede ser negativo.'})
+		
+		if self.condicion_venta == 1 and self.limite_credito != 0:
+			errors.update({'limite_credito': 'Los clientes con condición de venta "Contado" deben tener límite de crédito 0.'})
+		
+		if self.condicion_venta == 2 and (self.limite_credito is None or self.limite_credito <= 0):
+				errors['limite_credito'] = 'Los clientes con condición de venta "Cuenta Corriente" deben tener un límite de crédito mayor a cero.'
 		
 		if errors:
 			#-- Lanza el conjunto de excepciones.
 			raise ValidationError(errors)
+	
+	def _calcular_limite_credito_automatico(self):
+		"""
+		Calcula el límite de crédito automático según las reglas de negocio:
+		1. Si condición de venta = Contado (1), límite = 0
+		2. Si condición de venta = Cta. Cte. (2):
+		- Con sub_cuenta asignada: usa creditomay de Empresa
+		- Sin sub_cuenta: según tipo_venta del vendedor
+			* Mostrador (M) o E-Commerce (E): creditomin
+			* Revendedor (R): creditomay
+		Retorna el valor calculado o None si no aplica.
+		"""
+		from .empresa_models import Empresa
+		
+		#-- Solo para Cuenta Corriente.
+		if self.condicion_venta != 2:
+			return None
+		
+		empresa = Empresa.objects.first()
+		if not empresa:
+			return None
+		
+		#-- Con sub_cuenta asignada: usa creditomay.
+		if self.sub_cuenta and self.sub_cuenta > 0:
+			return empresa.creditomay or 0
+		
+		#-- Sin sub_cuenta: depende del tipo_venta del vendedor.
+		if self.id_vendedor:
+			tipo_venta = self.id_vendedor.tipo_venta
+			if tipo_venta == 'R':
+				#-- Revendedor.
+				return empresa.creditomay or 0
+			elif tipo_venta in ('M', 'E'):
+				#-- Mostrador o E-Commerce.
+				return empresa.creditomin or 0
+		
+		return None
+	
+	def save(self, *args, **kwargs):
+		"""
+		Sobrescribir save para manejar el límite de crédito según las reglas:
+		- Si condición es Contado: siempre forzar a 0 y no permitir modificación manual
+		- Si condición es Cta. Cte.: respetar límite manual si existe, sino calcular automático
+		"""
+		#-- Forzar a cero si se cumplen las condiciones.
+		if self.condicion_venta == 1 or (self.limite_credito is not None and self.limite_credito < 0) or self.limite_credito is None:
+			self.limite_credito = 0
+		
+		# Si es Cta. Cte. y no tiene valor manual, asignar automático.
+		if self.condicion_venta == 2 and (self.limite_credito is None or self.limite_credito == 0):
+				limite_auto = self._calcular_limite_credito_automatico()
+				if limite_auto is not None and limite_auto > 0:
+					self.limite_credito = limite_auto
+		
+		super().save(*args, **kwargs)
 	
 	@property
 	def cuit_formateado(self):
@@ -294,3 +353,4 @@ class Cliente(ModeloBaseGenerico):
 	@property
 	def nombre_tipo_documento_identidad(self):
 		return self.id_tipo_documento_identidad.nombre_documento_identidad
+
