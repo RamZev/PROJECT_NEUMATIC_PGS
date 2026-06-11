@@ -66,7 +66,8 @@ class Vendedor(ModeloBaseGenerico):
 	tipo_venta = models.CharField(
 		verbose_name="Tipo",
 		max_length=1,
-		choices=TIPO_VENTA
+		choices=TIPO_VENTA,
+		db_index=True
 	)
 	col_descuento = models.IntegerField(
 		verbose_name="Columna Dcto.",

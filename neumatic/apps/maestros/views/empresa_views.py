@@ -1,4 +1,4 @@
-# neumatic\apps\maestros\views\localidad_views.py
+# neumatic\apps\maestros\views\empresa_views.py
 import os
 import tempfile
 import json
@@ -6,9 +6,13 @@ from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.db.models import Case, When, Value, F, Q
+from django.db import transaction
 
 from ..views.cruds_views_generics import *
 from ..models.empresa_models import Empresa
+from ..models.cliente_models import Cliente
+from ..models.vendedor_models import Vendedor
 from ..forms.empresa_forms import EmpresaForm
 
 
@@ -395,3 +399,83 @@ class CargarClaveView(View):
 				return True
 			print(f"Error al validar clave: {e}")
 			return False
+
+
+@method_decorator(login_required, name='dispatch')
+class ActualizarLimitesClientesView(View):
+	"""
+	Vista para actualizar los límites de crédito de los clientes con condición Cta. Cte.
+	"""
+	
+	def post(self, request, *args, **kwargs):
+		try:
+			#-- Obtener la empresa (Traer solo los campos necesarios).
+			empresa = Empresa.objects.only('creditomay', 'creditomin').first()
+			if not empresa:
+				return JsonResponse({
+					'success': False,
+					'error': 'No se encontró la configuración de la empresa.'
+				})
+			
+			creditomay = empresa.creditomay or 0
+			creditomin = empresa.creditomin or 0
+			
+			#-- Base del queryset de clientes a modificar filtrado por condición de venta 2 (Cta. Cte.).
+			clientes_base  = Cliente.objects.filter(condicion_venta=2)
+			
+			#-- Guardamos el total antes de actualizar para el reporte final.
+			total_clientes = clientes_base.count()
+			
+			if total_clientes == 0:
+				return JsonResponse({
+					'success': True,
+					'message': 'No hay clientes con condición de venta "Cuenta Corriente"',
+					'actualizados': 0
+				})
+			
+			actualizados = 0
+			
+			# --- OPERACIÓN 1: Clientes CON sub_cuenta ---
+			#-- Esta operación no requiere de la tabla vendedor, se ejecuta directo.
+			actualizados += clientes_base.filter(
+				sub_cuenta__gt=0,
+				limite_credito__lt=creditomay
+			).update(limite_credito=creditomay)
+			
+			# --- OPERACIÓN 2 y 3: Clientes SIN sub_cuenta (Dependen del Vendedor) ---
+			#-- Pre-extraemos los IDs de los vendedores según su tipo de venta en una consulta de lectura (rápida).
+			vendedores_r = list(Vendedor.objects.filter(tipo_venta='R').values_list('id_vendedor', flat=True))
+			vendedores_me = list(Vendedor.objects.filter(tipo_venta__in=['M', 'E']).values_list('id_vendedor', flat=True))
+			
+			#-- Clientes sin sub_cuenta base para las siguientes actualizaciones.
+			clientes_sin_subcuenta = clientes_base.filter(
+				Q(sub_cuenta__isnull=True) | Q(sub_cuenta=0)
+			)
+			
+			#-- Ejecutamos actualización para tipo 'R' usando la lista de IDs.
+			if vendedores_r:
+				actualizados += clientes_sin_subcuenta.filter(
+					id_vendedor_id__in=vendedores_r,
+					limite_credito__lt=creditomay
+				).update(limite_credito=creditomay)
+				
+			#-- Ejecutamos actualización para tipo 'M' o 'E'.
+			if vendedores_me:
+				actualizados += clientes_sin_subcuenta.filter(
+					id_vendedor_id__in=vendedores_me,
+					limite_credito__lt=creditomin
+				).update(limite_credito=creditomin)		
+			
+			return JsonResponse({
+				'success': True,
+				'actualizados': actualizados,
+				'total': total_clientes,
+				'creditomay': float(creditomay),
+				'creditomin': float(creditomin)
+			})
+			
+		except Exception as e:
+			return JsonResponse({
+				'success': False,
+				'error': f'Error al actualizar: {str(e)}'
+			})

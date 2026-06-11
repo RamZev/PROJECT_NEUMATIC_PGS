@@ -57,6 +57,7 @@ from .views.consulta_views_maestros import (
 from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
 from .views.actualizar_producto_estado_views import ActualizarEstadosProductosView
 from .views.select2_views import buscar_cliente_select2
+from .views.empresa_views import ActualizarLimitesClientesView
 
 urlpatterns = [
 	#-- Tablas:
@@ -319,6 +320,7 @@ urlpatterns = [
 	path('get-descuentos-columna/<str:columna>/', get_descuentos_columna, name='get_descuentos_columna'),
 	
 	#-- Nuevas URLs para la funcionalidad de límite de crédito.
+	path('empresa/actualizar-limites-clientes/', ActualizarLimitesClientesView.as_view(), name='actualizar_limites_clientes'),
 	path('obtener-parametros-empresa/', obtener_parametros_empresa, name='obtener_parametros_empresa'),
 	path('obtener-tipo-venta-vendedor/', obtener_tipo_venta_vendedor, name='obtener_tipo_venta_vendedor'),
 	

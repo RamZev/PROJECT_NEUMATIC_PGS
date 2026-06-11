@@ -81,7 +81,8 @@ class Cliente(ModeloBaseGenerico):
 	condicion_venta = models.IntegerField(
 		verbose_name="Condición Venta*",
 		default=True,
-		choices=CONDICION_VENTA
+		choices=CONDICION_VENTA,
+		db_index=True
 	)
 	telefono_cliente = models.CharField(
 		verbose_name="Teléfono*",

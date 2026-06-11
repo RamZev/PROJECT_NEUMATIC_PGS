@@ -196,18 +196,6 @@ class EmpresaForm(CrudGenericForm):
 					'min': -99.99,
 					'max': 99.99
 				}),
-			# 'creditomay':
-			# 	forms.NumberInput(attrs={
-			# 		**formclasstext,
-			# 		'min': 0,
-			# 		'max': 9999999999999.99
-			# 	}),
-			# 'creditomin':
-			# 	forms.NumberInput(attrs={
-			# 		**formclasstext,
-			# 		'min': 0,
-			# 		'max': 9999999999999.99
-			# 	}),
 			'creditomay':
 				forms.TextInput(attrs={**formclassnumb,}),
 			'creditomin':
