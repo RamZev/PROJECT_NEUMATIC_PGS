@@ -179,7 +179,7 @@ class MaestroUpdateView(AuditoriaMixin, PermissionRequiredMixin, UpdateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         
-        if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
+        if hasattr(self.form_class, '__init__') and 'user' in self.form_class.__init__.__code__.co_varnames:
             kwargs['user'] = self.request.user
         
         return kwargs
@@ -217,63 +217,16 @@ class MaestroUpdateView(AuditoriaMixin, PermissionRequiredMixin, UpdateView):
             "list_view_name": self.list_view_name,
         })
         
-        context['form'] = self.get_form()
         context['requerimientos'] = obtener_requerimientos_modelo(self.model)
         context['fecha'] = timezone.now()
         
         return context
     
-    def handle_no_permission(self):
-        messages.error(self.request, 'No tienes permiso para realizar esta acción.')
-        return redirect(self.list_view_name or 'home')
-    list_view_name = None
-    
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        
-        if hasattr(self.form_class, '__ini__') and 'user' in self.form_class.__init__.__code__.co_varnames:
-            kwargs['user'] = self.request.user
-        
-        return kwargs
-    
-    def form_valid(self, form):
-        user = self.request.user
-        
-        if not form.instance.pk:  # CREACIÓN
-            form.instance.id_user = user
-            form.instance.usuario = user.username
-        else:  # ACTUALIZACIÓN
-            form.instance.id_user_update = user
-        
-        try:
-            with transaction.atomic():
-                return super().form_valid(form)
-        except Exception as e:
-            # Mostrar mensaje de error
-            messages.error(self.request, f'❌ Error al actualizar: {str(e)}')
-            # Redirigir al listado
-            return redirect(self.list_view_name or 'home')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        
-        registro = self.get_object()
-        
-        context.update({
-            "accion": f"Editar {self.model._meta.verbose_name} - {registro.pk}",
-            "list_view_name": self.list_view_name,
-        })
-        
-        context['form'] = self.get_form()
-        context['requerimientos'] = obtener_requerimientos_modelo(self.model)
-        context['fecha'] = timezone.now()
-        
-        return context
     
     def handle_no_permission(self):
         messages.error(self.request, 'No tienes permiso para realizar esta acción.')
         return redirect(self.list_view_name or 'home')
-
+ 
 
 @method_decorator(login_required, name='dispatch')
 class MaestroDeleteView(PermissionRequiredMixin, DeleteView):

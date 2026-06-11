@@ -65,7 +65,8 @@ from .views.consultas_factura_views import (
 	buscar_banco,
 	buscar_codigo_banco,
 	obtener_libro_iva,
-	buscar_factura
+	buscar_factura,
+    validar_limite_credito,  # ← NUEVA IMPORTACIÓN
 )
 from .views.consultas_compra_views import (
 	obtener_numero_compra,
@@ -141,6 +142,7 @@ urlpatterns = [
 	path('buscar/codigo_banco/', buscar_codigo_banco, name='buscar_codigo_banco'),
 	path('obtener/libro_iva/', obtener_libro_iva, name='obtener_libro_iva'),
 	path('buscar/factura/', buscar_factura, name='buscar_factura'),
+    path('validar-limite-credito/', validar_limite_credito, name='validar_limite_credito'),
 	
 	#-- Vista para obtener datos de AFIPArca.
 	path('obtener/estado-servidores/', fe_dummy, name='estado_servidores'),

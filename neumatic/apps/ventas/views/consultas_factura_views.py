@@ -6,6 +6,10 @@ from django.db.models import Q, F
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
+
+from utils.saldo_cliente import obtener_saldo_cliente
+from apps.maestros.models.cliente_models import Cliente
+
 from datetime import date, timedelta
 import traceback
 import json
@@ -922,3 +926,64 @@ def buscar_factura(request):
 			{'error': 'Error interno del servidor'},
 			status=500
 		)
+
+
+# ============================================
+# VALIDACIÓN DE SALDO / LÍMITE DE CRÉDITO
+# ============================================
+@require_GET
+def validar_limite_credito(request):
+    """
+    Endpoint para validar el saldo de un cliente contra su límite de crédito
+    Recibe: cliente_id (query parameter)
+    Retorna: JSON con saldo, límite y estado de validación
+    """
+    cliente_id = request.GET.get('cliente_id')
+    
+    if not cliente_id:
+        return JsonResponse({
+            'success': False,
+            'error': 'Se requiere el ID del cliente'
+        }, status=400)
+    
+    try:
+        cliente_id = int(cliente_id)
+    except ValueError:
+        return JsonResponse({
+            'success': False,
+            'error': 'ID de cliente inválido'
+        }, status=400)
+    
+    # Obtener el cliente y su límite de crédito
+    try:
+        cliente = Cliente.objects.get(id_cliente=cliente_id)
+        limite_credito = cliente.limite_credito or 0
+    except Cliente.DoesNotExist:
+        return JsonResponse({
+            'success': False,
+            'error': 'Cliente no encontrado'
+        }, status=404)
+    
+    # Obtener saldo del cliente
+    saldo_data = obtener_saldo_cliente(cliente_id)
+    
+    if not saldo_data:
+        saldo_actual = 0.0
+    else:
+        saldo_actual = saldo_data['saldo']
+    
+    # Evaluar si supera el límite
+    supera_limite = saldo_actual > limite_credito
+    
+    return JsonResponse({
+        'success': True,
+        'cliente_id': cliente_id,
+        'nombre_cliente': cliente.nombre_cliente,
+        'saldo': saldo_actual,
+        'limite_credito': float(limite_credito),
+        'supera_limite': supera_limite,
+        'necesita_autorizacion': supera_limite,
+        'primer_fact_impaga': saldo_data['primer_fact_impaga'] if saldo_data else None,
+        'ultimo_pago': saldo_data['ultimo_pago'] if saldo_data else None,
+        'mensaje': f"Saldo: ${saldo_actual:,.2f} | Límite: ${limite_credito:,.2f}"
+    })
