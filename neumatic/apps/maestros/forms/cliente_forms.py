@@ -88,18 +88,13 @@ class ClienteForm(CrudGenericForm):
 				forms.TextInput(attrs={'type':'date', **formclassdate, 'readonly': True}),
 			'cliente_empresa': 
 				forms.Select(attrs={**formclassselect}),
-			# 'limite_credito':
-			# 	forms.NumberInput(attrs={
-			# 		**formclasstext,
-			# 		'min': 0,
-			# 		'max': 9999999999999.99
-			# 	}),
 			'limite_credito':
 				forms.TextInput(attrs={**formclassnumb}),
 		}
 	
 	def __init__(self, *args, **kwargs):
-		self.user = kwargs.pop('user', None)  # Extraer el usuario autenticado
+		
+		self.restricted_fields = kwargs.pop('restricted_fields', None)
 		super().__init__(*args, **kwargs)
 		
 		self.fields['id_localidad'].choices = []
@@ -139,7 +134,8 @@ class ClienteForm(CrudGenericForm):
 		#-- Si es un nuevo registro.
 		if not self.instance.pk:
 			self.fields['id_sucursal'].initial = self.initial.get('id_sucursal')
-			#-- Deshabilita el campo.
+			#-- Deshabilita el campo y evita la validación del requerido.
+			self.fields['id_sucursal'].required = False
 			self.fields['id_sucursal'].widget.attrs['disabled'] = True
 		else:
 			#-- Configuración en modo edición.
@@ -148,30 +144,42 @@ class ClienteForm(CrudGenericForm):
 			self.initial['id_sucursal'] = self.instance.id_sucursal
 		
 		##########################################################################
-		#-- Restricciones por jerarquía.
-		if self.user and self.user.jerarquia >= "L":
-			campos_restringidos = ['id_vendedor', 'telefono_cliente', 'movil_cliente', 'email_cliente', 'email2_cliente']
-			for campo in campos_restringidos:
+		#-- Restricciones por jerarquía (sólo en modo edición).
+		if self.instance.pk and self.restricted_fields:
+			for campo in self.restricted_fields:
 				if campo in self.fields:
+					#-- Marcar como no requerido para evitar validación de requerido en campos vacíos.
+					self.fields[campo].required = False
+					#-- Usar Field.disabled para que Django no valide.
+					self.fields[campo].disabled = True
 					self.fields[campo].widget.attrs['readonly'] = True
-					self.fields[campo].required = False  # Evitar validaciones innecesarias			
-	
+					self.fields[campo].widget.attrs['class'] = self.fields[campo].widget.attrs.get('class', '') + ' bg-body-secondary'
+		
 		#-- Configurar el campo limite_credito según la condición de venta.
-		instance = kwargs.get('instance')
-		if instance and instance.pk:
-			if instance.condicion_venta == 1:  #-- Contado.
+		if self.instance and self.instance.pk:
+			if self.instance.condicion_venta == 1:  #-- Contado.
+				self.fields['limite_credito'].required = False
+				self.fields['limite_credito'].disabled = True
 				self.fields['limite_credito'].widget.attrs['readonly'] = True
-				self.fields['limite_credito'].widget.attrs['class'] += ' bg-light'
-				self.fields['limite_credito'].help_text = 'Automático - No editable para clientes Contado'
-			elif hasattr(instance, '_limite_es_manual') and instance._limite_es_manual:
-				self.fields['limite_credito'].widget.attrs['class'] += ' bg-warning bg-opacity-25'
-				self.fields['limite_credito'].help_text = '⚠️ Valor asignado manualmente'
 	
 	def clean(self):
 		cleaned_data = super().clean()
+		
 		#-- Asignar automáticamente id_sucursal si el formulario está en modo edición.
 		if self.instance.pk:
 			cleaned_data['id_sucursal'] = self.instance.id_sucursal
 			#-- Remover id_sucursal de la validación en modo edición.
-			self._errors.pop('id_sucursal', None)
+			if self._errors is not None:
+				self._errors.pop('id_sucursal', None)
+		
+		#-- Restaurar valores de campos disabled y limpiar errores asociados.
+		for campo in self.restricted_fields:
+			if campo in self.fields and self.fields[campo].disabled:
+				#-- Restaurar el valor original del instance.
+				if self.instance and hasattr(self.instance, campo):
+					cleaned_data[campo] = getattr(self.instance, campo)
+				#-- Limpiar cualquier error de validación para este campo.
+				if self._errors is not None and campo in self._errors:
+					del self._errors[campo]
+		
 		return cleaned_data

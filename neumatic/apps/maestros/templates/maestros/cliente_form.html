@@ -526,7 +526,6 @@
 			const cuitInput = document.getElementById("id_cuit");
 			
 			if (cuitInput) {
-				// cuitInput.addEventListener("change", function () {
 				cuitInput.addEventListener("blur", function () {
 					const cuit = cuitInput.value.trim();
 					if (cuit) {
@@ -566,31 +565,30 @@
 			const idClienteSubCuenta = document.getElementById("id_sub_cuenta");
 			
 			if (idClienteSubCuenta) {
-				// idClienteSubCuenta.addEventListener("change", function () {
-					idClienteSubCuenta.addEventListener("blur", function () {
-					const idSubCuenta = idClienteSubCuenta.value.trim();
-					if (idSubCuenta) {
-						const url = "{% url 'buscar_cliente_id' %}?id_cliente=" + encodeURIComponent(idSubCuenta);
-						fetch(url)
-							.then(response => response.json())
-							.then(data => {
-								let mens;
-								if (data.existe) {
-									mens = `<p>La Sub Cuenta pertenece al cliente :</p>`;
-									mens += `<p><b>${data.cliente}</b></p>`;
-									
+				idClienteSubCuenta.addEventListener("blur", function () {
+				const idSubCuenta = idClienteSubCuenta.value.trim();
+				if (idSubCuenta) {
+					const url = "{% url 'buscar_cliente_id' %}?id_cliente=" + encodeURIComponent(idSubCuenta);
+					fetch(url)
+						.then(response => response.json())
+						.then(data => {
+							let mens;
+							if (data.existe) {
+								mens = `<p>La Sub Cuenta pertenece al cliente :</p>`;
+								mens += `<p><b>${data.cliente}</b></p>`;
+								
+							}else{
+								if (data.error){
+									mens = `<p>${data.error}</p>`;
 								}else{
-									if (data.error){
-										mens = `<p>${data.error}</p>`;
-									}else{
-										mens = `<p>No existe un cliente con la Sub Cuenta indicada</p>`;
-									}
+									mens = `<p>No existe un cliente con la Sub Cuenta indicada</p>`;
 								}
-								mostrarModalMensajes(mens);
-							})
-							.catch(error => {
-								console.error("Error al verificar el Id del cliente (Sub Cuenta):", error);
-							});
+							}
+							mostrarModalMensajes(mens);
+						})
+						.catch(error => {
+							console.error("Error al verificar el Id del cliente (Sub Cuenta):", error);
+						});
 					}
 				});
 			}
@@ -604,6 +602,8 @@
 			const subCuentaInput = document.getElementById("id_sub_cuenta");
 			const limiteCreditoInput = document.getElementById("id_limite_credito");
 			
+			const estabaReadOnly = limiteCreditoInput.readOnly;
+			
 			// Variables para tracking
 			let esLimiteManual = false;
 			let actualizando = false;
@@ -614,50 +614,40 @@
 				let valor = limiteCreditoInput.value;
 				if (!valor) return 0;
 				
-				// Separar parte entera y decimal
-				let partes = valor.split(',');
-				let parteEntera = partes[0];
-				let parteDecimal = partes[1] || '00';
+				valor = valor.toString().trim().replace(/\s/g, '');
+				let tieneComa = valor.indexOf(',') !== -1;
+				let tienePunto = valor.indexOf('.') !== -1;
 				
-				// Eliminar puntos de miles de la parte entera
-				let enteroSinPuntos = parteEntera.replace(/\./g, '');
+				if (tieneComa && tienePunto) {
+					// Formato 1.234.567,89
+					valor = valor.replace(/\./g, '').replace(/,/g, '.');
+				} else if (tieneComa) {
+					// Formato 1234567,89
+					valor = valor.replace(/,/g, '.');
+				} else if (tienePunto) {
+					const lastDot = valor.lastIndexOf('.');
+					if (valor.indexOf('.') !== lastDot) {
+						const entero = valor.slice(0, lastDot).replace(/\./g, '');
+						const decimal = valor.slice(lastDot + 1);
+						valor = entero + '.' + decimal;
+					}
+				}
 				
-				// Reconstruir el número con punto decimal
-				let numeroConPunto = enteroSinPuntos + '.' + parteDecimal;
-				let numero = parseFloat(numeroConPunto);
-				
+				const numero = parseFloat(valor);
 				return isNaN(numero) ? 0 : numero;
 			}
 			
 			// Función para formatear el valor en el input
 			function formatearLimiteCredito() {
-				if (!limiteCreditoInput || limiteCreditoInput.readOnly) return;
+				if (!limiteCreditoInput) return;
 				
-				let valor = limiteCreditoInput.value;
-				if (!valor) {
+				let valorNumerico = obtenerValorNumericoInput();
+				if (isNaN(valorNumerico)) {
 					limiteCreditoInput.value = '0,00';
 					return;
 				}
 				
-				// Separar la parte entera de la decimal
-				let partes = valor.split('.');
-				let parteEntera = partes[0];
-				let parteDecimal = partes[1] || '00';
-				
-				// Eliminar SOLO los puntos de miles de la parte entera (no tocar el punto decimal)
-				let enteroSinPuntos = parteEntera.replace(/\./g, '');
-				
-				// Reconstruir el número
-				let numeroLimpio = enteroSinPuntos + '.' + parteDecimal;
-				let numero = parseFloat(numeroLimpio);
-				
-				if (isNaN(numero)) {
-					limiteCreditoInput.value = '0,00';
-					return;
-				}
-				
-				// Formatear con separadores de miles y coma decimal
-				let formateado = numero.toLocaleString('es-AR', {
+				let formateado = valorNumerico.toLocaleString('es-AR', {
 					minimumFractionDigits: 2,
 					maximumFractionDigits: 2
 				});
@@ -680,8 +670,7 @@
 					console.warn("Posible valor con decimales incorrectos:", valorReal);
 				}
 				
-				const estabaReadOnly = limiteCreditoInput.readOnly;
-				
+				//const estabaReadOnly = limiteCreditoInput.readOnly;
 				if (estabaReadOnly) {
 					limiteCreditoInput.readOnly = false;
 				}
@@ -819,6 +808,13 @@
 				actualizando = true;
 				
 				try {
+					if (limiteCreditoInput?.disabled) {
+						// Si ya está deshabilitado por el servidor, sólo formatear y no cambiar su estado.
+						formatearLimiteCredito();
+						actualizando = false;
+						return;
+					}
+					
 					const condicionVenta = parseInt(condicionVentaSelect?.value || 1);
 					const limiteActual = obtenerValorNumericoInput();
 					// Caso Contado: forzar a 0 y readonly
@@ -826,8 +822,8 @@
 						if (limiteCreditoInput) {
 							asignarValorInput(0);
 							limiteCreditoInput.readOnly = true;
-							limiteCreditoInput.classList.add('bg-light');
-							limiteCreditoInput.classList.remove('bg-warning', 'bg-opacity-25');
+							//limiteCreditoInput.classList.add('bg-light');
+							//limiteCreditoInput.classList.remove('bg-warning', 'bg-opacity-25');
 							limiteCreditoInput.title = 'Automático - No editable para clientes Contado';
 						}
 						esLimiteManual = false;
@@ -836,9 +832,9 @@
 					}
 					
 					// Caso Cta. Cte.: habilitar edición
-					if (limiteCreditoInput) {
+					if (limiteCreditoInput && !estabaReadOnly) {
 						limiteCreditoInput.readOnly = false;
-						limiteCreditoInput.classList.remove('bg-light');
+						//limiteCreditoInput.classList.remove('bg-light');
 						limiteCreditoInput.title = '';
 					}
 					
@@ -859,15 +855,17 @@
 								if (aplicar) {
 									asignarValorInput(limiteAutomatico);
 									esLimiteManual = false;
-									if (limiteCreditoInput) {
-										limiteCreditoInput.classList.remove('bg-warning', 'bg-opacity-25');
-									}
+									//if (limiteCreditoInput) {
+									//	limiteCreditoInput.classList.remove('bg-warning', 'bg-opacity-25');
+									//}
 								} else {
 									esLimiteManual = true;
-									if (limiteCreditoInput) {
-										limiteCreditoInput.classList.add('bg-warning', 'bg-opacity-25');
-										limiteCreditoInput.title = '⚠️ Valor asignado manualmente';
-									}
+									
+									//limiteCreditoInput.classList.add('bg-opacity-25');
+									//if (limiteCreditoInput) {
+									//	limiteCreditoInput.classList.add('bg-warning', 'bg-opacity-25');
+									//	limiteCreditoInput.title = '⚠️ Valor asignado manualmente';
+									//}
 								}
 							});
 						}
@@ -887,8 +885,9 @@
 					const condicion = parseInt(condicionVentaSelect?.value || 1);
 					if (condicion === 2) {
 						esLimiteManual = true;
-						limiteCreditoInput.classList.add('bg-warning', 'bg-opacity-25');
-						limiteCreditoInput.title = '⚠️ Valor asignado manualmente';
+						//limiteCreditoInput.classList.add('bg-opacity-25');
+						//limiteCreditoInput.classList.add('bg-warning', 'bg-opacity-25');
+						//limiteCreditoInput.title = '⚠️ Valor asignado manualmente';
 					}
 				}
 			}
@@ -901,8 +900,8 @@
 					<div class="toast align-items-center text-bg-info border-0 position-fixed bottom-0 end-0 m-3 toast-info" role="alert" style="z-index: 1100;">
 						<div class="d-flex">
 							<div class="toast-body">
-								El límite de crédito fue asignado manualmente. 
-								<button type="button" class="btn btn-sm btn-light ms-2" id="recalcularBtn">recalcular</button>
+								Se han modificado los parámetros que determinan el Límite de Crédito. 
+								<button type="button" class="btn btn-sm btn-light ms-2" id="recalcularBtn">Recalcular</button>
 							</div>
 							<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
 						</div>
@@ -911,7 +910,7 @@
 				
 				document.body.insertAdjacentHTML('beforeend', toastHTML);
 				const toastElement = document.querySelector('.toast-info');
-				const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 5000 });
+				const toast = new bootstrap.Toast(toastElement, { autohide: true, delay: 10000 });
 				
 				const recalcularBtn = document.getElementById('recalcularBtn');
 				if (recalcularBtn) {
@@ -985,10 +984,15 @@
 				const condicion = parseInt(condicionVentaSelect?.value || 1);
 				
 				if (limiteCreditoInput) {
+					if (limiteCreditoInput.disabled) {
+						formatearLimiteCredito();
+						return;
+					}
+					
 					if (condicion === 1) {
 						asignarValorInput(0);
 						limiteCreditoInput.readOnly = true;
-						limiteCreditoInput.classList.add('bg-light');
+						//limiteCreditoInput.classList.add('bg-light');
 						limiteCreditoInput.title = 'Automático - No editable para clientes Contado';
 					} else {
 						// Asegurar formato al cargar

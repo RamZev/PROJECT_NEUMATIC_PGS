@@ -130,6 +130,37 @@ class ClienteUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
+	
+	#-- Campos restringidos para usuarios de jerarquía "L" o superior (no superuser)
+	restricted_fields = [
+		'id_vendedor', 
+		'telefono_cliente', 
+		'movil_cliente', 
+		'email_cliente', 
+		'email2_cliente', 
+		'condicion_venta', 
+		'sub_cuenta', 
+		'limite_credito'
+	]
+	
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		# Pasar información sobre qué campos restringir
+		kwargs['restricted_fields'] = self._get_restricted_fields_for_user()
+		return kwargs
+	
+	def _get_restricted_fields_for_user(self):
+		"""
+		Determina qué campos deben estar restringidos para el usuario actual.
+		Retorna una lista de nombres de campos o None si no aplica restricción.
+		"""
+		user = self.request.user
+		
+		# Solo restringir en modo edición, con jerarquía >= "L" y no superuser
+		if user.jerarquia >= "L" and not user.is_superuser:
+			return self.restricted_fields
+		
+		return None
 
 
 class ClienteDeleteView (MaestroDeleteView):
