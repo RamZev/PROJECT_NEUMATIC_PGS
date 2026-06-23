@@ -1172,7 +1172,7 @@ CREATE VIEW VLTablaDinamicaDetalleVentas AS
 		JOIN producto p ON df.id_producto_id = p.id_producto
 		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
 		JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
-		JOIN operario o ON df.id_operario_id = o.id_operario
+		LEFT JOIN operario o ON df.id_operario_id = o.id_operario
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN vendedor v ON c.id_vendedor_id = v.id_vendedor
