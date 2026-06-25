@@ -3,18 +3,10 @@ from django.db import models
 from django.utils import timezone
 
 from .base_gen_models import ModeloBaseGenerico
+from .base_models import ComprobanteVenta
 from .sucursal_models import Sucursal
 from .cliente_models import Cliente
 from entorno.constantes_base import ESTATUS_GEN
-
-
-COMPROBANTES = [
-	("", ""),
-	("001", "001"),
-	("003", "003"),
-	("203", "203"),
-	("203", "208")
-]
 
 
 class Valida(ModeloBaseGenerico):
@@ -60,13 +52,17 @@ class Valida(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
-	compro = models.CharField(
-		verbose_name="Compro",
-		max_length=3,
-		choices=COMPROBANTES,
-		null=True,
-		blank=True
-	)
+	id_comprobante_venta = models.ForeignKey(
+        ComprobanteVenta,
+        on_delete=models.PROTECT,
+        verbose_name="Comprobante*",
+        null=True,
+        blank=True,
+        limit_choices_to={
+            'estatus_comprobante_venta': True,
+			'tipo_comprobante__in': ["REMITO", "FACTURA", "NOTA DE CRÉDITO"]
+        }
+    )
 	numero_comprobante = models.IntegerField(
 		verbose_name="Número",
 		null=True,
@@ -90,7 +86,12 @@ class Valida(ModeloBaseGenerico):
 		db_table = 'valida'
 	
 	def __str__(self):
-		return f"{self.compro}-{self.numero_comprobante} ({self.fecha_valida})"  # Corregido
+		return f"{self.id_comprobante_venta}-{self.numero_comprobante} ({self.fecha_valida})"  # Corregido
+	
+	@property
+	def cliente_id(self):
+		"""Devuelve el ID del cliente para mostrar en la lista"""
+		return self.id_cliente.id_cliente if self.id_cliente else ''
 	
 	def save(self, *args, **kwargs):
 		#-- Asigna fecha y hora actual solo si no tienen valor (o siempre, según tu necesidad).

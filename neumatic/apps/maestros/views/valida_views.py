@@ -64,18 +64,22 @@ class DataViewList():
 	table_headers = {
 		'estatus_valida': (1, 'Estatus'),
 		'id_valida': (1, 'ID'),
-		'id_cliente': (3, 'Cliente'),
+		'cliente_id': (1, 'ID Clie'),    
+		'id_cliente': (2, 'Cliente'),
 		'solicitado': (2, 'Solicitante'),
-		'fecha_valida': (2, 'Fecha'),
+		'id_comprobante_venta': (2, 'Comprobante'),
+		'fecha_valida': (1, 'Fecha'),
 		'hora_valida': (1, 'Hora'),
 		'acciones': (2, 'Acciones'),
 	}
 	
 	table_data = [
-		{'field_name': 'estatus_tipo_iva', 'date_format': None},
+		{'field_name': 'estatus_valida', 'date_format': None},
 		{'field_name': 'id_valida', 'date_format': None},
+		{'field_name': 'cliente_id', 'date_format': None},
 		{'field_name': 'id_cliente', 'date_format': None},
 		{'field_name': 'solicitado', 'date_format': None},
+		{'field_name': 'id_comprobante_venta', 'date_format': None},
 		{'field_name': 'fecha_valida', 'date_format': 'd/m/Y'},
 		{'field_name': 'hora_valida', 'date_format': None},
 	]

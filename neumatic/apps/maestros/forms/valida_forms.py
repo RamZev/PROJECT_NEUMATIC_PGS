@@ -13,7 +13,6 @@ from diseno_base.diseno_bootstrap import(
 
 
 class ValidaForm(CrudGenericForm):
-    
     # Campo temporal para Select2 (búsqueda de cliente) - NO se guarda en DB
     # cliente_busqueda = forms.CharField(
     #     label='Cliente',
@@ -54,8 +53,11 @@ class ValidaForm(CrudGenericForm):
             'solicitado': forms.TextInput(attrs={**formclasstext}),                
             'comentario': forms.TextInput(attrs={**formclasstext}),
             'id_cliente': forms.HiddenInput(),  # Campo oculto que SÍ se guarda en DB
-            'compro': forms.Select(attrs={**formclassselect}), 
-            'numero_comprobante': forms.TextInput(attrs={**formclasstext}),
+            'id_comprobante_venta': forms.Select(attrs={
+                'class': 'form-control form-control-sm border border-primary',
+                'style': 'width: 100%;',
+            }),
+            'numero_comprobante': forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             'hs': forms.TimeInput(attrs={**formclasstext, 'readonly': 'readonly'}),
         }
     

@@ -467,13 +467,9 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						letra = "X"
 
 				# Manejar la numeración según el tipo
-				# ============================================
-				# BLOQUE PARA COMPROBANTES ELECTRÓNICOS
-				# ============================================
 				if tipo_numeracion == 'electronica':
 					#------------------------------------------->
-				
-
+					# Facturación Electrónica con ARCA - SOLICITUD DE CAE COMPLETA
 					from datetime import datetime, timedelta
 					from pathlib import Path
 					import time
@@ -487,19 +483,18 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					# FeCabReq
 					cant_reg = 1
 					punto_venta_obj = form.cleaned_data['id_punto_venta']
-					punto_venta_valor = punto_venta_obj.punto_venta
-					punto_venta_entero = int(punto_venta_valor)
+					punto_venta_valor = punto_venta_obj.punto_venta  # Ej: "00022"
 					
-					pto_vta = f"{punto_venta_entero:04d}"
-					# cbte_tipo = comprobante_afip
-					cbte_tipo = f"{int(comprobante_afip):03d}"
+					# Obtener el valor entero del punto de venta (sin ceros a la izquierda)
+					punto_venta_entero = int(punto_venta_valor)  # Ej: 22
+					
+					pto_vta = f"{punto_venta_entero:04d}"  # Para AFIP: 4 dígitos con ceros (Ej: "0022")
+					cbte_tipo = comprobante_afip
 
 					# Crear facturador
 					arca = FacturadorARCA(empresa=empresa)
 					
-					# ============================================
-					# 1. OBTENER EL NÚMERO DE ARCA
-					# ============================================
+					# ===== BUCLE DE REINTENTOS (hasta 4 veces para error 10016) =====
 					cae_obtenido = False
 					for intento in range(4):
 						if intento > 0:
@@ -514,29 +509,22 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							empresa.cuit
 						)
 						
-						# ============================================
-						# 2. MOSTRAR EL NÚMERO ASIGNADO POR ARCA
-						# ============================================
-						print("=" * 60)
-						print("📊 NÚMERO ASIGNADO POR ARCA")
-						print(f"   Tipo de comprobante: {cbte_tipo}")
-						print(f"   Punto de venta: {punto_venta_entero}")
-						print(f"   Número ARCA: {proximo_numero}")
-						print("=" * 60)
+						# ===== FORMAR EL NÚMERO DE COMPROBANTE PARA FACTURA =====
+						# Formato: 2 dígitos (punto de venta) + 8 dígitos (número ARCA con ceros)
+						pv_2d = f"{punto_venta_entero:02d}"          # Ej: "22"
+						num_8d = f"{proximo_numero:08d}"             # Ej: "00000003"
+						nuevo_numero = f"{pv_2d}{num_8d}"             # Ej: "2200000003"
 						
-						# Formar el número de comprobante (10 dígitos)
-						pv_2d = f"{punto_venta_entero:02d}"
-						num_8d = f"{proximo_numero:08d}"
-						nuevo_numero = f"{pv_2d}{num_8d}"
-						
-						print(f"✅ Número formado para el documento: {nuevo_numero}")
+						print(f"✅ Número obtenido de ARCA: {proximo_numero}")
+						print(f"✅ Número formado para Factura: {nuevo_numero}")
 						
 						# ===== PARA EL XML DE ARCA, USAR NÚMERO COMO ENTERO =====
-						cbte_desde = str(proximo_numero)
-						cbte_hasta = cbte_desde
+						cbte_desde = str(proximo_numero)  # Ej: "3"
+						cbte_hasta = cbte_desde            # Ej: "3"
 						
 						# FECAEDetRequest
 						concepto = 3
+
 						cliente_obj = form.cleaned_data['id_cliente']
 						doc_tipo = cliente_obj.id_tipo_documento_identidad.ws_afip
 						doc_nro = cliente_obj.cuit
@@ -564,9 +552,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						# Condición de IVA del receptor
 						condicion_iva_receptor_id = cliente_obj.id_tipo_iva.codigo_afip_responsable
 
-						# ============================================
-						# CÁLCULO DE IMPUESTOS (IVA)
-						# ============================================
+						# Diccionario del IVA
 						alicuotas = AlicuotaIva.objects.filter(
 							estatus_alicuota_iva=True
 						).values('codigo_alicuota', 'alicuota_iva')
@@ -587,6 +573,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						
 						for form_detalle in formset_detalle:
 							detalle_data = form_detalle.cleaned_data
+							
 							porcentaje_iva = float(detalle_data.get('alic_iva', 0))
 							gravado = float(detalle_data.get('gravado', 0) or 0)
 							iva = float(detalle_data.get('iva', 0) or 0)
@@ -600,6 +587,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							if codigo_afip is not None:
 								if codigo_afip not in acumuladores:
 									acumuladores[codigo_afip] = {'iva_base_imp': 0.0, 'iva_importe': 0.0}
+								
 								acumuladores[codigo_afip]['iva_base_imp'] += gravado
 								acumuladores[codigo_afip]['iva_importe'] += iva
 						
@@ -611,18 +599,22 @@ class FacturaCreateView(MaestroDetalleCreateView):
 								'iva_importe': f"{montos['iva_importe']:.2f}"
 							})
 
-						# ============================================
-						# VERIFICAR COHERENCIA DE VALORES
-						# ============================================
+						# ===== VERIFICAR COHERENCIA DE VALORES =====
+						# Calcular totales desde los detalles
 						total_gravado_calc = sum(float(item['iva_base_imp']) for item in datos_impuestos)
 						total_iva_calc = sum(float(item['iva_importe']) for item in datos_impuestos)
+						
+						# Usar los valores calculados (no los del formulario)
+						# Convertir imp_tot_conc a float para la suma
 						imp_tot_conc_float = float(imp_tot_conc)
 						
+						# Usar los valores calculados
 						imp_neto = total_gravado_calc
 						imp_iva = total_iva_calc
 						imp_total = imp_neto + imp_iva + imp_tot_conc_float
 						
 						print(f"✅ Valores recalculados - Neto: {imp_neto:.2f}, IVA: {imp_iva:.2f}, Total: {imp_total:.2f}")
+						# =============================================
 
 						# Datos de cabecera del comprobante
 						datos_comprobante = {
@@ -650,105 +642,13 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							'condicion_iva_receptor_id': condicion_iva_receptor_id
 						}
 
-						# Datos del cliente
+						# ===== DATOS DEL CLIENTE (desde el modelo) =====
 						datos_cliente = {
 							'nombre': cliente_obj.nombre_cliente or cliente_obj.nombre_fantasia or 'CLIENTE GENERICO',
 							'domicilio': cliente_obj.domicilio_cliente or 'DIRECCION GENERICA 123',
 							'localidad': cliente_obj.id_localidad.nombre_localidad if cliente_obj.id_localidad else 'CIUDAD',
 							'cp': cliente_obj.codigo_postal or '1000'
 						}
-
-						################
-						# ============================================
-						# OBTENER COMPROBANTE ASOCIADO PARA NC/ND
-						# ============================================
-						comprobante_asociado_data = None
-						cbte_tipo_nc = int(comprobante_afip)
-
-						# =========================================================
-						# 🔍 DEBUG: VER TODOS LOS DATOS DEL FORMULARIO
-						# =========================================================
-						print("=" * 60)
-						print("#" * 60)
-						print("🔍 DEBUG - CONTENIDO DE form.cleaned_data")
-						print("=" * 60)
-						for key, value in form.cleaned_data.items():
-							print(f"   {key}: {value}")
-						print("=" * 60)
-
-						# 🔍 DEBUG ESPECÍFICO PARA id_comprobante_asociado
-						print(f"🔍 form.cleaned_data.get('id_comprobante_asociado'): {form.cleaned_data.get('id_comprobante_asociado')}")
-						print(f"🔍 form.cleaned_data.get('id_id_comprobante_asociado'): {form.cleaned_data.get('id_id_comprobante_asociado')}")
-						print("#" * 60)
-						print("=" * 60)
-						# =========================================================
-						
-
-						if cbte_tipo_nc in [2, 3]:  # Nota de Crédito (3) o Nota de Débito (2)
-							id_comprobante_asociado = form.cleaned_data.get('id_comprobante_asociado')
-							
-							if id_comprobante_asociado:
-								try:
-									factura_asociada = Factura.objects.get(id_factura=id_comprobante_asociado)
-									
-									nro_completo = int(factura_asociada.numero_comprobante)  # 2100000032
-									
-									# ✅ NUEVO CÓDIGO
-									# Extraer punto de venta (primeros 2 dígitos) y formatear a 4 dígitos
-									pto_vta_asoc = f"{int(str(nro_completo)[:2]):04d}"  # "0021"
-									
-									# Extraer número secuencial (últimos 8 dígitos) y formatear a 8 dígitos
-									nro_secuencial = int(str(nro_completo)[2:])  # 32
-									nro_asoc = f"{nro_secuencial:08d}"  # "00000032"
-									
-									# Obtener código AFIP del comprobante asociado
-									comprobante_asociado_obj = factura_asociada.id_comprobante_venta
-									
-									codigo_afip_a_asoc = comprobante_asociado_obj.codigo_afip_a
-									codigo_afip_b_asoc = comprobante_asociado_obj.codigo_afip_b
-									
-									cliente_asociado = factura_asociada.id_cliente
-									id_discrimina_iva_asoc = cliente_asociado.id_tipo_iva.discrimina_iva
-									
-									if codigo_afip_a_asoc != codigo_afip_b_asoc:
-										if id_discrimina_iva_asoc:
-											comprobante_asociado_codigo = codigo_afip_a_asoc
-										else:
-											comprobante_asociado_codigo = codigo_afip_b_asoc
-									else:
-										comprobante_asociado_codigo = codigo_afip_a_asoc
-									
-									# Obtener CUIT de la empresa
-									empresa = Empresa.objects.first()
-									cuit_empresa = str(empresa.cuit) if empresa else "30692402363"
-									
-									comprobante_asociado_data = {
-										'tipo': str(comprobante_asociado_codigo),  # "001"
-										'pto_vta': pto_vta_asoc,                   # "0021"
-										'nro': nro_asoc,                           # "00000032"
-										'cuit': cuit_empresa,                      # "30692402363"
-										'fecha': factura_asociada.fecha_comprobante.strftime('%Y%m%d')  # "20260623"
-									}
-									
-									print(f"✅ Comprobante asociado: {comprobante_asociado_data}")
-									
-								except Factura.DoesNotExist:
-									print(f"⚠️ Factura no encontrada: {id_comprobante_asociado}")
-									form.add_error('id_comprobante_asociado', 'El comprobante asociado no existe')
-									return self.form_invalid(form)
-							else:
-								print("⚠️ No hay comprobante asociado para NC/ND")
-								form.add_error('id_comprobante_asociado', 'Debe seleccionar un comprobante asociado')
-								return self.form_invalid(form)
-							
-						# =========================================================
-						# 🔍 PRINT DE DEPURACIÓN - AGREGAR AQUÍ
-						# =========================================================
-						print(f"🔍 VALOR DE comprobante_asociado_data: {comprobante_asociado_data}")
-						print(f"🔍 cbte_tipo_nc: {cbte_tipo_nc}")
-						print(f"🔍 ¿Es NC/ND? {cbte_tipo_nc in [2, 3]}")
-						# =========================================================
-						################
 
 						# Generar el XML
 						xml_content = self.generar_xml_afiparca(
@@ -759,13 +659,10 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							},
 							comprobante=datos_comprobante,
 							cliente=datos_cliente,
-							impuestos=datos_impuestos,
-							comprobante_asociado=comprobante_asociado_data 
+							impuestos=datos_impuestos
 						)
 
-						# ============================================
-						# ENVIAR SOLICITUD DE CAE A ARCA
-						# ============================================
+						# ===== ENVIAR SOLICITUD DE CAE A ARCA =====
 						print(f"\n🚀 ENVIANDO SOLICITUD DE CAE A ARCA ({arca.entorno.upper()})...")
 						respuesta = arca.enviar_solicitud_cae(xml_content)
 						print(f"✅ Respuesta recibida")
@@ -773,9 +670,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						# Procesar respuesta usando el método de arca
 						resultado = arca.procesar_respuesta_cae(respuesta)
 						
-						# ============================================
-						# GUARDAR XML DE RESPUESTA
-						# ============================================
+						# ===== GUARDAR XML DE RESPUESTA =====
 						BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
 						xml_dir = BASE_DIR / "xml_afiparca"
 						xml_dir.mkdir(exist_ok=True, parents=True)
@@ -794,62 +689,25 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							f.write(arca.formatear_xml(respuesta))
 						print(f"✅ XML Respuesta guardado en: {archivo_respuesta}")
 						
-						# ============================================
-						# VERIFICAR RESULTADO Y ACTUALIZAR CAMPOS
-						# ============================================
+						# ===== VERIFICAR RESULTADO Y ACTUALIZAR CAMPOS =====
 						if resultado['aprobado']:
-							print("=" * 60)
-							print("✅ COMPROBANTE APROBADO POR ARCA")
-							print(f"   CAE: {resultado['cae']}")
-							print(f"   Vencimiento: {resultado['vencimiento']}")
-							print(f"   Número asignado: {nuevo_numero}")
-							print("=" * 60)
-
+							print(f"✅ CAE OBTENIDO: {resultado['cae']}")
+							print(f"📅 Vencimiento: {resultado['vencimiento']}")
+							
 							# ===== ASIGNAR VALORES AL MODELO FACTURA =====
-							form.instance.numero_comprobante = nuevo_numero
-							form.instance.cae = int(resultado['cae'])
+							form.instance.numero_comprobante = nuevo_numero  # Formato 10 dígitos
+							form.instance.cae = int(resultado['cae'])        # CAE como entero
 							form.instance.cae_vto = datetime.strptime(resultado['vencimiento'], '%Y%m%d').date()
-
-														# =========================================================
-							# ACTUALIZAR MODELO NUMERO (CORREGIDO)
-							# =========================================================
-							try:
-								numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-									id_sucursal=sucursal,
-									id_punto_venta=punto_venta,
-									comprobante=comprobante_afip,
-									letra=letra,
-									defaults={
-										'numero': int(nuevo_numero),  # ← Guardar 2100000028
-										'lineas': 1,
-										'copias': 1
-									}
-								)
-
-								if created:
-									print(f"✅ Nuevo registro en Numero: {comprobante_afip}-{letra} = {nuevo_numero}")
-								else:
-									# ✅ AHORA GUARDA EL NÚMERO COMPLETO
-									Numero.objects.filter(pk=numero_obj.pk).update(numero=int(nuevo_numero))
-									print(f"✅ Numero actualizado: {comprobante_afip}-{letra} = {nuevo_numero}")
-
-							except Exception as e:
-								print(f"⚠️ Error al actualizar Numero: {str(e)}")
-
-							# =========================================================
-							# MOSTRAR EVENTOS/OBSERVACIONES DE ARCA
-							# =========================================================
+							# ==============================================
+							
 							if resultado['eventos']:
-								print("\n📢 Eventos/Observaciones de ARCA:")
+								print("\n📢 Eventos/Observaciones:")
 								for evento in resultado['eventos']:
 									print(f"   • {evento}")
-
+							
 							cae_obtenido = True
 							break  # Salir del bucle de reintentos
-												
-						# ============================================
-						# 4. MANEJO DE ERRORES DE ARCA
-						# ============================================
+						
 						# Si hay error 10016, reintentar
 						if any("10016" in error for error in resultado.get('errores', [])):
 							print(f"⚠️ Error 10016 detectado, reintentando...")
@@ -860,41 +718,40 @@ class FacturaCreateView(MaestroDetalleCreateView):
 								continue
 						
 						# Otros errores - mostrar y salir
-						print("\n" + "=" * 60)
-						print("❌ ERRORES DE ARCA:")
-						print("=" * 60)
+						print("\n❌ ERRORES ARCA:")
 						for error in resultado.get('errores', []):
 							print(f"   • {error}")
 							form.add_error(None, f"Error ARCA: {error}")
-						
-						# Si no hay errores en la lista, mostrar el resultado completo
-						if not resultado.get('errores'):
-							print(f"   • Resultado completo: {resultado}")
-							form.add_error(None, f"Error ARCA sin detalle: {resultado}")
-						
-						# Guardar archivo de error para debug
-						archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_ERROR.txt"
-						with open(archivo_error, 'w', encoding='utf-8') as f:
-							f.write("RESPUESTA COMPLETA:\n")
-							f.write(f"  aprobado: {resultado.get('aprobado')}\n")
-							f.write(f"  errores: {resultado.get('errores', [])}\n")
-							f.write(f"  cae: {resultado.get('cae')}\n")
-							f.write(f"  vencimiento: {resultado.get('vencimiento')}\n")
-							f.write(f"  eventos: {resultado.get('eventos', [])}\n")
-							f.write(f"\nRESPUESTA XML:\n{respuesta}\n")
-						print(f"📄 Error guardado en: {archivo_error}")
 						
 						return self.form_invalid(form)
 					
 					# ===== FIN BUCLE DE REINTENTOS =====
 					
 					if not cae_obtenido:
-						print("=" * 60)
-						print("❌ ERROR: No se pudo obtener CAE después de 4 intentos")
-						print("=" * 60)
 						form.add_error(None, "No se pudo obtener CAE después de 4 intentos")
 						return self.form_invalid(form)
-				
+
+					# ===== ACTUALIZAR MODELO NUMERO (OPCIONAL) =====
+					# Actualizar el modelo Numero con el número obtenido de ARCA
+					'''
+					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+						id_sucursal=sucursal,
+						id_punto_venta=punto_venta,
+						comprobante=comprobante_afip,
+						letra=letra,
+						defaults={'numero': proximo_numero}
+					)
+					
+					if not created and proximo_numero > numero_obj.numero:
+						Numero.objects.filter(pk=numero_obj.pk).update(numero=proximo_numero)
+					elif not created and proximo_numero <= numero_obj.numero:
+						form.add_error('numero_comprobante', 
+									f'Error: El número {proximo_numero} debe ser mayor al último usado ({numero_obj.numero})')
+						return self.form_invalid(form)
+
+					print(f"✅ Número {proximo_numero} registrado en modelo Numero")
+					'''
+					#------------------------------------------->				
 				elif tipo_numeracion == 'manual':
 					print("tipo_numeracion**:", tipo_numeracion)
 					nuevo_numero = numero_plantilla
@@ -1237,18 +1094,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			raise
 
 
-	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos,  comprobante_asociado=None):
-		# =========================================================
-		# 🔍 DEBUG - VER QUÉ RECIBE LA FUNCIÓN
-		# =========================================================
-		print("=" * 60)
-		print("🔍 DENTRO DE generar_xml_afiparca")
-		print(f"🔍 comprobante_asociado: {comprobante_asociado}")
-		print(f"🔍 tipo de comprobante: {comprobante.get('cbte_tipo')}")
-		print("=" * 60)
-		# =========================================================
-
-
+	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos):
 		from xml.etree.ElementTree import Element, SubElement, tostring
 		from xml.dom import minidom
 
@@ -1324,23 +1170,6 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		}
 		for tag, key in fields.items():
 			SubElement(det, tag).text = str(comprobante.get(key, '0.00' if 'Imp' in key else ''))
-
-		# =========================================================
-		# CBTEASOC PARA NC/ND
-		# =========================================================
-		cbte_tipo = int(comprobante.get('cbte_tipo', '0'))
-
-		if cbte_tipo in [2, 3] and comprobante_asociado:
-			# Primero crear CbtesAsoc
-			cbtes_asoc_node = SubElement(det, "CbtesAsoc")
-			# Luego crear CbteAsoc dentro de CbtesAsoc
-			cbte_asoc_node = SubElement(cbtes_asoc_node, "CbteAsoc")
-			
-			SubElement(cbte_asoc_node, "Tipo").text = str(comprobante_asociado.get('tipo', '001'))
-			SubElement(cbte_asoc_node, "PtoVta").text = str(comprobante_asociado.get('pto_vta', '0021'))
-			SubElement(cbte_asoc_node, "Nro").text = str(comprobante_asociado.get('nro', '00000000'))
-			SubElement(cbte_asoc_node, "CbteFch").text = str(comprobante_asociado.get('fecha', ''))
-			SubElement(cbte_asoc_node, "Cuit").text = auth['cuit']
 
 		# IVA - Usamos tus claves tal cual
 		iva_node = SubElement(det, "Iva")

@@ -984,11 +984,11 @@
 		</div>
 	</div>
 	
-	<!-- Modal de Autorización -->
+	<!-- Modal de Autorización de Documentos Vencidos -->
 	<div class="modal fade" id="autorizacionModal" tabindex="-1" aria-labelledby="autorizacionModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
-				<div class="modal-header text-white bg-danger py-2">
+				<div class="modal-header text-white bg-primary bg-opacity-75 py-2">
 					<h5 class="modal-title fs-6" id="autorizacionModalLabel">
 						<i class="bi bi-exclamation-triangle-fill me-2"></i>
 						<span id="modalTitulo">Autorización Requerida</span>
@@ -1075,11 +1075,11 @@
 					</form>
 				</div>
 				<div class="modal-footer py-2">
-					<button type="submit" class="btn btn-danger btn-sm" id="btnConfirmarAutorizacion">
-						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
-					</button>
 					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
 						<i class="bi bi-x-circle-fill me-2"></i>Cancelar
+					</button>
+					<button type="submit" class="btn btn-primary btn-sm" id="btnConfirmarAutorizacion">
+						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
 					</button>
 				</div>
 			</div>
@@ -1090,7 +1090,7 @@
 	<div class="modal fade" id="autorizacionNcModal" tabindex="-1" aria-labelledby="autorizacionNcModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<div class="modal-header text-white bg-warning py-2">
+				<div class="modal-header text-white bg-primary bg-opacity-75 py-2">
 					<h5 class="modal-title fs-6" id="autorizacionNcModalLabel">
 						<i class="bi bi-exclamation-triangle-fill me-2"></i>
 						Autorización Requerida - Nota de Crédito
@@ -1113,7 +1113,7 @@
 					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
 						<i class="bi bi-x-circle-fill me-2"></i>Cancelar
 					</button>
-					<button type="button" class="btn btn-warning btn-sm" id="btnConfirmarNc">
+					<button type="button" class="btn btn-primary btn-sm" id="btnConfirmarNc">
 						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
 					</button>
 				</div>
@@ -1124,6 +1124,25 @@
 {% endblock modals %}
 
 {% block script %}
+	<script>
+		// Función auxiliar para obtener el token CSRF
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+
+	</script>
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const formsetContainer = document.getElementById('formset-container');
@@ -2612,6 +2631,7 @@
 		}
 		///
 		// Función para mostrar modal de autorización de Nota de Crédito
+		////////////////
 		function mostrarModalAutorizacionNc(dataCliente, callback) {
 			const modalElement = document.getElementById('autorizacionNcModal');
 			const modal = new bootstrap.Modal(modalElement);
@@ -2627,10 +2647,12 @@
 			// Remover evento anterior y clonar botón
 			const nuevoBtnConfirmar = btnConfirmar.cloneNode(true);
 			btnConfirmar.parentNode.replaceChild(nuevoBtnConfirmar, btnConfirmar);
-			
+						
 			nuevoBtnConfirmar.onclick = function() {
 				const codigo = codigoInput.value.trim();
+				alert("onclick confirmar");
 				
+				// ✅ Validar que el código no esté vacío
 				if (!codigo) {
 					mensajeError.textContent = 'Ingrese el código de autorización';
 					mensajeError.style.display = 'block';
@@ -2638,11 +2660,25 @@
 					return;
 				}
 				
-				// Deshabilitar botón durante la validación
+				// ✅ Validar que el código sea numérico
+				if (!/^\d+$/.test(codigo)) {
+					mensajeError.textContent = 'El código debe ser un número entero';
+					mensajeError.style.display = 'block';
+					codigoInput.classList.add('is-invalid');
+					return;
+				}
+				
+				// ✅ Limpiar error anterior
+				mensajeError.style.display = 'none';
+				codigoInput.classList.remove('is-invalid');
+				
+				// ✅ Deshabilitar botón durante la validación
 				nuevoBtnConfirmar.disabled = true;
 				nuevoBtnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
 				
-				fetch('/ventas/valida-autorizacion/', {
+				
+				alert("Previo al fetch");
+				fetch('/ventas/clientes/autorizacion-ncr/', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',
@@ -2652,40 +2688,70 @@
 						codigo: codigo,
 						cliente_id: dataCliente.id_cliente,
 						sucursal_id: document.getElementById('id_id_sucursal').value,
-						fecha_comprobante: document.getElementById('id_fecha_comprobante').value
+						fecha_comprobante: document.getElementById('id_fecha_comprobante').value,
+						comprobante_id: document.getElementById('id_id_comprobante_venta').value
 					})
 				})
-				.then(response => response.json())
+				.then(response => {
+					// ✅ VERIFICAR EL ESTADO DE LA RESPUESTA
+					if (!response.ok) {
+						// Si el servidor devuelve error HTTP (404, 403, 500, etc.)
+						return response.json().then(data => {
+							throw new Error(data.mensaje || 'Error en el servidor');
+						});
+					}
+					return response.json();
+				})
 				.then(authData => {
+					// ✅ Aquí la respuesta es exitosa y se puede procesar
 					if (authData.valido) {
-						// Guardar ID de autorización
+						// ✅ Autorización válida - guardar y cerrar
 						document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
 						modal.hide();
 						callback(true);
 					} else {
+						// ❌ Autorización inválida (código incorrecto o ya usado)
 						mensajeError.textContent = authData.mensaje || 'Código de autorización incorrecto';
 						mensajeError.style.display = 'block';
 						codigoInput.classList.add('is-invalid');
+						
+						// ✅ RESTAURAR BOTÓN
 						nuevoBtnConfirmar.disabled = false;
 						nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
+						
+						// ✅ Limpiar y enfocar el input
+						codigoInput.value = '';
+						codigoInput.focus();
 					}
 				})
 				.catch(error => {
-					console.error('Error:', error);
-					mensajeError.textContent = 'Error de conexión al validar';
+					// ✅ ERROR: captura cualquier error (HTTP, red, etc.)
+					console.error('Error en validación:', error);
+					mensajeError.textContent = error.message || 'Error de conexión al validar';
 					mensajeError.style.display = 'block';
 					codigoInput.classList.add('is-invalid');
+					
+					// ✅ RESTAURAR BOTÓN
 					nuevoBtnConfirmar.disabled = false;
 					nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
+					
+					// ✅ Limpiar y enfocar el input
+					codigoInput.value = '';
+					codigoInput.focus();
 				});
 			};
 			
-			// Limpiar al cerrar el modal
+			// ✅ Limpiar al cerrar el modal
 			modalElement.addEventListener('hidden.bs.modal', function onHidden() {
 				modalElement.removeEventListener('hidden.bs.modal', onHidden);
 				codigoInput.value = '';
 				mensajeError.style.display = 'none';
 				codigoInput.classList.remove('is-invalid');
+				
+				// ✅ Asegurar que el botón esté restaurado
+				nuevoBtnConfirmar.disabled = false;
+				nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
+				
 				if (callback && !document.getElementById('id_id_valida').value) {
 					callback(false);
 				}
@@ -2693,6 +2759,7 @@
 			
 			modal.show();
 		}		
+		////////////////
 		///
 	</script>
 	
@@ -2742,21 +2809,6 @@
 				.catch(error => console.error('Error:', error));
 			});
 			
-			// Función para obtener el token CSRF del cookie
-			function getCookie(name) {
-				let cookieValue = null;
-				if (document.cookie && document.cookie !== '') {
-					const cookies = document.cookie.split(';');
-					for (let i = 0; i < cookies.length; i++) {
-						const cookie = cookies[i].trim();
-						if (cookie.substring(0, name.length + 1) === (name + '=')) {
-							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-							break;
-						}
-					}
-				}
-				return cookieValue;
-			}
 		});
 		
 	</script>
@@ -2911,7 +2963,7 @@
 								// Verifica en consola (opcional)
 								// alert(`Sucursal: ${sucursal_id} | Fecha: ${fecha_comprobante}`);
 								
-								fetch('/ventas/clientes/validar-autorizacion/', {
+								fetch('/ventas/clientes/autorizacion-fac-rem/', {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
@@ -2921,7 +2973,8 @@
 										codigo: codigo,
 										cliente_id: clienteId,
 										sucursal_id: sucursal_id,
-										fecha_comprobante: fecha_comprobante
+										fecha_comprobante: fecha_comprobante,
+										comprobante_id: document.getElementById('id_id_comprobante_venta').value
 									})
 								})
 								.then(response => response.json())
@@ -3178,13 +3231,14 @@
 				const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
 				modal.hide();
 			}
+
+			// Función para limpiar TODOS los campos del cliente (versión completa)
+			
 			
 			// Selección del Cliente desde buscar_cliente
 			const buscarClienteInput = document.getElementById('buscar_cliente');
 			buscarClienteInput.addEventListener('blur', function () {
 				let busqueda = buscarClienteInput.value.trim();
-				
-				// alert("Aquí es");
 				
 				// Si está vacío, no hacer nada
 				if (!busqueda) return;
@@ -3230,16 +3284,27 @@
 								if (autorizada) {
 									completarDatosCliente(data);  // ✅ Siempre completar datos
 								} else {
-									// Canceló - limpiar
-									alert("No autorizó!");
-									buscarClienteInput.value = '';
-									buscarClienteInput.focus();
-									document.getElementById('id_id_cliente').value = '';
+									// Canceló - limpiar TODOS los campos
+									// alert("Autorización cancelada. Se ha limpiado la selección del cliente.");
+									limpiarCamposCliente();  // ← Una sola línea hace todo
+									
+									const buscarClienteInput = document.getElementById('buscar_cliente');
+									if (buscarClienteInput) {
+										buscarClienteInput.disabled = false;
+										buscarClienteInput.focus();
+									}
+									
+									const validarBtn = document.getElementById('validarBtn');
+									if (validarBtn) validarBtn.disabled = false;
+									
+									const listarAgenda = document.getElementById('listar_agenda');
+									if (listarAgenda) listarAgenda.disabled = false;
+									
 									return;
 								}
 							});
 						} else {
-							alert("No es nota de Crédito!");
+							// alert("No es nota de Crédito!");
 						}
 						///-
 						
@@ -3269,7 +3334,7 @@
 									// Limpiar campos del modal para la próxima vez
 									document.getElementById('codigoAutorizacion').value = '';
 									document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
-								});								
+								});                                
 								///
 								if (vencimientoData.requiere_autorizacion) {
 									// ========== MODAL DE AUTORIZACIÓN ==========
@@ -3278,7 +3343,7 @@
 									
 									// 1. Actualizar título del modal
 									document.getElementById('modalTitulo').innerHTML = `
-										<i class="bi bi-exclamation-triangle-fill me-2"></i>
+										
 										Autorización Requerida - Documento Vencido
 									`;
 									
@@ -3342,7 +3407,10 @@
 											return;
 										}
 										
-										fetch('/ventas/valida-autorizacion/', {
+										// ============================================
+										// ✅ FETCH ACTUALIZADO - FAC/REM
+										// ============================================
+										fetch('/ventas/clientes/autorizacion-fac-rem/', {
 											method: 'POST',
 											headers: {
 												'Content-Type': 'application/json',
@@ -3352,7 +3420,8 @@
 												codigo: codigo,
 												cliente_id: clienteData.id_cliente,
 												sucursal_id: document.getElementById('id_id_sucursal').value,
-												fecha_comprobante: document.getElementById('id_fecha_comprobante').value
+												fecha_comprobante: document.getElementById('id_fecha_comprobante').value,
+												comprobante_id: document.getElementById('id_id_comprobante_venta').value  // ← NUEVO
 											})
 										})
 										.then(response => response.json())
@@ -3386,7 +3455,7 @@
 								} else {
 									// Continuar con el flujo normal si no hay vencimientos
 									completarDatosCliente(data);
-								}								
+								}                                
 
 							})
 							.catch(error => {
@@ -3397,6 +3466,7 @@
 						} else {
 							completarDatosCliente(data);
 						}
+
 					}
 				})
 				.catch(error => {
@@ -3444,21 +3514,41 @@
 				}
 			});
 			
-			// Función auxiliar para obtener el token CSRF
-			function getCookie(name) {
-				let cookieValue = null;
-				if (document.cookie && document.cookie !== '') {
-					const cookies = document.cookie.split(';');
-					for (let i = 0; i < cookies.length; i++) {
-						const cookie = cookies[i].trim();
-						if (cookie.substring(0, name.length + 1) === (name + '=')) {
-							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-							break;
-						}
-					}
-				}
-				return cookieValue;
+			function limpiarCamposCliente() {
+				const camposTexto = [
+					'buscar_cliente',
+					'id_id_cliente',
+					'id_cuit',
+					'id_nombre_factura',
+					'id_domicilio_factura',
+					'id_movil_factura',
+					'id_email_factura',
+					'id_id_vendedor',
+					'id_vendedor_factura',
+					'id_tipo_venta',
+					'id_condicion_comprobante',
+					'id_cliente_vip',           // ← COMA agregada
+					'id_numero_comprobante',
+					'id_letra_comprobante',
+					'id_compro'
+				];
+				
+				camposTexto.forEach(id => {
+					const elemento = document.getElementById(id);
+					if (elemento) elemento.value = '';
+				});
+				
+				const checkbox = document.getElementById('id_discrimina_iva');
+				if (checkbox) checkbox.checked = false;
+				
+				const numeroDefinitivo = document.getElementById('id_numero_definitivo');
+				if (numeroDefinitivo) numeroDefinitivo.value = '';
+				
+				const idValida = document.getElementById('id_id_valida');
+				if (idValida) idValida.value = '';
 			}
+
+			
 			//**-->>
 			
 			document.getElementById('tablaResultadosAgenda').addEventListener('click', function(e) {
@@ -3469,72 +3559,6 @@
 					alert(`⛔ Cliente en lista negra\nMotivo: ${motivo}`);
 					e.stopPropagation();
 				}
-			});
-			
-			const autorizacionForm = document.getElementById('autorizacionForm');
-			const codigoInput = document.getElementById('codigoAutorizacion');
-			const mensajeError = document.getElementById('mensajeErrorAutorizacion');
-			
-			// Configurar datos ocultos al mostrar el modal
-			document.getElementById('autorizacionModal').addEventListener('show.bs.modal', function() {
-				document.getElementById('validaClienteId').value = document.getElementById('id_id_cliente').value;
-				document.getElementById('validaSucursalId').value = document.getElementById('id_id_sucursal').value;
-				document.getElementById('validaFecha').value = document.getElementById('id_fecha_comprobante').value;
-			});
-			
-			// Manejar el envío del formulario
-			autorizacionForm.addEventListener('submit', function(e) {
-				e.preventDefault();
-				
-				// Validación básica
-				const codigo = codigoInput.value.trim();
-				if (!/^[1-9]\d*$/.test(codigo)) {
-					mensajeError.textContent = 'Ingrese un número entero positivo';
-					mensajeError.style.display = 'block';
-					return;
-				}
-				
-				// Deshabilitar botón durante la validación
-				const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
-				const btnOriginalHTML = btnConfirmar.innerHTML;
-				btnConfirmar.disabled = true;
-				btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
-				
-				fetch('/ventas/valida-autorizacion/', {
-					method: 'POST',
-					headers: {
-						'X-CSRFToken': getCookie('csrftoken'),
-						'X-Requested-With': 'XMLHttpRequest'
-					},
-					body: new FormData(autorizacionForm)
-				})
-				.then(response => {
-					if (!response.ok) throw new Error('Error en la respuesta del servidor');
-					return response.json();
-				})
-				.then(data => {
-					if (data.valido) {
-						bootstrap.Modal.getInstance(document.getElementById('autorizacionModal')).hide();
-						// Continuar con el flujo después de validar
-					} else {
-						mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>${data.mensaje || 'Error en la validación'}`;
-						mensajeError.style.display = 'block';
-					}
-				})
-				.catch(error => {
-					mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Error de conexión`;
-					mensajeError.style.display = 'block';
-				})
-				.finally(() => {
-					btnConfirmar.disabled = false;
-					btnConfirmar.innerHTML = btnOriginalHTML;
-				});
-			});
-			
-			// Resetear al cerrar el modal
-			document.getElementById('autorizacionModal').addEventListener('hidden.bs.modal', function() {
-				autorizacionForm.reset();
-				mensajeError.style.display = 'none';
 			});
 			
 		});

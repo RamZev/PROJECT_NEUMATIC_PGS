@@ -429,8 +429,11 @@ def validar_vencimientos_cliente(request, cliente_id):
 		}, status=500)
 
 	
+# ===============================================
+# AUTORIZACIÓN PARA NOTAS DE FACTURAS Y REMITOS #
+# ===============================================
 @require_POST
-def valida_autorizacion(request):
+def autorizacion_fac_rem(request):
 	if request.method != 'POST':
 		return JsonResponse({'valido': False, 'mensaje': 'Método no permitido'}, status=405)
 	
@@ -440,6 +443,7 @@ def valida_autorizacion(request):
 		cliente_id = data.get('cliente_id')
 		sucursal_id = data.get('sucursal_id')
 		fecha_comprobante = data.get('fecha_comprobante')
+		comprobante_id = data.get('comprobante_id')
 		
 		'''
 		print("Datos recibidos:")
@@ -486,6 +490,10 @@ def valida_autorizacion(request):
 			if fecha_bd != fecha_comprobante:
 				errores.append(f'Fecha no coincide (BD: {fecha_bd} vs Recibido: {fecha_comprobante})')
 
+		if comprobante_id and autorizacion.id_comprobante_venta_id:
+			if str(autorizacion.id_comprobante_venta_id) != str(comprobante_id):
+				errores.append('Comprobante no coincide')
+		
 		if errores:
 			print("Errores de validación:", errores)
 			return JsonResponse({
@@ -987,3 +995,110 @@ def validar_limite_credito(request):
         'ultimo_pago': saldo_data['ultimo_pago'] if saldo_data else None,
         'mensaje': f"Saldo: ${saldo_actual:,.2f} | Límite: ${limite_credito:,.2f}"
     })
+
+
+# ==========================================
+# AUTORIZACIÓN PARA NOTAS DE CRÉDITO (NCR) #
+# ==========================================
+@require_POST
+def autorizacion_ncr(request):
+    """
+    Valida autorización para Notas de Crédito (NCR)
+    Solo se usa para comprobantes tipo NOTA DE CRÉDITO
+    """
+    if request.method != 'POST':
+        return JsonResponse({'valido': False, 'mensaje': 'Método no permitido'}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        codigo = str(data.get('codigo', '')).strip()
+        cliente_id = data.get('cliente_id')
+        sucursal_id = data.get('sucursal_id')
+        fecha_comprobante = data.get('fecha_comprobante')
+        comprobante_id = data.get('comprobante_id')
+        
+        print(f"🔍 BUSCANDO AUTORIZACIÓN NCR - Código: {codigo}")
+        print(f"   Cliente: {cliente_id}, Sucursal: {sucursal_id}, Fecha: {fecha_comprobante}")
+        
+        # Validación básica del código
+        if not codigo.isdigit() or int(codigo) <= 0:
+            print(f"❌ Código inválido: {codigo} (no es número entero positivo)")
+            return JsonResponse({
+                'valido': False,
+                'mensaje': 'El código debe ser un entero positivo'
+            })
+        
+        # Buscar autorización
+        try:
+            autorizacion = Valida.objects.get(
+                id_valida=int(codigo),
+                estatus_valida=True
+            )
+            print(f"✅ Autorización encontrada: ID {autorizacion.id_valida}")
+            print(f"   Sucursal BD: {autorizacion.id_sucursal_id}, Cliente BD: {autorizacion.id_cliente_id}")
+            
+        except Valida.DoesNotExist:
+            print(f"❌ AUTORIZACIÓN NO ENCONTRADA: ID {codigo} no existe o está inactiva")
+            return JsonResponse({
+                'valido': False,
+                'mensaje': 'Autorización no encontrada o ya fue utilizada'
+            })
+        
+        # ============================================
+        # VALIDACIONES
+        # ============================================
+        errores = []
+        
+        # 1. Validar sucursal
+        if str(autorizacion.id_sucursal_id) != str(sucursal_id):
+            errores.append(f'Sucursal no coincide (BD: {autorizacion.id_sucursal_id} vs Recibido: {sucursal_id})')
+        
+        # 2. Validar cliente
+        if str(autorizacion.id_cliente_id) != str(cliente_id):
+            errores.append(f'Cliente no coincide (BD: {autorizacion.id_cliente_id} vs Recibido: {cliente_id})')
+        
+        # 3. Validar fecha
+        if fecha_comprobante:
+            fecha_bd = autorizacion.fecha_valida.strftime('%Y-%m-%d') if autorizacion.fecha_valida else None
+            if fecha_bd != fecha_comprobante:
+                errores.append(f'Fecha no coincide (BD: {fecha_bd} vs Recibido: {fecha_comprobante})')
+        
+        # 4. Validar comprobante (si se envió)
+        if comprobante_id and autorizacion.id_comprobante_venta_id:
+            if str(autorizacion.id_comprobante_venta_id) != str(comprobante_id):
+                errores.append(f'Comprobante no coincide (BD: {autorizacion.id_comprobante_venta_id} vs Recibido: {comprobante_id})')
+        
+        if errores:
+            print(f"❌ Errores de validación: {errores}")
+            return JsonResponse({
+                'valido': False,
+                'mensaje': ' | '.join(errores)
+            })
+        
+        print(f"✅ AUTORIZACIÓN VALIDADA CORRECTAMENTE - ID: {autorizacion.id_valida}")
+        return JsonResponse({
+            'valido': True,
+            'mensaje': 'Autorización validada exitosamente',
+            'datos_autorizacion': {
+                'codigo': autorizacion.id_valida,
+                'sucursal': autorizacion.id_sucursal_id,
+                'cliente': autorizacion.id_cliente_id,
+                'comprobante': autorizacion.id_comprobante_venta_id,
+                'fecha': autorizacion.fecha_valida.strftime('%Y-%m-%d') if autorizacion.fecha_valida else None
+            }
+        })
+        
+    except json.JSONDecodeError as e:
+        print(f"❌ Error decodificando JSON: {str(e)}")
+        return JsonResponse({
+            'valido': False,
+            'mensaje': 'Formato de datos inválido'
+        })
+    except Exception as e:
+        print(f"❌ Error interno en autorizacion_ncr: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'valido': False,
+            'mensaje': f'Error interno: {str(e)}'
+        })
