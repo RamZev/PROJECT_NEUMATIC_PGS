@@ -85,4 +85,60 @@
 			});
 		});
 	</script>
+
+	<script>
+		// ============================================
+		// SUSTITUIR ENTER POR TAB EN FORMULARIOS CRUD
+		// ============================================
+		document.addEventListener('DOMContentLoaded', function() {
+			// Seleccionar el primer formulario de la página (el principal)
+			const form = document.querySelector('form');
+			if (!form) return;
+
+			form.addEventListener('keydown', function(e) {
+				// Solo actuar si la tecla presionada es Enter
+				if (e.key !== 'Enter') return;
+
+				const target = e.target;
+
+				// Si el elemento es un botón o tiene type="submit", no intervenir (se envía el formulario)
+				if (target.tagName === 'BUTTON' || (target.tagName === 'INPUT' && target.type === 'submit')) {
+					return;
+				}
+
+				// Si es un textarea, permitir Shift+Enter para saltos de línea
+				if (target.tagName === 'TEXTAREA' && e.shiftKey) {
+					return; // Dejar el comportamiento nativo
+				}
+
+				// Para inputs, selects y textareas (sin Shift), prevenir el envío del formulario
+				if (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA') {
+					e.preventDefault();
+
+					// Obtener todos los campos enfocables dentro del mismo formulario
+					const focusable = Array.from(form.querySelectorAll(
+						'input:not([type="hidden"]):not([disabled]):not([readonly]), ' +
+						'select:not([disabled]), ' +
+						'textarea:not([disabled])'
+					));
+
+					// Encontrar el índice del elemento actual
+					const currentIndex = focusable.indexOf(target);
+					if (currentIndex !== -1 && currentIndex < focusable.length - 1) {
+						// Enfocar el siguiente campo
+						const nextField = focusable[currentIndex + 1];
+						nextField.focus();
+
+						// Si el siguiente campo es un <select>, abrir el dropdown
+						if (nextField.tagName === 'SELECT') {
+							// Pequeño retraso para permitir que el foco se establezca antes de abrir
+							setTimeout(() => {
+								nextField.click();
+							}, 50);
+						}
+					}
+				}
+			});
+		});
+	</script>	
 {% endblock script %}

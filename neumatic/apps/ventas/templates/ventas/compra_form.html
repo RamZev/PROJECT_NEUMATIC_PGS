@@ -817,4 +817,58 @@
         }, 100);
     });
     </script>
+
+    <script>
+        // ============================================
+        // SUSTITUIR ENTER POR TAB EN COMPRA_FORM
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('compra-form');
+            if (!form) return;
+
+            // Función que devuelve todos los campos enfocables dentro del formulario
+            function getFocusableFields() {
+                return Array.from(form.querySelectorAll(
+                    'input:not([type="hidden"]):not([disabled]):not([readonly]), ' +
+                    'select:not([disabled]), ' +
+                    'textarea:not([disabled])'
+                ));
+            }
+
+            form.addEventListener('keydown', function(e) {
+                if (e.key !== 'Enter') return;
+
+                const target = e.target;
+
+                // Si es un botón o submit, no intervenir
+                if (target.tagName === 'BUTTON' || (target.tagName === 'INPUT' && target.type === 'submit')) {
+                    return;
+                }
+
+                // En textarea, permitir Shift+Enter para saltos de línea
+                if (target.tagName === 'TEXTAREA' && e.shiftKey) {
+                    return;
+                }
+
+                // Solo para inputs, selects y textareas
+                if (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA') {
+                    e.preventDefault();
+
+                    // Obtener campos enfocables actualizados (incluye los dinámicos)
+                    const focusable = getFocusableFields();
+
+                    const currentIndex = focusable.indexOf(target);
+                    if (currentIndex !== -1 && currentIndex < focusable.length - 1) {
+                        const nextField = focusable[currentIndex + 1];
+                        nextField.focus();
+
+                        // Abrir dropdown si es un select
+                        if (nextField.tagName === 'SELECT') {
+                            setTimeout(() => nextField.click(), 50);
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 {% endblock script %}
