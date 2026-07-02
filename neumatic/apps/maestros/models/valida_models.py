@@ -6,7 +6,7 @@ from .base_gen_models import ModeloBaseGenerico
 from .base_models import ComprobanteVenta
 from .sucursal_models import Sucursal
 from .cliente_models import Cliente
-from entorno.constantes_base import ESTATUS_GEN
+from entorno.constantes_base import ESTATUS_GEN, MOTIVO_AUTORIZACION
 
 
 class Valida(ModeloBaseGenerico):
@@ -79,6 +79,14 @@ class Valida(ModeloBaseGenerico):
 		blank=True,
 		null=True
 	)
+	motivo = models.CharField(
+		verbose_name="Motivo de autorización",
+		max_length=20,
+		choices=MOTIVO_AUTORIZACION,
+		blank=True,
+		null=True,
+		help_text="Razón por la que se emitió la autorización (Vencimiento o Límite de crédito)"
+	)	
 	
 	class Meta:
 		verbose_name = 'Validación'

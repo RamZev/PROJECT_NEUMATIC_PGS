@@ -1108,14 +1108,14 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						# No hacemos return para no impedir la creación de la factura principal
 
 				# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
-				if form.cleaned_data.get('id_valida'):  # Si tiene autorización asociada
+				if form.cleaned_data.get('id_valida'):
 					autorizacion = form.cleaned_data['id_valida']
 					Valida.objects.filter(pk=autorizacion.pk).update(
-							hs=timezone.now().time(),
-							estatus_valida=False,
-							# fecha_uso=timezone.now().date()  # Campo adicional para auditoría
+						hs=timezone.now().time(),
+						estatus_valida=False,
+						numero_comprobante=int(nuevo_numero),  # ← CAMBIO AQUÍ
 					)
-					print(f"Autorización {autorizacion.id_valida} marcada como utilizada")
+					print(f"Autorización {autorizacion.id_valida} marcada como utilizada con número {nuevo_numero}")				
 
 				# 7. Guardado en el modelo Detallefactura y DetalleSerial
 				formset_detalle.instance = self.object

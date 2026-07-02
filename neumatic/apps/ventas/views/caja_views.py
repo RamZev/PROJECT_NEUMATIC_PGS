@@ -569,12 +569,13 @@ class CajaUpdateView(MaestroUpdateView):
         if form.cleaned_data.get('caja_cerrada'):
             # 1. Validar que se haya ingresado el recuento
             recuento = form.cleaned_data.get('recuento') or 0
-            if not recuento or recuento <= 0:
-                messages.error(
-                    self.request,
-                    'Error: Debe ingresar el recuento físico para cerrar la caja.'
-                )
-                return self.form_invalid(form)
+            
+            # if not recuento or recuento <= 0:
+            #     messages.error(
+            #         self.request,
+            #         'Error: Debe ingresar el recuento físico para cerrar la caja.'
+            #     )
+            #     return self.form_invalid(form)
             
             # 2. Calcular diferencia según la nueva fórmula
             form.instance.diferencia = (

@@ -2,7 +2,7 @@ from django import forms
 from django.db.models import Q 
 from datetime import time
 
-from .crud_forms_generics import CrudGenericForm
+from .crud_forms_generics_def import CrudGenericForm
 from ..models.valida_models import Valida
 from ..models.cliente_models import Cliente
 from diseno_base.diseno_bootstrap import(
@@ -59,9 +59,11 @@ class ValidaForm(CrudGenericForm):
             }),
             'numero_comprobante': forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             'hs': forms.TimeInput(attrs={**formclasstext, 'readonly': 'readonly'}),
+            'motivo': forms.Select(attrs={**formclassselect}),            
         }
     
     def __init__(self, *args, **kwargs):
+        kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
         # Configurar formatos de hora

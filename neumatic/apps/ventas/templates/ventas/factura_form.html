@@ -230,7 +230,7 @@
 												<label for="{{ form.id_comprobante_venta.id_for_label }}">Comprobante</label>
 											</div>                                            
 											
-											<div class="col-md-9">
+											<div class="col-md-6">
 												{{ form.id_comprobante_venta }}
 											</div>
 										</div>
@@ -301,6 +301,16 @@
 												
 											</div>
 										</div>
+
+										<!-- Mensaje de IVA (inicialmente oculto) -->
+										<div id="iva-message-container" class="row my-1" style="display: none;">
+											<div class="col-md-12">
+												<div class="alert alert-warning alert-dismissible fade show mb-0 py-1" role="alert">
+													<span id="iva-message-text">IVA Responsable Inscripto</span>
+													<button type="button" class="btn-close py-0" data-bs-dismiss="alert" aria-label="Close"></button>
+												</div>
+											</div>
+										</div>										
 										
 									</div>
 									<!-- sector izquierdo del encabezado end -->
@@ -1141,6 +1151,35 @@
 			return cookieValue;
 		}
 
+		////////////
+		// ===== FUNCIONES PARA MENSAJE DE IVA =====
+		function actualizarMensajeIVA() {
+			const container = document.getElementById('iva-message-container');
+			const textSpan = document.getElementById('iva-message-text');
+			const checkbox = document.getElementById('id_discrimina_iva');
+			const idCliente = document.getElementById('id_id_cliente');
+
+			// Solo mostrar si hay un cliente seleccionado
+			if (!container || !textSpan || !checkbox || !idCliente) return;
+
+			if (idCliente.value) {
+				if (checkbox.checked) {
+					textSpan.textContent = 'IVA Responsable Inscripto';
+				} else {
+					textSpan.textContent = 'IVA Consumidor Final';
+				}
+				container.style.display = 'block';
+			} else {
+				container.style.display = 'none';
+			}
+		}
+
+		function ocultarMensajeIVA() {
+			const container = document.getElementById('iva-message-container');
+			if (container) container.style.display = 'none';
+		}
+		////////////
+
 	</script>
 
 	<script>
@@ -1513,7 +1552,7 @@
 					
 					// 👇 NUEVO: aplicar descuento de revendedor si existe
 					const descRevendedor = parseFloat(producto.descuento_revendedor || 0);
-					alert(descRevendedor);
+					// alert(descRevendedor);
 					if (descRevendedor > 0) {
 						precioConDescuento = precioConDescuento * (1 - (descRevendedor / 100));
 					}
@@ -2650,7 +2689,6 @@
 						
 			nuevoBtnConfirmar.onclick = function() {
 				const codigo = codigoInput.value.trim();
-				alert("onclick confirmar");
 				
 				// ✅ Validar que el código no esté vacío
 				if (!codigo) {
@@ -2676,8 +2714,6 @@
 				nuevoBtnConfirmar.disabled = true;
 				nuevoBtnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
 				
-				
-				alert("Previo al fetch");
 				fetch('/ventas/clientes/autorizacion-ncr/', {
 					method: 'POST',
 					headers: {
@@ -3326,10 +3362,10 @@
 									}
 									
 									// Limpiar también el campo oculto id_cliente por si acaso
-									const idClienteInput = document.getElementById('id_id_cliente');
-									if (idClienteInput) {
-										idClienteInput.value = '';
-									}
+									// const idClienteInput = document.getElementById('id_id_cliente');
+									// if (idClienteInput) {
+									// 	idClienteInput.value = '';
+									// }
 									
 									// Limpiar campos del modal para la próxima vez
 									document.getElementById('codigoAutorizacion').value = '';
@@ -3491,6 +3527,8 @@
 					document.getElementById('id_tipo_venta').value = data.tipo_venta || '';
 					document.getElementById('id_condicion_comprobante').value = data.condicion_venta || '';
 					document.getElementById('id_discrimina_iva').checked = data.discrimina_iva;
+
+					actualizarMensajeIVA();
 					
 					// Verificación de sucursal
 					const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
@@ -3546,6 +3584,8 @@
 				
 				const idValida = document.getElementById('id_id_valida');
 				if (idValida) idValida.value = '';
+
+				ocultarMensajeIVA();
 			}
 
 			

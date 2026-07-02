@@ -193,3 +193,9 @@ FILTRO_CONDICION_VENTA = [
 	(2, 'Cuenta Corriente'),
 	(0, 'Ambos'),
 ]
+
+# Motivos de autorización para el modelo Valida (solo para comprobantes de venta)
+MOTIVO_AUTORIZACION = [
+    ('VENCIMIENTO', 'Documentos vencidos'),
+    ('LIMITE_CREDITO', 'Límite de crédito excedido'),
+]

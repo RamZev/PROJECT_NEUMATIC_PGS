@@ -721,6 +721,19 @@
 									<td class="text-center">pesos</td>
 									<td id="total-15" class="text-end total-fila fw-bold">0.00</td>
 								</tr>
+								<!-- Fila 16: 1.00 (Dólares) -->
+								<tr class="fila-recuento" data-moneda="dolar">
+									<td class="text-center">
+										<input type="number" min="0" step="1" 
+											id="cantidad-16" 
+											class="form-control form-control-sm text-center cantidad-input" 
+											value="0" 
+											data-valor="1.00">
+									</td>
+									<td id="valor-16" class="text-end fw-bold">1.00</td>
+									<td class="text-center">Dólares</td>
+									<td id="total-16" class="text-end total-fila fw-bold">0.00</td>
+								</tr>
 							</tbody>
 							<tfoot class="table-secondary sticky-bottom" style="bottom: 0; z-index: 1;">
 								<tr>
@@ -910,7 +923,7 @@
 			}
 			
 			// Configurar eventos para TODOS los inputs de cantidad
-			for (let i = 1; i <= 15; i++) {
+			for (let i = 1; i <= 16; i++) {
 				const inputId = 'cantidad-' + i;
 				const input = document.getElementById(inputId);
 				
@@ -1075,31 +1088,36 @@
 		const form = document.getElementById('cajaForm');
 		const cajaCerradaCheckbox = document.querySelector('[name="caja_cerrada"]');
 		const guardarBtn = document.getElementById('guardarBtn');
+
+		// 👇 NUEVO: inicializar el botón deshabilitado
+		const esCajaAbierta = {% if form.instance.pk and not form.instance.caja_cerrada %}true{% else %}false{% endif %};
+		if (esCajaAbierta && guardarBtn) {
+			guardarBtn.disabled = true;
+		}
 		
 		if (form && cajaCerradaCheckbox && guardarBtn) {
 			// Manejar cambio en el checkbox de cierre
+			/////////
 			cajaCerradaCheckbox.addEventListener('change', function() {
 				if (this.checked) {
-					// Cambiar texto del botón
 					guardarBtn.innerHTML = '<i class="bi bi-lock-fill me-1"></i> Confirmar Cierre de Caja';
-					
-					// Validar que haya recuento
+					guardarBtn.disabled = true; // Inicia deshabilitado
+
 					const recuento = recuentoInput ? parseFloat(recuentoInput.value) || 0 : 0;
 					
 					if (recuento <= 0) {
-						alert('⚠️ Para cerrar la caja, debe ingresar el recuento físico primero.');
-						this.checked = false;
-						guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
-						if (recuentoInput) {
-							recuentoInput.focus();
+						if (!confirm('⚠️ No se ha ingresado recuento físico. ¿Desea cerrar la caja de todos modos?')) {
+							this.checked = false;
+							guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+							return;
 						}
-						return;
 					}
-					
-					// Calcular diferencia actual
+
+					// Si llegamos aquí, todas las confirmaciones (recuento) fueron aceptadas
+					guardarBtn.disabled = false; // HABILITAR BOTÓN
+
+					// Opcional: mostrar confirmación de sobrante/faltante (puedes omitirla si quieres simplificar más)
 					const diferencia = calcularDiferencia();
-					
-					// Mostrar confirmación basada en la diferencia
 					let mensaje = '';
 					if (diferencia > 0) {
 						mensaje = `⚠️ Hay un SOBRANTE de $${diferencia.toFixed(2)}. ¿Continuar con el cierre?`;
@@ -1112,12 +1130,15 @@
 					if (!confirm(mensaje)) {
 						this.checked = false;
 						guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+						guardarBtn.disabled = true;
 					}
+
 				} else {
-					// Restaurar texto del botón
 					guardarBtn.innerHTML = '<i class="bi bi-save me-1"></i> Cerrar Caja';
+					guardarBtn.disabled = true;
 				}
-			});
+			});						
+			/////////
 			
 			// Validar al enviar el formulario
 			form.addEventListener('submit', function(event) {
@@ -1125,13 +1146,11 @@
 					const recuento = recuentoInput ? parseFloat(recuentoInput.value) || 0 : 0;
 					
 					if (recuento <= 0) {
-						event.preventDefault();
-						alert('❌ Error: Debe ingresar el recuento físico para cerrar la caja.');
-						if (recuentoInput) {
-							recuentoInput.focus();
+						if (!confirm('⚠️ No se ha ingresado recuento físico. ¿Desea cerrar la caja de todos modos?')) {
+							event.preventDefault();
+							return false;
 						}
-						return false;
-					}
+					}					
 					
 					// Mostrar confirmación final
 					const confirmacion = confirm(
@@ -1153,7 +1172,7 @@
 
 <script>
 	// Control simple - SOLO para cajas abiertas en edición
-	document.addEventListener('DOMContentLoaded', function() {
+	{% comment %} document.addEventListener('DOMContentLoaded', function() {
 		// Elementos
 		const btn = document.getElementById('guardarBtn');
 		const chkCierre = document.querySelector('[name="caja_cerrada"]');
@@ -1177,6 +1196,6 @@
 			// Estado inicial
 			actualizarBoton();
 		}
-	});
-	</script>
+	}); {% endcomment %}
+</script>
 {% endblock script %}

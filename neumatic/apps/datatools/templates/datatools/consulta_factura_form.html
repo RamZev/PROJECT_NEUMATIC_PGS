@@ -132,8 +132,17 @@
 				<!-- Formulario de búsqueda -->
 				<form method="get" class="row g-3 mb-4">
 					<div class="col-md-4">
-						<input type="text" name="buscar_por" class="form-control" placeholder="ID Cliente o RUC" value="{{ request.GET.buscar_por }}">
+						<input type="text" id="buscar_por" name="buscar_por" class="form-control" placeholder="ID Cliente o CUIT" value="{{ request.GET.buscar_por }}">
 					</div>
+
+					<!-- NUEVO CAMPO SELECT2 -->
+					<div class="col-md-4">
+						<select id="cliente_select2" style="width: 100%;">
+							<option value="">Buscar cliente por nombre...</option>
+						</select>
+						
+					</div>
+
 					<div class="col-md-2">
 						<button type="submit" class="btn btn-primary">
 							<i class="bi bi-search"></i> Buscar
@@ -268,3 +277,58 @@
 		</div>
 	{% endblock principalcomponent %}
 {% endblock maincomponent %}
+
+{% block script %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
+
+	<script>
+		$(document).ready(function() {
+			$('#cliente_select2').select2({
+				theme: 'bootstrap-5',
+				allowClear: true,
+				language: 'es',
+				minimumInputLength: 2,
+				ajax: {
+					url: "{% url 'buscar_cliente_select2' %}",
+					dataType: 'json',
+					delay: 300,
+					data: function(params) {
+						return { term: params.term, page: params.page || 1 };
+					},
+					processResults: function(data, params) {
+						return { results: data.results, pagination: { more: data.pagination.more } };
+					}
+				},
+				templateResult: function(cliente) {
+					if (cliente.loading) return cliente.text;
+					var html = '<div><strong>' + cliente.id + '</strong> - ' + cliente.text;
+					if (cliente.cuit) {
+						html += '<br><small>CUIL/CUIT: ' + cliente.cuit + '</small>';
+					}
+					html += '</div>';
+					return $(html);
+				},
+				templateSelection: function(cliente) {
+					if (!cliente || !cliente.id) return '';
+					return cliente.id + ' - ' + cliente.text;
+				}
+			});
+
+			// Al seleccionar, llenar el input con el ID
+			$('#cliente_select2').on('select2:select', function(e) {
+				var clienteId = e.params.data.id;
+				$('#buscar_por').val(clienteId);   // <--- CORREGIDO: usa '#buscar_por'
+				// (Opcional) Enviar formulario automáticamente:
+				// $(this).closest('form').submit();
+			});
+
+			// Al limpiar, vaciar el input
+			$('#cliente_select2').on('select2:clearing', function(e) {
+				$('#buscar_por').val('');          // <--- CORREGIDO
+			});
+		});		
+	</script>
+{% endblock %}
