@@ -235,11 +235,13 @@
 											</div>
 
 											<div class="col-md-3">
+												{% if tipo_comprobante != 'presupuesto' %}
 												<button type="button" class="btn btn-outline-primary btn-sm" 
 													id="btnAutorizaciones" data-bs-toggle="modal" 
 													data-bs-target="#autorizacionesModal" disabled>
 													Autorizaciones
 												</button>
+												{% endif %}
 											</div>
 
 										</div>
@@ -1609,9 +1611,13 @@
 					// alert("comprobanteId: " + comprobanteId + "\ntipoComprobante: " + tipoComprobante);
 					
 					// Detectar si es FACTURA
-					const esFactura = (tipoComprobante === "FACTURA");
-					const precioEditable = esFactura ? '' : 'readonly';
+					// const esFactura = (tipoComprobante === "FACTURA");
+					// const precioEditable = esFactura ? '' : 'readonly';
 					// ========================================
+
+					// Detectar si el precio debe ser editable (FACTURA o PRESUPUESTO)
+					const esEditable = (tipoComprobante === "FACTURA" || tipoComprobante === "PRESUPUESTO");
+					const precioEditable = esEditable ? '' : 'readonly';
 					
 					// Cálculos iniciales
 					const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
@@ -2744,6 +2750,15 @@
 			const tipoComprobante = tipoComprobanteDict[comprobanteSelect.value] || '';
 			return tipoComprobante === "NOTA DE CRÉDITO";
 		}
+		// Función para detectar si el comprobante seleccionado es Presupuesto
+		function esPresupuesto() {
+			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+			if (!comprobanteSelect || !comprobanteSelect.value) return false;
+			
+			const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+			const tipoComprobante = tipoComprobanteDict[comprobanteSelect.value] || '';
+			return tipoComprobante === "PRESUPUESTO";
+		}		
 		///
 		// Función para mostrar modal de autorización de Nota de Crédito
 		////////////////
@@ -3419,6 +3434,12 @@
 							// alert("No es nota de Crédito!");
 						}
 						///-
+
+						// EXCEPCIÓN PARA PRESUPUESTO: no validar vencimientos
+						if (esPresupuesto()) {
+							completarDatosCliente(data);
+							return; // Salir sin ejecutar validación
+						}						
 						
 						// Validar vencimientos de documentos
 						const clienteId = data.id_cliente;
