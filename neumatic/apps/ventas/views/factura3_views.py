@@ -112,7 +112,8 @@ class PresupuestoListView(MaestroDetalleListView):
 		# Si el usuario no es superusuario, filtrar por sucursal
 		# if not user.is_superuser:
 		if not (user.is_superuser or user.jerarquia == "A"):
-			queryset = queryset.filter(id_sucursal=user.id_sucursal)
+			#-- Filtrar solo los presupuestos de la sucursal del usuario autenticado y sus respectivos clientes.
+			queryset = queryset.filter(id_sucursal=user.id_sucursal, id_vendedor=user.id_vendedor)
 		
 		# 2. NUEVO FILTRO: Presupuestos
 		queryset = queryset.filter(
