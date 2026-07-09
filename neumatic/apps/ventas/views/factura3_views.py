@@ -45,13 +45,12 @@ update_view_name = f"{model_string2}_update"
 delete_view_name = f"{model_string2}_delete"
 
 
-# @method_decorator(login_required, name='dispatch')
 class PresupuestoListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
 	context_object_name = 'objetos'
 	tipo_comprobante = 'presupuesto'  # Nuevo atributo de clase
-
+	
 	search_fields = [
 	 'id_factura',
 	 'compro',
@@ -59,9 +58,9 @@ class PresupuestoListView(MaestroDetalleListView):
 	 'cuit',
 	 'id_cliente__nombre_cliente' #separar por guión bajo doble "__"
 	]
-
+	
 	ordering = ['-id_factura']
-
+	
  	#-- Encabezado de la Tabla.
 	table_headers = {
 		'id_factura': (1, 'ID'),
@@ -74,7 +73,7 @@ class PresupuestoListView(MaestroDetalleListView):
 		'total': (2, 'Total'),
 		'opciones': (1, 'Opciones'),
 	}
-
+	
 	#-- Columnas de la Tabla.
 	table_data = [
 		{'field_name': 'id_factura', 'date_format': None},
@@ -86,7 +85,7 @@ class PresupuestoListView(MaestroDetalleListView):
 		{'field_name': 'id_cliente', 'date_format': None},
 		{'field_name': 'total', 'date_format': None, 'decimal_places': 2},
 	]
-
+	
 	#cadena_filtro = "Q(nombre_color__icontains=text)"
 	extra_context = {
 		#"master_title": model._meta.verbose_name_plural,
@@ -101,50 +100,53 @@ class PresupuestoListView(MaestroDetalleListView):
 		"model_string_for_pdf": "factura",  # ¡Solución clave aquí!
 		"model_string": model_string,
 	}
-
+	
+	#-- Grupos de usuarios permitidos para acceder a la vista.
+	allowed_groups = {'Administracion', 'Super', 'Puntos de Ventas', 'Encargado Sucursal', 'Deposito'}
+	
 	def get_queryset(self):
-		# Obtener el queryset base
+		#-- Obtener el queryset base.
 		queryset = super().get_queryset()
-
-		# Obtener el usuario actual
+		
+		#-- Obtener el usuario actual.
 		user = self.request.user
-
-		# Si el usuario no es superusuario, filtrar por sucursal
-		# if not user.is_superuser:
-		if not (user.is_superuser or user.jerarquia == "A"):
-			#-- Filtrar solo los presupuestos de la sucursal del usuario autenticado y sus respectivos clientes.
+		
+		allowed_groups = set(self.allowed_groups)
+		user_groups = set(user.groups.values_list('name', flat=True))
+		
+		#-- Si el usuario no es superusuario o no pertenece a los grupos permitidos, filtrar por sucursal y sus clientes.
+		if not (user.is_superuser or user_groups.intersection(allowed_groups)):
 			queryset = queryset.filter(id_sucursal=user.id_sucursal, id_vendedor=user.id_vendedor)
 		
-		# 2. NUEVO FILTRO: Presupuestos
+		#-- NUEVO FILTRO: Presupuestos.
 		queryset = queryset.filter(
-            id_comprobante_venta__presupuesto=True
+			id_comprobante_venta__presupuesto=True
 		)
-
-		# Aplicar búsqueda y ordenación
+		
+		#-- Aplicar búsqueda y ordenación.
 		query = self.request.GET.get('busqueda', None)
 		if query:
 			search_conditions = Q()
 			for field in self.search_fields:
 				search_conditions |= Q(**{f"{field}__icontains": query})
 			queryset = queryset.filter(search_conditions)
-
+		
 		return queryset.order_by(*self.ordering)
- 
-
+	
 	def get_context_data(self, **kwargs):
-		# Obtener el contexto base
+		#-- Obtener el contexto base.
 		context = super().get_context_data(**kwargs)
 		
-		# Agregar model_string al contexto
+		#-- Agregar model_string al contexto.
 		context['model_string'] = model_string  # Esto devolverá 'factura'
 		
-		# Mantener todos los valores de extra_context
+		#-- Mantener todos los valores de extra_context.
 		if hasattr(self, 'extra_context'):
 			context.update(self.extra_context)
 				
 		return context
 
-# @method_decorator(login_required, name='dispatch')
+
 class PresupuestoCreateView(MaestroDetalleCreateView):
 	model = modelo
 	list_view_name = list_view_name
@@ -448,7 +450,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 					
 					# Recorrer cada alícuota del diccionario
 					datos_impuestos = []
-    
+	
 					# Crear diccionario de mapeo: porcentaje -> código AFIP
 					mapeo_porcentaje_a_codigo = {}
 					for codigo, porcentaje in diccionario_alicuotas.items():
@@ -963,7 +965,7 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		parsed = minidom.parseString(raw)
 		return '\n'.join([line for line in parsed.toprettyxml(indent="    ").splitlines() if line.strip()])	
 
-# @method_decorator(login_required, name='dispatch')
+
 class PresupuestoUpdateView(MaestroDetalleUpdateView):
 	model = modelo
 	list_view_name = list_view_name
@@ -1094,7 +1096,6 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		return kwargs
 
 
-# @method_decorator(login_required, name='dispatch')
 class PresupuestoDeleteView(MaestroDetalleDeleteView):
 	model = modelo
 	list_view_name = list_view_name
@@ -1142,5 +1143,3 @@ class PresupuestoDeleteView(MaestroDetalleDeleteView):
 		except Exception as e:
 			messages.error(request, f"Error inesperado: {str(e)}")
 			return redirect(self.success_url)
-
-# ------------------------------------------------------------------------------
