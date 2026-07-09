@@ -289,6 +289,12 @@ class ConfigViews:
 			"csv": True
 		},
 	}
+	
+	#-- Niveles de jerarquía permitidos para ver la columna "costo" en el reporte.
+	nivel_permitido = ['A',]
+	
+	#-- Columnas que se deben ocultar para usuarios sin el nivel de jerarquía permitido.
+	cols_vetadas = ['costo',]
 
 
 class ProductoInformeView(InformeFormView):
@@ -429,6 +435,13 @@ class ProductoInformeView(InformeFormView):
 			modelo = f"Desde: {id_modelo_desde}"
 		elif id_modelo_hasta:
 			modelo = f"Hasta: {id_modelo_hasta}"
+		
+		user = self.request.user
+		
+		#-- Si el usuario no tiene el nivel de jerarquía permitido, se elimina la columna "costo" del reporte.
+		if user.jerarquia not in ConfigViews.nivel_permitido:
+			for col in ConfigViews.cols_vetadas:
+				ConfigViews.table_info.pop(col, None)
 		
 		fecha_hora_reporte = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 		

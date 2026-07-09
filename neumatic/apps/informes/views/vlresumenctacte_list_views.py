@@ -139,6 +139,9 @@ class ConfigViews:
 			"csv": True
 		}
 	}
+	
+	#-- Grupos de usuarios permitidos para acceder a la vista.
+	allowed_groups = {'Administracion', 'Super', 'Puntos de Ventas', 'Encargado Sucursal', 'Deposito'}
 
 
 class VLResumenCtaCteInformeView(InformeFormView):
@@ -154,6 +157,11 @@ class VLResumenCtaCteInformeView(InformeFormView):
 		"url_pantalla": ConfigViews.url_pantalla,
 		"url_pdf": ConfigViews.url_pdf,
 	}
+	
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['allowed_groups'] = ConfigViews.allowed_groups
+		return kwargs
 	
 	def obtener_queryset(self, cleaned_data):
 		resumen_pendiente = cleaned_data.get('resumen_pendiente')

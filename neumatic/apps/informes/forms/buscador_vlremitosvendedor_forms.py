@@ -30,13 +30,15 @@ class BuscadorRemitosVendedorForm(InformesGenericForm):
 	
 	def __init__(self, *args, **kwargs):
 		#-- Se espera que la vista pase el usuario autenticado con la clave 'user'.
-		user = kwargs.pop('user', None)
+		self.user = kwargs.pop('user', None)
+		self.allowed_groups = set(kwargs.pop('allowed_groups', None))
+		self.user_groups = set(self.user.groups.values_list('name', flat=True))
 		super().__init__(*args, **kwargs)
 		
 		#-- Si el usuario es vendedor (tiene un id_vendedor asociado).
-		if user and getattr(user, 'id_vendedor', None):
+		if self.user and getattr(self.user, 'id_vendedor', None) and not self.user.is_superuser and not self.user_groups.intersection(self.allowed_groups):
 			#-- Fijar el campo vendedor al id del vendedor asociado.
-			self.fields['vendedor'].initial = user.id_vendedor
+			self.fields['vendedor'].initial = self.user.id_vendedor
 			
 			#-- Deshabilitar el combo Vendedor.
 			self.fields['vendedor'].disabled = True

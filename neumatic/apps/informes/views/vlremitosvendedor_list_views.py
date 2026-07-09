@@ -131,6 +131,9 @@ class ConfigViews:
 			"csv": True
 		},
 	}
+	
+	#-- Grupos de usuarios permitidos para acceder a la vista.
+	allowed_groups = {'Administracion', 'Super', 'Puntos de Ventas', 'Encargado Sucursal', 'Deposito'}
 
 
 class VLRemitosVendedorInformeView(InformeFormView):
@@ -146,6 +149,11 @@ class VLRemitosVendedorInformeView(InformeFormView):
 		"url_pantalla": ConfigViews.url_pantalla,
 		"url_pdf": ConfigViews.url_pdf,
 	}
+	
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['allowed_groups'] = ConfigViews.allowed_groups
+		return kwargs
 	
 	def obtener_queryset(self, cleaned_data):
 		vendedor = cleaned_data.get("vendedor", None)

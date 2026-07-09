@@ -161,8 +161,6 @@ class ClienteUpdateView(MaestroUpdateView):
 			return self.restricted_fields
 		else:
 			return []
-		
-		return None
 
 
 class ClienteDeleteView (MaestroDeleteView):

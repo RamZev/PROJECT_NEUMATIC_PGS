@@ -50,7 +50,9 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 		- `fecha_desde` se establece en el 1 de enero del año actual.
 		- `fecha_hasta` se establece en la fecha actual.
 		"""
-		
+		self.user = kwargs.pop('user', None)
+		self.allowed_groups = set(kwargs.pop('allowed_groups', None))
+		self.user_groups = set(self.user.groups.values_list('name', flat=True))
 		super().__init__(*args, **kwargs)
 		
 		if "fecha_desde" not in self.initial:
@@ -89,6 +91,11 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 		if id_cliente:
 			try:
 				cliente = Cliente.objects.get(id_cliente=id_cliente)
+				
+				#-- Validar que el usuario autenticado sea el vendedor del cliente, a menos que sea superusuario o pertenezca a los grupos permitidos.
+				if not self.user.is_superuser and not self.user_groups.intersection(self.allowed_groups) and cliente.id_vendedor != self.user.id_vendedor:
+					self.add_error("id_cliente", "No tiene permisos para consultar este cliente. Solo puede consultar clientes de su vendedor.")
+				
 			except Cliente.DoesNotExist:
 				self.add_error("id_cliente", "El cliente no existe. Por favor, verifique el código.")
 		
