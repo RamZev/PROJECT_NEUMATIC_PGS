@@ -233,6 +233,15 @@
 											<div class="col-md-6">
 												{{ form.id_comprobante_venta }}
 											</div>
+
+											<div class="col-md-3">
+												<button type="button" class="btn btn-outline-primary btn-sm" 
+													id="btnAutorizaciones" data-bs-toggle="modal" 
+													data-bs-target="#autorizacionesModal" disabled>
+													Autorizaciones
+												</button>
+											</div>
+
 										</div>
 
 										<div class="row my-1">
@@ -1131,6 +1140,69 @@
 		</div>
 	</div>
 
+	<!-- Modal de Autorizaciones (versión compacta) -->
+	<div class="modal fade" id="autorizacionesModal" tabindex="-1" aria-labelledby="autorizacionesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-md"> <!-- ← modal-md (más compacto) -->
+			<div class="modal-content">
+				<div class="modal-header text-white bg-primary bg-opacity-75 py-2">
+					<h5 class="modal-title fs-6" id="autorizacionesModalLabel">
+						<i class="bi bi-shield-lock me-2"></i>Gestión de Autorizaciones
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="text-muted small">Ingrese los IDs de autorización. Al perder el foco se validarán.</p>
+
+					<!-- Los tres campos en una fila horizontal -->
+					<div class="row g-2">
+						<!-- Vencimiento -->
+						<div class="col-md-4">
+							<label for="{{ form.id_valida_vencimiento.id_for_label }}" class="form-label small fw-bold">
+								<i class="bi bi-clock-history me-1"></i>Vencimiento
+							</label>
+							<div class="input-group input-group-sm">
+								{{ form.id_valida_vencimiento }}
+								<span class="input-group-text" id="status-vencimiento">⏳</span>
+							</div>
+							<small id="info-vencimiento" class="text-muted d-block text-truncate" style="font-size: 0.7rem;"></small>
+						</div>
+
+						<!-- Nota de Crédito -->
+						<div class="col-md-4">
+							<label for="{{ form.id_valida_nota_credito.id_for_label }}" class="form-label small fw-bold">
+								<i class="bi bi-pencil-square me-1"></i>Nota Crédito
+							</label>
+							<div class="input-group input-group-sm">
+								{{ form.id_valida_nota_credito }}
+								<span class="input-group-text" id="status-nc">⏳</span>
+							</div>
+							<small id="info-nc" class="text-muted d-block text-truncate" style="font-size: 0.7rem;"></small>
+						</div>
+
+						<!-- Límite de crédito -->
+						<div class="col-md-4">
+							<label for="{{ form.id_valida_limite_credito.id_for_label }}" class="form-label small fw-bold">
+								<i class="bi bi-credit-card me-1"></i>Límite
+							</label>
+							<div class="input-group input-group-sm">
+								{{ form.id_valida_limite_credito }}
+								<span class="input-group-text" id="status-limite">⏳</span>
+							</div>
+							<small id="info-limite" class="text-muted d-block text-truncate" style="font-size: 0.7rem;"></small>
+						</div>
+					</div>
+
+					<div class="alert alert-info small mt-3 mb-0">
+						<i class="bi bi-info-circle me-1"></i>
+						La validación es automática al salir del campo. Si el ID es válido, se mostrarán los datos.
+					</div>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
 {% endblock modals %}
 
 {% block script %}
@@ -2031,17 +2103,21 @@
 			// Funcionalidad del Remito
 			
 			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+			const btnAutorizaciones = document.getElementById('btnAutorizaciones');
 			
 			if (comprobanteSelect) {
 				// Asignar el event listener
 				comprobanteSelect.addEventListener('change', function() {
 					actualizarDatosComprobante(this);
+					btnAutorizaciones.removeAttribute('disabled');
 				});
 				
 				// Ejecutar al cargar si ya hay un valor seleccionado
 				if (comprobanteSelect.value) {
 					actualizarDatosComprobante(comprobanteSelect);
+					
 				}
+
 			}
 			
 			function actualizarDatosComprobante(selectElement) {
@@ -4166,5 +4242,186 @@
 		});
 		
 	</script>
+
+	<script>
+	// =========================================================
+	// VALIDACIÓN DE AUTORIZACIONES CON BLOQUEO MUTUO Y LIMPIEZA OPCIONAL
+	// =========================================================
+	function configurarValidacionAutorizacion(campoId, infoId, statusId, motivo, campoBloqueadoId, limpiarSiInvalido = false) {
+		const campo = document.getElementById(campoId);
+		const info = document.getElementById(infoId);
+		const status = document.getElementById(statusId);
+		if (!campo) return;
+
+		// Función para bloquear/desbloquear el otro campo
+		function actualizarBloqueo(bloquear) {
+			if (!campoBloqueadoId) return;
+			const otro = document.getElementById(campoBloqueadoId);
+			if (otro) {
+				if (bloquear) {
+					otro.setAttribute('readonly', 'readonly');
+					otro.classList.add('readonly-select');
+				} else {
+					otro.removeAttribute('readonly');
+					otro.classList.remove('readonly-select');
+				}
+			}
+		}
+
+		// Limpiar estado de validación y desbloquear
+		function limpiarEstado() {
+			campo.classList.remove('is-valid', 'is-invalid');
+			info.innerHTML = '';
+			info.className = 'text-muted';
+			status.textContent = '⏳';
+			status.className = 'input-group-text text-muted';
+			actualizarBloqueo(false); // Desbloquear el otro campo al limpiar
+		}
+
+		// Función principal de validación
+		function validar() {
+			const valor = campo.value.trim();
+
+			// Si está vacío, limpiar y desbloquear
+			if (!valor) {
+				limpiarEstado();
+				return;
+			}
+
+			// Obtener datos necesarios para la validación (incluyendo fecha del comprobante)
+			const clienteId = document.getElementById('id_id_cliente').value;
+			const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+			const fechaComprobante = document.getElementById('id_fecha_comprobante').value;
+
+			const url = new URL('/ventas/validar-autorizacion/', window.location.origin);
+			url.searchParams.append('id', valor);
+			if (clienteId) url.searchParams.append('cliente_id', clienteId);
+			if (comprobanteId) url.searchParams.append('comprobante_id', comprobanteId);
+			if (motivo) url.searchParams.append('motivo', motivo);
+			if (fechaComprobante) url.searchParams.append('fecha_comprobante', fechaComprobante);
+
+			// Estado "validando..."
+			status.textContent = '⏳';
+			status.className = 'input-group-text text-warning';
+
+			fetch(url)
+				.then(response => response.json())
+				.then(data => {
+					if (data.valido) {
+						// ✅ Válido: mostrar información detallada
+						const datos = data.datos;
+						info.innerHTML = `
+							✅ <strong>${datos.cliente}</strong><br>
+							<small>${datos.tipo_documento}: ${datos.cuit}</small><br>
+							<small>${datos.motivo} · ${datos.comprobante} · ${datos.fecha}</small>
+						`;
+						info.className = 'text-success';
+						status.textContent = '✅';
+						status.className = 'input-group-text text-success';
+						campo.classList.remove('is-invalid');
+						campo.classList.add('is-valid');
+						// Bloquear el otro campo si existe
+						actualizarBloqueo(true);
+					} else {
+						// ❌ Inválido: mostrar error y DESBLOQUEAR el otro campo
+						info.innerHTML = `❌ ${data.error}`;
+						info.className = 'text-danger';
+						status.textContent = '❌';
+						status.className = 'input-group-text text-danger';
+						campo.classList.add('is-invalid');
+						campo.classList.remove('is-valid');
+						
+						// ← NUEVO: Desbloquear el otro campo en caso de error
+						actualizarBloqueo(false);
+
+						// Si se indica limpiar en inválido, borrar el valor
+						if (limpiarSiInvalido) {
+							campo.value = '';
+							// Tras limpiar, resetear el estado a vacío
+							limpiarEstado();
+							// Mantener el mensaje de error
+							info.innerHTML = `❌ ${data.error}`;
+							info.className = 'text-danger';
+							status.textContent = '❌';
+							status.className = 'input-group-text text-danger';
+							// No bloquear
+						}
+					}
+				})
+				.catch(error => {
+					// ⚠️ Error de conexión: mostrar error y DESBLOQUEAR el otro campo
+					console.error('Error validando autorización:', error);
+					info.innerHTML = '⚠️ Error de conexión';
+					info.className = 'text-warning';
+					status.textContent = '⚠️';
+					status.className = 'input-group-text text-warning';
+					campo.classList.remove('is-valid', 'is-invalid');
+					
+					// ← NUEVO: Desbloquear el otro campo en caso de error de conexión
+					actualizarBloqueo(false);
+					
+					if (limpiarSiInvalido) {
+						campo.value = '';
+						limpiarEstado();
+						info.innerHTML = '⚠️ Error de conexión';
+						info.className = 'text-warning';
+						status.textContent = '⚠️';
+						status.className = 'input-group-text text-warning';
+					}
+				});
+		}
+
+		// Evento blur: validar al perder el foco
+		campo.addEventListener('blur', validar);
+
+		// Evento input: cuando el usuario escribe, limpiar errores visuales
+		campo.addEventListener('input', function() {
+			this.classList.remove('is-valid', 'is-invalid');
+			// Si el valor queda vacío, limpiar estado y desbloquear
+			if (this.value.trim() === '') {
+				limpiarEstado();
+			}
+		});
+
+		// Si el campo ya tiene un valor al cargar, validarlo automáticamente
+		if (campo.value.trim()) {
+			setTimeout(validar, 100);
+		} else {
+			limpiarEstado();
+		}
+	}
 	
+	// Configurar los tres campos al cargar la página
+	document.addEventListener('DOMContentLoaded', function() {
+		configurarValidacionAutorizacion(
+			'id_id_valida_limite_credito',
+			'info-limite',
+			'status-limite',
+			'LIMITE_CREDITO',
+			null,          // sin bloqueo
+			true           // limpiar si inválido
+		);
+
+		// Vencimiento → bloquea Nota de Crédito, no se limpia si inválido
+		configurarValidacionAutorizacion(
+			'id_id_valida_vencimiento',
+			'info-vencimiento',
+			'status-vencimiento',
+			'VENCIMIENTO',
+			'id_id_valida_nota_credito',
+			false          // no limpiar si inválido
+		);
+
+		// Nota de Crédito → bloquea Vencimiento, no se limpia si inválido
+		configurarValidacionAutorizacion(
+			'id_id_valida_nota_credito',
+			'info-nc',
+			'status-nc',
+			'NOTA_CREDITO',
+			'id_id_valida_vencimiento',
+			false
+		);
+	});	
+	</script>
+
 {% endblock script %}

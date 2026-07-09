@@ -326,6 +326,30 @@ class Factura(ModeloBaseGenerico):
 		blank=True,
 		default=0.0
 	)
+	id_valida_vencimiento = models.ForeignKey(
+		'maestros.Valida',
+		on_delete=models.PROTECT,
+		verbose_name="Autorización de vencimiento",
+		null=True,
+		blank=True,
+		related_name='facturas_vencimiento'
+	)
+	id_valida_nota_credito = models.ForeignKey(
+		'maestros.Valida',
+		on_delete=models.PROTECT,
+		verbose_name="Autorización de Nota de Crédito",
+		null=True,
+		blank=True,
+		related_name='facturas_nota_credito'
+	)
+	id_valida_limite_credito = models.ForeignKey(
+		'maestros.Valida',
+		on_delete=models.PROTECT,
+		verbose_name="Autorización de límite de crédito",
+		null=True,
+		blank=True,
+		related_name='facturas_limite'
+	)
 	
 	class Meta:
 		db_table = "factura"

@@ -99,7 +99,8 @@ class ReciboListView(MaestroDetalleListView):
 		queryset = super().get_queryset()
 		user = self.request.user
 
-		if not user.is_superuser:
+		# if not user.is_superuser:
+		if not (user.is_superuser or user.jerarquia == "A"):
 			queryset = queryset.filter(id_sucursal=user.id_sucursal)
 
 		# Filtrar solo facturas con recibos asociados

@@ -108,6 +108,29 @@ class CajaListView(MaestroListView):
         "model_string": ConfigViews.model_string,
     }
 
+    # NUEVO MÉTODO AÑADIDO
+    def get_queryset(self):
+        # Obtener el queryset base (ya incluye todo)
+        queryset = super().get_queryset()
+
+        # Obtener el usuario actual
+        user = self.request.user
+
+        # Si el usuario NO es superusuario Y NO tiene jerarquía "A", filtrar por sucursal
+        if not (user.is_superuser or user.jerarquia == "A"):
+            queryset = queryset.filter(id_sucursal=user.id_sucursal)
+
+        # Aplicar búsqueda (tal como está en FacturaListView)
+        query = self.request.GET.get('busqueda', None)
+        if query:
+            search_conditions = Q()
+            for field in self.search_fields:
+                search_conditions |= Q(**{f"{field}__icontains": query})
+            queryset = queryset.filter(search_conditions)
+
+        # Aplicar ordenamiento
+        return queryset.order_by(*self.ordering)
+
 
 # CajaCreateView - Inicio
 # neumatic\apps\ventas\views\caja_views.py

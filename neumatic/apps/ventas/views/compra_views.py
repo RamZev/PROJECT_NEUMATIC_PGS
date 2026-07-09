@@ -84,7 +84,8 @@ class CompraListView(MaestroDetalleListView):
 		queryset = queryset.filter(id_comprobante_compra__remito=True)
 		
 		# Filtrar por sucursal si no es superusuario
-		if not user.is_superuser:
+		# if not user.is_superuser:
+		if not (user.is_superuser or user.jerarquia == "A"):
 			queryset = queryset.filter(id_sucursal=user.id_sucursal)
 		
 		# Aplicar búsqueda

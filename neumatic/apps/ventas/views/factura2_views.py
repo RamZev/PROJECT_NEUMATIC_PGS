@@ -115,7 +115,8 @@ class FacturaManualListView(MaestroDetalleListView):
 		user = self.request.user
 
 		# Si el usuario no es superusuario, filtrar por sucursal
-		if not user.is_superuser:
+		# if not user.is_superuser:
+		if not (user.is_superuser or user.jerarquia == "A"):
 				queryset = queryset.filter(id_sucursal=user.id_sucursal)
 		
 		# 2. NUEVO FILTRO: Comprobantes electrónicos o remitos

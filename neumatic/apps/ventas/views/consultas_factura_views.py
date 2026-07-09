@@ -1,5 +1,9 @@
 # neumatic\apps\ventas\views\consultas_factura_views.py
 from asyncio.log import logger
+from datetime import date, timedelta, datetime
+import traceback
+import json
+
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.db.models import Q, F
@@ -9,10 +13,6 @@ from django.views.decorators.http import require_POST, require_GET
 
 from utils.saldo_cliente import obtener_saldo_cliente
 from apps.maestros.models.cliente_models import Cliente
-
-from datetime import date, timedelta
-import traceback
-import json
 
 from apps.maestros.models.base_models import (
 	ProductoStock,
@@ -1102,3 +1102,90 @@ def autorizacion_ncr(request):
             'valido': False,
             'mensaje': f'Error interno: {str(e)}'
         })
+
+# =========================================================
+# VALIDACIÓN DE AUTORIZACIÓN EN TIEMPO REAL
+# =========================================================
+@require_GET
+def validar_autorizacion(request):
+    """
+    Endpoint para validar un ID de autorización (Valida) en tiempo real.
+    Valida: existencia, estatus activo, comprobante y fecha.
+    NO valida motivo.
+    Parámetros (query string):
+        - id (requerido): ID de Valida
+        - comprobante_id (requerido): ID del comprobante seleccionado
+        - fecha_comprobante (requerido): fecha del comprobante en formato YYYY-MM-DD
+    Retorna:
+        {
+            valido: bool,
+            datos: { id, cliente, tipo_documento, cuit, fecha, motivo, comprobante } (si valido)
+            error: str (si no valido)
+        }
+    """
+    # 1. Obtener parámetros
+    id_valida = request.GET.get('id')
+    if not id_valida:
+        return JsonResponse({'valido': False, 'error': 'Falta el ID'})
+
+    comprobante_id = request.GET.get('comprobante_id')
+    if not comprobante_id:
+        return JsonResponse({'valido': False, 'error': 'Falta el comprobante'})
+
+    fecha_comprobante_str = request.GET.get('fecha_comprobante')
+    if not fecha_comprobante_str:
+        return JsonResponse({'valido': False, 'error': 'Falta la fecha del comprobante'})
+
+    # 2. Buscar autorización
+    try:
+        autorizacion = Valida.objects.select_related(
+            'id_cliente__id_tipo_documento_identidad',
+            'id_comprobante_venta'
+        ).get(id_valida=id_valida)
+    except Valida.DoesNotExist:
+        return JsonResponse({'valido': False, 'error': 'Autorización no existe'})
+
+    # 3. Validar estatus (debe estar activa)
+    if not autorizacion.estatus_valida:
+        return JsonResponse({'valido': False, 'error': 'Autorización ya utilizada'})
+
+    # 4. Validar comprobante (coincidencia exacta)
+    if str(autorizacion.id_comprobante_venta_id) != str(comprobante_id):
+        return JsonResponse({
+            'valido': False,
+            'error': 'No corresponde a este comprobante'
+        })
+
+    # 5. Validar fecha (coincidencia exacta)
+    try:
+        fecha_comprobante = datetime.strptime(fecha_comprobante_str, '%Y-%m-%d').date()
+        if autorizacion.fecha_valida != fecha_comprobante:
+            return JsonResponse({
+                'valido': False,
+                'error': f'La autorización es para el día {autorizacion.fecha_valida.strftime("%d/%m/%Y")}, no para {fecha_comprobante.strftime("%d/%m/%Y")}'
+            })
+    except ValueError:
+        return JsonResponse({
+            'valido': False,
+            'error': 'Formato de fecha inválido (use YYYY-MM-DD)'
+        })
+
+    # =========================================================
+    # Todo OK → devolver datos enriquecidos
+    # =========================================================
+    cliente = autorizacion.id_cliente
+    tipo_doc = cliente.id_tipo_documento_identidad if cliente else None
+
+    return JsonResponse({
+        'valido': True,
+        'datos': {
+            'id': autorizacion.id_valida,
+            'cliente': cliente.nombre_cliente if cliente else 'N/A',
+            # 🔽 Asegúrate de usar el campo correcto (ej. 'nombre' o 'descripcion')
+            'tipo_documento': tipo_doc.nombre if tipo_doc else 'N/A',
+            'cuit': cliente.cuit if cliente else 'N/A',
+            'fecha': autorizacion.fecha_valida.strftime('%d/%m/%Y') if autorizacion.fecha_valida else 'N/A',
+            'motivo': autorizacion.get_motivo_display(),
+            'comprobante': autorizacion.id_comprobante_venta.nombre_comprobante_venta if autorizacion.id_comprobante_venta else 'N/A'
+        }
+    })
