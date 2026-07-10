@@ -568,6 +568,7 @@ def verificar_remito(request):
 			'id_producto__medida',
 			'id_producto__tipo_producto',
 			'id_producto__obliga_operario',
+			'id_producto__alicuota_iva',
 			'producto_venta',
 			'cantidad',
 			'precio',
@@ -579,7 +580,7 @@ def verificar_remito(request):
 			'alic_iva',
 			'iva',
 			'total',
-			'id_producto__id_alicuota_iva__alicuota_iva'
+			# 'id_producto__id_alicuota_iva__alicuota_iva'
 		)
 		
 		# Convertir el QuerySet a lista y asegurar valores decimales como float
@@ -596,7 +597,8 @@ def verificar_remito(request):
 				'descuento': float(detalle['descuento']),
 				'gravado': float(detalle['gravado']),
 				'no_gravado': float(detalle['no_gravado']),
-				'alic_iva': float(detalle.get('id_producto__id_alicuota_iva__alicuota_iva', detalle['alic_iva'])),
+				# 'alic_iva': float(detalle.get('id_producto__id_alicuota_iva__alicuota_iva', detalle['alic_iva'])),
+				'alic_iva': float(detalle.get('id_producto__alicuota_iva', detalle.get('alic_iva', 21.0))),
 				'iva': float(detalle['iva']),
 				'total': float(detalle['total']),
 				'tipo_producto': detalle['id_producto__tipo_producto'],

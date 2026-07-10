@@ -2142,23 +2142,26 @@
                         const montoCobradoInput = row.querySelector('input[name$="-monto_cobrado"]');
                         const montoCobrado = parseFloat(montoCobradoInput.value) || 0;
 
-                        // Actualiza los índices de los inputs para mantenerlos consecutivos
-                        const index = validRows;
-                        row.setAttribute('data-form-index', index);
-                        row.querySelectorAll('input, select').forEach(input => {
-                            if (input.getAttribute('name')) {
-                                const oldName = input.getAttribute('name');
-                                const newName = oldName.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
-                                input.setAttribute('name', newName);
-                            }
-                            if (input.getAttribute('id')) {
-                                const oldId = input.getAttribute('id');
-                                const newId = oldId.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
-                                input.setAttribute('id', newId);
-                            }
-                        });
-                        validRows++;
-                        
+                        if (montoCobrado <= 0) {
+                            row.remove(); // Elimina la fila del DOM
+                        } else {
+                            // Actualiza los índices de los inputs para mantenerlos consecutivos
+                            const index = validRows;
+                            row.setAttribute('data-form-index', index);
+                            row.querySelectorAll('input, select').forEach(input => {
+                                if (input.getAttribute('name')) {
+                                    const oldName = input.getAttribute('name');
+                                    const newName = oldName.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
+                                    input.setAttribute('name', newName);
+                                }
+                                if (input.getAttribute('id')) {
+                                    const oldId = input.getAttribute('id');
+                                    const newId = oldId.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
+                                    input.setAttribute('id', newId);
+                                }
+                            });
+                            validRows++;
+                        }
                     });
 
                     // Actualiza TOTAL_FORMS
