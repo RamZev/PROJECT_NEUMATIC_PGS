@@ -36,7 +36,7 @@ class BuscadorRemitosVendedorForm(InformesGenericForm):
 		super().__init__(*args, **kwargs)
 		
 		#-- Si el usuario es vendedor (tiene un id_vendedor asociado).
-		if self.user and getattr(self.user, 'id_vendedor', None) and not self.user.is_superuser and not self.user_groups.intersection(self.allowed_groups):
+		if self.user and getattr(self.user, 'id_vendedor', None) and not self.user.is_superuser and not self.user_groups.intersection(self.allowed_groups) and self.user.jerarquia != 'A':
 			#-- Fijar el campo vendedor al id del vendedor asociado.
 			self.fields['vendedor'].initial = self.user.id_vendedor
 			

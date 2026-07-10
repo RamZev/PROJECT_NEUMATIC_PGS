@@ -131,7 +131,7 @@ class ClienteUpdateView(MaestroUpdateView):
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
 	
-	#-- Campos restringidos para usuarios de jerarquía "L" o superior (no superuser)
+	#-- Campos restringidos para usuarios de jerarquía "E" o superior (no superuser)
 	restricted_fields = [
 		'id_vendedor', 
 		'telefono_cliente', 
@@ -156,8 +156,8 @@ class ClienteUpdateView(MaestroUpdateView):
 		"""
 		user = self.request.user
 		
-		#-- Solo restringir en modo edición, con jerarquía >= "L" y no superuser.
-		if user.jerarquia >= "L" and not user.is_superuser:
+		#-- Solo restringir en modo edición, con jerarquía >= "E" y no superuser.
+		if user.jerarquia >= "E" and not user.is_superuser:
 			return self.restricted_fields
 		else:
 			return []

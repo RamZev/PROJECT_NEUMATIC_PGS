@@ -93,7 +93,7 @@ class BuscadorResumenCtaCteForm(InformesGenericForm):
 				cliente = Cliente.objects.get(id_cliente=id_cliente)
 				
 				#-- Validar que el usuario autenticado sea el vendedor del cliente, a menos que sea superusuario o pertenezca a los grupos permitidos.
-				if not self.user.is_superuser and not self.user_groups.intersection(self.allowed_groups) and cliente.id_vendedor != self.user.id_vendedor:
+				if not self.user.is_superuser and not self.user_groups.intersection(self.allowed_groups) and cliente.id_vendedor != self.user.id_vendedor and self.user.jerarquia != 'A':
 					self.add_error("id_cliente", "No tiene permisos para consultar este cliente. Solo puede consultar clientes de su vendedor.")
 				
 			except Cliente.DoesNotExist:

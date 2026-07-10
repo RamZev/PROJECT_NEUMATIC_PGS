@@ -94,7 +94,7 @@ class ClienteForm(CrudGenericForm):
 	
 	def __init__(self, *args, **kwargs):
 		
-		self.restricted_fields = kwargs.pop('restricted_fields', None)
+		self.restricted_fields = kwargs.pop('restricted_fields', [])
 		super().__init__(*args, **kwargs)
 		
 		self.fields['id_localidad'].choices = []
