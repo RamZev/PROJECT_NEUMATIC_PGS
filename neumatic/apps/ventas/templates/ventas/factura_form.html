@@ -4268,52 +4268,62 @@
 	// =========================================================
 	// VALIDACIÓN DE AUTORIZACIONES CON BLOQUEO MUTUO Y LIMPIEZA OPCIONAL
 	// =========================================================
+	//////************
 	function configurarValidacionAutorizacion(campoId, infoId, statusId, motivo, campoBloqueadoId, limpiarSiInvalido = false) {
 		const campo = document.getElementById(campoId);
 		const info = document.getElementById(infoId);
 		const status = document.getElementById(statusId);
 		if (!campo) return;
 
-		// Función para bloquear/desbloquear el otro campo
-		function actualizarBloqueo(bloquear) {
+		// Habilitar campo (quita readonly y disabled)
+		function habilitar(elemento) {
+			if (!elemento) return;
+			elemento.removeAttribute('readonly');
+			elemento.removeAttribute('disabled');
+			elemento.disabled = false;
+			elemento.classList.remove('readonly-select');
+		}
+
+		// Bloquear/desbloquear el otro campo
+		function bloquearOtro(bloquear) {
 			if (!campoBloqueadoId) return;
 			const otro = document.getElementById(campoBloqueadoId);
-			if (otro) {
-				if (bloquear) {
-					otro.setAttribute('readonly', 'readonly');
-					otro.classList.add('readonly-select');
-				} else {
-					otro.removeAttribute('readonly');
-					otro.classList.remove('readonly-select');
-				}
+			if (!otro) return;
+			if (bloquear) {
+				otro.setAttribute('readonly', 'readonly');
+				otro.classList.add('readonly-select');
+			} else {
+				habilitar(otro);
 			}
 		}
 
-		// Limpiar estado de validación y desbloquear
+		// Limpiar estado de validación y habilitar
 		function limpiarEstado() {
 			campo.classList.remove('is-valid', 'is-invalid');
+			habilitar(campo);
 			info.innerHTML = '';
 			info.className = 'text-muted';
 			status.textContent = '⏳';
 			status.className = 'input-group-text text-muted';
-			actualizarBloqueo(false); // Desbloquear el otro campo al limpiar
+			bloquearOtro(false);
 		}
 
-		// Función principal de validación
+		// Función de validación
 		function validar() {
 			const valor = campo.value.trim();
-
-			// Si está vacío, limpiar y desbloquear
+			
+			// Si el campo está vacío, limpiar estado y salir
 			if (!valor) {
 				limpiarEstado();
 				return;
 			}
 
-			// Obtener datos necesarios para la validación (incluyendo fecha del comprobante)
-			const clienteId = document.getElementById('id_id_cliente').value;
-			const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
-			const fechaComprobante = document.getElementById('id_fecha_comprobante').value;
+			// Obtener datos del formulario
+			const clienteId = document.getElementById('id_id_cliente')?.value || '';
+			const comprobanteId = document.getElementById('id_id_comprobante_venta')?.value || '';
+			const fechaComprobante = document.getElementById('id_fecha_comprobante')?.value || '';
 
+			// Construir URL con parámetros
 			const url = new URL('/ventas/validar-autorizacion/', window.location.origin);
 			url.searchParams.append('id', valor);
 			if (clienteId) url.searchParams.append('cliente_id', clienteId);
@@ -4321,15 +4331,18 @@
 			if (motivo) url.searchParams.append('motivo', motivo);
 			if (fechaComprobante) url.searchParams.append('fecha_comprobante', fechaComprobante);
 
-			// Estado "validando..."
+			// Cambiar estado a "validando..."
 			status.textContent = '⏳';
 			status.className = 'input-group-text text-warning';
+			info.innerHTML = 'Validando...';
+			info.className = 'text-muted';
 
+			// Realizar petición
 			fetch(url)
 				.then(response => response.json())
 				.then(data => {
 					if (data.valido) {
-						// ✅ Válido: mostrar información detallada
+						// ✅ Válido: mostrar datos y bloquear el otro campo
 						const datos = data.datos;
 						info.innerHTML = `
 							✅ <strong>${datos.cliente}</strong><br>
@@ -4341,46 +4354,48 @@
 						status.className = 'input-group-text text-success';
 						campo.classList.remove('is-invalid');
 						campo.classList.add('is-valid');
-						// Bloquear el otro campo si existe
-						actualizarBloqueo(true);
+						habilitar(campo); // Asegurar que el campo actual esté habilitado
+						bloquearOtro(true); // Bloquear el otro campo
 					} else {
-						// ❌ Inválido: mostrar error y DESBLOQUEAR el otro campo
+						// ❌ Inválido: mostrar error y desbloquear
 						info.innerHTML = `❌ ${data.error}`;
 						info.className = 'text-danger';
 						status.textContent = '❌';
 						status.className = 'input-group-text text-danger';
 						campo.classList.add('is-invalid');
 						campo.classList.remove('is-valid');
-						
-						// ← NUEVO: Desbloquear el otro campo en caso de error
-						actualizarBloqueo(false);
 
-						// Si se indica limpiar en inválido, borrar el valor
+						// Desbloquear el otro campo y habilitar el actual
+						bloquearOtro(false);
+						habilitar(campo);
+
+						// 👉 Si se debe limpiar el valor (Límite o si lo deseas para todos)
 						if (limpiarSiInvalido) {
 							campo.value = '';
-							// Tras limpiar, resetear el estado a vacío
 							limpiarEstado();
-							// Mantener el mensaje de error
 							info.innerHTML = `❌ ${data.error}`;
 							info.className = 'text-danger';
 							status.textContent = '❌';
 							status.className = 'input-group-text text-danger';
-							// No bloquear
+						} else {
+							// Para Vencimiento y Nota de Crédito: no limpiar, pero enfocar para reescribir
+							campo.focus();
+							campo.select();
 						}
 					}
 				})
 				.catch(error => {
-					// ⚠️ Error de conexión: mostrar error y DESBLOQUEAR el otro campo
-					console.error('Error validando autorización:', error);
+					// ⚠️ Error de conexión
+					console.error('Error en validación:', error);
 					info.innerHTML = '⚠️ Error de conexión';
 					info.className = 'text-warning';
 					status.textContent = '⚠️';
 					status.className = 'input-group-text text-warning';
 					campo.classList.remove('is-valid', 'is-invalid');
 					
-					// ← NUEVO: Desbloquear el otro campo en caso de error de conexión
-					actualizarBloqueo(false);
-					
+					bloquearOtro(false);
+					habilitar(campo);
+
 					if (limpiarSiInvalido) {
 						campo.value = '';
 						limpiarEstado();
@@ -4388,61 +4403,90 @@
 						info.className = 'text-warning';
 						status.textContent = '⚠️';
 						status.className = 'input-group-text text-warning';
+					} else {
+						campo.focus();
+						campo.select();
 					}
 				});
 		}
 
-		// Evento blur: validar al perder el foco
+		// Eventos
 		campo.addEventListener('blur', validar);
 
-		// Evento input: cuando el usuario escribe, limpiar errores visuales
 		campo.addEventListener('input', function() {
+			// Limpiar clases de validación mientras se escribe
 			this.classList.remove('is-valid', 'is-invalid');
-			// Si el valor queda vacío, limpiar estado y desbloquear
+			habilitar(this); // Asegurar que esté habilitado
 			if (this.value.trim() === '') {
 				limpiarEstado();
 			}
 		});
 
-		// Si el campo ya tiene un valor al cargar, validarlo automáticamente
+		// Al hacer clic, asegurar que esté habilitado
+		campo.addEventListener('focus', function() {
+			habilitar(this);
+		});
+
+		// Si el campo tiene valor al cargar, validarlo automáticamente
 		if (campo.value.trim()) {
 			setTimeout(validar, 100);
 		} else {
 			limpiarEstado();
 		}
 	}
-	
-	// Configurar los tres campos al cargar la página
+
+	// =========================================================
+	// CONFIGURAR LOS TRES CAMPOS AL CARGAR LA PÁGINA
+	// =========================================================
 	document.addEventListener('DOMContentLoaded', function() {
+		// 1. Límite de crédito → siempre limpia en error, no bloquea a nadie
 		configurarValidacionAutorizacion(
 			'id_id_valida_limite_credito',
 			'info-limite',
 			'status-limite',
 			'LIMITE_CREDITO',
 			null,          // sin bloqueo
-			true           // limpiar si inválido
+			true           // ✅ limpiar si inválido
 		);
 
-		// Vencimiento → bloquea Nota de Crédito, no se limpia si inválido
+		// 2. Vencimiento → bloquea Nota de Crédito, NO limpia en error
 		configurarValidacionAutorizacion(
 			'id_id_valida_vencimiento',
 			'info-vencimiento',
 			'status-vencimiento',
 			'VENCIMIENTO',
 			'id_id_valida_nota_credito',
-			false          // no limpiar si inválido
+			false          // ❌ no limpiar si inválido
 		);
 
-		// Nota de Crédito → bloquea Vencimiento, no se limpia si inválido
+		// 3. Nota de Crédito → bloquea Vencimiento, NO limpia en error
 		configurarValidacionAutorizacion(
 			'id_id_valida_nota_credito',
 			'info-nc',
 			'status-nc',
 			'NOTA_CREDITO',
 			'id_id_valida_vencimiento',
-			false
+			false          // ❌ no limpiar si inválido
 		);
-	});	
+
+		// 👉 Forzar habilitación al abrir el modal
+		const modal = document.getElementById('autorizacionesModal');
+		if (modal) {
+			modal.addEventListener('shown.bs.modal', function() {
+				['id_id_valida_vencimiento', 'id_id_valida_nota_credito', 'id_id_valida_limite_credito'].forEach(function(id) {
+					const el = document.getElementById(id);
+					if (el) {
+						el.removeAttribute('readonly');
+						el.removeAttribute('disabled');
+						el.disabled = false;
+						el.classList.remove('readonly-select');
+					}
+				});
+			});
+		}
+	});
+	//////************
+
 	</script>
 
 {% endblock script %}

@@ -134,14 +134,14 @@ class FacturaForm(forms.ModelForm):
             "iva": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
             "percep_ib": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
             "total": forms.TextInput(attrs={**formclassnumb, 'readonly': 'readonly'}),
-            'id_valida_vencimiento': forms.NumberInput(attrs={
-                **formclassnumb, 'min': 0, 'step': 1,
+            'id_valida_vencimiento': forms.TextInput(attrs={
+                **formclasstext,
             }),
-            'id_valida_nota_credito': forms.NumberInput(attrs={
-                **formclassnumb, 'min': 0, 'step': 1,
+            'id_valida_nota_credito': forms.TextInput(attrs={
+                **formclasstext,
             }),
-            'id_valida_limite_credito': forms.NumberInput(attrs={
-                **formclassnumb, 'min': 0, 'step': 1,
+            'id_valida_limite_credito': forms.TextInput(attrs={
+                **formclasstext,
             }),
             
         }

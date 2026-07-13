@@ -75,6 +75,11 @@ class MenuItem(models.Model):
 		blank=True,
 		default=0
 	)
+	orden_acceso_directo = models.IntegerField(
+		verbose_name="Orden de Acceso Directo",
+		blank=True,
+		default=0
+	)
 	groups = models.ManyToManyField(
 		Group,
 		verbose_name="Grupos permitidos",
