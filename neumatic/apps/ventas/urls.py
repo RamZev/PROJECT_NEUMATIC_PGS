@@ -69,6 +69,7 @@ from .views.consultas_factura_views import (
 	buscar_factura,
     validar_limite_credito,  # ← NUEVA IMPORTACIÓN
     validar_autorizacion,
+    anular_remito,
 )
 from .views.consultas_compra_views import (
 	obtener_numero_compra,
@@ -173,4 +174,6 @@ urlpatterns = [
 	path('obtener-alicuota-proveedor/', obtener_alicuota_proveedor, name='obtener_alicuota_proveedor'),
 	
 	path('validar-autorizacion/', validar_autorizacion, name='validar_autorizacion'),
+    
+	path('remito/anular/<int:pk>/', anular_remito, name='remito_anular'),
 ]

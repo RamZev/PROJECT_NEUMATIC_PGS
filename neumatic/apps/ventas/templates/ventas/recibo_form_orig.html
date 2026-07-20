@@ -463,6 +463,16 @@
                                         {% comment %} <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Resto a Acreditar</strong>
+                                    </label>
+                                    <div>
+                                        <input type="text" id="id_resto_acreditar" class="form-control form-control-sm text-end" 
+                                            value="0.00" readonly style="background-color: #fff3cd; font-weight: bold;">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row my-1">
@@ -2142,26 +2152,23 @@
                         const montoCobradoInput = row.querySelector('input[name$="-monto_cobrado"]');
                         const montoCobrado = parseFloat(montoCobradoInput.value) || 0;
 
-                        if (montoCobrado <= 0) {
-                            row.remove(); // Elimina la fila del DOM
-                        } else {
-                            // Actualiza los índices de los inputs para mantenerlos consecutivos
-                            const index = validRows;
-                            row.setAttribute('data-form-index', index);
-                            row.querySelectorAll('input, select').forEach(input => {
-                                if (input.getAttribute('name')) {
-                                    const oldName = input.getAttribute('name');
-                                    const newName = oldName.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
-                                    input.setAttribute('name', newName);
-                                }
-                                if (input.getAttribute('id')) {
-                                    const oldId = input.getAttribute('id');
-                                    const newId = oldId.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
-                                    input.setAttribute('id', newId);
-                                }
-                            });
-                            validRows++;
-                        }
+                        // Actualiza los índices de los inputs para mantenerlos consecutivos
+                        const index = validRows;
+                        row.setAttribute('data-form-index', index);
+                        row.querySelectorAll('input, select').forEach(input => {
+                            if (input.getAttribute('name')) {
+                                const oldName = input.getAttribute('name');
+                                const newName = oldName.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
+                                input.setAttribute('name', newName);
+                            }
+                            if (input.getAttribute('id')) {
+                                const oldId = input.getAttribute('id');
+                                const newId = oldId.replace(/detallerecibo_set-\d+-/, `detallerecibo_set-${index}-`);
+                                input.setAttribute('id', newId);
+                            }
+                        });
+                        validRows++;
+                        
                     });
 
                     // Actualiza TOTAL_FORMS
@@ -2399,6 +2406,33 @@
                 console.log('DEBUG: Modo creación - botones habilitados');
             }
             ///
+
+            ////
+            // Autocompletar monto cobrado con el saldo al hacer doble clic
+            const formsetContainer2 = document.getElementById('formset-container2');
+            if (formsetContainer2) {
+                formsetContainer2.addEventListener('dblclick', function(e) {
+                    const target = e.target;
+                    // Verificar que el clic sea sobre un input de monto_cobrado (columna Pagos)
+                    if (target.matches('[name*="-monto_cobrado"]')) {
+                        const row = target.closest('tr');
+                        if (row) {
+                            const saldoInput = row.querySelector('[name*="-saldo"]');
+                            if (saldoInput) {
+                                // Copiar el valor del saldo al input de monto_cobrado
+                                target.value = saldoInput.value;
+                                // Disparar evento 'input' para activar validaciones y actualizaciones
+                                target.dispatchEvent(new Event('input', { bubbles: true }));
+                                // Actualizar todos los totales (ya existe la función)
+                                if (typeof actualizarTodo === 'function') {
+                                    actualizarTodo();
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            ////
 
         });
     </script>

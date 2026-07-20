@@ -291,6 +291,16 @@ class ReciboCreateView(MaestroDetalleCreateView):
 				print('total_cobrado:', total_cobrado)
 				form.instance.entrega = total_cobrado
 				
+				# ===== NUEVO: Ajuste de anticipos =====
+				total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
+				if total_cobrado < 0:
+					# El primer formset es el de detalles de recibo
+					formset_recibo = formsets[0]
+					self._ajustar_anticipos(formset_recibo)
+					# Después del ajuste, el neto es 0
+					form.instance.entrega = 0
+				# ===== FIN NUEVO =====				
+				
 				# 8. Guardar el formulario principal
 				self.object = form.save()
 				
@@ -357,6 +367,87 @@ class ReciboCreateView(MaestroDetalleCreateView):
 			messages.error(self.request, f"Error inesperado: {str(e)}")
 			return self.form_invalid(form)
 
+
+	def _ajustar_anticipos(self, formset_recibo):
+		"""
+		Ajusta los montos de los anticipos (mult_saldo = -1) para que el neto sea 0.
+		Prioridad: montos idénticos primero, luego fecha (más antiguo conserva, más reciente se recorta).
+		Retorna el nuevo neto ajustado (siempre 0).
+		"""
+		from decimal import Decimal
+		from django import forms  # si no está importado al inicio
+
+		# 1. Recopilar datos de cada línea del detalle
+		lineas = []
+		for form in formset_recibo.forms:
+			if form.cleaned_data.get('DELETE', False):
+				continue
+			monto = form.cleaned_data.get('monto_cobrado', Decimal('0.00'))
+			if monto == 0:
+				continue
+			factura_cobrada = form.cleaned_data.get('id_factura_cobrada')
+			if not factura_cobrada:
+				continue
+			mult_saldo = factura_cobrada.id_comprobante_venta.mult_saldo if factura_cobrada.id_comprobante_venta else 0
+			fecha = factura_cobrada.fecha_comprobante
+			lineas.append({
+				'form': form,
+				'monto': monto,
+				'mult_saldo': mult_saldo,
+				'fecha': fecha,
+				'id_factura_cobrada': factura_cobrada.id_factura,
+				'es_anticipo': mult_saldo == -1,
+			})
+
+		# 2. Separar facturas y anticipos
+		facturas = [l for l in lineas if l['mult_saldo'] == 1]
+		anticipos = [l for l in lineas if l['mult_saldo'] == -1]
+
+		total_facturas = sum(l['monto'] for l in facturas)
+		total_anticipos = sum(l['monto'] for l in anticipos)
+
+		# Si no hay excedente, no hacer nada
+		if total_anticipos <= total_facturas:
+			return
+
+		excedente = total_anticipos - total_facturas
+
+		# 3. Aplicar reglas de prioridad
+		# a) Identificar anticipos con montos idénticos a alguna factura
+		montos_facturas = set(l['monto'] for l in facturas)
+		anticipos_prioritarios = []
+		anticipos_restantes = []
+
+		for a in anticipos:
+			if a['monto'] in montos_facturas:
+				anticipos_prioritarios.append(a)
+			else:
+				anticipos_restantes.append(a)
+
+		# Los anticipos prioritarios no se tocan (se conservan completos)
+		# Ordenar los restantes por fecha (más antiguos primero)
+		anticipos_restantes.sort(key=lambda x: x['fecha'])
+
+		# b) Recortar desde el más reciente (último en la lista) hasta eliminar el excedente
+		for a in reversed(anticipos_restantes):
+			if excedente <= 0:
+				break
+			monto_actual = a['monto']
+			if monto_actual <= excedente:
+				nuevo_monto = 0
+				excedente -= monto_actual
+			else:
+				nuevo_monto = monto_actual - excedente
+				excedente = 0
+			# Actualizar el monto en el formulario y en la instancia
+			a['form'].cleaned_data['monto_cobrado'] = nuevo_monto
+			a['form'].instance.monto_cobrado = nuevo_monto
+
+		# Si aún queda excedente, lanzar error (no debería ocurrir)
+		if excedente > 0:
+			raise forms.ValidationError("No se pudo ajustar el excedente de anticipos.")
+
+	
 	def _get_context_with_preserved_data(self, form):
 		"""Obtener contexto con datos del formulario preservados"""
 		context = self.get_context_data()

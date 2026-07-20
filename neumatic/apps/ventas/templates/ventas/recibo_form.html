@@ -463,6 +463,16 @@
                                         {% comment %} <span class="formatted-number">{{ form.resto_cobrar.value|default:"0.00" }}</span> {% endcomment %}
                                     </div>
                                 </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label mb-0 text-primary">
+                                        <strong>Resto a Acreditar</strong>
+                                    </label>
+                                    <div>
+                                        <input type="text" id="id_resto_acreditar" class="form-control form-control-sm text-end" 
+                                            value="0.00" readonly style="background-color: #fff3cd; font-weight: bold;">
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="row my-1">
@@ -1198,7 +1208,6 @@
                 let totalCobrado = 0;
                 const rows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
                 
-                // Salir si no hay filas o si no se encuentra el campo monto_cobrado
                 if (rows.length === 0) {
                     document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
                     actualizarVisualizacion('id_total_cobrado');
@@ -1206,17 +1215,18 @@
                 }
 
                 rows.forEach(row => {
-                    const montoCobradoInput = row.querySelector('[name*="-monto_cobrado"]');
-                    if (montoCobradoInput) {
-                        const montoCobrado = parseNumber(montoCobradoInput.value);
-                        totalCobrado += montoCobrado;
+                    const montoInput = row.querySelector('[name*="-monto_cobrado"]');
+                    if (montoInput) {
+                        const monto = parseNumber(montoInput.value);
+                        // Obtener mult_saldo del atributo data-mult-saldo
+                        const multSaldo = parseInt(row.dataset.multSaldo) || 1; // por defecto 1
+                        totalCobrado += monto * multSaldo;
                     }
                 });
                 
                 document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
                 actualizarVisualizacion('id_total_cobrado');
             }
-
             ///
             function actualizarTotalRetenciones() {
                 let totalRetenciones = 0;
@@ -1482,18 +1492,21 @@
             }
             
             // Actualizar facturas pendientes
+            //////////
             window.updateFacturasPendientes = function(facturas) {
-                if (isEdit) return; // No agregar filas en modo edición
+                if (isEdit) return;
                 const tbody = formsetContainer.querySelector('.detalle-form tbody');
-                tbody.innerHTML = ''; // Limpiar tabla
+                tbody.innerHTML = '';
                 const formControlClass = 'form-control form-control-sm border border-primary small-font';
                 const readonlyClass = 'readonly-select';
                 const montoCobradoClass = 'form-control form-control-sm border border-primary text-end';
 
                 facturas.forEach((factura, index) => {
                     const saldo = parseNumber(factura.monto_pendiente);
+                    const multSaldo = factura.mult_saldo !== undefined ? factura.mult_saldo : 1;
+
                     const newFormHTML = `
-                        <tr data-form-index="${index}" class="small-font">
+                        <tr data-form-index="${index}" data-mult-saldo="${multSaldo}" class="small-font">
                             <td>
                                 <input type="hidden" name="detallerecibo_set-${index}-id_detalle_recibo">
                                 <input type="hidden" name="detallerecibo_set-${index}-id_factura">
@@ -1534,10 +1547,8 @@
 
                 document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = facturas.length;
                 actualizarTodo();
-
-                
-            }
-
+            };
+            //////////
             // Manejar cambios en monto_cobrado
             formsetContainer.addEventListener('input', function (event) {
                 if (event.target.matches('[name*="-monto_cobrado"]')) {
@@ -2065,6 +2076,7 @@
                         { id: 'id_total', label: 'Importe' }
                     ];
 
+                    ///////////////
                     requiredFields.forEach(field => {
                         const input = document.getElementById(field.id);
                         if (!input || !input.value.trim()) {
@@ -2073,18 +2085,19 @@
                             if (input) input.classList.add('is-invalid');
                         } else {
                             if (input) input.classList.remove('is-invalid');
-                            // Validación específica para id_total > 0
+                            // Validación específica para id_total (permite 0)
                             if (field.id === 'id_total') {
-                                const importeInput2 = input; // Reusar el input para respetar tu definición
+                                const importeInput2 = input;
                                 const importe = parseFloat(importeInput2.value);
-                                if (isNaN(importe) || importe <= 0) {
+                                if (isNaN(importe) || importe < 0) {
                                     isValid = false;
-                                    errorMessages.push('El Importe debe ser mayor a 0.');
+                                    errorMessages.push('El Importe no puede ser negativo.');
                                     importeInput2.classList.add('is-invalid');
                                 }
                             }
                         }
                     });
+                    ///////////////
 
                     // Validar CUIT (formato: 11 dígitos numéricos)
                     /* 
@@ -2098,7 +2111,8 @@
                     }
                     */
 
-                    // Paso 2: Validar totales
+                    ////////////////
+                    // Paso 2: Validar totales (nueva lógica)
                     const totalFormasPagoInput = document.getElementById('id_total_formas_pago');
                     const importeInput = document.getElementById('id_total');
                     const totalCobradoInput = document.getElementById('id_total_cobrado');
@@ -2107,25 +2121,38 @@
                     const importe = importeInput ? parseFloat(importeInput.value) || 0 : 0;
                     const totalCobrado = totalCobradoInput ? parseFloat(totalCobradoInput.value) || 0 : 0;
 
-                    // Regla 1.2: Total Formas de Pago = Total Cobrado
-                    if (totalFormasPago !== totalCobrado) {
-                        isValid = false;
-                        errorMessages.push('El Total de Formas de Pago debe ser igual al Total Cobrado.');
-                        if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
-                        if (totalCobradoInput) totalCobradoInput.classList.add('is-invalid');
+                    // 1. Si Total Cobrado es NEGATIVO, permitimos el envío (backend ajustará)
+                    // 2. Si Total Cobrado >= 0, entonces:
+                    //    - Total Formas de Pago debe ser >= Total Cobrado.
+                    //    - Importe debe ser igual a Total Formas de Pago.
+                    if (totalCobrado < 0) {
+                        // No se agrega error, se permite el envío.
+                        // (opcional) se puede mostrar un mensaje informativo no bloqueante.
+                        console.log("Total Cobrado negativo: será ajustado por el backend.");
                     } else {
-                        if (totalFormasPagoInput) totalFormasPagoInput.classList.remove('is-invalid');
-                        if (totalCobradoInput) totalCobradoInput.classList.remove('is-invalid');
+                        // Solo cuando totalCobrado >= 0
+                        if (totalFormasPago < totalCobrado) {
+                            isValid = false;
+                            errorMessages.push('El Total de Formas de Pago debe ser al menos el Total Cobrado.');
+                            if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
+                            if (totalCobradoInput) totalCobradoInput.classList.add('is-invalid');
+                        } else {
+                            if (totalFormasPagoInput) totalFormasPagoInput.classList.remove('is-invalid');
+                            if (totalCobradoInput) totalCobradoInput.classList.remove('is-invalid');
+                        }
                     }
 
-                    // Regla 1.3: Si > 0, deben ser iguales al Importe
-                    if (totalFormasPago > 0 && totalCobrado > 0 && (totalFormasPago !== importe || totalCobrado !== importe)) {
+                    // Regla 3: Importe debe ser igual a Total Formas de Pago (siempre)
+                    if (importe !== totalFormasPago) {
                         isValid = false;
-                        errorMessages.push('El Total de Formas de Pago y el Total Cobrado deben ser iguales al Importe cuando son mayores a cero.');
-                        if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
-                        if (totalCobradoInput) totalCobradoInput.classList.add('is-invalid');
+                        errorMessages.push('El Importe debe ser igual al Total de Formas de Pago.');
                         if (importeInput) importeInput.classList.add('is-invalid');
+                        if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
+                    } else {
+                        if (importeInput) importeInput.classList.remove('is-invalid');
+                        if (totalFormasPagoInput) totalFormasPagoInput.classList.remove('is-invalid');
                     }
+                    ////////////////
 
                     // Mostrar errores si los hay y detener el procesamiento
                     if (!isValid) {
@@ -2396,6 +2423,33 @@
                 console.log('DEBUG: Modo creación - botones habilitados');
             }
             ///
+
+            ////
+            // Autocompletar monto cobrado con el saldo al hacer doble clic
+            const formsetContainer2 = document.getElementById('formset-container2');
+            if (formsetContainer2) {
+                formsetContainer2.addEventListener('dblclick', function(e) {
+                    const target = e.target;
+                    // Verificar que el clic sea sobre un input de monto_cobrado (columna Pagos)
+                    if (target.matches('[name*="-monto_cobrado"]')) {
+                        const row = target.closest('tr');
+                        if (row) {
+                            const saldoInput = row.querySelector('[name*="-saldo"]');
+                            if (saldoInput) {
+                                // Copiar el valor del saldo al input de monto_cobrado
+                                target.value = saldoInput.value;
+                                // Disparar evento 'input' para activar validaciones y actualizaciones
+                                target.dispatchEvent(new Event('input', { bubbles: true }));
+                                // Actualizar todos los totales (ya existe la función)
+                                if (typeof actualizarTodo === 'function') {
+                                    actualizarTodo();
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+            ////
 
         });
     </script>

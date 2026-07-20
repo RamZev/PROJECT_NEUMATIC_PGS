@@ -23,7 +23,8 @@ class MenuItemForm(forms.ModelForm):
         model = MenuItem
         fields = [
             'heading', 'parent', 'name', 'url_name', 
-            'query_params', 'icon', 'is_collapse', 'order', 'groups'
+            'query_params', 'icon', 'is_collapse', 'order', 
+            'orden_acceso_directo', 'groups'
         ]
         widgets = {
             'heading': forms.Select(attrs={'class': 'form-control'}),
@@ -35,6 +36,7 @@ class MenuItemForm(forms.ModelForm):
             'is_collapse': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'order': forms.NumberInput(attrs={'class': 'form-control'}),
             # CheckboxSelectMultiple SIN attrs conflictivos
+            'orden_acceso_directo': forms.NumberInput(attrs={'class': 'form-control'}),
             'groups': forms.CheckboxSelectMultiple(),
         }
     

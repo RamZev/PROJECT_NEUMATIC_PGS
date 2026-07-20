@@ -501,19 +501,32 @@
 						</div>
 
 						<div class="container my-3">
-							<div class="d-flex justify-content-end align-items-center">
-								<!-- Nuevo botón para agregar serial -->
-								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
-									Agregar Seriales
-									<i class="bi bi-upc-scan"></i>
-								</button>
+							<div class="d-flex align-items-center">
+								<!-- Botón Anular a la izquierda -->
+								<div class="me-auto">
+									{% if is_edit and object.id_comprobante_venta.remito and object.estatus_comprobante and object.estado != 'F' %}
+										<button type="button" class="btn btn-danger btn-sm" 
+												id="btnAnularRemito" 
+												data-url="{% url 'remito_anular' object.pk %}">
+											Anular <i class="bi bi-x-circle"></i>
+										</button>
+									{% endif %}
+								</div>
 
-								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
-									Agregar Detalle
-									<i class="bi bi-file-earmark-plus"></i>
-								</button>
+								<!-- Botones a la derecha -->
+								<div>
+									<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
+										Agregar Seriales
+										<i class="bi bi-upc-scan"></i>
+									</button>
+									<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
+										Agregar Detalle
+										<i class="bi bi-file-earmark-plus"></i>
+									</button>
+								</div>
 							</div>
 						</div>
+
 						
 						<div class="accordion-item">
 							<h2 class="accordion-header">
@@ -2704,6 +2717,7 @@
 					return false;
 				}
 				
+				
 				/////////////////////////--->
 				// Evitar envío hasta obtener estados
 				// e.preventDefault();
@@ -4487,6 +4501,58 @@
 	});
 	//////************
 
+	</script>
+
+	<script>
+	// =========================================================
+	// ANULAR REMITO (con fetch y redirección)
+	// =========================================================
+	document.addEventListener('DOMContentLoaded', function() {
+		const btnAnular = document.getElementById('btnAnularRemito');
+		if (btnAnular) {
+			btnAnular.addEventListener('click', function(e) {
+				e.preventDefault();
+				
+				// Confirmación
+				if (!confirm('¿Está seguro de anular este remito? Se revertirán stock y movimientos de caja.')) {
+					return;
+				}
+				
+				const url = this.dataset.url;
+				
+				// Petición POST con fetch
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': getCookie('csrftoken'),
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({}) // sin datos adicionales
+				})
+				.then(response => {
+					if (response.ok) {
+						return response.json();
+					} else {
+						return response.json().then(data => {
+							throw new Error(data.error || 'Error al anular el remito');
+						});
+					}
+				})
+				.then(data => {
+					if (data.success) {
+						alert(data.message || 'Remito anulado correctamente');
+						// Redirigir a la lista de facturas
+						window.location.href = "{% url 'factura_list' %}";
+					} else {
+						alert(data.error || 'Error al anular');
+					}
+				})
+				.catch(error => {
+					alert('Error: ' + error.message);
+				});
+			});
+		}
+	});			
 	</script>
 
 {% endblock script %}

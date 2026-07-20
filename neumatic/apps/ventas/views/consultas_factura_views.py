@@ -7,12 +7,16 @@ import json
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.db.models import Q, F
-from django.shortcuts import get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.decorators.http import require_POST, require_GET
+from django.db import transaction
+from django.contrib import messages
+from django.utils import timezone
 
 from utils.saldo_cliente import obtener_saldo_cliente
 from apps.maestros.models.cliente_models import Cliente
+from apps.ventas.models.caja_models import CajaDetalle
 
 from apps.maestros.models.base_models import (
 	ProductoStock,
@@ -20,7 +24,7 @@ from apps.maestros.models.base_models import (
 	ComprobanteVenta,
 	Banco
 )
-from apps.ventas.models.factura_models import Factura, DetalleFactura
+from apps.ventas.models.factura_models import Factura, DetalleFactura, SerialFactura
 from apps.maestros.models.producto_models import Producto
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.base_models import ComprobanteVenta
@@ -647,7 +651,8 @@ def validar_deudas_cliente(request, cliente_id):
 		'fecha_comprobante',
 		'total',
 		'entrega',
-		'id_comprobante_venta__nombre_comprobante_venta'
+		'id_comprobante_venta__nombre_comprobante_venta',
+		'id_comprobante_venta__mult_saldo'
 	)
 
 	resultados = []
@@ -661,6 +666,7 @@ def validar_deudas_cliente(request, cliente_id):
 			'total': float(factura['total']),
 			'entrega': float(factura['entrega']),
 			'monto_pendiente': float(factura['total'] - factura['entrega']),
+			'mult_saldo': factura['id_comprobante_venta__mult_saldo']
 		}
 		resultados.append(factura_dict)
 
@@ -1191,3 +1197,74 @@ def validar_autorizacion(request):
             'comprobante': autorizacion.id_comprobante_venta.nombre_comprobante_venta if autorizacion.id_comprobante_venta else 'N/A'
         }
     })
+
+
+@login_required
+@permission_required('ventas.delete_factura', raise_exception=True)
+def anular_remito(request, pk):
+    """
+    Elimina físicamente un remito (con sus detalles y seriales) después de:
+    - Revertir stock y caja.
+    - Verificar que no haya otras facturas que dependan de este remito.
+    Retorna JSON para ser consumido por fetch.
+    """
+    remito = get_object_or_404(Factura, pk=pk)
+
+    # ========== VALIDACIONES PREVIAS ==========
+    if not remito.id_comprobante_venta.remito:
+        return JsonResponse({'success': False, 'error': 'El documento no es un remito.'}, status=400)
+
+    if remito.estado == 'F':
+        return JsonResponse({'success': False, 'error': 'No se puede eliminar un remito ya facturado.'}, status=400)
+
+    # ========== VERIFICAR INTEGRIDAD REFERENCIAL ==========
+    # Buscar si alguna factura utiliza este remito como comprobante asociado
+    dependencias = Factura.objects.filter(
+        comprobante_remito=remito.compro,
+        remito=str(remito.numero_comprobante)
+    ).exists()
+
+    # También buscar si alguna factura tiene este remito como id_comprobante_asociado
+    dependencias_asociado = Factura.objects.filter(
+        id_comprobante_asociado=remito.id_factura
+    ).exists()
+
+    if dependencias or dependencias_asociado:
+        return JsonResponse({
+            'success': False,
+            'error': 'No se puede eliminar el remito porque existen facturas que lo referencian.'
+        }, status=400)
+
+    # ========== ELIMINACIÓN ==========
+    try:
+        with transaction.atomic():
+            # 1. Revertir STOCK
+            if remito.id_comprobante_venta.mult_stock != 0:
+                detalles = DetalleFactura.objects.filter(id_factura=remito)
+                for detalle in detalles:
+                    producto_stock = ProductoStock.objects.select_for_update().filter(
+                        id_producto=detalle.id_producto,
+                        id_deposito=remito.id_deposito
+                    )
+                    for ps in producto_stock:
+                        ps.stock += detalle.cantidad * remito.id_comprobante_venta.mult_stock * -1
+                        ps.save()
+
+            # 2. Revertir CAJA
+            if remito.id_comprobante_venta.mult_caja != 0:
+                CajaDetalle.objects.filter(
+                    idventas=remito.id_factura,
+                    tipo_movimiento=1
+                ).delete()
+
+            # 3. Eliminar SERIALES y DETALLES (en cascada)
+            SerialFactura.objects.filter(id_factura=remito).delete()
+            DetalleFactura.objects.filter(id_factura=remito).delete()
+
+            # 4. Eliminar la FACTURA (borrado físico)
+            remito.delete()  # Esto elimina el registro de Factura
+
+            return JsonResponse({'success': True, 'message': 'Remito eliminado correctamente.'})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

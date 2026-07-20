@@ -30,6 +30,8 @@ from entorno.constantes_base import TIPO_VENTA
 
 from services.fe_arca import FacturadorARCA
 
+TIPOS_CON_ASOCIACION = {2, 3, 7, 8}
+
 modelo = Factura
 
 #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
@@ -685,7 +687,8 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						# =========================================================
 						
 
-						if cbte_tipo_nc in [2, 3]:  # Nota de Crédito (3) o Nota de Débito (2)
+						# if cbte_tipo_nc in [2, 3]:  # Nota de Crédito (3) o Nota de Débito (2)
+						if cbte_tipo_nc in TIPOS_CON_ASOCIACION:
 							id_comprobante_asociado = form.cleaned_data.get('id_comprobante_asociado')
 							
 							if id_comprobante_asociado:
@@ -925,7 +928,12 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# Condición de Venta
 				condicion_comprobante = form.cleaned_data['condicion_comprobante']
 				comprobante_venta_obj = form.cleaned_data['id_comprobante_venta']
-				if condicion_comprobante == 1 and not comprobante_venta_obj.remito:
+				# if condicion_comprobante == 1 and not comprobante_venta_obj.remito:
+				if (
+					condicion_comprobante == 1 and 
+					not comprobante_venta_obj.remito and
+					comprobante_venta_obj.mult_venta >= 0   # ← NUEVO (excluye NC con mult_venta = -1)
+				):
 					# Venta de contado
 					form.instance.entrega = form.instance.total  # Asignar el total a entrega
 					form.instance.estado = "C"  # Marcar como cobrado ("C")
@@ -963,19 +971,19 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						documento_asociado = Factura.objects.select_for_update().get(id_factura=id_comprobante_asociado)
 						
 						# 2. Sumar el total de la NC al campo entrega del documento asociado
-						nuevo_entrega = documento_asociado.entrega + form.instance.total
-						actualizaciones = {'entrega': nuevo_entrega}
+						# nuevo_entrega = documento_asociado.entrega + form.instance.total
+						# actualizaciones = {'entrega': nuevo_entrega}
 						
 						# 3. Verificar si se completó el pago
-						if nuevo_entrega >= documento_asociado.total:
-							actualizaciones['estado'] = 'C'  # Marcamos como cobrado
+						# if nuevo_entrega >= documento_asociado.total:
+						# 	actualizaciones['estado'] = 'C'  # Marcamos como cobrado
 						
 						# 4. Actualizar el documento asociado
-						Factura.objects.filter(id_factura=id_comprobante_asociado).update(**actualizaciones)
+						# Factura.objects.filter(id_factura=id_comprobante_asociado).update(**actualizaciones)
 						
 						# 5. Cerrar la Nota de Crédito
-						form.instance.entrega = form.instance.total  # Asignar el total a entrega
-						form.instance.estado = "C"  # Marcar como cobrado ("C")
+						# form.instance.entrega = form.instance.total  # Asignar el total a entrega
+						# form.instance.estado = "C"  # Marcar como cobrado ("C")
 						
 					except Factura.DoesNotExist:
 						form.add_error('id_comprobante_asociado', 'El documento asociado no existe')
@@ -1032,7 +1040,8 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				# =========================================================
 				# REGISTRAR EN CAJA DETALLE PARA VENTA DE CONTADO (DESPUÉS DE GUARDAR)
 				# =========================================================
-				if condicion_comprobante == 1:
+				# if condicion_comprobante == 1:
+				if condicion_comprobante == 1 and not form.cleaned_data.get('no_estadist', False):
 					try:
 						usuario = self.request.user
 						fecha_comprobante = form.cleaned_data['fecha_comprobante']
@@ -1331,7 +1340,8 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		# =========================================================
 		cbte_tipo = int(comprobante.get('cbte_tipo', '0'))
 
-		if cbte_tipo in [2, 3] and comprobante_asociado:
+		# if cbte_tipo in [2, 3] and comprobante_asociado:
+		if cbte_tipo in TIPOS_CON_ASOCIACION and comprobante_asociado:
 			# Primero crear CbtesAsoc
 			cbtes_asoc_node = SubElement(det, "CbtesAsoc")
 			# Luego crear CbteAsoc dentro de CbtesAsoc
