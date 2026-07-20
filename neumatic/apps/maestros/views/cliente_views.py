@@ -1,9 +1,11 @@
 # neumatic\apps\maestros\views\cliente_views.py
 from django.urls import reverse_lazy
+from django.contrib import messages
+from django.shortcuts import redirect
+
 from ..views.cruds_views_generics import *
 from ..models.cliente_models import Cliente
 from ..forms.cliente_forms import ClienteForm
-from django.utils import timezone
 
 
 class ConfigViews():
@@ -142,6 +144,12 @@ class ClienteUpdateView(MaestroUpdateView):
 		'sub_cuenta', 
 		'limite_credito'
 	]
+	
+	def dispatch(self, request, *args, **kwargs):
+		if request.user.jerarquia == "Z" and not request.user.is_superuser:
+			messages.error(request, "No tienes permiso para modificar clientes.")
+			return redirect(self.success_url)
+		return super().dispatch(request, *args, **kwargs)
 	
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()

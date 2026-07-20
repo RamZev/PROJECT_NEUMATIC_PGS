@@ -1,5 +1,6 @@
 # neumatic\apps\maestros\views\numero_views.py
 from django.urls import reverse_lazy
+
 from ..views.cruds_views_generics import *
 from ..models.numero_models import Numero
 from ..forms.numero_forms import NumeroForm
@@ -54,7 +55,8 @@ class ConfigViews():
 class DataViewList():
 	search_fields = [
 		'comprobante',
-		'id_punto_venta__punto_venta'
+		'id_punto_venta__punto_venta',
+		'id_sucursal__nombre_sucursal'
 	]
 	
 	ordering = [
@@ -103,6 +105,29 @@ class NumeroListView(MaestroListView):
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
 	}
+	
+	#-- NUEVO MÉTODO AÑADIDO.
+	def get_queryset(self):
+		#-- Obtener el queryset base (ya incluye todo).
+		queryset = super().get_queryset()
+
+		#-- Obtener el usuario actual.
+		user = self.request.user
+
+		#-- Si el usuario NO es superusuario Y NO tiene jerarquía "A", filtrar por sucursal.
+		if not (user.is_superuser or user.jerarquia == "A"):
+			queryset = queryset.filter(id_sucursal=user.id_sucursal)
+
+		#-- Aplicar búsqueda (tal como está en FacturaListView).
+		query = self.request.GET.get('busqueda', None)
+		if query:
+			search_conditions = Q()
+			for field in self.search_fields:
+				search_conditions |= Q(**{f"{field}__icontains": query})
+			queryset = queryset.filter(search_conditions)
+
+		#-- Aplicar ordenamiento.
+		return queryset.order_by(*self.ordering)
 
 
 class NumeroCreateView(MaestroCreateView):

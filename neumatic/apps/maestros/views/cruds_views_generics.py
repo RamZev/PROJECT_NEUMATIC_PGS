@@ -13,10 +13,8 @@ from django.contrib.auth.decorators import login_required
 
 #-- Recursos necesarios para los permisos de usuarios sobre modelos.
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils import timezone
-import inspect
 
 
 # -- Vistas Genéricas Basada en Clases -----------------------------------------------
@@ -112,16 +110,16 @@ class AuditoriaMixin:
 	def form_valid(self, form):
 		user = self.request.user
 		
-		if not form.instance.pk:  # CREACIÓN
-			# Guardar usuario creador
+		if not form.instance.pk:  #-- CREACIÓN.
+			#-- Guardar usuario creador.
 			form.instance.id_user = user
 			form.instance.usuario = user.username
-			# id_user_update se queda NULL automáticamente
+			#-- id_user_update se queda NULL automáticamente.
 			
-		else:  # ACTUALIZACIÓN
-			# Guardar usuario modificador
+		else:  #-- ACTUALIZACIÓN.
+			#-- Guardar usuario modificador.
 			form.instance.id_user_update = user
-			# Opcional: si quieres mantener el nombre del último que modificó
+			#-- Opcional: si quieres mantener el nombre del último que modificó.
 			# form.instance.usuario = user.username
 			
 		return super().form_valid(form)
@@ -134,23 +132,23 @@ class MaestroCreateView(AuditoriaMixin, PermissionRequiredMixin, CreateView):
 	def form_valid(self, form):
 		user = self.request.user
 		
-		if not form.instance.pk:  # CREACIÓN
+		if not form.instance.pk:  #-- CREACIÓN.
 			form.instance.id_user = user
 			form.instance.usuario = user.username
-		else:  # ACTUALIZACIÓN
+		else:  #-- ACTUALIZACIÓN.
 			form.instance.id_user_update = user
 		
 		try:
 			with transaction.atomic():
 				response = super().form_valid(form)
-				# Mensaje de éxito
+				#-- Mensaje de éxito.
 				messages.success(
 					self.request, 
 					f'✅ {self.model._meta.verbose_name} creado correctamente.'
 				)
 				return response
 		except Exception as e:
-			# Mensaje de error
+			#-- Mensaje de error.
 			messages.error(self.request, f'❌ Error al guardar: {str(e)}')
 			return redirect(self.list_view_name or 'home')
 	
@@ -185,23 +183,23 @@ class MaestroUpdateView(AuditoriaMixin, PermissionRequiredMixin, UpdateView):
 	def form_valid(self, form):
 		user = self.request.user
 		
-		if not form.instance.pk:  # CREACIÓN
+		if not form.instance.pk:  #-- CREACIÓN.
 			form.instance.id_user = user
 			form.instance.usuario = user.username
-		else:  # ACTUALIZACIÓN
+		else:  #-- ACTUALIZACIÓN.
 			form.instance.id_user_update = user
 		
 		try:
 			with transaction.atomic():
 				response = super().form_valid(form)
-				# Mensaje de éxito
+				#-- Mensaje de éxito.
 				messages.success(
 					self.request, 
 					f'✅ {self.model._meta.verbose_name} actualizado correctamente.'
 				)
 				return response
 		except Exception as e:
-			# Mensaje de error
+			#-- Mensaje de error.
 			messages.error(self.request, f'❌ Error al actualizar: {str(e)}')
 			return redirect(self.list_view_name or 'home')
 	
@@ -241,7 +239,7 @@ class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 			messages.error(request, 'No se puede eliminar el registro ya que está relacionado con otros.')
 			return redirect(self.success_url)
 		except IntegrityError as e:
-			# Capturar errores de integridad (PK duplicada en cascada, etc.)
+			#-- Capturar errores de integridad (PK duplicada en cascada, etc.).
 			messages.error(request, f'Error de integridad al eliminar: {str(e)}')
 			return redirect(self.success_url)
 		except Exception as e:
