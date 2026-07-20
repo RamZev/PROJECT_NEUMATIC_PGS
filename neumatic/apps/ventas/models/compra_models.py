@@ -11,6 +11,7 @@ from apps.maestros.models.base_models import (ComprobanteCompra,
 from apps.maestros.models.sucursal_models import Sucursal
 from apps.maestros.models.proveedor_models import Proveedor
 from apps.maestros.models.producto_models import Producto
+from apps.ventas.models.factura_models import Factura
 
 
 class Compra(ModeloBaseGenerico):
@@ -67,6 +68,14 @@ class Compra(ModeloBaseGenerico):
 		null=True,
 		blank=True
 	)
+	id_factura_origen = models.ForeignKey(
+        Factura,
+        on_delete=models.PROTECT,
+        verbose_name="Remito Origen",
+        null=True,
+        blank=True,
+        related_name='Remito_origen'
+    )
 	fecha_registro = models.DateField(
 		verbose_name="Fecha Registro",
 		null=True,
