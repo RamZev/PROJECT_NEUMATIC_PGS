@@ -4139,6 +4139,9 @@
 	</script>
 	
 	<script>
+		// ========================= //
+		// CONTROL DE LA TECLA ENTER //
+		// ========================= //
 		document.addEventListener('DOMContentLoaded', function() {
 			// Seleccionar todos los inputs editables (excluyendo hidden, buttons y submits)
 			const inputs = document.querySelectorAll(`
@@ -4273,6 +4276,58 @@
 					}
 				}
 			});
+
+			//
+			// =========================================================
+			// CONTROL DE ENTER EN DETALLE DINÁMICO (delegación) - VERSIÓN MEJORADA
+			// =========================================================
+			const detalleTbody = document.querySelector('.detalle-form tbody');
+			if (detalleTbody) {
+				detalleTbody.addEventListener('keydown', function(e) {
+					if (e.key === 'Enter') {
+						const target = e.target;
+						// Solo interesa si es un input o select dentro de una fila, excluyendo hidden
+						if (!target.closest('tr') || target.matches('input[type="hidden"]')) {
+							return;
+						}
+						// Prevenir SIEMPRE el envío del formulario
+						e.preventDefault();
+
+						// Si es readonly o disabled, solo prevenimos el submit, no navegamos
+						if (target.readOnly || target.disabled) {
+							return;
+						}
+
+						// Navegación entre campos editables (no readonly, no disabled, no hidden)
+						const row = target.closest('tr');
+						const fields = row.querySelectorAll(
+							'input:not([type="hidden"]):not([disabled]):not([readonly]), ' +
+							'select:not([disabled]):not([readonly])'
+						);
+						const currentIndex = Array.from(fields).indexOf(target);
+						if (currentIndex === -1) return;
+
+						if (currentIndex < fields.length - 1) {
+							fields[currentIndex + 1].focus();
+							return;
+						}
+
+						// Si es el último campo editable de la fila, pasar a la siguiente fila
+						const nextRow = row.nextElementSibling;
+						if (nextRow) {
+							const nextFields = nextRow.querySelectorAll(
+								'input:not([type="hidden"]):not([disabled]):not([readonly]), ' +
+								'select:not([disabled]):not([readonly])'
+							);
+							if (nextFields.length) {
+								nextFields[0].focus();
+							}
+						}
+						// Opcional: si no hay siguiente fila, podrías agregar una nueva automáticamente
+						// document.getElementById('btnAgregarDetalle')?.click();
+					}
+				});
+			}			
 			//
 		});
 		

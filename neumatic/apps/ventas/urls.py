@@ -73,7 +73,8 @@ from .views.consultas_factura_views import (
 )
 from .views.consultas_compra_views import (
 	obtener_numero_compra,
-	obtener_alicuota_proveedor
+	obtener_alicuota_proveedor,
+    buscar_remito_origen
 )
 from .views.crear_agenda import crear_agenda
 from .views.genera_pdf import GeneraPDFView
@@ -176,4 +177,7 @@ urlpatterns = [
 	path('validar-autorizacion/', validar_autorizacion, name='validar_autorizacion'),
     
 	path('remito/anular/<int:pk>/', anular_remito, name='remito_anular'),
+    
+	path('buscar-remito-origen/', buscar_remito_origen, name='buscar_remito_origen'),
+
 ]

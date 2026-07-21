@@ -509,14 +509,37 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							print(f"🔄 Reintento #{intento + 1} por error 10016")
 						
 						# Obtener el próximo número de ARCA
-						proximo_numero, ultimo_numero = arca.obtener_proximo_numero(
-							punto_venta_entero,
-							int(cbte_tipo), 
-							token, 
-							sign, 
-							empresa.cuit
-						)
+						# proximo_numero, ultimo_numero = arca.obtener_proximo_numero(
+						# 	punto_venta_entero,
+						# 	int(cbte_tipo), 
+						# 	token, 
+						# 	sign, 
+						# 	empresa.cuit
+						# )
 						
+						# Obtener el próximo número de ARCA
+						try:
+							proximo_numero, ultimo_numero = arca.obtener_proximo_numero(
+								punto_venta_entero,
+								int(cbte_tipo), 
+								token, 
+								sign, 
+								empresa.cuit
+							)
+						except Exception as e:
+							print(f"❌ Error de conexión al obtener número de ARCA: {str(e)}")
+							# Guardar archivo de error (opcional)
+							BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+							xml_dir = BASE_DIR / "xml_afiparca"
+							xml_dir.mkdir(exist_ok=True, parents=True)
+							archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_ERROR_CONEXION.txt"
+							with open(archivo_error, 'w', encoding='utf-8') as f:
+								f.write(f"Error de conexión al obtener número: {str(e)}\n")
+								import traceback
+								traceback.print_exc(file=f)
+							messages.error(self.request, f"Error de conexión con ARCA: {str(e)}")
+							return redirect(self.get_success_url())
+
 						# ============================================
 						# 2. MOSTRAR EL NÚMERO ASIGNADO POR ARCA
 						# ============================================
@@ -771,7 +794,21 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						# ENVIAR SOLICITUD DE CAE A ARCA
 						# ============================================
 						print(f"\n🚀 ENVIANDO SOLICITUD DE CAE A ARCA ({arca.entorno.upper()})...")
-						respuesta = arca.enviar_solicitud_cae(xml_content)
+						# respuesta = arca.enviar_solicitud_cae(xml_content)
+						try:
+							respuesta = arca.enviar_solicitud_cae(xml_content)
+						except Exception as e:
+							print(f"❌ Error de conexión al enviar XML: {str(e)}")
+							BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+							xml_dir = BASE_DIR / "xml_afiparca"
+							archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_ERROR_ENVIO.txt"
+							with open(archivo_error, 'w', encoding='utf-8') as f:
+								f.write(f"Error de conexión al enviar XML: {str(e)}\n")
+								f.write(f"XML enviado:\n{xml_content}\n")
+								import traceback
+								traceback.print_exc(file=f)
+							messages.error(self.request, f"Error de conexión con ARCA al enviar comprobante: {str(e)}")
+							return redirect(self.get_success_url())
 						print(f"✅ Respuesta recibida")
 						
 						# Procesar respuesta usando el método de arca
@@ -864,31 +901,65 @@ class FacturaCreateView(MaestroDetalleCreateView):
 								continue
 						
 						# Otros errores - mostrar y salir
+						# print("\n" + "=" * 60)
+						# print("❌ ERRORES DE ARCA:")
+						# print("=" * 60)
+						# for error in resultado.get('errores', []):
+						# 	print(f"   • {error}")
+						# 	form.add_error(None, f"Error ARCA: {error}")
+						
+						# # Si no hay errores en la lista, mostrar el resultado completo
+						# if not resultado.get('errores'):
+						# 	print(f"   • Resultado completo: {resultado}")
+						# 	form.add_error(None, f"Error ARCA sin detalle: {resultado}")
+						
+						# # Guardar archivo de error para debug
+						# archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_ERROR.txt"
+						# with open(archivo_error, 'w', encoding='utf-8') as f:
+						# 	f.write("RESPUESTA COMPLETA:\n")
+						# 	f.write(f"  aprobado: {resultado.get('aprobado')}\n")
+						# 	f.write(f"  errores: {resultado.get('errores', [])}\n")
+						# 	f.write(f"  cae: {resultado.get('cae')}\n")
+						# 	f.write(f"  vencimiento: {resultado.get('vencimiento')}\n")
+						# 	f.write(f"  eventos: {resultado.get('eventos', [])}\n")
+						# 	f.write(f"\nRESPUESTA XML:\n{respuesta}\n")
+						# print(f"📄 Error guardado en: {archivo_error}")
+						
+						# return self.form_invalid(form)
+
+						# Otros errores - mostrar y salir
 						print("\n" + "=" * 60)
 						print("❌ ERRORES DE ARCA:")
 						print("=" * 60)
-						for error in resultado.get('errores', []):
+						mensaje_error = "Error al obtener CAE de ARCA: "
+						errores = resultado.get('errores', [])
+						if errores:
+							mensaje_error += ", ".join(errores)
+						else:
+							mensaje_error += str(resultado)
+
+						for error in errores:
 							print(f"   • {error}")
-							form.add_error(None, f"Error ARCA: {error}")
-						
-						# Si no hay errores en la lista, mostrar el resultado completo
-						if not resultado.get('errores'):
+
+						if not errores:
 							print(f"   • Resultado completo: {resultado}")
-							form.add_error(None, f"Error ARCA sin detalle: {resultado}")
-						
+
 						# Guardar archivo de error para debug
 						archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_ERROR.txt"
 						with open(archivo_error, 'w', encoding='utf-8') as f:
 							f.write("RESPUESTA COMPLETA:\n")
 							f.write(f"  aprobado: {resultado.get('aprobado')}\n")
-							f.write(f"  errores: {resultado.get('errores', [])}\n")
+							f.write(f"  errores: {errores}\n")
 							f.write(f"  cae: {resultado.get('cae')}\n")
 							f.write(f"  vencimiento: {resultado.get('vencimiento')}\n")
 							f.write(f"  eventos: {resultado.get('eventos', [])}\n")
 							f.write(f"\nRESPUESTA XML:\n{respuesta}\n")
 						print(f"📄 Error guardado en: {archivo_error}")
-						
-						return self.form_invalid(form)
+
+						# 👇 REDIRIGIR CON MENSAJE DE ERROR
+						messages.error(self.request, mensaje_error)
+						return redirect(self.get_success_url())
+
 					
 					# ===== FIN BUCLE DE REINTENTOS =====
 					
@@ -896,8 +967,11 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						print("=" * 60)
 						print("❌ ERROR: No se pudo obtener CAE después de 4 intentos")
 						print("=" * 60)
-						form.add_error(None, "No se pudo obtener CAE después de 4 intentos")
-						return self.form_invalid(form)
+						
+						# form.add_error(None, "No se pudo obtener CAE después de 4 intentos")
+						# return self.form_invalid(form)
+						messages.error(self.request, "No se pudo obtener CAE de ARCA después de 4 intentos. Verifique conexión y reintente.")
+						return redirect(self.get_success_url())
 				
 				elif tipo_numeracion == 'manual':
 					print("tipo_numeracion**:", tipo_numeracion)

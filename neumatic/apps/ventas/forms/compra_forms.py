@@ -47,6 +47,11 @@ class CompraForm(GenericForm):
 		widget=forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'})
 	)
 
+	id_factura_origen = forms.IntegerField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+
 	class Meta:
 		model = Compra
 		fields = "__all__"

@@ -6,6 +6,7 @@ from django.views.decorators.http import require_POST, require_GET
 from apps.ventas.models.compra_models import Compra
 from apps.maestros.models.proveedor_models import Proveedor
 from apps.maestros.models.base_models import ComprobanteCompra
+from ..models.factura_models import Factura, DetalleFactura
 
 
 @require_GET
@@ -67,3 +68,61 @@ def obtener_alicuota_proveedor(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
 
+
+@require_GET
+def buscar_remito_origen(request):
+    """
+    Busca un remito interno en Factura por número de comprobante.
+    Retorna los detalles para cargar en la compra.
+    """
+    numero = request.GET.get('numero', '').strip()
+    
+    if not numero:
+        return JsonResponse({'error': 'Número de remito requerido'}, status=400)
+    
+    # Validar formato: 10 dígitos
+    if not numero.isdigit() or len(numero) != 10:
+        return JsonResponse({'error': 'El número debe tener 10 dígitos'}, status=400)
+    
+    try:
+        factura = Factura.objects.select_related('id_comprobante_venta').get(
+            numero_comprobante=numero,
+            id_comprobante_venta__remito=True,
+            id_comprobante_venta__interno=True
+        )
+    except Factura.DoesNotExist:
+        return JsonResponse({'error': 'Remito interno no encontrado'}, status=404)
+    
+    # Verificar que no esté facturado
+    if factura.estado == 'F':
+        return JsonResponse({'error': 'El remito ya fue facturado'}, status=400)
+    
+    # Verificar que no esté ya utilizado
+    from ..models.compra_models import Compra
+    if Compra.objects.filter(id_factura_origen=factura).exists():
+        return JsonResponse({'error': 'Este remito ya fue utilizado en otra compra'}, status=400)
+    
+    # Obtener detalles
+    detalles = DetalleFactura.objects.filter(id_factura=factura).select_related('id_producto')
+    
+    if not detalles.exists():
+        return JsonResponse({'error': 'El remito no tiene detalles'}, status=404)
+    
+    # Preparar respuesta
+    data = {
+        'id_factura': factura.id_factura,
+        'numero_comprobante': factura.numero_comprobante,
+        'detalles': []
+    }
+    
+    for detalle in detalles:
+        data['detalles'].append({
+            'id_producto': detalle.id_producto.id_producto,
+            'medida': detalle.id_producto.medida or '',
+            'nombre': detalle.producto_venta,
+            'cantidad': float(detalle.cantidad),
+            'precio': float(detalle.precio),
+            'total': float(detalle.total),
+        })
+    
+    return JsonResponse(data)
