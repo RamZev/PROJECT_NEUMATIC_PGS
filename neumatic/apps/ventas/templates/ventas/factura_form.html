@@ -2985,6 +2985,7 @@
 	</script>
 	
 	<script>
+		/*
 		document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('validarBtn').addEventListener('click', function() {
 				const nroDocIdentidad = document.getElementById('id_cuit').value;
@@ -3016,6 +3017,7 @@
 			});
 			
 		});
+		*/
 		
 	</script>
 	{% comment %} SCRIPTS JS End {% endcomment %}
@@ -3500,11 +3502,13 @@
 										buscarClienteInput.focus();
 									}
 									
+									/*
 									const validarBtn = document.getElementById('validarBtn');
 									if (validarBtn) validarBtn.disabled = false;
 									
 									const listarAgenda = document.getElementById('listar_agenda');
 									if (listarAgenda) listarAgenda.disabled = false;
+									*/
 									
 									return;
 								}
@@ -4052,9 +4056,9 @@
 				// Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
 				const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
 				
-				const validarBtn =  document.getElementById('validarBtn');
-				const listar_agenda =  document.getElementById('listar_agenda');
-				const crearClienteBtn =  document.getElementById('crearClienteBtn');
+				// const validarBtn =  document.getElementById('validarBtn');
+				// const listar_agenda =  document.getElementById('listar_agenda');
+				// const crearClienteBtn =  document.getElementById('crearClienteBtn');
 				
 				const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
 				const btnAgregarSerial = document.getElementById('btnAgregarSerial');
@@ -4064,6 +4068,7 @@
 					input.classList.add('readonly-select');  
 				});
 				
+				/*
 				if (validarBtn) {
 					validarBtn.disabled = true;
 				}
@@ -4078,6 +4083,7 @@
 					crearClienteBtn.removeAttribute('href'); // Eliminamos el href para que no sea clickeable
 					crearClienteBtn.classList.add('disabled'); // Añadimos clase visual
 				}
+				*/
 				
 				if (btnAgregarDetalle) {
 					btnAgregarDetalle.disabled = true;
