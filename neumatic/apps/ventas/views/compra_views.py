@@ -8,6 +8,7 @@ import json
 # Importar tus vistas genéricas base
 from .msdt_views_generics import *
 from ..models.compra_models import Compra
+from ..models.factura_models import Factura
 from ..forms.compra_forms import CompraForm, DetalleCompraFormSet
 from ...maestros.models.base_models import ProductoStock, ComprobanteCompra
 from ...maestros.models.producto_models import Producto
@@ -145,6 +146,12 @@ class CompraCreateView(MaestroDetalleCreateView):
 			for c in ComprobanteCompra.objects.all()
 		}
 		data['comprobante_codigos'] = json.dumps(comprobante_codigos)
+
+		nombres_comp_compra = {
+			str(c.id_comprobante_compra): c.nombre_comprobante_compra
+			for c in ComprobanteCompra.objects.all()
+		}
+		data['nombres_comp_compra'] = json.dumps(nombres_comp_compra)
 		
 		# Si necesitas datos de ComprobanteCompra, descomenta:
 		# tipo_comp_compra_dict = {str(c.id_comprobante_compra): c.nombre_comprobante_compra for c in ComprobanteCompra.objects.all()}
@@ -174,9 +181,40 @@ class CompraCreateView(MaestroDetalleCreateView):
 				# 🔥 ELIMINAR TODA LA LÓGICA DE NUMERACIÓN COMPLEJA
 				# Los campos vienen directamente del formulario
 				
+				# Validación específica para REMITO INTERNO
+				comprobante_compra_obj = form.cleaned_data.get('id_comprobante_compra')
+				if comprobante_compra_obj and comprobante_compra_obj.remito:
+					# Detectar si es interno por nombre (o por campo booleano si existe)
+					if "INTERNO" in comprobante_compra_obj.nombre_comprobante_compra.upper():
+						if not form.cleaned_data.get('id_factura_origen'):
+							form.add_error('numero_comprobante', 'Debe ingresar un número de remito válido')
+							return self.form_invalid(form)				
+				
 				# 2. Guardar Compra
 				self.object = form.save()
 				
+				# 3. Guardar Detalles
+				formset_detalle.instance = self.object
+				detalles = formset_detalle.save()
+
+				# 👇 VALIDAR id_factura_origen ANTES de guardar
+				id_factura_origen = form.cleaned_data.get('id_factura_origen')
+				factura_origen = None
+
+				if id_factura_origen:
+					try:
+						factura_origen = Factura.objects.get(pk=id_factura_origen)
+						print(f"✅ Factura origen encontrada: {factura_origen.id_factura}")
+					except Factura.DoesNotExist:
+						messages.error(self.request, f'La factura origen con ID {id_factura_origen} no existe')
+						return redirect(self.get_success_url())
+
+				# 2. Guardar Compra (asignando la factura antes de guardar)
+				self.object = form.save(commit=False)
+				if factura_origen:
+					self.object.id_factura_origen = factura_origen
+				self.object.save()
+
 				# 3. Guardar Detalles
 				formset_detalle.instance = self.object
 				detalles = formset_detalle.save()

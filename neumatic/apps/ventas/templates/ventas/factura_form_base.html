@@ -103,63 +103,6 @@
 		text-align: right;
 		font-familily: monospace;
 	}
-
-	/* ============================================
-	FORZAR SELECT2 A USAR MISMO ESTILO QUE LOS INPUTS
-	(Igual que form-control-sm border-primary)
-	============================================ */
-
-	/* Contenedor principal */
-	.select2-container--bootstrap-5 .select2-selection {
-		min-height: 31px !important;
-		height: 31px !important;
-		border: 1px solid #0d6efd !important;
-		border-radius: 0.2rem !important;
-		background-color: #fff !important;
-		font-size: 0.875rem !important;
-		padding: 0 !important;
-	}
-
-	/* Texto interno (rendered) */
-	.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
-		line-height: 29px !important;  /* height - 2px de borde */
-		padding: 0 0.5rem !important;
-		font-size: 0.875rem !important;
-		color: #212529 !important;
-	}
-
-	/* Placeholder */
-	.select2-container--bootstrap-5 .select2-selection__placeholder {
-		color: #6c757d !important;
-		font-size: 0.875rem !important;
-	}
-
-	/* Flecha de despliegue */
-	.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
-		height: 29px !important;
-	}
-
-	/* Margen inferior (igual a mb-2) */
-	.select2-container--bootstrap-5 {
-		margin-bottom: 8px !important;
-	}
-
-	/* Focus (igual que inputs con border-primary) */
-	.select2-container--bootstrap-5.select2-container--focus .select2-selection {
-		border-color: #86b7fe !important;
-		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-	}
-
-	/* Dropdown */
-	.select2-container--bootstrap-5 .select2-dropdown {
-		border-color: #dee2e6 !important;
-		border-radius: 0.2rem !important;
-	}
-
-	.select2-container--bootstrap-5 .select2-results__option {
-		font-size: 0.875rem !important;
-		padding: 0.25rem 0.5rem !important;
-	}	
 	
 {% endblock style %}
 
@@ -309,17 +252,11 @@
 												<label for="{{ form.buscar_cliente.id_for_label }}">Buscar Cliente</label>
 											</div>
 										
-											<div class="col-md-3">
+											<div class="col-md-6">
 												{{ form.buscar_cliente }}
 											</div>
 
-											<div class="col-md-6">
-												<!-- Nuevo campo Select2 para búsqueda de clientes -->
-												<input type="text" id="cliente_select2" class="form-control form-control-sm" placeholder="Buscar cliente por nombre..." style="width: 100%;">
-												<!-- El campo oculto id_cliente ya existe más abajo -->
-											</div>
-
-											{% comment %} <div class="col-md-3 d-flex justify-content-end">
+											<div class="col-md-3 d-flex justify-content-end">
 												<button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Validar" id="validarBtn" disabled>
 													<i class="bi bi-card-checklist"></i>
 												</button>
@@ -327,14 +264,14 @@
 												<button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Listar" data-bs-toggle="modal" data-bs-target="#agendaModal" id="listar_agenda" disabled>
 													<i class="bi bi-card-list"></i>
 												</button>
-												
+												{% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" id="listarBtn">Listar</button> {% endcomment %}
 												
 												<a id="crearClienteBtn" href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
 													class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
 													<i class="bi bi-building-add"></i>
 												</a>
 												
-											</div> {% endcomment %}
+											</div>
 										</div>
 
 										<div class="row my-1">
@@ -2246,19 +2183,17 @@
 					buscarCliente.removeAttribute('readonly');
 				}
 				
-				$('#cliente_select2').prop('disabled', false);
-
 				// 2. Botón de validar
-				// const validarBtn = document.getElementById('validarBtn');
-				// if (validarBtn) {
-				// 	validarBtn.removeAttribute('disabled');
-				// }
+				const validarBtn = document.getElementById('validarBtn');
+				if (validarBtn) {
+					validarBtn.removeAttribute('disabled');
+				}
 				
 				// 3. Botón de listar agenda
-				// const listarAgenda = document.getElementById('listar_agenda');
-				// if (listarAgenda) {
-				// 	listarAgenda.removeAttribute('disabled');
-				// }
+				const listarAgenda = document.getElementById('listar_agenda');
+				if (listarAgenda) {
+					listarAgenda.removeAttribute('disabled');
+				}
 				
 				// 4. habilitar o inhabilitar el input Factura Asociada
 				const numeroAsociadoInput = document.getElementById('id_numero_asociado');
@@ -3719,9 +3654,8 @@
 					}
 					
 					// Deshabilitar botones
-					// document.getElementById('listar_agenda').disabled = true;
+					document.getElementById('listar_agenda').disabled = true;
 					document.getElementById('buscar_cliente').disabled = true;
-					$('#cliente_select2').prop('disabled', true);
 					
 					///
 					calcularNumeroComprobante();
@@ -4675,159 +4609,5 @@
 		}
 	});			
 	</script>
-
-	{% comment %} <script>
-	$(document).ready(function() {
-		// Inicializar Select2 sobre el nuevo input
-		$('#cliente_select2').select2({
-			theme: 'bootstrap-5',
-			allowClear: true,
-			minimumInputLength: 2,
-			placeholder: 'Buscar cliente por nombre...',
-			ajax: {
-				url: '/maestros/buscar-cliente-select2/',
-				dataType: 'json',
-				delay: 300,
-				data: function(params) {
-					return { term: params.term, page: params.page || 1 };
-				},
-				processResults: function(data) {
-					return { results: data.results, pagination: { more: data.more } };
-				}
-			},
-			templateResult: function(cliente) {
-				if (cliente.loading) return cliente.text;
-				return $('<div><strong>' + cliente.id + '</strong> - ' + cliente.text + '</div>');
-			},
-			templateSelection: function(cliente) {
-				return cliente.id + ' - ' + cliente.text;
-			}
-		});
-
-		// Evento al seleccionar un cliente
-		$('#cliente_select2').on('select2:select', function(e) {
-			var data = e.params.data;
-			var clienteId = data.id;
-			var clienteNombre = data.text;
-
-			// 1. Asignar el ID al campo buscar_cliente (para que la lógica de blur lo use)
-			var $buscarCliente = $('#id_buscar_cliente');
-			$buscarCliente.val(clienteId);
-
-			// 2. Opcional: también asignar el ID al campo oculto id_cliente
-			$('#id_id_cliente').val(clienteId);
-
-			// 3. Actualizar el texto mostrado en el Select2 para que muestre "ID - Nombre"
-			var $span = $(this).next('.select2-container').find('.select2-selection__rendered');
-			if ($span.length) {
-				$span.html(clienteId + ' - ' + clienteNombre);
-			}
-
-			// 4. Disparar el evento blur en buscar_cliente para que se ejecute toda la lógica
-			//    (validación de vencimientos, autorizaciones, llenado de campos)
-			$buscarCliente.trigger('blur');
-		});
-
-		// Evento al limpiar la selección
-		$('#cliente_select2').on('select2:clearing', function() {
-			$('#id_buscar_cliente').val('');
-			$('#id_id_cliente').val('');
-			$('#id_buscar_cliente').trigger('blur');
-		});
-
-		// Modo edición: si ya hay un cliente seleccionado, mostrar sus datos en el Select2
-		var clienteId = $('#id_id_cliente').val();
-		var clienteNombre = $('#id_buscar_cliente').val(); // Puede ser solo el ID o "ID - Nombre"
-		if (clienteId && clienteNombre) {
-			// Si el campo buscar_cliente tiene el formato "ID - Nombre", lo usamos.
-			// Si solo tiene el ID, podemos hacer una consulta AJAX para obtener el nombre,
-			// pero por simplicidad asumimos que el backend ya puso el formato correcto.
-			var displayText = clienteNombre.includes(' - ') ? clienteNombre : clienteId + ' - ' + clienteNombre;
-			setTimeout(function() {
-				var $span = $('#cliente_select2').next('.select2-container').find('.select2-selection__rendered');
-				if ($span.length) {
-					$span.html(displayText);
-				}
-			}, 100);
-		}
-	});
-	</script>	 {% endcomment %}
-
-	<script>
-	$(document).ready(function() {
-		// Inicializar Select2
-		$('#cliente_select2').select2({
-			theme: 'bootstrap-5',
-			allowClear: true,
-			minimumInputLength: 2,
-			placeholder: 'Buscar cliente por nombre...',
-			ajax: {
-				url: '/maestros/buscar-cliente-select2/',
-				dataType: 'json',
-				delay: 300,
-				data: function(params) {
-					return { term: params.term, page: params.page || 1 };
-				},
-				processResults: function(data) {
-					return { results: data.results, pagination: { more: data.more } };
-				}
-			},
-			templateResult: function(cliente) {
-				if (cliente.loading) return cliente.text;
-				return $('<div><strong>' + cliente.id + '</strong> - ' + cliente.text + '</div>');
-			},
-			templateSelection: function(cliente) {
-				return cliente.id + ' - ' + cliente.text;
-			}
-		});
-
-		// Si no hay comprobante seleccionado, deshabilitar Select2
-		if (!$('#id_id_comprobante_venta').val()) {
-			$('#cliente_select2').prop('disabled', true);
-		}
-
-		// Evento al seleccionar un cliente
-		$('#cliente_select2').on('select2:select', function(e) {
-			var data = e.params.data;
-			var clienteId = data.id;
-			var clienteNombre = data.text;
-
-			// Asignar el ID al campo buscar_cliente
-			var $buscar = $('#buscar_cliente');
-			$buscar.val(clienteId);
-
-			// Actualizar el texto mostrado en el Select2
-			var $span = $(this).next('.select2-container').find('.select2-selection__rendered');
-			if ($span.length) {
-				$span.html(clienteId + ' - ' + clienteNombre);
-			}
-
-			// Forzar el blur (enfocar y perder foco para ejecutar el evento)
-			$buscar.focus();
-			$buscar.blur();
-		});
-
-		// Evento al limpiar la selección
-		$('#cliente_select2').on('select2:clearing', function() {
-			var $buscar = $('#buscar_cliente');
-			$buscar.val('');
-			$buscar.focus();
-			$buscar.blur();
-		});
-
-		// Modo edición: mostrar cliente actual en el Select2
-		var clienteId = $('#id_id_cliente').val();
-		var clienteNombre = $('#buscar_cliente').val();
-		if (clienteId && clienteNombre) {
-			var displayText = clienteNombre.includes(' - ') ? clienteNombre : clienteId + ' - ' + clienteNombre;
-			setTimeout(function() {
-				var $span = $('#cliente_select2').next('.select2-container').find('.select2-selection__rendered');
-				if ($span.length) {
-					$span.html(displayText);
-				}
-			}, 100);
-		}
-	});
-	</script>	
 
 {% endblock script %}

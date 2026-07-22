@@ -52,8 +52,10 @@ class CompraForm(GenericForm):
         widget=forms.HiddenInput()
     )
 
+	
 	class Meta:
 		model = Compra
+		exclude = ('id_factura_origen',)
 		fields = "__all__"
 		widgets = {
 			# Campos ocultos
@@ -69,7 +71,6 @@ class CompraForm(GenericForm):
 			"letra_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
 			"numero_comprobante": forms.TextInput(attrs={
 				**formclasstext,
-				'readonly': 'readonly',
 				'type': 'number',
 				'autocomplete': "off",
 				'required': 'required',

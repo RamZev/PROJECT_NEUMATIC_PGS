@@ -71,58 +71,75 @@ def obtener_alicuota_proveedor(request):
 
 @require_GET
 def buscar_remito_origen(request):
-    """
-    Busca un remito interno en Factura por número de comprobante.
-    Retorna los detalles para cargar en la compra.
-    """
-    numero = request.GET.get('numero', '').strip()
-    
-    if not numero:
-        return JsonResponse({'error': 'Número de remito requerido'}, status=400)
-    
-    # Validar formato: 10 dígitos
-    if not numero.isdigit() or len(numero) != 10:
-        return JsonResponse({'error': 'El número debe tener 10 dígitos'}, status=400)
+    import traceback
+    from django.http import JsonResponse
+    from ..models.factura_models import Factura, DetalleFactura
     
     try:
+        numero = request.GET.get('numero', '').strip()
+        compro = request.GET.get('compro', '').strip()
+        letra = request.GET.get('letra', '').strip()
+        
+        print("=" * 60)
+        print("🔍 DEBUG buscar_remito_origen")
+        print(f"   Número: '{numero}'")
+        print(f"   Compro: '{compro}'")
+        print(f"   Letra: '{letra}'")
+        print("=" * 60)
+        
+        if not numero:
+            return JsonResponse({'error': 'Número de remito requerido'}, status=400)
+        
+        if not compro or not letra:
+            return JsonResponse({'error': 'Faltan datos del comprobante (compro o letra)'}, status=400)
+        
+        if not numero.isdigit() or len(numero) != 10:
+            return JsonResponse({'error': 'El número debe tener 10 dígitos'}, status=400)
+        
+        # BÚSQUEDA POR LOS TRES CAMPOS
         factura = Factura.objects.select_related('id_comprobante_venta').get(
-            numero_comprobante=numero,
-            id_comprobante_venta__remito=True,
-            id_comprobante_venta__interno=True
+            numero_comprobante=int(numero),
+            compro=compro,
+            letra_comprobante=letra
         )
+        
+        # Verificar que no esté facturado
+        if factura.estado == 'F':
+            return JsonResponse({'error': 'El remito ya fue facturado'}, status=400)
+        
+        # Verificar que no esté ya utilizado
+        from ..models.compra_models import Compra
+        if Compra.objects.filter(id_factura_origen=factura).exists():
+            return JsonResponse({'error': 'Este remito ya fue utilizado en otra compra'}, status=400)
+        
+        # Obtener detalles
+        detalles = DetalleFactura.objects.filter(id_factura=factura).select_related('id_producto')
+        
+        if not detalles.exists():
+            return JsonResponse({'error': 'El remito no tiene detalles'}, status=404)
+        
+        data = {
+            'id_factura': factura.id_factura,
+            'numero_comprobante': factura.numero_comprobante,
+            'detalles': []
+        }
+        
+        for detalle in detalles:
+            data['detalles'].append({
+                'id_producto': detalle.id_producto.id_producto,
+                'medida': detalle.id_producto.medida or '',
+                'nombre': detalle.producto_venta,
+                'cantidad': float(detalle.cantidad),
+                'precio': float(detalle.precio),
+                'total': float(detalle.total),
+            })
+        
+        return JsonResponse(data)
+        
     except Factura.DoesNotExist:
-        return JsonResponse({'error': 'Remito interno no encontrado'}, status=404)
-    
-    # Verificar que no esté facturado
-    if factura.estado == 'F':
-        return JsonResponse({'error': 'El remito ya fue facturado'}, status=400)
-    
-    # Verificar que no esté ya utilizado
-    from ..models.compra_models import Compra
-    if Compra.objects.filter(id_factura_origen=factura).exists():
-        return JsonResponse({'error': 'Este remito ya fue utilizado en otra compra'}, status=400)
-    
-    # Obtener detalles
-    detalles = DetalleFactura.objects.filter(id_factura=factura).select_related('id_producto')
-    
-    if not detalles.exists():
-        return JsonResponse({'error': 'El remito no tiene detalles'}, status=404)
-    
-    # Preparar respuesta
-    data = {
-        'id_factura': factura.id_factura,
-        'numero_comprobante': factura.numero_comprobante,
-        'detalles': []
-    }
-    
-    for detalle in detalles:
-        data['detalles'].append({
-            'id_producto': detalle.id_producto.id_producto,
-            'medida': detalle.id_producto.medida or '',
-            'nombre': detalle.producto_venta,
-            'cantidad': float(detalle.cantidad),
-            'precio': float(detalle.precio),
-            'total': float(detalle.total),
-        })
-    
-    return JsonResponse(data)
+        return JsonResponse({'error': f'Remito no encontrado: {compro} {letra} {numero}'}, status=404)
+    except Exception as e:
+        # 🔥 ESTO ES LO IMPORTANTE: capturar cualquier error y devolver JSON
+        print("❌ ERROR EN buscar_remito_origen:")
+        traceback.print_exc()
+        return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)

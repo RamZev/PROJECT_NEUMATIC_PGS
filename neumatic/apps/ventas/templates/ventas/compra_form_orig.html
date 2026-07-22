@@ -152,7 +152,6 @@
 												</div>
 												<div class="col-md-5">
 													{{ form.numero_comprobante }}
-                                                    {{ form.id_factura_origen }}
 												</div>
 											</div>
 											<div class="row my-1">
@@ -162,9 +161,9 @@
 												<div class="col-md-4">
 													{{ form.condicion_comprobante }}
 												</div>
-												{% comment %} <div class="col-md-5">
+												<div class="col-md-5">
 													{{ form.documento_asociado }}
-												</div> {% endcomment %}
+												</div>
 											</div>
 											<div class="row my-1">
 												<div class="col-md-3">
@@ -760,238 +759,54 @@
         });
 
         ////
-        // 11. MANEJO DEL CAMBIO DE COMPROBANTE (UNIFICADO)
+        // 11. MANEJO DEL CAMBIO DE COMPROBANTE DE COMPRA (VERSIÓN SIMPLIFICADA)
         const comprobanteSelect = document.getElementById('id_id_comprobante_compra');
         const comproInput = document.getElementById('id_compro');
         const letraInput = document.getElementById('id_letra_comprobante');
         const numeroInput = document.getElementById('id_numero_comprobante');
-        const idFacturaOrigen = document.getElementById('id_id_factura_origen');
 
-        // Diccionarios
-        const comprobanteCodigos = JSON.parse(document.getElementById('comprobante-codigos-data').dataset.codigos);
-        const nombresComp = JSON.parse(document.getElementById('nombres-comp-data').dataset.nombres);
+        // Obtener datos del div oculto
+        const comprobanteCodigosElement = document.getElementById('comprobante-codigos-data');
+        const comprobanteCodigos = comprobanteCodigosElement ? 
+            JSON.parse(comprobanteCodigosElement.dataset.codigos) : {};
 
-        // Función para limpiar detalles
-        function limpiarDetallesCargados() {
-            const filas = document.querySelectorAll('.detalle-form tbody tr');
-            filas.forEach(row => {
-                const deleteInput = row.querySelector('input[name$="-DELETE"]');
-                if (deleteInput) {
-                    deleteInput.checked = true;
-                    row.style.display = 'none';
-                }
-            });
-            actualizarContadorFormsets();
-            actualizarTotalCompra();
-        }
+        console.log('Comprobantes cargados:', comprobanteCodigos);
 
-        // ÚNICO EVENTO CHANGE
-        comprobanteSelect.addEventListener('change', function() {
-            const comprobanteId = this.value;
+        function actualizarDatosComprobante() {
+            const comprobanteId = comprobanteSelect.value;
             
             if (!comprobanteId) {
+                // Limpiar campos si no hay comprobante seleccionado
                 comproInput.value = '';
                 letraInput.value = '';
-                numeroInput.value = '';
-                numeroInput.readOnly = true;
-                numeroInput.placeholder = '';
-                numeroInput.style.backgroundColor = '';
-                idFacturaOrigen.value = '';
-                limpiarDetallesCargados();
                 return;
             }
-            
-            // 🔹 ASIGNAR CÓDIGO Y LETRA (funcionalidad original)
+
+            // Obtener código del comprobante seleccionado
             const codigo = comprobanteCodigos[comprobanteId] || '';
             comproInput.value = codigo;
-            letraInput.value = 'R';
+
+            // Habilitar campos de letra y número
+            letraInput.value = "R";
             letraInput.readOnly = false;
-            
-            // 🔹 DETECTAR SI ES REMITO (cualquier comprobante que contenga "REMITO")
-            const nombre = nombresComp[comprobanteId] || '';
-            
-            if (esRemito) {
-                // Habilitar para ingresar número de remito origen
-                numeroInput.readOnly = false;
-                numeroInput.placeholder = 'Ingrese número de remito origen (10 dígitos)';
-                numeroInput.value = '';
-                numeroInput.style.backgroundColor = '';
-                idFacturaOrigen.value = '';
-                limpiarDetallesCargados();
-                numeroInput.focus();
-            } else {
-                // Deshabilitar para otros comprobantes
-                numeroInput.readOnly = true;
-                numeroInput.placeholder = '';
-                numeroInput.value = '';
-                numeroInput.style.backgroundColor = '#f0f0f0';
-                idFacturaOrigen.value = '';
-                limpiarDetallesCargados();
-            }
-            
-            console.log(`Comprobante: ${comprobanteId}, Código: ${codigo}, esRemito: ${esRemito}`);
-        });
+            numeroInput.readOnly = false;
 
-        // EVENTO BLUR DEL NÚMERO DE COMPROBANTE (solo para remitos)
-        ////
-        numeroInput.addEventListener('blur', function() {
-            const comprobanteId = comprobanteSelect.value;
-            if (!comprobanteId) return;
-            const nombre = nombresComp[comprobanteId] || '';
-            if (!nombre.toUpperCase().includes('REMITO')) return;
+            console.log(`Comprobante seleccionado: ${comprobanteId}, Código: ${codigo}`);
+        }
+
+        if (comprobanteSelect) {
+            // Asignar el event listener
+            comprobanteSelect.addEventListener('change', actualizarDatosComprobante);
             
-            const numero = this.value.trim();
-            if (!numero) {
-                this.readOnly = false;
-                this.style.backgroundColor = '';
-                return;
+            // Ejecutar al cargar si ya hay un valor seleccionado
+            if (comprobanteSelect.value) {
+                actualizarDatosComprobante();
             }
-            
-            if (!/^\d{10}$/.test(numero)) {
-                alert('El número de remito debe tener 10 dígitos (ej: 2100000001)');
-                this.value = '';
-                this.focus();
-                return;
-            }
-            
-            // ===== OBTENER COMPRO Y LETRA =====
-            const compro = comproInput.value.trim();
-            const letra = letraInput.value.trim();
-            
-            if (!compro || !letra) {
-                alert('Faltan datos del comprobante (compro o letra)');
-                return;
-            }
-            // ====================================
-            
-            const originalBg = this.style.backgroundColor;
-            this.style.backgroundColor = '#f5f5f5';
-            this.readOnly = true;
-            
-            // ===== ENVIAR COMPRO Y LETRA EN LA URL =====
-            fetch(`/ventas/buscar-remito-origen/?numero=${encodeURIComponent(numero)}&compro=${encodeURIComponent(compro)}&letra=${encodeURIComponent(letra)}`, {
-                method: 'GET',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    return response.json().then(data => {
-                        throw new Error(data.error || 'Error al buscar remito');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                // ... el resto del código (carga de detalles) ...
-                if (!data.detalles || data.detalles.length === 0) {
-                        alert('El remito no tiene detalles');
-                        return;
-                    }
-                    
-                    if (!confirm(`¿Cargar ${data.detalles.length} ítems del remito ${numero}?`)) {
-                        return;
-                    }
-                    
-                    // Limpiar detalles existentes
-                    limpiarDetallesCargados();
-                    
-                    // Guardar ID de factura en campo oculto
-                    idFacturaOrigen.value = data.id_factura;
-                    
-                    // Insertar nuevos detalles (con restricciones)
-                    data.detalles.forEach((detalle) => {
-                        const currentIndex = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])').length;
-                        const total = (detalle.cantidad * detalle.precio).toFixed(2);
-                        
-                        const newRow = `
-                        <tr data-form-index="${currentIndex}" class="small-font" data-origen-remito="true">
-                            <input type="hidden" name="detallecompra_set-${currentIndex}-id_detalle_compra">
-                            <input type="hidden" name="detallecompra_set-${currentIndex}-id_compra">
-                            <input type="hidden" name="detallecompra_set-${currentIndex}-id_producto" value="${detalle.id_producto}">
-                            <td>
-                                <input type="text" name="detallecompra_set-${currentIndex}-medida"
-                                    class="form-control form-control-sm border border-primary" 
-                                    value="${detalle.medida}" readonly>
-                            </td>
-                            <td>
-                                <input type="text" name="detallecompra_set-${currentIndex}-producto_venta"
-                                    class="form-control form-control-sm border border-primary" 
-                                    value="${detalle.nombre}" readonly>
-                            </td>
-                            <td>
-                                <input type="text" name="detallecompra_set-${currentIndex}-despacho"
-                                    class="form-control form-control-sm border border-primary" 
-                                    maxlength="16" placeholder="Despacho" value="">
-                            </td>
-                            <td>
-                                <input type="number" name="detallecompra_set-${currentIndex}-cantidad"
-                                    class="form-control form-control-sm border border-primary text-end" 
-                                    value="${detalle.cantidad}" readonly
-                                    style="background-color: #e9ecef;">
-                            </td>
-                            <td>
-                                <input type="number" name="detallecompra_set-${currentIndex}-precio"
-                                    class="form-control form-control-sm border border-primary text-end" 
-                                    value="${detalle.precio.toFixed(2)}" readonly
-                                    style="background-color: #e9ecef;">
-                            </td>
-                            <td>
-                                <input type="number" name="detallecompra_set-${currentIndex}-total"
-                                    class="form-control form-control-sm border border-primary text-end" 
-                                    value="${total}" readonly>
-                            </td>
-                            <td>
-                                <button type="button" class="btn btn-danger btn-sm btn-delete" 
-                                    data-form-index="${currentIndex}" disabled>
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                                <input type="checkbox" name="detallecompra_set-${currentIndex}-DELETE" style="display: none;">
-                            </td>
-                        </tr>`;
-                        
-                        document.querySelector('.detalle-form tbody').insertAdjacentHTML('beforeend', newRow);
-                        const nuevaFila = document.querySelector('.detalle-form tbody tr:last-child');
-                        if (nuevaFila) recalcularFila(nuevaFila);
-                    });
-                    
-                    // Actualizar contador y totales
-                    actualizarContadorFormsets();
-                    actualizarTotalCompra();
-                    
-                    // Abrir acordeón de detalles
-                    const accordionDetalle = document.getElementById('collapseDetalle');
-                    const btnDetalle = document.querySelector('[data-bs-target="#collapseDetalle"]');
-                    if (accordionDetalle && !accordionDetalle.classList.contains('show')) {
-                        new bootstrap.Collapse(accordionDetalle, { show: true });
-                        btnDetalle.classList.remove('collapsed');
-                    }
-                    
-                    // Bloquear el campo numero_comprobante (readonly) para que no se pueda modificar
-                    numeroInput.readOnly = true;
-                    numeroInput.style.backgroundColor = '#f0f0f0';
-                    
-                    alert(`✅ ${data.detalles.length} ítems cargados del remito ${numero}`);
-                //
-            })
-            .catch(error => {
-                alert('❌ ' + error.message);
-                numeroInput.value = '';
-                numeroInput.focus();
-            })
-            .finally(() => {
-                numeroInput.style.backgroundColor = originalBg || '';
-                if (numeroInput.value === '' && !numeroInput.readOnly) {
-                    numeroInput.readOnly = false;
-                }
-            });
-        });
+        }
         ////
 
-        // Ejecutar al cargar si ya hay un comprobante seleccionado
-        if (comprobanteSelect.value) {
-            comprobanteSelect.dispatchEvent(new Event('change'));
-        }                
-        ////
+        // Inicializar
+        manageInputs();
         
         // Inicializar totales si hay filas existentes
         setTimeout(() => {
