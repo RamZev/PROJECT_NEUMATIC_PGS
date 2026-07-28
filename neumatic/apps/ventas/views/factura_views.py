@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.utils.safestring import mark_safe
 
 from datetime import datetime, timedelta
+from decimal import Decimal, ROUND_HALF_UP
+
 import time
 
 import json
@@ -851,7 +853,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							form.instance.cae = int(resultado['cae'])
 							form.instance.cae_vto = datetime.strptime(resultado['vencimiento'], '%Y%m%d').date()
 
-														# =========================================================
+							# =========================================================
 							# ACTUALIZAR MODELO NUMERO (CORREGIDO)
 							# =========================================================
 							try:
@@ -980,6 +982,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				elif tipo_numeracion == 'automatica':
 					print("tipo_numeracion***:", tipo_numeracion)
 					# Bloquear y obtener/crear el número
+					#numero_obj, created = Numero.objects.select_for_update().get_or_create(
 					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 						id_sucursal=sucursal,
 						id_punto_venta=punto_venta,
@@ -1192,6 +1195,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						# No hacemos return para no impedir la creación de la factura principal
 
 				# 6. ACTUALIZACIÓN DE LA AUTORIZACIÓN (NUEVO)
+				print("nuevo_numero", nuevo_numero)
 				if form.cleaned_data.get('id_valida'):
 					autorizacion = form.cleaned_data['id_valida']
 					Valida.objects.filter(pk=autorizacion.pk).update(
@@ -1247,7 +1251,12 @@ class FacturaCreateView(MaestroDetalleCreateView):
 
 						
 		except DatabaseError as e:
-			messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+			# messages.error(self.request, "Error de concurrencia: Intente nuevamente")
+			# return self.form_invalid(form)
+			print(f"❌ DatabaseError capturado: {e}")
+			import traceback
+			traceback.print_exc()
+			messages.error(self.request, f"Error de concurrencia: {e}")
 			return self.form_invalid(form)
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
@@ -1406,8 +1415,32 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			'CanMisMonExt': 'can_mis_mon_ext',
 			'CondicionIVAReceptorId': 'condicion_iva_receptor_id',
 		}
+		# for tag, key in fields.items():
+		# 	SubElement(det, tag).text = str(comprobante.get(key, '0.00' if 'Imp' in key else ''))
+
+		###################################
 		for tag, key in fields.items():
-			SubElement(det, tag).text = str(comprobante.get(key, '0.00' if 'Imp' in key else ''))
+			value = comprobante.get(key)
+			if value is None:
+				value = '0.00' if tag.startswith('Imp') else ''
+			else:
+				if tag.startswith('Imp') or tag == 'MonCotiz':
+					try:
+						dec = Decimal(str(value))
+						if tag == 'MonCotiz':
+							# MonCotiz requiere 3 decimales (ej: 1.000)
+							dec = dec.quantize(Decimal('0.001'), rounding=ROUND_HALF_UP)
+							value = f"{dec:.3f}"
+						else:
+							# Importes a 2 decimales
+							dec = dec.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+							value = f"{dec:.2f}"
+					except Exception:
+						value = '0.00' if tag.startswith('Imp') else ''
+				else:
+					value = str(value)
+			SubElement(det, tag).text = value
+		###################################
 
 		# =========================================================
 		# CBTEASOC PARA NC/ND

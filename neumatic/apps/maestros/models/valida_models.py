@@ -63,7 +63,7 @@ class Valida(ModeloBaseGenerico):
 			'tipo_comprobante__in': ["REMITO", "FACTURA", "NOTA DE CRÉDITO"]
         }
     )
-	numero_comprobante = models.IntegerField(
+	numero_comprobante = models.BigIntegerField(
 		verbose_name="Número",
 		null=True,
 		blank=True
