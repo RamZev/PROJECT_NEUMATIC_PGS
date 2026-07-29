@@ -178,42 +178,64 @@ class CompraCreateView(MaestroDetalleCreateView):
 					form.add_error('id_deposito', 'Debe seleccionar un depósito')
 					return self.form_invalid(form)
 				
-				# 2. Validación y obtención de factura origen (solo para RM)
+				# 🔥 ELIMINAR TODA LA LÓGICA DE NUMERACIÓN COMPLEJA
+				# Los campos vienen directamente del formulario
+				
+				# Validación específica para REMITO INTERNO
 				comprobante_compra_obj = form.cleaned_data.get('id_comprobante_compra')
+				if comprobante_compra_obj and comprobante_compra_obj.remito:
+					# Detectar si es interno por nombre (o por campo booleano si existe)
+					if "INTERNO" in comprobante_compra_obj.nombre_comprobante_compra.upper():
+						if not form.cleaned_data.get('id_factura_origen'):
+							form.add_error('numero_comprobante', 'Debe ingresar un número de remito válido')
+							return self.form_invalid(form)				
+				
+				# 2. Guardar Compra
+				self.object = form.save()
+				
+				# 3. Guardar Detalles
+				formset_detalle.instance = self.object
+				detalles = formset_detalle.save()
+
+				# 👇 VALIDAR id_factura_origen ANTES de guardar
 				id_factura_origen = form.cleaned_data.get('id_factura_origen')
 				factura_origen = None
 
-				if comprobante_compra_obj and comprobante_compra_obj.codigo_comprobante_compra == 'RM':
-					if not id_factura_origen:
-						form.add_error('numero_comprobante', 'Debe ingresar un número de remito válido (10 dígitos)')
-						return self.form_invalid(form)
+				if id_factura_origen:
 					try:
 						factura_origen = Factura.objects.get(pk=id_factura_origen)
 						print(f"✅ Factura origen encontrada: {factura_origen.id_factura}")
 					except Factura.DoesNotExist:
 						messages.error(self.request, f'La factura origen con ID {id_factura_origen} no existe')
 						return redirect(self.get_success_url())
-				# Si no es RM, factura_origen permanece None
 
-				# 3. Guardar cabecera (una sola vez)
+				# 2. Guardar Compra (asignando la factura antes de guardar)
 				self.object = form.save(commit=False)
 				if factura_origen:
 					self.object.id_factura_origen = factura_origen
-				else:
-					self.object.id_factura_origen = None  # Aseguramos NULL para RT y otros
 				self.object.save()
 
-				# 4. Guardar detalles (una sola vez)
+				# 3. Guardar Detalles
 				formset_detalle.instance = self.object
 				detalles = formset_detalle.save()
 				
-				# 5. Actualizar Stock
+				# 4. Actualizar Stock
 				for detalle in detalles:
 					if (hasattr(detalle.id_producto, 'tipo_producto') and
 						detalle.id_producto.tipo_producto == "P" and
 						detalle.cantidad):
 						
-						# A. ACTUALIZAR INVENTARIO (usando select_for_update)
+						# A. ACTUALIZAR INVENTARIO (EXISTENTE)
+						''' Código Original Ricardo
+						ProductoStock.objects.select_for_update().filter(
+							id_producto=detalle.id_producto,
+							id_deposito=deposito
+						).update(
+							stock=F('stock') + (detalle.cantidad * self.object.id_comprobante_compra.mult_stock),
+							fecha_producto_stock=form.cleaned_data['fecha_comprobante']
+						)
+						'''
+						#-- Código Modificado por Leoncio (para que se active el signal).
 						producto_stocks = ProductoStock.objects.select_for_update().filter(
 							id_producto=detalle.id_producto,
 							id_deposito=deposito
@@ -224,12 +246,14 @@ class CompraCreateView(MaestroDetalleCreateView):
 							producto_stock.fecha_producto_stock = form.cleaned_data['fecha_comprobante']
 							producto_stock.save()
 						
-						# B. ACTUALIZAR DESPACHOS EN PRODUCTO
+						# B. NUEVO: ACTUALIZAR DESPACHOS EN PRODUCTO
 						if hasattr(detalle, 'despacho') and detalle.despacho:
 							producto_obj = detalle.id_producto
+							
+							# Actualizar campos de despacho según la lógica requerida
 							Producto.objects.filter(id_producto=producto_obj.id_producto).update(
-								despacho_2=producto_obj.despacho_1,
-								despacho_1=detalle.despacho
+								despacho_2=producto_obj.despacho_1,  # 1. Pasar despacho_1 a despacho_2
+								despacho_1=detalle.despacho          # 2. Reemplazar despacho_1 por despacho del detalle
 							)
 				
 				messages.success(self.request, f"Compra {self.object.numero_comprobante} creada correctamente")
@@ -237,7 +261,7 @@ class CompraCreateView(MaestroDetalleCreateView):
 		
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
-			return self.form_invalid(form)	
+			return self.form_invalid(form)
 	######
 	
 	def form_invalid(self, form):
@@ -314,51 +338,24 @@ class CompraUpdateView(MaestroDetalleUpdateView):
 		
 		return data
 	
-	###
 	def form_valid(self, form):
 		context = self.get_context_data()
 		formset_detalle = context['formset_detalle']
 		
-		if not formset_detalle.is_valid():
+		if formset_detalle.is_valid():
+			try:
+				with transaction.atomic():
+					self.object = form.save()
+					formset_detalle.instance = self.object
+					formset_detalle.save()
+					messages.success(self.request, "La Compra se ha actualizado correctamente.")
+					return super().form_valid(form)
+			except Exception as e:
+				messages.error(self.request, f"Error al actualizar la compra: {str(e)}")
+				return self.form_invalid(form)
+		else:
+			messages.error(self.request, "Error en el detalle de la compra. Revise los datos.")
 			return self.form_invalid(form)
-		
-		try:
-			with transaction.atomic():
-				# 1. Validación y obtención de factura origen (solo para RM)
-				comprobante_compra_obj = form.cleaned_data.get('id_comprobante_compra')
-				id_factura_origen = form.cleaned_data.get('id_factura_origen')
-				factura_origen = None
-
-				if comprobante_compra_obj and comprobante_compra_obj.codigo_comprobante_compra == 'RM':
-					if not id_factura_origen:
-						form.add_error('numero_comprobante', 'Debe ingresar un número de remito válido (10 dígitos)')
-						return self.form_invalid(form)
-					try:
-						factura_origen = Factura.objects.get(pk=id_factura_origen)
-						print(f"✅ Factura origen encontrada: {factura_origen.id_factura}")
-					except Factura.DoesNotExist:
-						messages.error(self.request, f'La factura origen con ID {id_factura_origen} no existe')
-						return redirect(self.get_success_url())
-				# Si no es RM, factura_origen permanece None
-
-				# 2. Guardar cabecera (con commit=False para asignar id_factura_origen)
-				self.object = form.save(commit=False)
-				if factura_origen:
-					self.object.id_factura_origen = factura_origen
-				else:
-					self.object.id_factura_origen = None  # Aseguramos NULL para RT y otros
-				self.object.save()
-
-				# 3. Guardar detalles
-				formset_detalle.instance = self.object
-				formset_detalle.save()
-
-				messages.success(self.request, "La Compra se ha actualizado correctamente.")
-				return redirect(self.get_success_url())
-		except Exception as e:
-			messages.error(self.request, f"Error al actualizar la compra: {str(e)}")
-			return self.form_invalid(form)
-	###
 	
 	def form_invalid(self, form):
 		print("Errores del formulario principal:", form.errors)

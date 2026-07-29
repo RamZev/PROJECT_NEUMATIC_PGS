@@ -143,3 +143,29 @@ def buscar_remito_origen(request):
         print("❌ ERROR EN buscar_remito_origen:")
         traceback.print_exc()
         return JsonResponse({'error': f'Error interno: {str(e)}'}, status=500)
+
+
+@require_GET
+def verificar_unicidad_remito(request):
+    """
+    Verifica si ya existe un remito (RT) con el mismo proveedor y número.
+    """
+    id_proveedor = request.GET.get('id_proveedor')
+    numero = request.GET.get('numero')
+    
+    if not id_proveedor or not numero:
+        return JsonResponse({'error': 'Faltan parámetros'}, status=400)
+    
+    try:
+        proveedor = Proveedor.objects.get(pk=id_proveedor)
+    except Proveedor.DoesNotExist:
+        return JsonResponse({'error': 'Proveedor no encontrado'}, status=404)
+    
+    # Buscar si existe alguna compra con ese proveedor y número (solo RT)
+    existe = Compra.objects.filter(
+        id_proveedor=proveedor,
+        numero_comprobante=numero,
+        id_comprobante_compra__codigo_comprobante_compra='RT'
+    ).exists()
+    
+    return JsonResponse({'exists': existe})
