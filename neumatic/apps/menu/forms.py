@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import Group
 from django.db.models import Case, When, Max
 from .models import MenuHeading, MenuItem
-
+from entorno.constantes_base import ICON_CHOICES
 
 class MenuHeadingForm(forms.ModelForm):
     class Meta:
@@ -19,6 +19,14 @@ class MenuHeadingForm(forms.ModelForm):
 
 
 class MenuItemForm(forms.ModelForm):
+    # --- CAMPO SOBRESCRITO ---
+    icon = forms.ChoiceField(
+        choices=ICON_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        help_text='Selecciona el icono que se mostrará junto al acceso rápido. El color puede estar incluido en la clase.')
+
+
     class Meta:
         model = MenuItem
         fields = [
@@ -32,7 +40,8 @@ class MenuItemForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'url_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'nombre_url'}),
             'query_params': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '?parametro=valor'}),
-            'icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-home'}),
+            # 'icon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'fas fa-home'}),
+            'icon': forms.Select(choices=ICON_CHOICES, attrs={'class': 'form-control'}),
             'is_collapse': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'order': forms.NumberInput(attrs={'class': 'form-control'}),
             # CheckboxSelectMultiple SIN attrs conflictivos
@@ -99,6 +108,11 @@ class MenuItemForm(forms.ModelForm):
             
             return collapsable_items
         
+        # Agregar opción vacía al campo icon
+        choices = list(self.fields['icon'].choices)
+        choices.insert(0, ('', '---------'))
+        self.fields['icon'].choices = choices
+
         # Filtrar items padres para evitar referencias circulares
         collapsable_items = get_collapsable_items_ordered()
         

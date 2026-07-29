@@ -85,7 +85,7 @@
     </div>
 
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             <div class="mb-3">
                 {{ form.icon.label_tag }}
                 {{ form.icon }}
@@ -93,6 +93,15 @@
                 <div class="text-danger small">{{ form.icon.errors }}</div>
                 {% endif %}
                 <div class="form-text">Clase de FontAwesome (ej: 'fas fa-home')</div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="mb-3">
+                {{ form.orden_acceso_directo.label_tag }}
+                {{ form.orden_acceso_directo }}
+                
+                <div class="form-text">Orden de Acceso Directo</div>
             </div>
         </div>
 

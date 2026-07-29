@@ -39,7 +39,20 @@ def menu_context(request):
             menu_tree[heading] = visible_items
     
     # print(f"DEBUG: Headings visibles: {[h.name for h in menu_tree.keys()]}")
-    return {'menu_tree': menu_tree}
+    
+    # Obtener accesos rápidos
+    accesos_rapidos = MenuItem.objects.filter(
+        orden_acceso_directo__gt=0
+    ).order_by('orden_acceso_directo')
+    
+    # Filtrar por permisos del usuario
+    user = request.user
+    accesos_rapidos = [item for item in accesos_rapidos if item.has_access(user)]
+    
+    return {
+        'menu_tree': menu_tree,
+        'accesos_rapidos': accesos_rapidos, 
+        }
 
 
 def build_menu_tree(menu_item, user):
