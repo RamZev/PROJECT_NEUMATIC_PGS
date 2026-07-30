@@ -163,53 +163,125 @@ class CompraForm(GenericForm):
 			remito=True  # 🔥 SOLO COMPROBANTES CON REMITO
 		).order_by('nombre_comprobante_compra')
 
+	# def clean(self):
+	# 	cleaned_data = super().clean()
+
+	# 	print("--- Validando duplicados en CompraForm ---")
+		
+	# 	#-- Obtener los datos a validar desde cleaned_data.
+	# 	compro = cleaned_data.get('compro')
+	# 	letra = cleaned_data.get('letra_comprobante')
+	# 	numero = cleaned_data.get('numero_comprobante')
+		
+	# 	proveedor = cleaned_data.get('id_proveedor')
+		
+	# 	#-- Comprobar validaciones.
+	# 	errors = {}
+		
+	# 	if not numero:
+	# 		errors['numero_comprobante'] = "Se debe generar un Número de comprobante."
+		
+	# 	if not proveedor:
+	# 		errors['id_proveedor'] = "Debe indicar un Proveedor."
+		
+	# 	# Validación de duplicados
+	# 	if compro and letra and numero:
+	# 		queryset = Compra.objects.filter(
+	# 			compro=compro,
+	# 			letra_comprobante=letra,
+	# 			numero_comprobante=numero
+	# 		)
+			
+	# 		if queryset.exists():
+	# 			comprobante_existente = queryset.first()
+	# 			print(f"***Comprobante duplicado: {compro} {letra} {numero}")
+
+	# 			 # ✅ Error general (no asociado a campo específico)
+	# 			if '__all__' not in errors:
+	# 				errors['__all__'] = []
+
+	# 			errors['__all__'].append(
+	# 				f"Comprobante {compro} {letra} {numero} ya existe. "
+	# 				f"Proveedor: {comprobante_existente.id_proveedor} - "
+	# 				f"Fecha: {comprobante_existente.fecha_comprobante.strftime('%d/%m/%Y')}"
+	# 			)
+
+		
+	# 	#-- Si hay errores de validación, lanzar la excepción para que se agreguen al contexto.
+	# 	if errors:
+	# 		raise ValidationError(errors)
+		
+	# 	return cleaned_data
+
 	def clean(self):
 		cleaned_data = super().clean()
-
-		print("--- Validando duplicados en CompraForm ---")
 		
-		#-- Obtener los datos a validar desde cleaned_data.
+		# Obtener datos necesarios
 		compro = cleaned_data.get('compro')
 		letra = cleaned_data.get('letra_comprobante')
 		numero = cleaned_data.get('numero_comprobante')
-		
 		proveedor = cleaned_data.get('id_proveedor')
+		comprobante_obj = cleaned_data.get('id_comprobante_compra')
 		
-		#-- Comprobar validaciones.
+		# Validaciones obligatorias
 		errors = {}
-		
 		if not numero:
 			errors['numero_comprobante'] = "Se debe generar un Número de comprobante."
-		
 		if not proveedor:
 			errors['id_proveedor'] = "Debe indicar un Proveedor."
 		
-		# Validación de duplicados
-		if compro and letra and numero:
-			queryset = Compra.objects.filter(
-				compro=compro,
-				letra_comprobante=letra,
-				numero_comprobante=numero
-			)
-			
-			if queryset.exists():
-				comprobante_existente = queryset.first()
-				print(f"***Comprobante duplicado: {compro} {letra} {numero}")
-
-				 # ✅ Error general (no asociado a campo específico)
-				if '__all__' not in errors:
-					errors['__all__'] = []
-
-				errors['__all__'].append(
-					f"Comprobante {compro} {letra} {numero} ya existe. "
-					f"Proveedor: {comprobante_existente.id_proveedor} - "
-					f"Fecha: {comprobante_existente.fecha_comprobante.strftime('%d/%m/%Y')}"
-				)
-
-		
-		#-- Si hay errores de validación, lanzar la excepción para que se agreguen al contexto.
 		if errors:
 			raise ValidationError(errors)
+		
+		# --- VALIDACIONES ESPECÍFICAS SEGÚN TIPO DE COMPROBANTE ---
+		if comprobante_obj:
+			codigo = comprobante_obj.codigo_comprobante_compra
+			
+			# 1. PARA REMITOS (RT) - validación de 8 dígitos y unicidad por proveedor+número
+			if codigo == 'RT':
+				# a) Mínimo 8 dígitos
+				if len(str(numero)) < 8:
+					self.add_error('numero_comprobante', 'El número de remito debe tener al menos 8 dígitos.')
+					return cleaned_data  # cortamos para no seguir
+				
+				# b) Unicidad: no puede existir otro RT con el mismo proveedor y número
+				queryset = Compra.objects.filter(
+					id_proveedor=proveedor,
+					numero_comprobante=numero,
+					id_comprobante_compra=comprobante_obj  # solo RT
+				)
+				if self.instance.pk:
+					queryset = queryset.exclude(pk=self.instance.pk)
+				
+				if queryset.exists():
+					compra_existente = queryset.first()
+					self.add_error(
+						'numero_comprobante',
+						f'Ya existe un remito con el número {numero} para el proveedor {proveedor.nombre_proveedor}. '
+						f'(Fecha: {compra_existente.fecha_comprobante.strftime("%d/%m/%Y")})'
+					)
+			
+			# 2. PARA REMITOS INTERNOS (RM) - validación ya está en la vista (id_factura_origen)
+			# No añadimos nada aquí porque la vista se encarga.
+			
+			# 3. PARA OTROS COMPROBANTES (FA, NC, etc.) - validación por compro+letra+numero
+			else:
+				queryset = Compra.objects.filter(
+					compro=compro,
+					letra_comprobante=letra,
+					numero_comprobante=numero
+				)
+				if self.instance.pk:
+					queryset = queryset.exclude(pk=self.instance.pk)
+				
+				if queryset.exists():
+					comprobante_existente = queryset.first()
+					self.add_error(
+						'__all__',
+						f'Comprobante {compro} {letra} {numero} ya existe. '
+						f'Proveedor: {comprobante_existente.id_proveedor} - '
+						f'Fecha: {comprobante_existente.fecha_comprobante.strftime("%d/%m/%Y")}'
+					)
 		
 		return cleaned_data
 
