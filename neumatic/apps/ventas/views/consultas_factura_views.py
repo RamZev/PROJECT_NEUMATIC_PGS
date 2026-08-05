@@ -13,6 +13,9 @@ from django.views.decorators.http import require_POST, require_GET
 from django.db import transaction
 from django.contrib import messages
 from django.utils import timezone
+from django.db import transaction
+from django.db.models import Max
+
 
 from utils.saldo_cliente import obtener_saldo_cliente
 from apps.maestros.models.cliente_models import Cliente
@@ -1268,3 +1271,65 @@ def anular_remito(request, pk):
 
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+from django.db import transaction
+from django.db.models import Max
+from apps.maestros.models.numero_models import Numero
+from apps.ventas.models.factura_models import Factura
+
+class NumeracionService:
+    @staticmethod
+    def obtener_proximo_numero(sucursal, punto_venta, comprobante_venta, comprobante_afip, letra):
+        """
+        Devuelve el próximo número para la combinación dada,
+        calculándolo a partir del máximo usado en Factura,
+        y actualiza el registro en Numero de forma atómica.
+        """
+        with transaction.atomic():
+            # 1. Obtener el máximo número usado en Factura para esta combinación
+            max_actual = Factura.objects.filter(
+                id_sucursal=sucursal,
+                id_punto_venta=punto_venta,
+                id_comprobante_venta=comprobante_venta,
+                letra_comprobante=letra
+            ).aggregate(Max('numero_comprobante'))['numero_comprobante__max'] or 0
+
+            # 2. Obtener o crear el registro en Numero con bloqueo
+            numero_obj, created = Numero.objects.select_for_update().get_or_create(
+                id_sucursal=sucursal,
+                id_punto_venta=punto_venta,
+                comprobante=comprobante_afip,  # Código AFIP (ej. "1", "2", "3")
+                letra=letra,
+                defaults={
+                    'numero': max_actual,
+                    'lineas': 1,
+                    'copias': 1
+                }
+            )
+
+            # 3. Si ya existía pero su número es menor al máximo real, actualizarlo
+            if not created and numero_obj.numero < max_actual:
+                numero_obj.numero = max_actual
+                numero_obj.save(update_fields=['numero'])
+
+            # 4. Incrementar y guardar
+            nuevo_numero = numero_obj.numero + 1
+            numero_obj.numero = nuevo_numero
+            numero_obj.save(update_fields=['numero'])
+
+            return nuevo_numero
+
+    @staticmethod
+    def calcular_proximo_numero(sucursal, punto_venta, comprobante_venta, letra):
+        """
+        Versión de solo lectura: devuelve el próximo número sin modificar la BD.
+        Útil para previsualización en el frontend.
+        """
+        max_actual = Factura.objects.filter(
+            id_sucursal=sucursal,
+            id_punto_venta=punto_venta,
+            id_comprobante_venta=comprobante_venta,
+            letra_comprobante=letra
+        ).aggregate(Max('numero_comprobante'))['numero_comprobante__max'] or 0
+        return max_actual + 1

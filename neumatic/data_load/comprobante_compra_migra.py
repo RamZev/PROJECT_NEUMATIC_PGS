@@ -1,74 +1,102 @@
+# neumatic\data_load\comprobante_compra_migra.py
+import json
 import os
 import sys
 import django
-from dbfread import DBF
-from django.db import connection
 
-# Añadir el directorio base del proyecto al sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
-
-# Configurar Django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
+from django.db import connection
+from django.core.exceptions import ValidationError
+from django.conf import settings
 from apps.maestros.models.base_models import ComprobanteCompra
 
-def cargar_comprobantes_compra_desde_dbf(archivo_dbf):
-    """Carga los datos de comprobantes de compra desde un archivo DBF y los migra al modelo ComprobanteCompra."""
-    
-    # Abrir la tabla DBF y leer su contenido
-    dbf_table = DBF(archivo_dbf, load=True)
 
-    # Resetear la tabla ComprobanteCompra (eliminar los datos existentes)
-    reset_comprobantes_compra()
-
-    # Iterar sobre cada registro de la tabla DBF
-    for record in dbf_table:
-        # Crear el registro en la base de datos
-        ComprobanteCompra.objects.create(
-            estatus_comprobante_compra=True,  # Asignar True por defecto
-            codigo_comprobante_compra=record['CODIGO'].strip(),
-            nombre_comprobante_compra=record['NOMBRE'].strip(),
-            mult_compra=record['MULT_COM'] if record['MULT_COM'] is not None else 0,
-            mult_saldo=record['MULT_PRO'] if record['MULT_PRO'] is not None else 0,
-            mult_stock=record['MULT_STO'] if record['MULT_STO'] is not None else 0,
-            mult_caja=record['MULT_CAJA'] if record['MULT_CAJA'] is not None else 0,
-            libro_iva=record['LIBROIVA'] if record['LIBROIVA'] is not None else False,
-            codigo_afip_a=str(record['CODAFIP']).strip() if record['CODAFIP'] is not None else '',
-            codigo_afip_b=str(record['CODAFIPB']).strip() if record['CODAFIPB'] is not None else '',
-            codigo_afip_c=str(record['CODAFIPC']).strip() if record['CODAFIPC'] is not None else '',
-            codigo_afip_m=''  # Asignar False (campo de tipo CharField, por lo que lo dejamos vacío)
-        )
-
-    print(f"Se han migrado {len(dbf_table)} comprobantes de compra de forma exitosa.")
-
-def reset_comprobantes_compra():
-    """Elimina los datos existentes en la tabla ComprobanteCompra y resetea su ID."""
-    # Eliminar los datos existentes en la tabla
+def limpiar_tabla():
+    """Elimina todos los registros de la tabla ComprobanteCompra."""
     ComprobanteCompra.objects.all().delete()
+    print("Tabla ComprobanteCompra limpiada.")
 
-    # Detectar el motor de base de datos
-    from django.conf import settings
+
+def actualizar_secuencia_postgres(max_id):
+    """Actualiza la secuencia de PostgreSQL al valor máximo + 1."""
     engine = settings.DATABASES['default']['ENGINE']
-    
-    with connection.cursor() as cursor:
-        if 'sqlite' in engine:
-            # SQLite: reiniciar secuencia
-            cursor.execute("DELETE FROM sqlite_sequence WHERE name='comprobante_compra';")
-            print("Autoincremento reseteado (SQLite).")
-        elif 'mssql' in engine or 'sql_server' in engine:
-            # SQL Server: reiniciar identity
-            cursor.execute("DBCC CHECKIDENT ('comprobante_compra', RESEED, 0);")
-            print("Autoincremento reseteado (SQL Server).")
-        else:
-            print(f"Motor {engine} - No se requiere reset automático de secuencia.")
+    if 'postgresql' in engine:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT setval(pg_get_serial_sequence('comprobante_compra', 'id_comprobante_compra'), %s, true);",
+                [max_id + 1]
+            )
+            print(f"Secuencia de PostgreSQL actualizada al valor {max_id + 1}.")
+    else:
+        print("No es PostgreSQL, no se actualiza secuencia.")
 
-    print("Datos de la tabla ComprobanteCompra eliminados.")
+
+def cargar_comprobantes_desde_json(ruta_json):
+    """
+    Carga los comprobantes de compra respetando los IDs originales del JSON.
+    - usuario: toma del JSON, si es null → 'admin'
+    - estacion: toma del JSON, si es null → 'ESTACION03'
+    - id_user_id: toma del JSON, si es null → 1
+    - id_user_update_id: igual que id_user_id
+    """
+    with open(ruta_json, 'r', encoding='utf-8') as file:
+        comprobantes = json.load(file)
+
+    creados = 0
+    max_id = 0
+
+    for item in comprobantes:
+        try:
+            usuario_val = item.get("usuario") or "admin"
+            estacion_val = item.get("estacion") or "ESTACION03"
+            id_user = item.get("id_user_id") or 1
+            id_user_update = item.get("id_user_update_id") or 1
+
+            ComprobanteCompra.objects.create(
+                id_comprobante_compra=item.get("id_comprobante_compra"),  # ← ID original
+                usuario=usuario_val,
+                estacion=estacion_val,
+                fcontrol=item.get("fcontrol"),
+                fcontrol2=item.get("fcontrol2"),
+                estatus_comprobante_compra=bool(item.get("estatus_comprobante_compra", True)),
+                codigo_comprobante_compra=item.get("codigo_comprobante_compra", ""),
+                nombre_comprobante_compra=item.get("nombre_comprobante_compra", ""),
+                nombre_impresion=item.get("nombre_impresion", ""),
+                mult_compra=int(item.get("mult_compra", 0)),
+                mult_saldo=int(item.get("mult_saldo", 0)),
+                mult_stock=int(item.get("mult_stock", 0)),
+                mult_caja=int(item.get("mult_caja", 0)),
+                libro_iva=bool(item.get("libro_iva", False)),
+                codigo_afip_a=item.get("codigo_afip_a", ""),
+                codigo_afip_b=item.get("codigo_afip_b", ""),
+                codigo_afip_c=item.get("codigo_afip_c", ""),
+                codigo_afip_m=item.get("codigo_afip_m", ""),
+                remito=bool(item.get("remito", False)),
+                retencion=bool(item.get("retencion", False)),
+                id_user_id=id_user,
+                id_user_update_id=id_user_update,
+            )
+            creados += 1
+            id_actual = item.get("id_comprobante_compra", 0)
+            if id_actual > max_id:
+                max_id = id_actual
+
+        except ValidationError as e:
+            print(f"Error validando comprobante {item.get('nombre_comprobante_compra', 'Desconocido')}: {e}")
+        except Exception as e:
+            print(f"Error creando comprobante {item.get('nombre_comprobante_compra', 'Desconocido')}: {e}")
+
+    print(f"✅ Se han migrado {creados} comprobantes de compra.")
+    return max_id
+
 
 if __name__ == '__main__':
-    # Ruta del archivo DBF
-    archivo_dbf = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'codcom.dbf')
-
-    # Ejecutar la migración
-    cargar_comprobantes_compra_desde_dbf(archivo_dbf)
+    ruta_json = os.path.join(BASE_DIR, 'data_load', 'comprobante_compra.json')
+    limpiar_tabla()
+    max_id_insertado = cargar_comprobantes_desde_json(ruta_json)
+    actualizar_secuencia_postgres(max_id_insertado)
+    print("🎯 Migración completada.")

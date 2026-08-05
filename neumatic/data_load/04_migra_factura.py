@@ -14,7 +14,7 @@ SCRIPTS = [
     'factura_migra.py',
     'factura_mov_stock_migra.py',
     'detalle_factura_migra.py',
-    #'factura_mov_stock_detalle_migra.py',
+    # 'factura_mov_stock_detalle_migra.py',
     'stock_cliente_migra.py'
 ]
 

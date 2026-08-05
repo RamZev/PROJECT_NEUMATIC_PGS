@@ -3,74 +3,63 @@ import json
 import os
 import sys
 import django
+from django.db import connection
+from django.core.exceptions import ValidationError
 
-# Configuración del entorno Django (siempre al principio)
+# Configuración del entorno Django
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
-django.setup()  # <-- Importante: antes de importar modelos o settings
+django.setup()
 
-# Ahora importamos todo lo que necesita Django
-from django.db import connection
-from django.core.exceptions import ValidationError
-from django.conf import settings  # <-- Ahora sí, después del setup
 from apps.maestros.models.base_models import ComprobanteVenta
 
-
-def limpiar_tabla():
-    """Elimina todos los registros de la tabla (sin resetear secuencia)."""
+def reset_comprobante_venta():
+    """Elimina los datos existentes en la tabla ComprobanteVenta y resetea su ID."""
     ComprobanteVenta.objects.all().delete()
     print("Tabla ComprobanteVenta limpiada.")
 
-
-def actualizar_secuencia_postgres(max_id):
-    """Actualiza la secuencia de PostgreSQL al valor máximo + 1."""
+    # Detectar el motor de base de datos
+    from django.conf import settings
     engine = settings.DATABASES['default']['ENGINE']
-    if 'postgresql' in engine:
-        with connection.cursor() as cursor:
-            cursor.execute(
-                "SELECT setval(pg_get_serial_sequence('comprobante_venta', 'id_comprobante_venta'), %s, true);",
-                [max_id + 1]
-            )
-            print(f"Secuencia de PostgreSQL actualizada al valor {max_id + 1}.")
-    else:
-        print("No es PostgreSQL, no se actualiza secuencia.")
-
+    
+    with connection.cursor() as cursor:
+        if 'sqlite' in engine:
+            # SQLite: reiniciar secuencia
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='comprobante_venta';")
+            print("Secuencia de ID reseteada (SQLite).")
+        elif 'postgresql' in engine:
+            # PostgreSQL: reiniciar secuencia usando setval
+            cursor.execute("SELECT setval(pg_get_serial_sequence('comprobante_venta', 'id_comprobante_venta'), 1, false);")
+            print("Secuencia de ID reseteada (PostgreSQL).")
+        elif 'mssql' in engine or 'sql_server' in engine:
+            # SQL Server: reiniciar identity
+            cursor.execute("DBCC CHECKIDENT ('comprobante_venta', RESEED, 0);")
+            print("Secuencia de ID reseteada (SQL Server).")
+        elif 'mysql' in engine:
+            # MySQL: reiniciar autoincremento
+            cursor.execute("ALTER TABLE comprobante_venta AUTO_INCREMENT = 1;")
+            print("Secuencia de ID reseteada (MySQL).")
+        else:
+            print(f"Motor {engine} no requiere reset manual de secuencia.")
 
 def cargar_comprobantes_desde_json(ruta_json):
-    """
-    Carga los comprobantes de venta respetando los IDs originales del JSON.
-    - usuario: toma del JSON, si es null → 'admin'
-    - estacion: toma del JSON, si es null → 'ESTACION03'
-    - id_user_id: toma del JSON, si es null → 1
-    - id_user_update_id: igual que id_user_id
-    - tipo_numeracion: se toma tal cual (puede ser None)
-    """
+    """Carga los comprobantes de venta desde un archivo JSON con IDs manuales."""
     with open(ruta_json, 'r', encoding='utf-8') as file:
         comprobantes = json.load(file)
 
-    creados = 0
-    max_id = 0
-
+    # Contador para IDs manuales (empezando desde 1)
+    contador_id = 1
+    
     for item in comprobantes:
         try:
-            # Valores por defecto según requerimientos
-            usuario_val = item.get("usuario") or "admin"
-            estacion_val = item.get("estacion") or "ESTACION03"
-            id_user = item.get("id_user_id") or 1
-            id_user_update = item.get("id_user_update_id") or 1
-
             ComprobanteVenta.objects.create(
-                id_comprobante_venta=item.get("id_comprobante_venta"),
-                usuario=usuario_val,
-                estacion=estacion_val,
-                fcontrol=item.get("fcontrol"),
-                fcontrol2=item.get("fcontrol2"),
+                id_comprobante_venta=contador_id,  # ← Asignar ID manual empezando desde 1
+                usuario="admin",
                 estatus_comprobante_venta=bool(item.get("estatus_comprobante_venta", True)),
                 codigo_comprobante_venta=item.get("codigo_comprobante_venta", ""),
                 nombre_comprobante_venta=item.get("nombre_comprobante_venta", ""),
                 tipo_comprobante=item.get("tipo_comprobante"),
-                tipo_numeracion=item.get("tipo_numeracion"),  # puede ser None
                 compro_asociado=item.get("compro_asociado"),
                 mult_venta=int(item.get("mult_venta", 0)),
                 mult_saldo=int(item.get("mult_saldo", 0)),
@@ -92,35 +81,17 @@ def cargar_comprobantes_desde_json(ruta_json):
                 ncr_ndb=bool(item.get("ncr_ndb", False)),
                 manual=bool(item.get("manual", False)),
                 mipyme=bool(item.get("mipyme", False)),
-                interno=bool(item.get("interno", False)),
-                id_user_id=id_user,
-                id_user_update_id=id_user_update,
+                interno=bool(item.get("interno", False))
             )
-            creados += 1
-            # Guardar el ID máximo para actualizar la secuencia
-            id_actual = item.get("id_comprobante_venta", 0)
-            if id_actual > max_id:
-                max_id = id_actual
-
+            contador_id += 1
         except ValidationError as e:
             print(f"Error validando comprobante {item.get('nombre_comprobante_venta', 'Desconocido')}: {e}")
         except Exception as e:
             print(f"Error creando comprobante {item.get('nombre_comprobante_venta', 'Desconocido')}: {e}")
 
-    print(f"✅ Se han migrado {creados} comprobantes de venta.")
-    return max_id
-
+    print(f"Se han migrado {ComprobanteVenta.objects.count()} comprobantes de venta con IDs desde 1.")
 
 if __name__ == '__main__':
     ruta_json = os.path.join(BASE_DIR, 'data_load', 'comprobante_venta.json')
-
-    # 1. Limpiar tabla
-    limpiar_tabla()
-
-    # 2. Cargar datos desde JSON (con IDs originales)
-    max_id_insertado = cargar_comprobantes_desde_json(ruta_json)
-
-    # 3. Actualizar secuencia si es PostgreSQL
-    actualizar_secuencia_postgres(max_id_insertado)
-
-    print("🎯 Migración completada.")
+    reset_comprobante_venta()
+    cargar_comprobantes_desde_json(ruta_json)

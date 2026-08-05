@@ -32,6 +32,8 @@ from entorno.constantes_base import TIPO_VENTA
 
 from services.fe_arca import FacturadorARCA
 
+from .consultas_factura_views import NumeracionService
+
 TIPOS_CON_ASOCIACION = {2, 3, 7, 8}
 
 modelo = Factura
