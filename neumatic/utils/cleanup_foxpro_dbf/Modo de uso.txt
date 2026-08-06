@@ -1,0 +1,117 @@
+===========================================================================================
+Requisitos Previos
+===========================================================================================
+
+  Asegúrate de instalar la librería nativa para manipulación de tablas Visual FoxPro (.dbf):
+  
+  pip install dbf
+
+
+===========================================================================================
+Verificar configuración
+===========================================================================================
+
+	python limpiar_caracteres_dbf_directo.py --verify
+
+De esta forma se verificará la configuración de búsqueda, rutas y campos de las tablas.
+ 
+Esto verificará:
+ ✅ Que existan las tablas .DBF configuradas en RUTA_TABLAS_DBF dentro de cleanup_config.py.
+ ✅ Que los campos especificados existan en la estructura del archivo .DBF.
+ ✅ Muestra la lista de caracteres a reemplazar.
+
+
+===========================================================================================
+Analizar (MODO SEGURO - sin modificar)
+===========================================================================================
+
+	python limpiar_caracteres_dbf_directo.py
+
+Esto:
+ ✅ NO modifica los archivos .DBF (se abren en modo LECTURA).
+ ✅ Analiza todos los archivos .DBF configurados.
+ ✅ Muestra cuántos registros se modificarían.
+ ✅ Muestra ejemplos del contenido original y corregido.
+ ✅ Genera un log: cleanup_dbf_20260806_143000.log
+ ✅ Muestra si se requieren cambios antes de aplicarlos.
+
+
+===========================================================================================
+Limpiar (MODO REAL - ¡MODIFICA LOS ARCHIVOS .DBF!)
+===========================================================================================
+
+	python limpiar_caracteres_dbf_directo.py --fix
+
+Esto:
+ ⚠️ Pide confirmación antes de modificar.
+ ⚠️ Modifica permanentemente los registros de los archivos .DBF.
+ ⚠️ Ignora automáticamente registros marcados como eliminados (DELETED() en FoxPro).
+ ✅ Limpia todos los caracteres corruptos campo por campo.
+ ✅ Genera log detallado de los cambios aplicados.
+
+
+===========================================================================================
+OPCIONES ADICIONALES
+===========================================================================================
+
+Limpiar solo una tabla .DBF específica:
+
+	#-- Solo analizar una tabla.
+	python limpiar_caracteres_dbf_directo.py --tabla CLIENTES.DBF
+
+	#-- Limpiar solo una tabla.
+	python limpiar_caracteres_dbf_directo.py --tabla CLIENTES.DBF --fix
+
+
+===========================================================================================
+EJEMPLO DE FLUJO COMPLETO RECOMENDADO:
+===========================================================================================
+
+#-- 1. Ir al directorio del script.
+	cd ...\PROJECT_NEUMATIC\neumatic\utils\cleanup_foxpro
+
+#-- 2. Hacer backup de la carpeta de tablas .DBF (¡MUY IMPORTANTE!).
+
+#-- 3. Configurar la variable RUTA_TABLAS_DBF y TABLAS_CAMPOS en cleanup_config.py.
+
+#-- 4. Verificar configuración.
+	python limpiar_caracteres_dbf_directo.py --verify
+
+#-- 5. Analizar sin modificar.
+	python limpiar_caracteres_dbf_directo.py
+
+#-- 6. Revisar el archivo de log generado.
+
+#-- 7. Si el análisis es correcto, ejecutar la limpieza sobre los .DBF:
+	python limpiar_caracteres_dbf_directo.py --fix
+
+
+===========================================================================================
+ACTUALIZAR cleanup_config.py
+===========================================================================================
+
+1. Especificar la ruta donde residen los archivos .DBF de origen:
+   RUTA_TABLAS_DBF = r"C:\ruta\a\tus\tablas_foxpro"
+
+2. Agregar/Modificar las tablas y sus campos correspondientes (usar nombres en mayúsculas):
+   TABLAS_CAMPOS = {
+       'FACTURA.DBF': ['OBSERVA', 'NUMERO'],
+       'PEDIDO.DBF': ['NOTAS', 'REFERENCIA'],
+   }
+
+3. Actualizar CARACTERES_REEMPLAZO_CON_DESCRIPCION o CARACTERES_ELIMINAR según sea necesario.
+
+
+===========================================================================================
+PROBLEMAS COMUNES Y SOLUCIONES
+===========================================================================================
+
+- Error: "Archivo no encontrado: C:\...\TABLA.DBF"
+  · Verifica que la variable RUTA_TABLAS_DBF tenga la ruta correcta en cleanup_config.py.
+  · Asegúrate de haber escrito correctamente el nombre del archivo con su extensión .DBF.
+
+- Error: "Permission denied / Archivo bloqueado"
+  · Asegúrate de que Visual FoxPro, la aplicación cliente o cualquier otro proceso no tenga abierta la tabla en modo exclusivo.
+
+- Ninguno de los campos especificados existe
+  · Abre la tabla o verifica los nombres exactos de las columnas/campos en la estructura del DBF (recuerda que FoxPro limita los campos a 10 caracteres).
