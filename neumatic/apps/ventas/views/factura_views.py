@@ -28,7 +28,7 @@ from ...maestros.models.base_models import AlicuotaIva
 from apps.ventas.models.caja_models import Caja, CajaDetalle
 from ...maestros.models.descuento_vendedor_models import DescuentoRevendedor
 
-from entorno.constantes_base import TIPO_VENTA
+from entorno.constantes_base import TIPO_VENTA, LETRAS_AUTOMATICAS
 
 from services.fe_arca import FacturadorARCA
 
@@ -461,17 +461,31 @@ class FacturaCreateView(MaestroDetalleCreateView):
 				else:
 					comprobante_afip = codigo_afip_a
 					# Buscar si ya existe un número para esta combinación
-					numero_existente = Numero.objects.filter(
-						id_sucursal=sucursal,
-						id_punto_venta=punto_venta,
-						comprobante=comprobante_afip
-					).first()
+					# numero_existente = Numero.objects.filter(
+					# 	id_sucursal=sucursal,
+					# 	id_punto_venta=punto_venta,
+					# 	comprobante=comprobante_afip
+					# ).first()
 					
-					if numero_existente:
-						letra = numero_existente.letra
-						print("if numero_existente", letra)
+					# if numero_existente:
+					# 	letra = numero_existente.letra
+					# 	print("if numero_existente", letra)
+					# else:
+					# 	print("if not numero_existente", letra)
+					# 	letra = "X"
+
+					comprobante_afip = codigo_afip_a
+					# Usar el mapeo fijo para automáticos
+					if comprobante in LETRAS_AUTOMATICAS:
+						letra = LETRAS_AUTOMATICAS[comprobante]
 					else:
-						letra = "X"
+						# Fallback: buscar en Numero (para casos no contemplados)
+						numero_existente = Numero.objects.filter(
+							id_sucursal=sucursal,
+							id_punto_venta=punto_venta,
+							comprobante=comprobante_afip
+						).first()
+						letra = numero_existente.letra if numero_existente else "X"
 
 				# Manejar la numeración según el tipo
 				# ============================================
@@ -982,19 +996,37 @@ class FacturaCreateView(MaestroDetalleCreateView):
 					nuevo_numero = numero_plantilla
 				
 				elif tipo_numeracion == 'automatica':
-					print("tipo_numeracion***:", tipo_numeracion)
-					# Bloquear y obtener/crear el número
-					#numero_obj, created = Numero.objects.select_for_update().get_or_create(
-					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-						id_sucursal=sucursal,
-						id_punto_venta=punto_venta,
-						comprobante=comprobante_afip,
-						letra=letra,
-						defaults={'numero': 0}
+					# print("tipo_numeracion***:", tipo_numeracion)
+					# # Bloquear y obtener/crear el número
+					# #numero_obj, created = Numero.objects.select_for_update().get_or_create(
+					# numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
+					# 	id_sucursal=sucursal,
+					# 	id_punto_venta=punto_venta,
+					# 	comprobante=comprobante_afip,
+					# 	letra=letra,
+					# 	defaults={'numero': 0}
+					# )
+
+					# nuevo_numero = numero_obj.numero + 1
+					# Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+					
+					print("DEBUG INI -*-*-*-*")
+					print("LETRAS_AUTOMATICAS", LETRAS_AUTOMATICAS)
+					print("punto_venta", punto_venta)
+					print("compro", comprobante)
+					print("comprobante_afip", comprobante_afip)
+					print("letra", letra)
+					print("DEBUG FIN -*-*-*-*")
+					nuevo_numero = NumeracionService.obtener_proximo_numero(
+						punto_venta=punto_venta,          # ← objeto PuntoVenta (ya obtenido de form.cleaned_data['id_punto_venta'])
+						compro=comprobante,               # ← 'RM', 'PR', etc.
+						comprobante_afip=comprobante_afip,
+						letra=letra
 					)
 
-					nuevo_numero = numero_obj.numero + 1
-					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+					print("tipo_numeracion***:", tipo_numeracion)
+					print("Nuevo Número:", nuevo_numero)
+
 
 				# Asignar valores definiitivos
 				form.instance.numero_comprobante = nuevo_numero

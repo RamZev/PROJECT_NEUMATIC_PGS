@@ -372,3 +372,16 @@ MOTIVO_AUTORIZACION = [
     ('VENCIMIENTO', 'Documentos vencidos'),
     ('LIMITE_CREDITO', 'Límite de crédito excedido'),
 ]
+
+LETRAS_AUTOMATICAS = {
+    'DM': 'R',
+    'MI': 'X',
+    'MM': 'R',
+    'PR': 'P',
+    'RB': 'R',
+    'RC': 'R',
+    'RD': 'R',
+    'RF': 'R',
+    'RM': 'R',
+    'RR': 'R',
+}
