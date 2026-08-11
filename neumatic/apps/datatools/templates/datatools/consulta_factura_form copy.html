@@ -103,7 +103,7 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid">
-				<h4>Comprobantes por Cliente</h4>
+				<h4>Buscar Facturas por Cliente</h4>
 
 				<!-- === NUEVO: AÑADE ESTE BLOQUE PARA MOSTRAR MENSAJES === -->
 				{% if messages %}
@@ -152,7 +152,7 @@
 
 				<!-- Tabla de facturas -->
 				<div class="table-responsive tbl-container">
-					<table class="table table-sm table-bordered table-striped">
+					<table class="table table-bordered table-striped">
 					<thead class="table-primary">
 						<tr>
 						<th>ID</th>
@@ -182,73 +182,59 @@
 									<i class="bi bi-eye"></i> Ver
 								</button>
 								
-								<!-- ====== NUEVA CONDICIÓN PARA BOTONES DE STOCK ====== -->
-								{% if factura.id_comprobante_venta.tipo_comprobante == "FACTURA" %}
-									<!-- Botón: Crear Stock Cliente -->
-									{% if not factura.stock_clie %}
-										<form method="post" 
-											action="{% url 'crear_stock_cliente' factura.id_factura %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}"
-											style="display:inline;" class="ms-1">
-											{% csrf_token %}
-											<button type="submit" class="btn btn-sm btn-success" 
-													onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
-												<i class="bi bi-box-seam"></i> Crear Stock
-											</button>
-										</form>
-									{% else %}
-										<span class="badge bg-warning text-dark ms-1">Stock creado</span>
-									{% endif %}
-
-									<!-- Botón: Gestionar Stock Cliente -->
-									<a href="{% url 'stock_cliente_detalle' factura.id_factura %}" 
-										class="btn btn-sm btn-info ms-1">
-										<i class="bi bi-box-seam"></i> Gestionar Stock
-									</a>
+								<!-- Botón: Crear Stock Cliente -->
+								{% if not factura.tiene_stock_cliente %}
+									<form method="post" 
+										action="{% url 'crear_stock_cliente' factura.id_factura %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}"
+										style="display:inline;" class="ms-1">
+										{% csrf_token %}
+										<button type="submit" class="btn btn-sm btn-success" 
+												onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
+											<i class="bi bi-box-seam"></i> Crear Stock
+										</button>
+									</form>
+								{% else %}
+									<span class="badge bg-warning text-dark ms-1">Stock creado</span>
 								{% endif %}
-								<!-- ====== FIN DE CONDICIÓN ====== -->
+
+								<!-- Botón: Gestionar Stock Cliente (NUEVA VISTA) -->
+								<a href="{% url 'stock_cliente_detalle' factura.id_factura %}" 
+									class="btn btn-sm btn-info ms-1">
+									<i class="bi bi-box-seam"></i> Gestionar Stock
+								</a>
 								
 							</td>
 						</tr>
 						<tr class="collapse" id="detalles{{ factura.id_factura }}">
-							<td colspan="9">
+							<td colspan="5">
 							<div class="table-responsive mt-2">
 								<table class="table table-sm table-bordered">
-									<thead class="table-primary">
+								<thead class="table-primary">
+									<tr>
+									<th>Producto</th>
+									<th>Cantidad</th>
+									<th>Precio Unitario</th>
+									<th>Subtotal</th>
+									</tr>
+								</thead>
+								<tbody>
+									{% for detalle in detalles_factura|get_item:factura.id_factura %}
 										<tr>
-											<th>Marca</th>
-											<th>Medida</th>
-											<th>Descripción</th>
-											<th>Cantidad</th>
-											<th>Precio</th>
-											<th>Descuento</th>
-											<th>Total</th>
-											<th>Reventa</th>
-											<th>Operario</th>
+										<td>{{ detalle.producto_venta }}</td>
+										<td class="decimal">{{ detalle.cantidad|formato_es_ar }}</td>
+										<td class="decimal">{{ detalle.precio|formato_es_ar }}</td>
+										<td class="decimal"><strong>{{ detalle.total|formato_es_ar }}</strong></td>
 										</tr>
-									</thead>
-									<tbody>
-										{% for detalle in detalles_factura|get_item:factura.id_factura %}
-											<tr>
-												<td>{{ detalle.id_producto.id_marca.nombre_producto_marca|default:"-" }}</td>
-												<td>{{ detalle.id_producto.medida|default:"-" }}</td>
-												<td>{{ detalle.producto_venta }}</td>
-												<td class="decimal">{{ detalle.cantidad|formato_es_ar }}</td>
-												<td class="decimal">{{ detalle.precio|formato_es_ar }}</td>
-												<td class="decimal">{{ detalle.descuento|formato_es_ar }}</td>
-												<td class="decimal"><strong>{{ detalle.total|formato_es_ar }}</strong></td>
-												<td>{{ detalle.reventa|default:"-" }}</td>
-												<td>{{ detalle.id_operario.nombre_operario|default:"SIN OPERARIO" }}</td>
-											</tr>
-										{% empty %}
-											<tr><td colspan="4">No hay detalles para esta comprobante.</td></tr>
-										{% endfor %}
-									</tbody>
+									{% empty %}
+										<tr><td colspan="4">No hay detalles para esta factura.</td></tr>
+									{% endfor %}
+								</tbody>
 								</table>
 							</div>
 							</td>
 						</tr>
 						{% empty %}
-						<tr><td colspan="9">No se encontraron facturas para este cliente.</td></tr>
+						<tr><td colspan="5">No se encontraron facturas para este cliente.</td></tr>
 						{% endfor %}
 					</tbody>
 					</table>

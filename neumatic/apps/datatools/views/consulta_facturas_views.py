@@ -73,7 +73,7 @@ class ConsultaFacturasClienteView(TemplateView):
 				if cliente:
 					facturas = Factura.objects.filter(
 						id_cliente=cliente,
-						id_comprobante_venta__libro_iva=True
+						# id_comprobante_venta__libro_iva=True
 					).select_related(
 						'id_comprobante_venta',
 						'id_cliente'
@@ -89,7 +89,11 @@ class ConsultaFacturasClienteView(TemplateView):
 						facturas_ids = [f.id_factura for f in facturas]
 						detalles = DetalleFactura.objects.filter(
 							id_factura__in=facturas_ids
-						).select_related('id_producto')
+						).select_related(
+							'id_producto',          # Producto en sí
+							'id_producto__id_marca',# Marca del producto
+							'id_operario'           # Operario
+						)
 						
 						# Organizar detalles por factura
 						detalles_factura = {
