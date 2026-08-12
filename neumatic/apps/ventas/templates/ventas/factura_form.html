@@ -569,13 +569,34 @@
 						<div class="container my-3">
 							<div class="d-flex align-items-center">
 								<!-- Botón Anular a la izquierda -->
-								<div class="me-auto">
+								{% comment %} <div class="me-auto">
 									{% if is_edit and object.id_comprobante_venta.remito and object.estatus_comprobante and object.estado != 'F' %}
 										<button type="button" class="btn btn-danger btn-sm" 
 												id="btnAnularRemito" 
 												data-url="{% url 'remito_anular' object.pk %}">
 											Anular <i class="bi bi-x-circle"></i>
 										</button>
+									{% endif %}
+								</div> {% endcomment %}
+
+								<div class="me-auto">
+									{% if is_edit and object.id_comprobante_venta.remito and object.estatus_comprobante %}
+										{% if object.estado != 'F' %}
+											<!-- Botón Anular (rojo) -->
+											<button type="button" class="btn btn-danger btn-sm me-2" 
+													id="btnAnularRemito" 
+													data-url="{% url 'remito_anular' object.pk %}">
+												Anular <i class="bi bi-x-circle"></i>
+											</button>
+										{% endif %}
+										{% if not object.estado and request.user.jerarquia == 'A' or request.user.is_superuser %}
+											<button type="button" class="btn btn-success btn-sm" 
+													id="btnCancelarRemito" 
+													data-bs-toggle="modal" 
+													data-bs-target="#cancelarRemitoModal">
+												Cancelar Remito <i class="bi bi-check-circle"></i>
+											</button>
+										{% endif %}										
 									{% endif %}
 								</div>
 
@@ -1284,6 +1305,53 @@
 			</div>
 		</div>
 	</div>
+
+	<!-- Modal Cancelar Remito -->
+	<div class="modal fade" id="cancelarRemitoModal" tabindex="-1" aria-labelledby="cancelarRemitoModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header text-white bg-success bg-opacity-75 py-2">
+					<h5 class="modal-title fs-6" id="cancelarRemitoModalLabel">
+						<i class="bi bi-pencil-square me-2"></i>Cancelar Remito
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- NO hay <form> aquí -->
+					<input type="hidden" id="cancelarRemitoId" value="{{ object.pk }}">
+					
+					<div class="mb-3">
+						<label for="estadoRemito" class="form-label">Estado</label>
+						<select class="form-select" id="estadoRemito">
+							<option value="" {% if not object.estado %}selected{% endif %}>Vacío</option>
+							<option value="C" {% if object.estado == 'C' %}selected{% endif %}>C</option>
+							<option value="F" {% if object.estado == 'F' %}selected{% endif %}>F</option>
+							<option value="R" {% if object.estado == 'R' %}selected{% endif %}>R</option>
+						</select>
+					</div>
+					
+					<div class="mb-3 form-check">
+						<input type="checkbox" class="form-check-input" id="productosCamiones" {% if object.productos_camiones %}checked{% endif %}>
+						<label class="form-check-label" for="productosCamiones">Productos de Camiones</label>
+					</div>
+					
+					<div class="mb-3">
+						<label for="comisionRemito" class="form-label">Comisión</label>
+						<select class="form-select" id="comisionRemito">
+							<option value="" {% if not object.comision %}selected{% endif %}>Vacío</option>
+							<option value="C" {% if object.comision == 'C' %}selected{% endif %}>C</option>
+						</select>
+					</div>
+
+					<div id="mensajeCancelarRemito" class="mt-2"></div>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+					<button type="button" class="btn btn-success btn-sm" id="btnGuardarCancelarRemito">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>	
 {% endblock modals %}
 
 {% block script %}
@@ -4224,17 +4292,21 @@
 				#factura-form select,
 				#factura-form textarea
 			`);
-			
+
 			// Agregar evento 'keydown' a cada campo
 			inputs.forEach((input, index) => {
 				input.addEventListener('keydown', function(e) {
 					if (e.key === 'Enter') {
-						e.preventDefault(); // Evitar envío del formulario
+						// Si es un textarea, no interferir (deja que inserte salto de línea)
+						if (this.tagName === 'TEXTAREA') {
+							return; // Permite el comportamiento nativo
+						}
+						e.preventDefault(); // Evitar envío del formulario para otros campos
 						
 						// Encontrar el siguiente campo disponible
 						let nextIndex = index + 1;
 						while (nextIndex < inputs.length && 
-							  (inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
+							(inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
 							nextIndex++;
 						}
 						
@@ -4251,7 +4323,7 @@
 						}
 					}
 				});
-			});
+			});			
 			
 			// Bloqueo adicional para evitar envío por Enter en cualquier campo
 			const form = document.getElementById('factura-form');
@@ -4837,6 +4909,83 @@
 			}, 100);
 		}
 	});
-	</script>	
-
+	</script>
+	
+	<script>
+	// =========================================================
+	// CANCELAR REMITO - Modal sin form anidado
+	// =========================================================
+	document.addEventListener('DOMContentLoaded', function() {
+		const btnGuardar = document.getElementById('btnGuardarCancelarRemito');
+		if (btnGuardar) {
+			btnGuardar.addEventListener('click', function() {
+				const remitoId = document.getElementById('cancelarRemitoId').value;
+				const estado = document.getElementById('estadoRemito').value;
+				const productosCamiones = document.getElementById('productosCamiones').checked;
+				const comision = document.getElementById('comisionRemito').value;
+				const mensajeDiv = document.getElementById('mensajeCancelarRemito');
+				
+				// Deshabilitar botón
+				btnGuardar.disabled = true;
+				btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+				mensajeDiv.innerHTML = '';
+				
+				const url = `/ventas/remito/actualizar-campos/${remitoId}/`;
+				
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': getCookie('csrftoken')
+					},
+					body: JSON.stringify({
+						estado: estado,
+						productos_camiones: productosCamiones,
+						comision: comision
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						mensajeDiv.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+							${data.message}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>`;
+						// Recargar para reflejar cambios
+						setTimeout(() => location.reload(), 1500);
+					} else {
+						mensajeDiv.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							Error: ${data.error}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>`;
+						btnGuardar.disabled = false;
+						btnGuardar.innerHTML = 'Guardar';
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					mensajeDiv.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						Error de conexión.
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>`;
+					btnGuardar.disabled = false;
+					btnGuardar.innerHTML = 'Guardar';
+				});
+			});
+		}
+		
+		// Limpiar al cerrar el modal
+		const modal = document.getElementById('cancelarRemitoModal');
+		if (modal) {
+			modal.addEventListener('hidden.bs.modal', function() {
+				document.getElementById('mensajeCancelarRemito').innerHTML = '';
+				const btn = document.getElementById('btnGuardarCancelarRemito');
+				if (btn) {
+					btn.disabled = false;
+					btn.innerHTML = 'Guardar';
+				}
+			});
+		}
+	});		
+	</script>
 {% endblock script %}

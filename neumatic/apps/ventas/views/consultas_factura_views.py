@@ -1318,3 +1318,51 @@ class NumeracionService:
                 numero_obj.save(update_fields=['numero'])
 
             return nuevo_numero
+
+
+@login_required
+@require_POST
+def actualizar_campos_remito(request, pk):
+    """
+    Actualiza los campos estado, productos_camiones y comision de un remito.
+    Recibe JSON con los nuevos valores.
+    """
+    try:
+        remito = get_object_or_404(Factura, pk=pk)
+
+        # Validar que sea remito
+        if not remito.id_comprobante_venta.remito:
+            return JsonResponse({'success': False, 'error': 'El documento no es un remito.'}, status=400)
+
+        # Validar estado actual (solo si está vacío)
+        if remito.estado not in (None, ''):
+            return JsonResponse({'success': False, 'error': 'Solo se pueden modificar remitos con estado vacío.'}, status=400)
+
+        # Validar permisos (solo superusuario o jerarquía 'A')
+        if not (request.user.is_superuser or request.user.jerarquia == 'A'):
+            return JsonResponse({'success': False, 'error': 'No tiene permisos.'}, status=403)
+
+        # Leer JSON del body
+        data = json.loads(request.body)
+        estado = data.get('estado', '')
+        productos_camiones = data.get('productos_camiones', False)  # booleano
+        comision = data.get('comision', '')
+
+        # Validar opciones permitidas
+        if estado not in ['', 'C', 'F', 'R']:
+            return JsonResponse({'success': False, 'error': 'Estado no válido.'}, status=400)
+        if comision not in ['', 'C']:
+            return JsonResponse({'success': False, 'error': 'Comisión no válida.'}, status=400)
+
+        # Actualizar
+        remito.estado = estado
+        remito.productos_camiones = bool(productos_camiones)
+        remito.comision = comision
+        remito.save(update_fields=['estado', 'productos_camiones', 'comision'])
+
+        return JsonResponse({'success': True, 'message': 'Remito actualizado correctamente.'})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Formato JSON inválido.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)

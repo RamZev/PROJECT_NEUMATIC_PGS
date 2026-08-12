@@ -4,7 +4,7 @@ import json
 import glob
 from datetime import date
 from io import BytesIO
-# from decimal import Decimal
+import re
 
 from django.http import HttpResponse
 from django.views.generic import TemplateView, View
@@ -729,3 +729,130 @@ class AdministrarStockClienteView(TemplateView):
 		})
 		return context
 
+
+class BuscarRemitoView(TemplateView):
+    template_name = 'datatools/buscar_remito.html'
+
+    def _normalizar_remito(self, valor):
+        """
+        Normaliza un número de remito al formato XXXX-XXXXXXXX.
+        Ejemplos:
+            '3600011660'  -> '0036-00011660'
+            '0036-00011660' -> '0036-00011660'
+            '36-00011660' -> '0036-00011660'
+        """
+        if not valor:
+            return None
+
+        # Eliminar guiones y espacios
+        limpio = re.sub(r'[-\s]', '', valor.strip())
+
+        if not limpio.isdigit():
+            return None
+
+        # Asegurar 12 dígitos (rellenar con ceros a la izquierda)
+        padded = limpio.zfill(12)
+
+        # Formatear como XXXX-XXXXXXXX
+        return f"{padded[:4]}-{padded[4:]}"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        remito_input = self.request.GET.get('remito', '').strip()
+        accion = self.request.GET.get('accion', '')
+        error = None
+        aviso_duplicados = None
+        remito_actual = None
+        comprobante_asociado = None
+        puede_siguiente = False
+
+        # --- Navegación "Siguiente" ---
+        if accion == 'siguiente' and remito_input:
+            remito_actual_formateado = self._normalizar_remito(remito_input)
+            if remito_actual_formateado:
+                # Buscar siguiente remito con número mayor (orden alfabético)
+                siguiente = Factura.objects.filter(
+                    remito__gt=remito_actual_formateado
+                ).exclude(
+                    remito__isnull=True
+                ).exclude(
+                    remito=''
+                ).select_related(
+                    'id_cliente', 'id_vendedor', 'id_user'
+                ).order_by('remito').first()
+
+                if siguiente:
+                    # Redirigir con el número sin guiones
+                    url = f"{reverse('buscar_remito')}?remito={siguiente.remito.replace('-', '')}"
+                    return redirect(url)
+                else:
+                    error = "No hay más remitos posteriores."
+                    # Cargar el remito actual para mostrarlo
+                    remito_actual = Factura.objects.filter(
+                        remito=remito_actual_formateado
+                    ).select_related(
+                        'id_cliente', 'id_vendedor', 'id_user'
+                    ).first()
+                    if not remito_actual:
+                        error = "El remito actual ya no existe."
+            else:
+                error = "Número de remito inválido."
+
+        # --- Búsqueda exacta ---
+        if remito_input and not accion:
+            remito_normalizado = self._normalizar_remito(remito_input)
+            if remito_normalizado:
+                remitos = Factura.objects.filter(
+                    remito=remito_normalizado
+                ).select_related(
+                    'id_cliente', 'id_vendedor', 'id_user',
+                    'id_comprobante_venta'
+                ).order_by('id_factura')
+
+                count = remitos.count()
+                if count == 0:
+                    error = f"No se encontró ningún remito con el número {remito_input}."
+                else:
+                    if count > 1:
+                        aviso_duplicados = f"Se encontraron {count} remitos con ese número. Se muestra el primero."
+                    remito_actual = remitos.first()
+
+                    # Obtener comprobante asociado
+                    if remito_actual.id_comprobante_asociado:
+                        try:
+                            comprobante_asociado = Factura.objects.select_related(
+                                'id_cliente', 'id_vendedor', 'id_user'
+                            ).get(id_factura=remito_actual.id_comprobante_asociado)
+                        except Factura.DoesNotExist:
+                            comprobante_asociado = None
+                            error = "El comprobante asociado al remito ya no existe en la base de datos."
+                    else:
+                        comprobante_asociado = None
+
+                    # Verificar si existe siguiente
+                    siguiente = Factura.objects.filter(
+                        remito__gt=remito_actual.remito
+                    ).exclude(
+                        remito__isnull=True
+                    ).exclude(
+                        remito=''
+                    ).order_by('remito').first()
+                    puede_siguiente = siguiente is not None
+            else:
+                error = "El número de remito debe ser un valor numérico."
+
+        # --- Primera carga (formulario vacío) ---
+        if not remito_actual and not error and not remito_input:
+            pass
+
+        context.update({
+            'remito_actual': remito_actual,
+            'comprobante_asociado': comprobante_asociado,
+            'error': error,
+            'aviso_duplicados': aviso_duplicados,
+            'puede_siguiente': puede_siguiente,
+            'remito_input': remito_input,
+            'remito_formateado': remito_actual.remito if remito_actual else '',
+        })
+        return context

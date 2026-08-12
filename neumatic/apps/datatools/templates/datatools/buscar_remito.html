@@ -1,0 +1,152 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        .remito-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        .remito-card {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .remito-label {
+            font-weight: bold;
+            display: inline-block;
+            width: 120px;
+        }
+        .remito-value {
+            display: inline-block;
+        }
+        .btn-salir {
+            margin-left: 10px;
+        }
+        .badge-remito {
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block maincomponent %}
+    {% block principalcomponent %}
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    <h4 class="mb-3">Buscar Comprobantes según Remitos</h4>
+
+                    <!-- Mensajes de error o avisos -->
+                    {% if error %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+                    {% if aviso_duplicados %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <i class="bi bi-info-circle"></i> {{ aviso_duplicados }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endif %}
+
+                    <!-- Formulario de búsqueda -->
+                    <form method="get" class="row g-3 align-items-end mb-4">
+                        <div class="col-md-3">
+                            <label for="remito" class="form-label fw-bold">Búsqueda Exacta</label>
+                            <input type="text" id="remito" name="remito" class="form-control" 
+                                   placeholder="Número de remito (ej: 3600011660)" 
+                                   value="{{ remito_input }}">
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-search"></i> Buscar
+                            </button>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-salir">
+                                <i class="bi bi-x-circle"></i> Salir
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- Resultados -->
+                    {% if remito_actual %}
+                        <div class="remito-card">
+                            <h5 class="mb-3">
+                                Comprobante 
+                                <span class="badge bg-primary badge-remito">
+                                    {{ remito_actual.compro }} 
+                                    {{ remito_actual.letra_comprobante }} 
+                                    {{ remito_actual.numero_comprobante_formateado }}
+                                </span>
+                                <br>
+                                <small class="text-muted">Remito: {{ remito_actual.remito }}</small>
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><span class="remito-label">Fecha:</span> 
+                                        <span class="remito-value">{{ remito_actual.fecha_comprobante|date:"d/m/Y" }}</span>
+                                    </p>
+                                    <p><span class="remito-label">Cliente:</span> 
+                                        <span class="remito-value">
+                                            {% if comprobante_asociado %}
+                                                {{ comprobante_asociado.id_cliente.nombre_cliente|default:"Sin cliente" }}
+                                            {% else %}
+                                                {{ remito_actual.id_cliente.nombre_cliente|default:"Sin cliente" }}
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                    <p><span class="remito-label">Condición:</span> 
+                                        <span class="remito-value">
+                                            {% if comprobante_asociado %}
+                                                {{ comprobante_asociado.condicion_venta }}
+                                            {% else %}
+                                                {{ remito_actual.condicion_venta }}
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><span class="remito-label">Total:</span> 
+                                        <span class="remito-value fw-bold text-success">
+                                            {% if comprobante_asociado %}
+                                                {{ comprobante_asociado.total|formato_es_ar }}
+                                            {% else %}
+                                                {{ remito_actual.total|formato_es_ar }}
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                    <p><span class="remito-label">Operador:</span> 
+                                        <span class="remito-value">
+                                            {% if comprobante_asociado %}
+                                                {{ comprobante_asociado.id_user.username|default:"Sin operador" }}
+                                            {% else %}
+                                                {{ remito_actual.id_user.username|default:"Sin operador" }}
+                                            {% endif %}
+                                        </span>
+                                    </p>
+                                    {% comment %} {% if not comprobante_asociado %}
+                                        <p class="text-warning"><i class="bi bi-info-circle"></i> Este remito no tiene documento asociado.</p>
+                                    {% endif %} {% endcomment %}
+                                </div>
+                            </div>
+                        </div>
+                    {% elif not error and not remito_input %}
+
+                        <div class="alert alert-info mt-4">
+                            <i class="bi bi-info-circle"></i> Ingrese un número de remito para buscar.
+                        </div>
+                    {% endif %}
+                </div>
+            </main>
+        </div>
+    {% endblock %}
+{% endblock %}

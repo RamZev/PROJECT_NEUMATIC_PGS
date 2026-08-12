@@ -70,6 +70,7 @@ from .views.consultas_factura_views import (
     validar_limite_credito,  # ← NUEVA IMPORTACIÓN
     validar_autorizacion,
     anular_remito,
+    actualizar_campos_remito,
 )
 from .views.consultas_compra_views import (
 	obtener_numero_compra,
@@ -180,6 +181,8 @@ urlpatterns = [
 	path('remito/anular/<int:pk>/', anular_remito, name='remito_anular'),
     
 	path('buscar-remito-origen/', buscar_remito_origen, name='buscar_remito_origen'),
+
+    path('remito/actualizar-campos/<int:pk>/', actualizar_campos_remito, name='actualizar_campos_remito'),
 
 	path('verificar-unicidad-remito/', verificar_unicidad_remito, name='verificar_unicidad_remito'),
 

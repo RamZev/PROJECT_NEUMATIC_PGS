@@ -2093,8 +2093,16 @@
                                     isValid = false;
                                     errorMessages.push('El Importe no puede ser negativo.');
                                     importeInput2.classList.add('is-invalid');
+                                } else if (importe === 0) {
+                                    // 🆕 NUEVA VALIDACIÓN: importe debe ser mayor a cero
+                                    isValid = false;
+                                    errorMessages.push('El Importe debe ser mayor a cero.');
+                                    importeInput2.classList.add('is-invalid');
+                                } else {
+                                    importeInput2.classList.remove('is-invalid');
                                 }
-                            }
+                            }                            
+                            //
                         }
                     });
                     ///////////////

@@ -5,6 +5,7 @@ from .views.consulta_facturas_views import (
     ConsultaProductosView,
     CrearStockClienteView, 
     AdministrarStockClienteView,
+    BuscarRemitoView,
     # NUEVAS IMPORTACIONES
     stock_cliente_detalle,
     generar_entrega_cliente,
@@ -33,6 +34,7 @@ from .views.actualizar_estados_views import (
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
     path('productos/', ConsultaProductosView.as_view(), name='consulta_productos_stock'),
+    path('buscar-remito/', BuscarRemitoView.as_view(), name='buscar_remito'),
     
 	# --- NUEVAS RUTAS ---
     path('facturas-cliente/crear-stock/<int:id_factura>/', CrearStockClienteView.as_view(), name='crear_stock_cliente'),
