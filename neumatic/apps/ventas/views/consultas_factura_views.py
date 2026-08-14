@@ -16,7 +16,7 @@ from django.utils import timezone
 from django.db import transaction
 from django.db.models import Max
 
-from utils.saldo_cliente import obtener_saldo_cliente
+from utils.saldo_cliente import check_limite_credito   # ← importar la función
 from apps.maestros.models.cliente_models import Cliente
 from apps.ventas.models.caja_models import CajaDetalle
 
@@ -952,58 +952,33 @@ def buscar_factura(request):
 @require_GET
 def validar_limite_credito(request):
     """
-    Endpoint para validar el saldo de un cliente contra su límite de crédito
-    Recibe: cliente_id (query parameter)
-    Retorna: JSON con saldo, límite y estado de validación
+    Endpoint para validar el saldo de un cliente contra su límite de crédito.
     """
     cliente_id = request.GET.get('cliente_id')
-    
     if not cliente_id:
-        return JsonResponse({
-            'success': False,
-            'error': 'Se requiere el ID del cliente'
-        }, status=400)
-    
+        return JsonResponse({'success': False, 'error': 'Se requiere ID del cliente'}, status=400)
+
     try:
         cliente_id = int(cliente_id)
     except ValueError:
-        return JsonResponse({
-            'success': False,
-            'error': 'ID de cliente inválido'
-        }, status=400)
-    
-    # Obtener el cliente y su límite de crédito
-    try:
-        cliente = Cliente.objects.get(id_cliente=cliente_id)
-        limite_credito = cliente.limite_credito or 0
-    except Cliente.DoesNotExist:
-        return JsonResponse({
-            'success': False,
-            'error': 'Cliente no encontrado'
-        }, status=404)
-    
-    # Obtener saldo del cliente
-    saldo_data = obtener_saldo_cliente(cliente_id)
-    
-    if not saldo_data:
-        saldo_actual = 0.0
-    else:
-        saldo_actual = saldo_data['saldo']
-    
-    # Evaluar si supera el límite
-    supera_limite = saldo_actual > limite_credito
-    
+        return JsonResponse({'success': False, 'error': 'ID de cliente inválido'}, status=400)
+
+    resultado = check_limite_credito(cliente_id)   # ← llamar a la nueva función
+    if resultado is None:
+        return JsonResponse({'success': False, 'error': 'Cliente no encontrado'}, status=404)
+
     return JsonResponse({
         'success': True,
         'cliente_id': cliente_id,
-        'nombre_cliente': cliente.nombre_cliente,
-        'saldo': saldo_actual,
-        'limite_credito': float(limite_credito),
-        'supera_limite': supera_limite,
-        'necesita_autorizacion': supera_limite,
-        'primer_fact_impaga': saldo_data['primer_fact_impaga'] if saldo_data else None,
-        'ultimo_pago': saldo_data['ultimo_pago'] if saldo_data else None,
-        'mensaje': f"Saldo: ${saldo_actual:,.2f} | Límite: ${limite_credito:,.2f}"
+        'nombre_cliente': resultado['cliente'].nombre_cliente,
+        'saldo': resultado['saldo'],
+        'limite_credito': resultado['limite'],
+        'supera_limite': resultado['supera_limite'],
+        'necesita_autorizacion': resultado['necesita_autorizacion'],
+        'primer_fact_impaga': resultado['primer_fact_impaga'],
+        'ultimo_pago': resultado['ultimo_pago'],
+        'saldo_proyectado': resultado.get('saldo_proyectado'),
+        'mensaje': f"Saldo: ${resultado['saldo']:,.2f} | Límite: ${resultado['limite']:,.2f}"
     })
 
 
