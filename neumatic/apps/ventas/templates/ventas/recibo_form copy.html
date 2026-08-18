@@ -2165,6 +2165,11 @@
                                     isValid = false;
                                     errorMessages.push('El Importe no puede ser negativo.');
                                     importeInput2.classList.add('is-invalid');
+                                } else if (importe === 0) {
+                                    // 🆕 NUEVA VALIDACIÓN: importe debe ser mayor a cero
+                                    isValid = false;
+                                    errorMessages.push('El Importe debe ser mayor a cero.');
+                                    importeInput2.classList.add('is-invalid');
                                 } else {
                                     importeInput2.classList.remove('is-invalid');
                                 }
@@ -2173,39 +2178,6 @@
                         }
                     });
                     ///////////////
-
-                    // ===== VALIDACIÓN DE CONTENIDO DEL RECIBO (con soporte para anticipos) =====
-                    const detallesRows = document.querySelectorAll('#formset-container2 .detalle-form tbody tr:not([style*="display: none"])');
-                    let tieneMontoCobrado = false;
-
-                    detallesRows.forEach(row => {
-                        const montoInput = row.querySelector('input[name$="-monto_cobrado"]');
-                        if (montoInput) {
-                            const monto = parseFloat(montoInput.value) || 0;
-                            if (monto !== 0) {
-                                tieneMontoCobrado = true;
-                            }
-                        }
-                    });
-
-                    // Si NO hay monto cobrado, verificar si es un anticipo (importe + formas de pago)
-                    if (!tieneMontoCobrado) {
-                        const importe = parseFloat(document.getElementById('id_total').value) || 0;
-                        const efectivo = parseFloat(document.getElementById('id_efectivo_recibo').value) || 0;
-                        const retenciones = parseFloat(document.getElementById('id_total_retenciones').value) || 0;
-                        const depositos = parseFloat(document.getElementById('id_total_depositos').value) || 0;
-                        const tarjetas = parseFloat(document.getElementById('id_total_tarjetas').value) || 0;
-                        const cheques = parseFloat(document.getElementById('id_total_cheques').value) || 0;
-
-                        const totalFormasPago = efectivo + retenciones + depositos + tarjetas + cheques;
-
-                        if (totalFormasPago === 0 || importe === 0) {
-                            isValid = false;
-                            errorMessages.push('Debe agregar al menos un detalle con monto cobrado (factura) o un importe con formas de pago (anticipo).');
-                        }
-                    }
-                    // alert("completó el código");
-                    // ===== FIN VALIDACIÓN =====
 
                     // Validar CUIT (formato: 11 dígitos numéricos)
                     /* 

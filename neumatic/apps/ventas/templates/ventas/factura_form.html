@@ -1351,6 +1351,24 @@
 				</div>
 			</div>
 		</div>
+	</div>
+	
+	<!-- Modal de Información del Cliente -->
+	<div class="modal fade" id="clienteInfoModal" tabindex="-1" aria-labelledby="clienteInfoModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="clienteInfoModalLabel">Información del Cliente</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="clienteInfoModalBody">
+					<!-- El contenido se llenará dinámicamente -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
 	</div>	
 {% endblock modals %}
 
@@ -3496,7 +3514,7 @@
 				}
 				
 				if (id_sucursal_cliente !== id_sucursal_factura) {
-					alert('Atención: El cliente pertenece a otra sucursal.');
+					alert('Atención: El cliente pertenece a otra sucursal.****');
 				}
 				
 				if (vip) {
@@ -3782,9 +3800,9 @@
 					actualizarMensajeIVA();
 					
 					// Verificación de sucursal
-					const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+					/* const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
 					if (data.id_sucursal !== id_sucursal_factura) {
-						alert('Atención: El cliente pertenece a otra sucursal.');
+						alert('Atención: El cliente pertenece a otra sucursal.////');
 					}
 					
 					// Verificación VIP
@@ -3792,6 +3810,29 @@
 						alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
 						document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
 					}
+					*/
+					
+					// Sucursal, VIP y Saldo
+					var id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+					var sucursalDiferente = (data.id_sucursal && data.id_sucursal != id_sucursal_factura);
+					var esVip = data.vip === true;
+
+					// Si el cliente es VIP, asignar el texto al campo correspondiente (ya existe en el código original)
+					if (esVip) {
+						document.getElementById('id_cliente_vip').value = "Cliente VIP";
+					}
+
+					// Obtener saldo del cliente
+					fetch(`/ventas/validar-limite-credito/?cliente_id=${data.id_cliente}`)
+						.then(response => response.json())
+						.then(saldoData => {
+							var saldo = saldoData.success ? saldoData.saldo : null;
+							mostrarInfoCliente(sucursalDiferente, esVip, saldo);
+						})
+						.catch(error => {
+							console.error('Error al obtener saldo:', error);
+							mostrarInfoCliente(sucursalDiferente, esVip, null);
+						});
 					
 					// Deshabilitar botones
 					// document.getElementById('listar_agenda').disabled = true;
@@ -4987,5 +5028,56 @@
 			});
 		}
 	});		
+	</script>
+
+	<script>
+	function mostrarInfoCliente(sucursalDiferente, esVip, saldo) {
+		var body = document.getElementById('clienteInfoModalBody');
+		if (!body) return;
+
+		var html = '';
+
+		// Mensaje de sucursal diferente
+		if (sucursalDiferente) {
+			html += '<div class="alert alert-warning" role="alert">';
+			html += '<i class="bi bi-exclamation-triangle-fill me-2"></i>';
+			html += 'Atención: El cliente pertenece a otra sucursal.';
+			html += '</div>';
+		}
+
+		// Mensaje de VIP
+		if (esVip) {
+			html += '<div class="alert alert-info" role="alert">';
+			html += '<i class="bi bi-star-fill me-2"></i>';
+			html += '⚠️ Este es un Cliente VIP - Trato Especial ⚠️';
+			html += '</div>';
+		}
+
+		// Saldo del cliente
+		if (saldo !== null && saldo !== undefined) {
+			var saldoFormateado = saldo.toLocaleString('es-AR', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
+			});
+			var color = saldo < 0 ? 'text-danger' : 'text-success';
+			html += '<div class="mt-3">';
+			html += '<h6>Saldo actual:</h6>';
+			html += '<p class="fs-4 fw-bold ' + color + '">$ ' + saldoFormateado + '</p>';
+			html += '</div>';
+		} else {
+			html += '<div class="mt-3 text-muted">No se pudo obtener el saldo del cliente.</div>';
+		}
+
+		// Si no hay ningún mensaje, mostrar un mensaje genérico
+		if (!html) {
+			html = '<p>No hay información adicional.</p>';
+		}
+
+		body.innerHTML = html;
+
+		// Mostrar la modal
+		var modal = new bootstrap.Modal(document.getElementById('clienteInfoModal'));
+		modal.show();
+	}
 	</script>
 {% endblock script %}
