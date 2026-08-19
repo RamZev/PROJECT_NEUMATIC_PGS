@@ -90,6 +90,9 @@ class CustomLogoutView(GenericLogoutView):
 			request.session.pop('is_staff', None)
 			request.session.pop('sucursal', None)
 			request.session.pop('punto_venta', None)
+			#-- Limpiar parámetros de consulta de la sesión (Cambio Costo/Precio por porcentaje).
+			request.session.pop('filtros_actualizacion', None)
+			request.session.pop('post_realizado', None)
 		 
 		#-- Llama al método original para cerrar la sesión.
 		return super().dispatch(request, *args, **kwargs)

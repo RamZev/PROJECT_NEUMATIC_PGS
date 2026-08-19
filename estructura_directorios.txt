@@ -1,101 +1,909 @@
-Estructura de directorios generada desde: \\srvadmirape\DISCO_P\Leoncio\ProyectosDjango\PROJECT_NEUMATIC
-Fecha: 2026-01-30 11:17:10
+Estructura de directorios generada desde: G:\DISCO_P\Leoncio\ProyectosDjango\PROJECT_NEUMATIC_PGS\neumatic
+Fecha: 2026-08-18 09:22:01
 ============================================================
 
-├── 📁 afip_arca/
-│   ├── 📁 comprobantes pd y xml/
-│   ├── 📁 dev-wsaa-cliente-powershell/
-├── 📁 agente/
-├── 📁 back/
-│   ├── 📁 DATA_DBN_drive/
-│   │   └── 📁 DATA/
-│   ├── 📁 datavfox/
-│   ├── 📁 Preguntas a Mario imresión Facturas/
-├── 📁 contexto/
-├── 📁 docs/
-│   ├── 📁 IMG_LOGIN_LOGOUT/
-│   ├── 📁 INFO/
-│   ├── 📁 INFORMES/
-│   │   └── 📁 PROJECT_NEUMATIC_PARCIAL/
-│   │       ├── 📁 apps/
-│   │       ├── 📁 neumatic/
-│   │       ├── 📁 templates/
-│   ├── 📁 Reportes/
-│   │   ├── 📁 Caja/
-│   │   ├── 📁 PDFS/
-│   │   │   ├── 📁 vpn/
-│   │   │   │   ├── 📁 Recibos/
-│   │   │   │   ├── 📁 Remitos/
-│   ├── 📁 SQL/
-│   ├── 📁 TESTEO/
-├── 📁 menu_data/
+├── 📁 apps/
+│   ├── 📁 datatools/
+│   │   ├── 📁 forms/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   ├── 🐍 actualizar_estados_forms.py
+│   │   │   ├── 🐍 actualizar_minimo_forms.py
+│   │   │   ├── 🐍 excel_forms.py
+│   │   │   └── 🐍 forms_generics.py
+│   │   ├── 📁 migrations/
+│   │   │   └── 🐍 __init__.py
+│   │   ├── 📁 templates/
+│   │   │   └── 📁 datatools/
+│   │   │       ├── 🌐 actualizar_estados_cargar.html
+│   │   │       ├── 🌐 actualizar_estados_errores.html
+│   │   │       ├── 🌐 actualizar_estados_previsualizar.html
+│   │   │       ├── 🌐 actualizar_estados_resultado.html
+│   │   │       ├── 🌐 actualizar_minimo_cargar.html
+│   │   │       ├── 🌐 actualizar_minimo_errores.html
+│   │   │       ├── 🌐 actualizar_minimo_previsualizar.html
+│   │   │       ├── 🌐 actualizar_minimo_resultado.html
+│   │   │       ├── 🌐 buscar_remito.html
+│   │   │       ├── 🌐 consulta_factura_form copy.html
+│   │   │       ├── 🌐 consulta_factura_form.html
+│   │   │       ├── 🌐 consulta_productos_form.html
+│   │   │       ├── 🌐 errores_excel.html
+│   │   │       ├── 🌐 excel_preview.html
+│   │   │       ├── 🌐 excel_upload.html
+│   │   │       ├── 🌐 paginacion Propuesta-DS.html
+│   │   │       ├── 🌐 paginacion.html
+│   │   │       ├── 🌐 resultado_productos.html
+│   │   │       ├── 🌐 stock_cliente_detalle copy.html
+│   │   │       └── 🌐 stock_cliente_detalle.html
+│   │   ├── 📁 templatetags/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   └── 🐍 datatools_tags.py
+│   │   ├── 📁 views/
+│   │   │   ├── 🐍 actualizar_estados_views.py
+│   │   │   ├── 🐍 actualizar_minimo_views.py
+│   │   │   ├── 🐍 consulta_facturas_views copy 2.py
+│   │   │   ├── 🐍 consulta_facturas_views copy.py
+│   │   │   ├── 🐍 consulta_facturas_views.py
+│   │   │   └── 🐍 excel_views.py
+│   │   ├── 🐍 __init__.py
+│   │   ├── 🐍 admin.py
+│   │   ├── 🐍 apps.py
+│   │   ├── 🐍 tests.py
+│   │   └── 🐍 urls.py
+│   ├── 📁 informes/
+│   │   ├── 📁 forms/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   ├── 🐍 buscador_actividad_forms.py
+│   │   │   ├── 🐍 buscador_alicuotaiva_forms.py
+│   │   │   ├── 🐍 buscador_banco_forms.py
+│   │   │   ├── 🐍 buscador_caiestados_forms.py
+│   │   │   ├── 🐍 buscador_caja_deposito_fecha_forms.py
+│   │   │   ├── 🐍 buscador_caja_deposito_forms.py
+│   │   │   ├── 🐍 buscador_cajaarqueo_forms.py
+│   │   │   ├── 🐍 buscador_chequerecibo_forms.py
+│   │   │   ├── 🐍 buscador_chequesfecha_forms.py
+│   │   │   ├── 🐍 buscador_cliente_forms.py
+│   │   │   ├── 🐍 buscador_codigoretencion_forms.py
+│   │   │   ├── 🐍 buscador_comprobantecompra_forms.py
+│   │   │   ├── 🐍 buscador_comprobanteventa_forms.py
+│   │   │   ├── 🐍 buscador_conceptobanco_forms.py
+│   │   │   ├── 🐍 buscador_cuenta_banco_forms.py
+│   │   │   ├── 🐍 buscador_cuponesfecha_forms.py
+│   │   │   ├── 🐍 buscador_descuentorevendedor_forms.py
+│   │   │   ├── 🐍 buscador_descuentovendedor_forms.py
+│   │   │   ├── 🐍 buscador_detallecomprobantes_forms.py
+│   │   │   ├── 🐍 buscador_detallecupones_forms.py
+│   │   │   ├── 🐍 buscador_egresoscaja_forms.py
+│   │   │   ├── 🐍 buscador_localidad_forms.py
+│   │   │   ├── 🐍 buscador_marketin_origen_forms.py
+│   │   │   ├── 🐍 buscador_mediopago_forms.py
+│   │   │   ├── 🐍 buscador_moneda_forms.py
+│   │   │   ├── 🐍 buscador_operario_forms.py
+│   │   │   ├── 🐍 buscador_planillacaja_forms.py
+│   │   │   ├── 🐍 buscador_producto_forms.py
+│   │   │   ├── 🐍 buscador_productocai_forms.py
+│   │   │   ├── 🐍 buscador_productodeposito_forms.py
+│   │   │   ├── 🐍 buscador_productoestado_forms.py
+│   │   │   ├── 🐍 buscador_productofamilia_forms.py
+│   │   │   ├── 🐍 buscador_productomarca_forms.py
+│   │   │   ├── 🐍 buscador_productominimo_forms.py
+│   │   │   ├── 🐍 buscador_productomodelo_forms.py
+│   │   │   ├── 🐍 buscador_proveedor_forms.py
+│   │   │   ├── 🐍 buscador_provincia_forms.py
+│   │   │   ├── 🐍 buscador_puntoventa_forms.py
+│   │   │   ├── 🐍 buscador_sucursal_forms.py
+│   │   │   ├── 🐍 buscador_tarjeta_forms.py
+│   │   │   ├── 🐍 buscador_tipodocumentoidentidad_forms.py
+│   │   │   ├── 🐍 buscador_tipoiva_forms.py
+│   │   │   ├── 🐍 buscador_tipopercepcionib_forms.py
+│   │   │   ├── 🐍 buscador_tiporetencionib_forms.py
+│   │   │   ├── 🐍 buscador_vendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlclienteultimaventa_forms.py
+│   │   │   ├── 🐍 buscador_vlcomisionoperario_forms.py
+│   │   │   ├── 🐍 buscador_vlcomisionvendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlcompraingresada_forms.py
+│   │   │   ├── 🐍 buscador_vlcomprobantesvencidos_forms.py
+│   │   │   ├── 🐍 buscador_vldetallecompraproveedor_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasseguncondicion_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasventas_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasventasmarca_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasventasmarcavendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasventasprovincia_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasventasvendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlestadisticasventasvendedorcliente_forms.py
+│   │   │   ├── 🐍 buscador_vlfichaseguimientostock_forms.py
+│   │   │   ├── 🐍 buscador_vlivaventasfull_forms.py
+│   │   │   ├── 🐍 buscador_vlivaventasprovincias_forms.py
+│   │   │   ├── 🐍 buscador_vlivaventassitrib_forms.py
+│   │   │   ├── 🐍 buscador_vllista_forms.py
+│   │   │   ├── 🐍 buscador_vllistarevendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlmercaderiaporcliente_forms.py
+│   │   │   ├── 🐍 buscador_vlmovimientointernostock_forms.py
+│   │   │   ├── 🐍 buscador_vlpercepibsubcuentadetallado_forms.py
+│   │   │   ├── 🐍 buscador_vlpercepibsubcuentatotales_forms.py
+│   │   │   ├── 🐍 buscador_vlpercepibvendedordetallado_forms.py
+│   │   │   ├── 🐍 buscador_vlpercepibvendedortotales_forms.py
+│   │   │   ├── 🐍 buscador_vlpreciodiferente_forms.py
+│   │   │   ├── 🐍 buscador_vlremitosclientes_forms.py
+│   │   │   ├── 🐍 buscador_vlremitospendientes_forms.py
+│   │   │   ├── 🐍 buscador_vlremitosvendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlreposicionstock_forms.py
+│   │   │   ├── 🐍 buscador_vlresumenctacte_forms.py
+│   │   │   ├── 🐍 buscador_vlresumenctactevendedor_forms.py
+│   │   │   ├── 🐍 buscador_vlsaldosclientes_forms.py
+│   │   │   ├── 🐍 buscador_vlstockcliente_forms.py
+│   │   │   ├── 🐍 buscador_vlstockdeposito_forms.py
+│   │   │   ├── 🐍 buscador_vlstockfecha_forms.py
+│   │   │   ├── 🐍 buscador_vlstockgeneralsucursal_forms.py
+│   │   │   ├── 🐍 buscador_vlstocksucursal_forms.py
+│   │   │   ├── 🐍 buscador_vlstockunico_forms.py
+│   │   │   ├── 🐍 buscador_vltabladinamicadetalleventas_forms.py
+│   │   │   ├── 🐍 buscador_vltabladinamicaestadistica_forms.py
+│   │   │   ├── 🐍 buscador_vltabladinamicaventas_forms.py
+│   │   │   ├── 🐍 buscador_vltotalremitosclientes_forms.py
+│   │   │   ├── 🐍 buscador_vlventacompro_forms.py
+│   │   │   ├── 🐍 buscador_vlventacomprolocalidad_forms.py
+│   │   │   ├── 🐍 buscador_vlventamostrador_forms.py
+│   │   │   ├── 🐍 buscador_vlventasinestadistica_forms.py
+│   │   │   ├── 🐍 buscador_vlventasresumenib_forms.py
+│   │   │   └── 🐍 informes_generics_forms.py
+│   │   ├── 📁 migrations/
+│   │   │   ├── 🐍 0001_initial.py
+│   │   │   └── 🐍 __init__.py
+│   │   ├── 📁 templates/
+│   │   │   └── 📁 informes/
+│   │   │       ├── 📁 reportes/
+│   │   │       │   ├── 🌐 actividad_list.html
+│   │   │       │   ├── 🌐 alicuotaiva_list.html
+│   │   │       │   ├── 🌐 banco_list.html
+│   │   │       │   ├── 🌐 base_reportes.html
+│   │   │       │   ├── 🌐 caiestados_list.html
+│   │   │       │   ├── 🌐 caja_deposito_fecha_list.html
+│   │   │       │   ├── 🌐 caja_deposito_list.html
+│   │   │       │   ├── 🌐 cajaarqueo_list.html
+│   │   │       │   ├── 🌐 chequerecibo_list.html
+│   │   │       │   ├── 🌐 chequesfecha_list.html
+│   │   │       │   ├── 🌐 cliente_list.html
+│   │   │       │   ├── 🌐 codigoretencion_list.html
+│   │   │       │   ├── 🌐 comprobantecompra_list.html
+│   │   │       │   ├── 🌐 comprobanteventa_list.html
+│   │   │       │   ├── 🌐 conceptobanco_list.html
+│   │   │       │   ├── 🌐 cuentabanco_list.html
+│   │   │       │   ├── 🌐 descuentorevendedor_list.html
+│   │   │       │   ├── 🌐 descuentovendedor_list.html
+│   │   │       │   ├── 🌐 detallecomprobantes_list.html
+│   │   │       │   ├── 🌐 egresoscaja_list.html
+│   │   │       │   ├── 🌐 localidad_list.html
+│   │   │       │   ├── 🌐 marketingorigen_list.html
+│   │   │       │   ├── 🌐 mediopago_list.html
+│   │   │       │   ├── 🌐 moneda_list.html
+│   │   │       │   ├── 🌐 operario_list.html
+│   │   │       │   ├── 🌐 planillacaja_list.html
+│   │   │       │   ├── 🌐 producto_list.html
+│   │   │       │   ├── 🌐 productocai_list.html
+│   │   │       │   ├── 🌐 productodeposito_list.html
+│   │   │       │   ├── 🌐 productoestado_list.html
+│   │   │       │   ├── 🌐 productofamilia_list.html
+│   │   │       │   ├── 🌐 productomarca_list.html
+│   │   │       │   ├── 🌐 productomodelo_list.html
+│   │   │       │   ├── 🌐 proveedor_list.html
+│   │   │       │   ├── 🌐 provincia_list.html
+│   │   │       │   ├── 🌐 puntoventa_list.html
+│   │   │       │   ├── 🌐 sucursal_list.html
+│   │   │       │   ├── 🌐 tarjeta_list.html
+│   │   │       │   ├── 🌐 tarjetarecibo_list.html
+│   │   │       │   ├── 🌐 tipodocumentoidentidad_list.html
+│   │   │       │   ├── 🌐 tipoiva_list.html
+│   │   │       │   ├── 🌐 tipopercepcionib_list.html
+│   │   │       │   ├── 🌐 tiporetencionib_list.html
+│   │   │       │   ├── 🌐 vendedor_list.html
+│   │   │       │   ├── 🌐 vlclienteultimaventa_list.html
+│   │   │       │   ├── 🌐 vlcomisionoperario_list.html
+│   │   │       │   ├── 🌐 vlcomisionvendedor_list.html
+│   │   │       │   ├── 🌐 vlcompraingresada_list.html
+│   │   │       │   ├── 🌐 vlcomprobantesvencidos_list.html
+│   │   │       │   ├── 🌐 vldetallecompraproveedor_list.html
+│   │   │       │   ├── 🌐 vlestadisticasseguncondicion_familia_list.html
+│   │   │       │   ├── 🌐 vlestadisticasseguncondicion_marca_list.html
+│   │   │       │   ├── 🌐 vlestadisticasseguncondicion_modelo_list.html
+│   │   │       │   ├── 🌐 vlestadisticasseguncondicion_producto_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventas_familia_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventas_marca_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventas_modelo_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventas_producto_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasmarca_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasmarcavendedor_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasprovincia_familia_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasprovincia_marca_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasprovincia_modelo_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasprovincia_producto_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedor_familia_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedor_marca_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedor_modelo_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedor_producto_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedorcliente_familia_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedorcliente_marca_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedorcliente_modelo_list.html
+│   │   │       │   ├── 🌐 vlestadisticasventasvendedorcliente_producto_list.html
+│   │   │       │   ├── 🌐 vlfacturas_pendientes_list.html
+│   │   │       │   ├── 🌐 vlfacturas_pendientes_vendedor_list.html
+│   │   │       │   ├── 🌐 vlfichaseguimientostock_list.html
+│   │   │       │   ├── 🌐 vlivaventasfull_list.html
+│   │   │       │   ├── 🌐 vlivaventasprovincias_list.html
+│   │   │       │   ├── 🌐 vlivaventassitrib_list.html
+│   │   │       │   ├── 🌐 vllista_list.html
+│   │   │       │   ├── 🌐 vllistarevendedor_list.html
+│   │   │       │   ├── 🌐 vlmercaderiaporcliente_list.html
+│   │   │       │   ├── 🌐 vlmovimientointernostock_list.html
+│   │   │       │   ├── 🌐 vlpercepibsubcuentadetallado_list.html
+│   │   │       │   ├── 🌐 vlpercepibsubcuentatotales_list.html
+│   │   │       │   ├── 🌐 vlpercepibvendedordetallado_list.html
+│   │   │       │   ├── 🌐 vlpercepibvendedortotales_list.html
+│   │   │       │   ├── 🌐 vlpreciodiferente_list.html
+│   │   │       │   ├── 🌐 vlproductominimo_list.html
+│   │   │       │   ├── 🌐 vlremitosclientes_list.html
+│   │   │       │   ├── 🌐 vlremitospendientes_list.html
+│   │   │       │   ├── 🌐 vlremitosvendedor_list.html
+│   │   │       │   ├── 🌐 vlreposicionstock_list.html
+│   │   │       │   ├── 🌐 vlresumenctacte_list.html
+│   │   │       │   ├── 🌐 vlresumenctactevendedor_list.html
+│   │   │       │   ├── 🌐 vlsaldosclientes_list.html
+│   │   │       │   ├── 🌐 vlstockcliente_list.html
+│   │   │       │   ├── 🌐 vlstockdeposito_list.html
+│   │   │       │   ├── 🌐 vlstockfecha_list.html
+│   │   │       │   ├── 🌐 vlstockgeneralsucursal_list.html
+│   │   │       │   ├── 🌐 vlstocksucursal_list.html
+│   │   │       │   ├── 🌐 vlstockunico_list.html
+│   │   │       │   ├── 🌐 vltabladinamicadetalleventas_list.html
+│   │   │       │   ├── 🌐 vltabladinamicaestadistica_list.html
+│   │   │       │   ├── 🌐 vltabladinamicaventas_list.html
+│   │   │       │   ├── 🌐 vltotalremitosclientes_list.html
+│   │   │       │   ├── 🌐 vlventacompro_list.html
+│   │   │       │   ├── 🌐 vlventacomprolocalidad_list.html
+│   │   │       │   ├── 🌐 vlventamostrador_list.html
+│   │   │       │   ├── 🌐 vlventasinestadistica_list.html
+│   │   │       │   └── 🌐 vlventasresumenib_list.html
+│   │   │       ├── 🌐 buscador_actividad.html
+│   │   │       ├── 🌐 buscador_alicuotaiva.html
+│   │   │       ├── 🌐 buscador_banco.html
+│   │   │       ├── 🌐 buscador_caiestados.html
+│   │   │       ├── 🌐 buscador_caja_deposito.html
+│   │   │       ├── 🌐 buscador_caja_deposito_fecha.html
+│   │   │       ├── 🌐 buscador_cajaarqueo.html
+│   │   │       ├── 🌐 buscador_chequerecibo.html
+│   │   │       ├── 🌐 buscador_chequesfecha.html
+│   │   │       ├── 🌐 buscador_cliente.html
+│   │   │       ├── 🌐 buscador_codigoretencion.html
+│   │   │       ├── 🌐 buscador_comprobantecompra.html
+│   │   │       ├── 🌐 buscador_comprobanteventa.html
+│   │   │       ├── 🌐 buscador_conceptobanco.html
+│   │   │       ├── 🌐 buscador_cuentabanco.html
+│   │   │       ├── 🌐 buscador_cuponesfecha.html
+│   │   │       ├── 🌐 buscador_descuentorevendedor.html
+│   │   │       ├── 🌐 buscador_descuentovendedor.html
+│   │   │       ├── 🌐 buscador_detallecomprobantes.html
+│   │   │       ├── 🌐 buscador_egresoscaja.html
+│   │   │       ├── 🌐 buscador_localidad.html
+│   │   │       ├── 🌐 buscador_marketingorigen.html
+│   │   │       ├── 🌐 buscador_mediopago.html
+│   │   │       ├── 🌐 buscador_moneda.html
+│   │   │       ├── 🌐 buscador_operario.html
+│   │   │       ├── 🌐 buscador_planillacaja.html
+│   │   │       ├── 🌐 buscador_producto.html
+│   │   │       ├── 🌐 buscador_productocai.html
+│   │   │       ├── 🌐 buscador_productodeposito.html
+│   │   │       ├── 🌐 buscador_productoestado.html
+│   │   │       ├── 🌐 buscador_productofamilia.html
+│   │   │       ├── 🌐 buscador_productomarca.html
+│   │   │       ├── 🌐 buscador_productomodelo.html
+│   │   │       ├── 🌐 buscador_proveedor.html
+│   │   │       ├── 🌐 buscador_provincia.html
+│   │   │       ├── 🌐 buscador_puntoventa.html
+│   │   │       ├── 🌐 buscador_sucursal.html
+│   │   │       ├── 🌐 buscador_tarjeta.html
+│   │   │       ├── 🌐 buscador_tarjetarecibo.html
+│   │   │       ├── 🌐 buscador_tipodocumentoidentidad.html
+│   │   │       ├── 🌐 buscador_tipoiva.html
+│   │   │       ├── 🌐 buscador_tipopercepcionib.html
+│   │   │       ├── 🌐 buscador_tiporetencionib.html
+│   │   │       ├── 🌐 buscador_vendedor.html
+│   │   │       ├── 🌐 buscador_vlclienteultimaventa.html
+│   │   │       ├── 🌐 buscador_vlcomisionoperario.html
+│   │   │       ├── 🌐 buscador_vlcomisionvendedor.html
+│   │   │       ├── 🌐 buscador_vlcompraingresada.html
+│   │   │       ├── 🌐 buscador_vlcomprobantesvencidos.html
+│   │   │       ├── 🌐 buscador_vldetallecompraproveedor.html
+│   │   │       ├── 🌐 buscador_vlestadisticasseguncondicion.html
+│   │   │       ├── 🌐 buscador_vlestadisticasventas.html
+│   │   │       ├── 🌐 buscador_vlestadisticasventasmarca.html
+│   │   │       ├── 🌐 buscador_vlestadisticasventasmarcavendedor.html
+│   │   │       ├── 🌐 buscador_vlestadisticasventasprovincia.html
+│   │   │       ├── 🌐 buscador_vlestadisticasventasvendedor.html
+│   │   │       ├── 🌐 buscador_vlestadisticasventasvendedorcliente.html
+│   │   │       ├── 🌐 buscador_vlfichaseguimientostock.html
+│   │   │       ├── 🌐 buscador_vlivaventasfull.html
+│   │   │       ├── 🌐 buscador_vlivaventasprovincias.html
+│   │   │       ├── 🌐 buscador_vlivaventassitrib.html
+│   │   │       ├── 🌐 buscador_vllista.html
+│   │   │       ├── 🌐 buscador_vllistarevendedor.html
+│   │   │       ├── 🌐 buscador_vlmercaderiaporcliente.html
+│   │   │       ├── 🌐 buscador_vlmovimientointernostock.html
+│   │   │       ├── 🌐 buscador_vlpercepibsubcuentadetallado.html
+│   │   │       ├── 🌐 buscador_vlpercepibsubcuentatotales.html
+│   │   │       ├── 🌐 buscador_vlpercepibvendedordetallado.html
+│   │   │       ├── 🌐 buscador_vlpercepibvendedortotales.html
+│   │   │       ├── 🌐 buscador_vlpreciodiferente.html
+│   │   │       ├── 🌐 buscador_vlproductominimo.html
+│   │   │       ├── 🌐 buscador_vlremitosclientes.html
+│   │   │       ├── 🌐 buscador_vlremitospendientes.html
+│   │   │       ├── 🌐 buscador_vlremitosvendedor.html
+│   │   │       ├── 🌐 buscador_vlreposicionstock.html
+│   │   │       ├── 🌐 buscador_vlresumenctacte.html
+│   │   │       ├── 🌐 buscador_vlresumenctactevendedor.html
+│   │   │       ├── 🌐 buscador_vlsaldosclientes.html
+│   │   │       ├── 🌐 buscador_vlstockcliente.html
+│   │   │       ├── 🌐 buscador_vlstockdeposito.html
+│   │   │       ├── 🌐 buscador_vlstockfecha.html
+│   │   │       ├── 🌐 buscador_vlstockgeneralsucursal.html
+│   │   │       ├── 🌐 buscador_vlstocksucursal.html
+│   │   │       ├── 🌐 buscador_vlstockunico.html
+│   │   │       ├── 🌐 buscador_vltabladinamicadetalleventas.html
+│   │   │       ├── 🌐 buscador_vltabladinamicaestadistica.html
+│   │   │       ├── 🌐 buscador_vltabladinamicaventas.html
+│   │   │       ├── 🌐 buscador_vltotalremitosclientes.html
+│   │   │       ├── 🌐 buscador_vlventacompro.html
+│   │   │       ├── 🌐 buscador_vlventacomprolocalidad.html
+│   │   │       ├── 🌐 buscador_vlventamostrador.html
+│   │   │       ├── 🌐 buscador_vlventasinestadistica.html
+│   │   │       ├── 🌐 buscador_vlventasresumenib.html
+│   │   │       ├── 🌐 maestro_informe.html
+│   │   │       ├── 🌐 modal_buscar_cliente.html
+│   │   │       └── 🌐 opciones_reporte.html
+│   │   ├── 📁 views/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   ├── 🐍 actividad_list_views.py
+│   │   │   ├── 🐍 alicuotaiva_list_views.py
+│   │   │   ├── 🐍 banco_list_views.py
+│   │   │   ├── 🐍 caiestados_list_views.py
+│   │   │   ├── 🐍 caja_deposito_fecha_list_views.py
+│   │   │   ├── 🐍 caja_deposito_list_views.py
+│   │   │   ├── 🐍 cajaarqueo_list_views.py
+│   │   │   ├── 🐍 chequerecibo_list_views.py
+│   │   │   ├── 🐍 chequesfecha_list_views.py
+│   │   │   ├── 🐍 cliente_list_views.py
+│   │   │   ├── 🐍 codigoretencion_list_views.py
+│   │   │   ├── 🐍 comprobantecompra_list_views.py
+│   │   │   ├── 🐍 comprobanteventa_list_views.py
+│   │   │   ├── 🐍 conceptobanco_list_views.py
+│   │   │   ├── 🐍 consultas_informes_views.py
+│   │   │   ├── 🐍 cuentabanco_list_views.py
+│   │   │   ├── 🐍 cuponesfecha_list_views.py
+│   │   │   ├── 🐍 descuentorevendedor_list_views.py
+│   │   │   ├── 🐍 descuentovendedor_list_views.py
+│   │   │   ├── 🐍 detallecomprobantes_list_views.py
+│   │   │   ├── 🐍 detallecupones_list_views.py
+│   │   │   ├── 🐍 egresoscaja_list_views.py
+│   │   │   ├── 🐍 list_views_generics.py
+│   │   │   ├── 🐍 localidad_list_views.py
+│   │   │   ├── 🐍 marketingorigen_list_views.py
+│   │   │   ├── 🐍 mediopago_list_views.py
+│   │   │   ├── 🐍 moneda_list_views.py
+│   │   │   ├── 🐍 operario_list_views.py
+│   │   │   ├── 🐍 planillacaja_list_views.py
+│   │   │   ├── 🐍 producto_list_views.py
+│   │   │   ├── 🐍 productocai_list_views.py
+│   │   │   ├── 🐍 productodeposito_list_views.py
+│   │   │   ├── 🐍 productoestado_list_views.py
+│   │   │   ├── 🐍 productofamilia_list_views.py
+│   │   │   ├── 🐍 productomarca_list_views.py
+│   │   │   ├── 🐍 productomodelo_list_views.py
+│   │   │   ├── 🐍 proveedor_list_views.py
+│   │   │   ├── 🐍 provincia_list_views.py
+│   │   │   ├── 🐍 puntoventa_list_views.py
+│   │   │   ├── 🐍 report_views_generics.py
+│   │   │   ├── 🐍 sucursal_list_views.py
+│   │   │   ├── 🐍 tarjeta_list_views.py
+│   │   │   ├── 🐍 tipodocumentoidentidad_list_views.py
+│   │   │   ├── 🐍 tipoiva_list_views.py
+│   │   │   ├── 🐍 tipopercepcionib_list_views.py
+│   │   │   ├── 🐍 tiporetencionib_list_views.py
+│   │   │   ├── 🐍 vendedor_list_views.py
+│   │   │   ├── 🐍 vlclienteultimaventa_list_views.py
+│   │   │   ├── 🐍 vlcomisionoperario_list_views.py
+│   │   │   ├── 🐍 vlcomisionvendedor_list_views.py
+│   │   │   ├── 🐍 vlcompraingresada_list_views.py
+│   │   │   ├── 🐍 vlcomprobantesvencidos_list_views.py
+│   │   │   ├── 🐍 vldetallecompraproveedor_list_views.py
+│   │   │   ├── 🐍 vlestadisticasseguncondicion_list_views.py
+│   │   │   ├── 🐍 vlestadisticasventas_list_views.py
+│   │   │   ├── 🐍 vlestadisticasventasmarca_list_views.py
+│   │   │   ├── 🐍 vlestadisticasventasmarcavendedor_list_views.py
+│   │   │   ├── 🐍 vlestadisticasventasprovincia_list_views.py
+│   │   │   ├── 🐍 vlestadisticasventasvendedor_list_views.py
+│   │   │   ├── 🐍 vlestadisticasventasvendedorcliente_list_views.py
+│   │   │   ├── 🐍 vlfichaseguimientostock_list_views.py
+│   │   │   ├── 🐍 vlivaventasfull_list_views.py
+│   │   │   ├── 🐍 vlivaventasprovincias_list_views.py
+│   │   │   ├── 🐍 vlivaventassitrib_list_views.py
+│   │   │   ├── 🐍 vllista_list_views.py
+│   │   │   ├── 🐍 vllistarevendedor_list_views.py
+│   │   │   ├── 🐍 vlmercaderiaporcliente_list_views.py
+│   │   │   ├── 🐍 vlmovimientointernostock_list_views.py
+│   │   │   ├── 🐍 vlpercepibsubcuentadetallado_list_views.py
+│   │   │   ├── 🐍 vlpercepibsubcuentatotales_list_views.py
+│   │   │   ├── 🐍 vlpercepibvendedordetallado_list_views.py
+│   │   │   ├── 🐍 vlpercepibvendedortotales_list_views.py
+│   │   │   ├── 🐍 vlpreciodiferente_list_views.py
+│   │   │   ├── 🐍 vlproductominimo_list_views.py
+│   │   │   ├── 🐍 vlremitosclientes_list_views.py
+│   │   │   ├── 🐍 vlremitospendientes_list_views.py
+│   │   │   ├── 🐍 vlremitosvendedor_list_views.py
+│   │   │   ├── 🐍 vlreposicionstock_list_views.py
+│   │   │   ├── 🐍 vlresumenctacte_list_views.py
+│   │   │   ├── 🐍 vlresumenctactevendedor_list_views.py
+│   │   │   ├── 🐍 vlsaldosclientes_list_views.py
+│   │   │   ├── 🐍 vlstockcliente_list_views.py
+│   │   │   ├── 🐍 vlstockdeposito_list_views.py
+│   │   │   ├── 🐍 vlstockfecha_list_views.py
+│   │   │   ├── 🐍 vlstockgeneralsucursal_list_views.py
+│   │   │   ├── 🐍 vlstocksucursal_list_views.py
+│   │   │   ├── 🐍 vlstockunico_list_views.py
+│   │   │   ├── 🐍 vltabladinamicadetalleventas_list_views.py
+│   │   │   ├── 🐍 vltabladinamicaestadistica_list_views.py
+│   │   │   ├── 🐍 vltabladinamicaventas_list_views.py
+│   │   │   ├── 🐍 vltotalremitosclientes_list_views.py
+│   │   │   ├── 🐍 vlventacompro_list_views.py
+│   │   │   ├── 🐍 vlventacomprolocalidad_list_views.py
+│   │   │   ├── 🐍 vlventamostrador_list_views.py
+│   │   │   ├── 🐍 vlventasinestadistica_list_views.py
+│   │   │   └── 🐍 vlventasresumenib_list_views.py
+│   │   ├── 🐍 __init__.py
+│   │   ├── 🐍 admin.py
+│   │   ├── 🐍 apps.py
+│   │   ├── 🗃️ crear_vistas_sql_postgre.sql
+│   │   ├── 🗃️ crear_vistas_sql_sqlite.sql
+│   │   ├── 🗃️ eliminar_vistas_sql_sqlite.sql
+│   │   ├── 🐍 models.py
+│   │   ├── 🐍 tests.py
+│   │   └── 🐍 urls.py
+│   ├── 📁 maestros/
+│   │   ├── 📁 forms/
+│   │   │   ├── 🐍 actividad_forms.py
+│   │   │   ├── 🐍 alicuota_iva_forms.py
+│   │   │   ├── 🐍 banco_forms.py
+│   │   │   ├── 🐍 cai_estados_forms.py
+│   │   │   ├── 🐍 cliente_forms.py
+│   │   │   ├── 🐍 codigo_retencion_forms.py
+│   │   │   ├── 🐍 comprobante_compra_forms.py
+│   │   │   ├── 🐍 comprobante_venta_forms.py
+│   │   │   ├── 🐍 concepto_banco_forms.py
+│   │   │   ├── 🐍 crud_forms_generics.py
+│   │   │   ├── 🐍 crud_forms_generics_def.py
+│   │   │   ├── 🐍 cuenta_banco_forms.py
+│   │   │   ├── 🐍 descuento_revendedor_forms.py
+│   │   │   ├── 🐍 descuento_vendedor_forms.py
+│   │   │   ├── 🐍 empresa_forms.py
+│   │   │   ├── 🐍 forma_pago_forms.py
+│   │   │   ├── 🐍 localidad_forms.py
+│   │   │   ├── 🐍 marketing_origen_forms.py
+│   │   │   ├── 🐍 medio_pago_forms.py
+│   │   │   ├── 🐍 moneda_forms.py
+│   │   │   ├── 🐍 numero_forms.py
+│   │   │   ├── 🐍 operario_forms.py
+│   │   │   ├── 🐍 parametro_forms.py
+│   │   │   ├── 🐍 producto_cai_forms.py
+│   │   │   ├── 🐍 producto_deposito_forms.py
+│   │   │   ├── 🐍 producto_estado_forms.py
+│   │   │   ├── 🐍 producto_familia_forms.py
+│   │   │   ├── 🐍 producto_forms.py
+│   │   │   ├── 🐍 producto_marca_forms.py
+│   │   │   ├── 🐍 producto_minimo_forms.py
+│   │   │   ├── 🐍 producto_modelo_forms.py
+│   │   │   ├── 🐍 producto_stock_forms.py
+│   │   │   ├── 🐍 proveedor_forms.py
+│   │   │   ├── 🐍 provincia_forms.py
+│   │   │   ├── 🐍 punto_venta_forms.py
+│   │   │   ├── 🐍 sucursal_forms.py
+│   │   │   ├── 🐍 tarjeta_forms.py
+│   │   │   ├── 🐍 tipo_documento_identidad_forms.py
+│   │   │   ├── 🐍 tipo_iva_forms.py
+│   │   │   ├── 🐍 tipo_percepcion_ib_forms.py
+│   │   │   ├── 🐍 tipo_retencion_ib_forms.py
+│   │   │   ├── 🐍 valida_forms.py
+│   │   │   ├── 🐍 valida_forms_base.py
+│   │   │   ├── 🐍 valida_forms_orig.py
+│   │   │   └── 🐍 vendedor_forms.py
+│   │   ├── 📁 migrations/
+│   │   │   ├── 🐍 0001_initial.py
+│   │   │   ├── 🐍 0002_initial.py
+│   │   │   └── 🐍 __init__.py
+│   │   ├── 📁 models/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   ├── 🐍 base_gen_models.py
+│   │   │   ├── 🐍 base_models.py
+│   │   │   ├── 🐍 cliente_models.py
+│   │   │   ├── 🐍 descuento_vendedor_models.py
+│   │   │   ├── 🐍 empresa_models.py
+│   │   │   ├── 🐍 numero_models.py
+│   │   │   ├── 🐍 parametro_models.py
+│   │   │   ├── 🐍 producto_models.py
+│   │   │   ├── 🐍 proveedor_models.py
+│   │   │   ├── 🐍 sucursal_models.py
+│   │   │   ├── 🐍 valida_models.py
+│   │   │   ├── 🐍 vendedor_comision_models.py
+│   │   │   └── 🐍 vendedor_models.py
+│   │   ├── 📁 signals/
+│   │   │   └── 🐍 signals.py
+│   │   ├── 📁 templates/
+│   │   │   └── 📁 maestros/
+│   │   │       ├── 🌐 actividad_form.html
+│   │   │       ├── 🌐 alicuota_iva_form.html
+│   │   │       ├── 🌐 banco_form.html
+│   │   │       ├── 🌐 cai_estados_form.html
+│   │   │       ├── 🌐 cliente_form.html
+│   │   │       ├── 🌐 codigo_retencion_form.html
+│   │   │       ├── 🌐 comprobante_compra_form.html
+│   │   │       ├── 🌐 comprobante_venta_form.html
+│   │   │       ├── 🌐 concepto_banco_form.html
+│   │   │       ├── 🌐 confirmar_actualizar_producto_estado.html
+│   │   │       ├── 🌐 cuenta_banco_form.html
+│   │   │       ├── 🌐 descuento_revendedor_form.html
+│   │   │       ├── 🌐 descuento_vendedor_form.html
+│   │   │       ├── 🌐 empresa_form.html
+│   │   │       ├── 🌐 forma_pago_form.html
+│   │   │       ├── 🌐 localidad_form.html
+│   │   │       ├── 🌐 maestro_list.html
+│   │   │       ├── 🌐 marketing_origen_form.html
+│   │   │       ├── 🌐 medio_pago_form.html
+│   │   │       ├── 🌐 modal.html
+│   │   │       ├── 🌐 modal_fields_requirements.html
+│   │   │       ├── 🌐 moneda_form.html
+│   │   │       ├── 🌐 numero_form.html
+│   │   │       ├── 🌐 operario_form.html
+│   │   │       ├── 🌐 parametro_form.html
+│   │   │       ├── 🌐 producto_cai_form.html
+│   │   │       ├── 🌐 producto_deposito_form.html
+│   │   │       ├── 🌐 producto_estado_form.html
+│   │   │       ├── 🌐 producto_familia_form.html
+│   │   │       ├── 🌐 producto_form.html
+│   │   │       ├── 🌐 producto_marca_form.html
+│   │   │       ├── 🌐 producto_minimo_form.html
+│   │   │       ├── 🌐 producto_modelo_form.html
+│   │   │       ├── 🌐 producto_stock_form.html
+│   │   │       ├── 🌐 proveedor_form.html
+│   │   │       ├── 🌐 provincia_form.html
+│   │   │       ├── 🌐 punto_venta_form.html
+│   │   │       ├── 🌐 sucursal_form.html
+│   │   │       ├── 🌐 tarjeta_form.html
+│   │   │       ├── 🌐 tipo_documento_identidad_form.html
+│   │   │       ├── 🌐 tipo_iva_form.html
+│   │   │       ├── 🌐 tipo_percepcion_ib_form.html
+│   │   │       ├── 🌐 tipo_retencion_ib_form.html
+│   │   │       ├── 🌐 valida_form.html
+│   │   │       ├── 🌐 valida_form_ok.html
+│   │   │       └── 🌐 vendedor_form.html
+│   │   ├── 📁 templatetags/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   └── 🐍 custom_tags.py
+│   │   ├── 📁 views/
+│   │   │   ├── 🐍 actividad_views.py
+│   │   │   ├── 🐍 actualizar_producto_views.py
+│   │   │   ├── 🐍 alicuota_iva_views.py
+│   │   │   ├── 🐍 banco_views.py
+│   │   │   ├── 🐍 cai_estados_views.py
+│   │   │   ├── 🐍 cliente_views.py
+│   │   │   ├── 🐍 codigo_retencion_views.py
+│   │   │   ├── 🐍 comprobante_compra_views.py
+│   │   │   ├── 🐍 comprobante_venta_views.py
+│   │   │   ├── 🐍 concepto_banco_views.py
+│   │   │   ├── 🐍 consulta_views_maestros.py
+│   │   │   ├── 🐍 cruds_views_generics.py
+│   │   │   ├── 🐍 cruds_views_generics_ini.py
+│   │   │   ├── 🐍 cruds_views_generics_ok.py
+│   │   │   ├── 🐍 cuenta_banco_views.py
+│   │   │   ├── 🐍 descuento_revendedor_views.py
+│   │   │   ├── 🐍 descuento_vendedor_views.py
+│   │   │   ├── 🐍 empresa_views.py
+│   │   │   ├── 🐍 forma_pago_views.py
+│   │   │   ├── 🐍 localidad_views.py
+│   │   │   ├── 🐍 marketing_origen_views.py
+│   │   │   ├── 🐍 medio_pago_views.py
+│   │   │   ├── 🐍 moneda_views.py
+│   │   │   ├── 🐍 numero_views.py
+│   │   │   ├── 🐍 operario_views.py
+│   │   │   ├── 🐍 parametro_views.py
+│   │   │   ├── 🐍 producto_cai_views.py
+│   │   │   ├── 🐍 producto_deposito_views.py
+│   │   │   ├── 🐍 producto_estado_views.py
+│   │   │   ├── 🐍 producto_familia_views.py
+│   │   │   ├── 🐍 producto_marca_views.py
+│   │   │   ├── 🐍 producto_minimo_views.py
+│   │   │   ├── 🐍 producto_modelo_views.py
+│   │   │   ├── 🐍 producto_stock_views.py
+│   │   │   ├── 🐍 producto_views.py
+│   │   │   ├── 🐍 proveedor_views.py
+│   │   │   ├── 🐍 provincia_views.py
+│   │   │   ├── 🐍 punto_venta_views.py
+│   │   │   ├── 🐍 select2_views copy.py
+│   │   │   ├── 🐍 select2_views.py
+│   │   │   ├── 🐍 sucursal_views.py
+│   │   │   ├── 🐍 tarjeta_views.py
+│   │   │   ├── 🐍 tipo_documento_identidad_views.py
+│   │   │   ├── 🐍 tipo_iva_views.py
+│   │   │   ├── 🐍 tipo_percepcion_ib_views.py
+│   │   │   ├── 🐍 tipo_retencion_ib_views.py
+│   │   │   ├── 🐍 valida_views.py
+│   │   │   └── 🐍 vendedor_views.py
+│   │   ├── 🐍 __init__.py
+│   │   ├── 🐍 admin.py
+│   │   ├── 🐍 apps.py
+│   │   ├── 🐍 services.py
+│   │   ├── 🐍 tests.py
+│   │   └── 🐍 urls.py
+│   ├── 📁 menu/
+│   │   ├── 📁 migrations/
+│   │   │   ├── 🐍 0001_initial.py
+│   │   │   └── 🐍 __init__.py
+│   │   ├── 📁 templates/
+│   │   │   └── 📁 menu/
+│   │   │       ├── 🌐 base_menu.html
+│   │   │       ├── 🌐 menu_tree.html
+│   │   │       ├── 🌐 menuheading_confirm_delete.html
+│   │   │       ├── 🌐 menuheading_form.html
+│   │   │       ├── 🌐 menuheading_list.html
+│   │   │       ├── 🌐 menuitem_confirm_delete.html
+│   │   │       ├── 🌐 menuitem_form copy.html
+│   │   │       ├── 🌐 menuitem_form.html
+│   │   │       ├── 🌐 menuitem_list copy.html
+│   │   │       └── 🌐 menuitem_list.html
+│   │   ├── 📁 templatetags/
+│   │   │   ├── 🐍 __init__.py
+│   │   │   └── 🐍 menu_tags.py
+│   │   ├── 🐍 __init__.py
+│   │   ├── 🐍 admin.py
+│   │   ├── 🐍 apps.py
+│   │   ├── 🐍 forms copy.py
+│   │   ├── 🐍 forms.py
+│   │   ├── 📋 menu_menuheading.json
+│   │   ├── 📋 menu_menuitem.json
+│   │   ├── 🐍 models.py
+│   │   ├── 🐍 tests.py
+│   │   ├── 🐍 urls.py
+│   │   ├── 🐍 views.py
+│   │   └── 🐍 views_ini.py
+│   ├── 📁 usuarios/
+│   │   ├── 📁 forms/
+│   │   │   ├── 🐍 password_reset_form.py
+│   │   │   └── 🐍 user_form.py
+│   │   ├── 📁 migrations/
+│   │   │   ├── 🐍 0001_initial.py
+│   │   │   └── 🐍 __init__.py
+│   │   ├── 📁 templates/
+│   │   │   └── 📁 usuarios/
+│   │   │       ├── 🌐 grupo_confirm_delete.html
+│   │   │       ├── 🌐 grupo_form.html
+│   │   │       ├── 🌐 grupo_list.html
+│   │   │       ├── 🌐 password_reset_complete.html
+│   │   │       ├── 🌐 password_reset_confirm.html
+│   │   │       ├── 🌐 password_reset_done.html
+│   │   │       ├── 🌐 password_reset_email.html
+│   │   │       ├── 📝 password_reset_email.txt
+│   │   │       ├── 🌐 password_reset_form.html
+│   │   │       ├── 📝 password_reset_subject.txt
+│   │   │       ├── 🌐 sesion_cerrar.html
+│   │   │       ├── 🌐 sesion_iniciar.html
+│   │   │       ├── 🌐 sesion_iniciar_ini.html
+│   │   │       ├── 🌐 usuario_confirm_delete.html
+│   │   │       ├── 🌐 usuario_crear_form.html
+│   │   │       ├── 🌐 usuario_editar_form.html
+│   │   │       └── 🌐 usuario_list.html
+│   │   ├── 📁 views/
+│   │   │   ├── 🐍 user_password_views - email_body=html.py
+│   │   │   ├── 🐍 user_password_views - email_body=Texto-plano.py
+│   │   │   ├── 🐍 user_password_views.py
+│   │   │   ├── 🐍 user_views.py
+│   │   │   └── 🐍 user_views_generics.py
+│   │   ├── 🐍 __init__.py
+│   │   ├── 🐍 admin.py
+│   │   ├── 🐍 apps.py
+│   │   ├── 🐍 models.py
+│   │   ├── 🐍 tests.py
+│   │   └── 🐍 urls.py
+│   └── 📁 ventas/
+│       ├── 📁 forms/
+│       │   ├── 🐍 caja_detalle_forms copy.py
+│       │   ├── 🐍 caja_detalle_forms.py
+│       │   ├── 🐍 caja_forms.py
+│       │   ├── 🐍 compra_forms.py
+│       │   ├── 🐍 compra_retencion_forms.py
+│       │   ├── 🐍 factura_forms.py
+│       │   ├── 🐍 forms_generics.py
+│       │   ├── 🐍 recibo_forms copy-Leo.py
+│       │   └── 🐍 recibo_forms.py
+│       ├── 📁 migrations/
+│       │   ├── 🐍 0001_initial.py
+│       │   └── 🐍 __init__.py
+│       ├── 📁 models/
+│       │   ├── 🐍 __init__.py
+│       │   ├── 🐍 caja_models.py
+│       │   ├── 🐍 compra_models.py
+│       │   ├── 🐍 factura_models.py
+│       │   ├── 🐍 recibo_models.py
+│       │   └── 🐍 venta_models.py
+│       ├── 📁 templates/
+│       │   └── 📁 ventas/
+│       │       ├── 📜 buscarClienteInput.js
+│       │       ├── 🌐 caja_detalle_form copy.html
+│       │       ├── 🌐 caja_detalle_form.html
+│       │       ├── 🌐 caja_form copy.html
+│       │       ├── 🌐 caja_form.html
+│       │       ├── 🌐 compra_form.html
+│       │       ├── 🌐 compra_form_orig.html
+│       │       ├── 🌐 compra_retencion_form.html
+│       │       ├── 🌐 factura_form copy.html
+│       │       ├── 🌐 factura_form.html
+│       │       ├── 🌐 factura_form_base.html
+│       │       ├── 🌐 factura_form_ini.html
+│       │       ├── 🌐 maestro_detalle_list.html
+│       │       ├── 🌐 maestro_list.html
+│       │       ├── 🌐 modal_temporal.html
+│       │       ├── 🌐 newFormHTML.html
+│       │       ├── 🌐 recibo_form.html
+│       │       ├── 🌐 recibo_form_orig.html
+│       │       ├── 🌐 recibo_form_ult.html
+│       │       ├── 🌐 resto_recibo.html
+│       │       └── 🌐 SeleccionarAgenda.html
+│       ├── 📁 views/
+│       │   ├── 🐍 buscar_clientes.py
+│       │   ├── 🐍 caja_detalle_views.py
+│       │   ├── 🐍 caja_views.py
+│       │   ├── 🐍 caja_views_debug.py
+│       │   ├── 🐍 compra_retencion_views.py
+│       │   ├── 🐍 compra_views.py
+│       │   ├── 🐍 compra_views_ini.py
+│       │   ├── 🐍 consultas_compra_views.py
+│       │   ├── 🐍 consultas_factura_views.py
+│       │   ├── 🐍 crear_agenda.py
+│       │   ├── 🐍 factura2_views.py
+│       │   ├── 🐍 factura3_views.py
+│       │   ├── 🐍 factura4_views.py
+│       │   ├── 🐍 factura_views.py
+│       │   ├── 🐍 factura_views_ini.py
+│       │   ├── 🐍 fe_afiparca_views.py
+│       │   ├── 🐍 genera_pdf.py
+│       │   ├── 🐍 msdt_views_generics.py
+│       │   ├── 🐍 pdf_retenciones.py
+│       │   ├── 🐍 recibo_views.py
+│       │   ├── 🐍 token_fip_arca.py
+│       │   ├── 🐍 validar_vencimientos_cliente.py
+│       │   └── 🐍 views_generics.py
+│       ├── 🐍 __init__.py
+│       ├── 🐍 admin.py
+│       ├── 🐍 apps.py
+│       ├── 🐍 tests.py
+│       └── 🐍 urls.py
+├── 📁 context_processors/
+│   ├── 🐍 context_processors_empresa.py
+│   └── 🐍 context_processors_menu.py
+├── 📁 diseno_base/
+│   └── 🐍 diseno_bootstrap.py
+├── 📁 entorno/
+│   ├── 🐍 __init__.py
+│   └── 🐍 constantes_base.py
+├── 📁 logs/
+│   └── 📝 facturas_sin_caja_detalle.txt
+├── 📁 media/
+│   └── 📁 empresas/
+│       └── 📁 logos/
+│           ├── 🖼️ logo_1_logo_debona.jpg
+│           └── 📄 Thumbs.db
 ├── 📁 neumatic/
-│   ├── 📁 apps/
-│   │   ├── 📁 datatools/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 datatools/
-│   │   │   ├── 📁 templatetags/
-│   │   │   ├── 📁 views/
-│   │   ├── 📁 generador/
-│   │   ├── 📁 informes/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 informes/
-│   │   │   │       ├── 📁 reportes/
-│   │   │   ├── 📁 views/
-│   │   ├── 📁 maestros/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 models/
-│   │   │   ├── 📁 signals/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 maestros/
-│   │   │   ├── 📁 templatetags/
-│   │   │   ├── 📁 views/
-│   │   ├── 📁 menu/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 menu/
-│   │   │   ├── 📁 templatetags/
-│   │   ├── 📁 usuarios/
-│   │   │   ├── 📁 forms/
-│   │   │   ├── 📁 migrations/
-│   │   │   ├── 📁 templates/
-│   │   │   │   └── 📁 usuarios/
-│   │   │   ├── 📁 views/
-│   │   └── 📁 ventas/
-│   │       ├── 📁 forms/
-│   │       ├── 📁 migrations/
-│   │       ├── 📁 models/
-│   │       ├── 📁 templates/
-│   │       │   └── 📁 ventas/
-│   │       ├── 📁 views/
-│   ├── 📁 certif/
-│   ├── 📁 data/
-│   │   ├── 📁 bak/
-│   ├── 📁 data_load/
-│   │   ├── 📁 datavfox/
-│   │   │   ├── 📁 Desktop/
-│   │   ├── 📁 datavfox_ant/
-│   │   ├── 📁 datavfox_ult2/
-│   ├── 📁 diseno_base/
-│   ├── 📁 entorno/
-│   ├── 📁 neumatic/
-│   ├── 📁 services/
-│   ├── 📁 static/
-│   │   ├── 📁 assets/
-│   │   │   ├── 📁 demo/
-│   │   │   └── 📁 img/
-│   │   ├── 📁 css/
-│   │   ├── 📁 img/
-│   │   │   ├── 📁 RESP/
-│   │   └── 📁 js/
-│   ├── 📁 templates/
-│   ├── 📁 utils/
-│   │   ├── 📁 helpers/
-│   │   ├── 📁 validator/
-│   ├── 📁 xml_afiparca/
-├── 📁 x/
+│   ├── 🐍 __init__.py
+│   ├── 🐍 asgi.py
+│   ├── 🐍 settings copy-Leo.py
+│   ├── 🐍 settings.py
+│   ├── 🐍 urls.py
+│   ├── 🐍 views.py
+│   └── 🐍 wsgi.py
+├── 📁 services/
+│   ├── 📑 001_0021_00058812_Solicitud.xml
+│   ├── 📑 001_0021_00058812_Solicitud2.xml
+│   ├── 📑 001_0021_00058812_Solicitud2_Respuesta.xml
+│   ├── 📑 001_0022_00024542_Solicitud.xml
+│   ├── 📑 001_0022_00024542_Solicitud_Respuesta.xml
+│   ├── 📋 acceso_arca_homologacion.json
+│   ├── 🐍 fe_arca.py
+│   ├── 🐍 fe_arca_test2.py
+│   ├── 🐍 fe_arca_test_ini.py
+│   └── 🐍 numeracion_cache.py
+├── 📁 static/
+│   ├── 📁 assets/
+│   │   ├── 📁 demo/
+│   │   │   ├── 📜 chart-area-demo.js
+│   │   │   ├── 📜 chart-bar-demo.js
+│   │   │   ├── 📜 chart-pie-demo.js
+│   │   │   └── 📜 datatables-demo.js
+│   │   └── 📁 img/
+│   │       └── 📄 error-404-monochrome.svg
+│   ├── 📁 css/
+│   │   ├── 🎨 botones.css
+│   │   ├── 🎨 reportes.css
+│   │   └── 🎨 styles.css
+│   ├── 📁 img/
+│   │   ├── 📁 RESP/
+│   │   │   ├── 📄 candado_01.jpeg
+│   │   │   └── 📄 logout_01.jpeg
+│   │   ├── 🖼️ actualizar.png
+│   │   ├── 🖼️ api.jpg
+│   │   ├── 🖼️ arca.png
+│   │   ├── 🖼️ background-image.jpg
+│   │   ├── 🖼️ background-image_ini.jpg
+│   │   ├── 📄 candado_01.jpeg
+│   │   ├── 📄 candado_02.jpeg
+│   │   ├── 🖼️ delete.png
+│   │   ├── 🖼️ delete16.png
+│   │   ├── 🖼️ delete24.png
+│   │   ├── 🖼️ escudo_01.png
+│   │   ├── 🖼️ favicon.png
+│   │   ├── 🖼️ logo_01.png
+│   │   ├── 📄 logo_center2.jpeg
+│   │   ├── 🖼️ logo_debona-removebg.png
+│   │   ├── 🖼️ logo_debona.jpg
+│   │   ├── 📄 logo_left.jpeg
+│   │   ├── 📄 logout_01.jpeg
+│   │   ├── 🖼️ qr.png
+│   │   ├── 📄 Thumbs.db
+│   │   ├── 🖼️ update.png
+│   │   ├── 🖼️ update16.png
+│   │   ├── 🖼️ update24.png
+│   │   └── 🖼️ view24.png
+│   └── 📁 js/
+│       ├── 📜 ae360af17e.js
+│       ├── 📜 control_list.js
+│       ├── 📜 datatables-simple-demo.js
+│       ├── 📜 filtros_ficha_seguimiento_stock.js
+│       ├── 📜 filtros_remitos_pendientes.js
+│       ├── 📜 filtros_resumen_cta_cte.js
+│       ├── 📜 filtros_saldos_clientes.js
+│       ├── 📜 grp_perm.js
+│       ├── 📜 neumatic_scripts.js
+│       ├── 📜 opciones_reporte.js
+│       ├── 📜 scripts.js
+│       └── 📜 select2_config_cliente.js
+├── 📁 templates/
+│   ├── 🌐 base.html
+│   ├── 🌐 buscador.html
+│   ├── 🌐 dashboard.html
+│   ├── 🌐 dashboard_ini.html
+│   ├── 🌐 datatool_form.html
+│   ├── 🌐 home.html
+│   ├── 🌐 maestro_form.html
+│   ├── 🌐 menu_item_recursive.html
+│   ├── 🌐 modal_errors.html
+│   ├── 🌐 paginador.html
+│   ├── 🌐 proceso_form.html
+│   ├── 🌐 sidebar.html
+│   ├── 🌐 sidebar_ini.html
+│   ├── 🌐 top_nav.html
+│   └── 🌐 top_nav_ini.html
+├── 📁 utils/
+│   ├── 📁 cleanup_foxpro/
+│   │   ├── 🐍 cleanup_config.py
+│   │   ├── 🐍 limpiar_caracteres_foxpro.py
+│   │   └── 📝 Modo de uso.txt
+│   ├── 📁 cleanup_foxpro_dbf/
+│   │   ├── 🐍 cleanup_config.py
+│   │   ├── 🐍 limpiar_caracteres_dbf_directo.py
+│   │   └── 📝 Modo de uso.txt
+│   ├── 📁 helpers/
+│   │   └── 🐍 export_helpers.py
+│   ├── 📁 validator/
+│   │   └── 🐍 validaciones.py
+│   ├── 🐍 __init__.py
+│   ├── 🐍 afip_simple.py
+│   ├── 🐍 saldo_cliente.py
+│   └── 🐍 utils.py
+├── 📄 .env
+├── 🐍 manage.py
+├── 📖 README.md
+├── 📝 requirements.txt
+└── 📝 requirements_afip.txt

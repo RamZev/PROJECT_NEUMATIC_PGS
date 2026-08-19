@@ -1,0 +1,241 @@
+<!-- apps/maestros/templates/maestros/actualizar_precios_producto.html -->
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Actualización Masiva de Precios{% endblock %}
+
+{% block header %}
+	{% include 'top_nav.html' %}
+{% endblock %}
+
+{% block main %}
+	<div id="layoutSidenav_nav">
+		{% include 'sidebar.html' %}
+	</div>
+	
+	<div id="layoutSidenav_content">
+		<main>
+			<div class="container-fluid px-4">
+				<h3 class="mt-4">{{ master_title }}</h3>
+				<ol class="breadcrumb mb-4">
+					<li class="breadcrumb-item"><a href="{% url 'home' %}">Panel</a></li>
+					<li class="breadcrumb-item active">{{ accion }}</li>
+				</ol>
+				
+				<!-- Sección de mensajes (messages) -->
+				{% if messages %}
+					{% for message in messages %}
+						<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+							{{ message }}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>
+					{% endfor %}
+				{% endif %}
+				
+				<div class="card mb-4">
+					<div class="card-header">
+						<i class="fas fa-edit me-1"></i>
+						{{ accion }}
+					</div>
+					<div class="card-body">
+						<form method="post" id="formActualizarPrecios" novalidate>
+							{% csrf_token %}
+							
+							<!-- Mostrar errores generales del formulario -->
+							{% if form.non_field_errors %}
+							<div class="alert alert-danger">
+								<ul class="mb-0">
+									{% for error in form.non_field_errors %}
+										<li>{{ error }}</li>
+									{% endfor %}
+								</ul>
+							</div>
+							{% endif %}
+							
+							<div class="row">
+								<!-- Sección de Porcentaje -->
+								<div class="col-md-6">
+									<div class="card mb-4">
+										<div class="card-header bg-primary text-white">
+											<i class="fas fa-percent me-1"></i> Configuración de Actualización
+										</div>
+										<div class="card-body">
+											<div class="form-group mb-3">
+												<label for="{{ form.porcentaje.id_for_label }}" class="fw-bold">
+													{{ form.porcentaje.label }}
+												</label>
+												<div class="input-group">
+													{{ form.porcentaje }}
+													<span class="input-group-text">%</span>
+												</div>
+												<small class="form-text text-muted">{{ form.porcentaje.help_text }}</small>
+												{% if form.porcentaje.errors %}
+													<div class="invalid-feedback d-block">
+														{{ form.porcentaje.errors }}
+													</div>
+												{% endif %}
+											</div>
+											
+											<hr>
+											
+											<div class="form-group mb-3">
+												<label class="fw-bold">Campos a actualizar</label>
+												<div class="row mt-2">
+													<div class="col-md-6">
+														<div class="form-check">
+															{{ form.actualizar_costo }}
+															<label class="form-check-label" for="{{ form.actualizar_costo.id_for_label }}">
+																{{ form.actualizar_costo.label }}
+															</label>
+															<div><small class="form-text text-muted">{{ form.actualizar_costo.help_text }}</small></div>
+															{% if form.actualizar_costo.errors %}
+																<div class="invalid-feedback d-block">{{ form.actualizar_costo.errors }}</div>
+															{% endif %}
+														</div>
+													</div>
+													<div class="col-md-6">
+														<div class="form-check">
+															{{ form.actualizar_precio }}
+															<label class="form-check-label" for="{{ form.actualizar_precio.id_for_label }}">
+																{{ form.actualizar_precio.label }}
+															</label>
+															<div><small class="form-text text-muted">{{ form.actualizar_precio.help_text }}</small></div>
+															{% if form.actualizar_precio.errors %}
+																<div class="invalid-feedback d-block">{{ form.actualizar_precio.errors }}</div>
+															{% endif %}
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								<!-- Sección de Filtros -->
+								<div class="col-md-6">
+									<div class="card mb-4">
+										<div class="card-header bg-secondary text-white">
+											<i class="fas fa-filter me-1"></i> Filtros de Productos
+										</div>
+										<div class="card-body">
+											<!-- Familia -->
+											<div class="row mb-3">
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="{{ form.id_familia_desde.id_for_label }}" class="form-label">
+															<i class="fas fa-tag me-1"></i> {{ form.id_familia_desde.label }}
+														</label>
+														{{ form.id_familia_desde }}
+														{% if form.id_familia_desde.errors %}
+															<div class="text-danger small">{{ form.id_familia_desde.errors }}</div>
+														{% endif %}
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="{{ form.id_familia_hasta.id_for_label }}" class="form-label">
+															<i class="fas fa-tag me-1"></i> {{ form.id_familia_hasta.label }}
+														</label>
+														{{ form.id_familia_hasta }}
+														{% if form.id_familia_hasta.errors %}
+															<div class="text-danger small">{{ form.id_familia_hasta.errors }}</div>
+														{% endif %}
+													</div>
+												</div>
+											</div>
+											
+											<!-- Marca -->
+											<div class="row mb-3">
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="{{ form.id_marca_desde.id_for_label }}" class="form-label">
+															<i class="fas fa-copyright me-1"></i> {{ form.id_marca_desde.label }}
+														</label>
+														{{ form.id_marca_desde }}
+														{% if form.id_marca_desde.errors %}
+															<div class="text-danger small">{{ form.id_marca_desde.errors }}</div>
+														{% endif %}
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="{{ form.id_marca_hasta.id_for_label }}" class="form-label">
+															<i class="fas fa-copyright me-1"></i> {{ form.id_marca_hasta.label }}
+														</label>
+														{{ form.id_marca_hasta }}
+														{% if form.id_marca_hasta.errors %}
+															<div class="text-danger small">{{ form.id_marca_hasta.errors }}</div>
+														{% endif %}
+													</div>
+												</div>
+											</div>
+											
+											<!-- Modelo -->
+											<div class="row">
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="{{ form.id_modelo_desde.id_for_label }}" class="form-label">
+															<i class="fas fa-cube me-1"></i> {{ form.id_modelo_desde.label }}
+														</label>
+														{{ form.id_modelo_desde }}
+														{% if form.id_modelo_desde.errors %}
+															<div class="text-danger small">{{ form.id_modelo_desde.errors }}</div>
+														{% endif %}
+													</div>
+												</div>
+												<div class="col-md-6">
+													<div class="form-group">
+														<label for="{{ form.id_modelo_hasta.id_for_label }}" class="form-label">
+															<i class="fas fa-cube me-1"></i> {{ form.id_modelo_hasta.label }}
+														</label>
+														{{ form.id_modelo_hasta }}
+														{% if form.id_modelo_hasta.errors %}
+															<div class="text-danger small">{{ form.id_modelo_hasta.errors }}</div>
+														{% endif %}
+													</div>
+												</div>
+											</div>
+											
+											<div class="alert alert-info mt-3">
+												<i class="fas fa-info-circle me-1"></i>
+												Deje los campos en blanco para aplicar a todos los productos activos.
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- Botones de acción -->
+							<div class="row">
+								<div class="col-12">
+									<div class="card mb-4">
+										<div class="card-header bg-warning">
+											<i class="fas fa-exclamation-triangle me-1"></i> Acción
+										</div>
+										<div class="card-body">
+											<div class="alert alert-warning">
+												<i class="fas fa-exclamation-circle me-1"></i>
+												<strong>¡Atención!</strong> Esta acción modificará los precios de los productos seleccionados. 
+												Verifique los filtros antes de continuar.
+											</div>
+											
+											<div class="d-flex gap-2 flex-wrap">
+												<button type="submit" class="btn btn-primary" id="btnActualizar">
+													<i class="fas fa-check me-1"></i> Actualizar
+												</button>
+												<a href="{% url 'home' %}" class="btn btn-secondary">
+													<i class="fas fa-times me-1"></i> Cancelar
+												</a>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				
+			</div>
+		</main>
+	</div>
+{% endblock %}

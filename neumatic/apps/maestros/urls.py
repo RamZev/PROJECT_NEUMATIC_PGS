@@ -55,7 +55,7 @@ from .views.consulta_views_maestros import (
 	obtener_tipo_venta_vendedor,
 )
 from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
-from .views.actualizar_producto_estado_views import ActualizarEstadosProductosView
+from .views.actualizar_producto_views import ActualizarEstadosProductosView, ActualizarPreciosProductosView
 from .views.select2_views import buscar_cliente_select2
 from .views.empresa_views import ActualizarLimitesClientesView
 
@@ -317,6 +317,7 @@ urlpatterns = [
 	path('buscar-cliente-id/', buscar_cliente_id_view, name='buscar_cliente_id'),
 	path('api/cai/<int:pk>/datos/', CAIDatosAPIView.as_view(), name='cai-datos-api'),
 	path('actualizar-estados-productos/', ActualizarEstadosProductosView.as_view(), name='actualizar_estados_productos'),
+	path('actualizar-precios-productos/', ActualizarPreciosProductosView.as_view(), name='actualizar_precios_productos'),
 	path('get-descuentos-columna/<str:columna>/', get_descuentos_columna, name='get_descuentos_columna'),
 	
 	#-- Nuevas URLs para la funcionalidad de límite de crédito.
