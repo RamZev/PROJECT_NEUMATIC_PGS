@@ -119,5 +119,16 @@
         "id_user_id": 1,
         "punto_venta": "00025",
         "usuario": "admin"
+    },
+    {
+        "descripcion_punto_venta": "Funes",
+        "estacion": "ESTACION03",
+        "estatus_punto_venta": 1,
+        "fcontrol": "2025-03-18 16:49:34",
+        "id_punto_venta": 12,
+        "id_sucursal_id": 12,
+        "id_user_id": 1,
+        "punto_venta": "00050",
+        "usuario": "admin"
     }
 ]

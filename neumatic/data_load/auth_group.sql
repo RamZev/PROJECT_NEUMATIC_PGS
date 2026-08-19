@@ -1,26 +1,54 @@
--- ============================================
--- CONVERSIÓN DE SQL SERVER A POSTGRESQL 18
--- Tabla: auth_group
--- ============================================
+--
+-- PostgreSQL database dump
+--
 
--- Eliminar datos existentes
-DELETE FROM auth_group;
+\restrict XI4UCL8S8cd21HrF6iBzub5LwrhUqQ3Y7d8REu92XSBB9n8WKXj7fr1wq84DHqk
 
--- Resetear la secuencia (el próximo ID será 1)
-SELECT setval(pg_get_serial_sequence('auth_group', 'id'), 1, false);
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3
 
--- Insertar registros
-INSERT INTO auth_group (id, name) VALUES (1, 'Administracion');
-INSERT INTO auth_group (id, name) VALUES (2, 'Puntos de Ventas');
-INSERT INTO auth_group (id, name) VALUES (3, 'Vendedores');
-INSERT INTO auth_group (id, name) VALUES (4, 'Encargado Sucursal');
-INSERT INTO auth_group (id, name) VALUES (5, 'Deposito');
+-- Started on 2026-08-19 10:57:37
 
--- ACTUALIZAR LA SECUENCIA AL MÁXIMO ID INSERTADO
-SELECT setval(pg_get_serial_sequence('auth_group', 'id'), (SELECT MAX(id) FROM auth_group));
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
 
--- Verificar
-SELECT * FROM auth_group;
+--
+-- TOC entry 5387 (class 0 OID 54005)
+-- Dependencies: 221
+-- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: postgres
+--
 
--- Verificar el valor actual de la secuencia
-SELECT currval(pg_get_serial_sequence('auth_group', 'id'));
+INSERT INTO public.auth_group VALUES (1, 'Administracion');
+INSERT INTO public.auth_group VALUES (2, 'Puntos de Ventas');
+INSERT INTO public.auth_group VALUES (3, 'Vendedores');
+INSERT INTO public.auth_group VALUES (4, 'Encargado Sucursal');
+INSERT INTO public.auth_group VALUES (5, 'Deposito');
+INSERT INTO public.auth_group VALUES (6, 'Super');
+
+
+--
+-- TOC entry 5394 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('public.auth_group_id_seq', 1, false);
+
+
+-- Completed on 2026-08-19 10:57:37
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict XI4UCL8S8cd21HrF6iBzub5LwrhUqQ3Y7d8REu92XSBB9n8WKXj7fr1wq84DHqk
+

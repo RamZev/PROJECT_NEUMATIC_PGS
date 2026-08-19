@@ -377,7 +377,7 @@ De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en SQL
 
 Cada vez que ejecute un script grabe los cambios
 
-**Scripts de Usuarios y Menú (user_menu.sql)**
+**Scripts de Usuarios y Menú (hacerlo uno a uno)**
 
 auth_group.sql
 
@@ -423,22 +423,24 @@ actualiza_cliente.sql
 
 actualiza_ventas_null.sql
 
-actualiza_factura_recibo.sql (no usada, pero revisar)
+/////
+
+**actualiza_factura_recibo.sql (no usada, pero revisar)**
 
 /////
 
-
-
 **medidas_estados_sin_cai.sql** (Nuevo)
-
-**actualiza_comprobante_venta.sql** YA NO
-
-**actualiza_comprobante_compra.sql** YA NO
 
 **Sincronización de secuencias de ID** (OJO)
 
 sincro_maestros_id_seq.sql
 sincro_ventas_id_seq.sql
+
+sincro_mebu_id_seq.sql
+
+UPDATE numero
+SET letra = 'R'
+WHERE comprobante = 'RB';
 
 **Al finalizar las migraciones:**
 
@@ -446,13 +448,13 @@ Ejecute la actualización del superusuario (OBLIGATORIO)
 
 1. actualiza_user.py y 
 
-2. (actualiza_user2.py (usuarios_user.json),  YA NO
+2. (actualiza_user2.py (usuarios_user.json),  **YA NO**
 
 3. Crear las vistas en la base de datos
    
    2.1. Abrir la base de datos en DB Browser
    
-   2.2. Copiar todo el contenido del script: **crear_vista_sql.sql**
+   2.2. Copiar todo el contenido del script: **crear_vistas_sql_postgre.sql**
    
    2.3. Ir a la pestaña Execute SQL y pagar todo el contendo
    

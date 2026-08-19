@@ -1,0 +1,26 @@
+
+Structure for table:    D:\PROJECT_NEUMATIC_PGS\NEUMATIC\DATA_LOAD\DATAVFOX\PARAM.DBF
+Number of data records: 1       
+Date of last update:    05/22/26
+Code Page:              850     
+Field  Field Name      Type                Width    Dec   Index   Collate Nulls    Next    Step
+    1  PRECIO1         Numeric                 7      2                      No
+    2  PRECIO2         Numeric                 7      2                      No
+    3  PRECIO3         Numeric                 7      2                      No
+    4  IVA             Numeric                 6      2                      No
+    5  ACRECE          Numeric                 6      2                      No
+    6  PERCEPCION      Numeric                 6      2                      No
+    7  INTERES         Numeric                 6      2                      No
+    8  DOLAR           Numeric                10      4                      No
+    9  DIASVTO         Numeric                 3                             No
+   10  IBINSCR         Numeric                 6      2                      No
+   11  IBCONV          Numeric                 6      2                      No
+   12  IBMONTO         Numeric                12      2                      No
+   13  IBINSCRER       Numeric                 6      2                      No
+   14  IBCONVER        Numeric                 6      2                      No
+   15  IBMONTOER       Numeric                10      2                      No
+   16  DESCMAX         Numeric                 6      2                      No
+   17  SU              Character              15                             No
+   18  CREDITOMAY      Numeric                14      2                      No
+   19  CREDITOMIN      Numeric                14      2                      No
+** Total **                                  154
