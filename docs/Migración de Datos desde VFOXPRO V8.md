@@ -431,6 +431,10 @@ actualiza_ventas_null.sql
 
 **medidas_estados_sin_cai.sql** (Nuevo)
 
+ejecutar numero_migra.py (RE-Nuevo)
+
+actualiza_factura_punto_venta.sql (Nuevo)
+
 **Sincronización de secuencias de ID** (OJO)
 
 sincro_maestros_id_seq.sql
