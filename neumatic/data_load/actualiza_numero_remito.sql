@@ -1,3 +1,4 @@
+-- Instrucción que actualiza el último número
 UPDATE numero n
 SET numero = (
     SELECT COALESCE(MAX(f.numero_comprobante), 0)

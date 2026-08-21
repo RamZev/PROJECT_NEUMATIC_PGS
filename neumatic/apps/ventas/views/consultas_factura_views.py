@@ -1247,16 +1247,63 @@ def anular_remito(request, pk):
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
 
 
+# class NumeracionService:
+#     @staticmethod
+#     def obtener_proximo_numero(punto_venta, compro, comprobante_afip, letra):
+#         """
+#         Devuelve el próximo número GLOBAL para el punto de venta dado,
+#         calculándolo a partir del máximo usado en Factura (campo compro),
+#         y actualiza el registro en Numero de forma atómica.
+#         """
+#         with transaction.atomic():
+#             # Bloquear/crear registro en Numero (usando punto_venta, comprobante_afip y letra)
+#             numero_obj, created = Numero.objects.select_for_update().get_or_create(
+#                 id_punto_venta=punto_venta,
+#                 comprobante=comprobante_afip,
+#                 letra=letra,
+#                 defaults={'numero': 0, 'lineas': 1, 'copias': 1}
+#             )
+
+#             # 🔥 Calcular máximo real en Factura para este punto de venta, compro y letra
+#             max_actual = Factura.objects.filter(
+#                 id_punto_venta=punto_venta,
+#                 compro=compro,
+#                 letra_comprobante=letra
+#             ).aggregate(Max('numero_comprobante'))['numero_comprobante__max'] or 0
+
+#             # Actualizar Numero si está atrasado
+#             if numero_obj.numero < max_actual:
+#                 numero_obj.numero = max_actual
+#                 numero_obj.save(update_fields=['numero'])
+
+#             # Incrementar y guardar
+#             nuevo_numero = numero_obj.numero + 1
+#             numero_obj.numero = nuevo_numero
+#             numero_obj.save(update_fields=['numero'])
+
+#             # Verificación extra: si el número ya existe en Factura (mismo punto_venta, compro, letra), forzar siguiente
+#             while Factura.objects.filter(
+#                 id_punto_venta=punto_venta,
+#                 compro=compro,
+#                 letra_comprobante=letra,
+#                 numero_comprobante=nuevo_numero
+#             ).exists():
+#                 nuevo_numero += 1
+#                 numero_obj.numero = nuevo_numero
+#                 numero_obj.save(update_fields=['numero'])
+
+#             return nuevo_numero
+
+
 class NumeracionService:
     @staticmethod
     def obtener_proximo_numero(punto_venta, compro, comprobante_afip, letra):
         """
-        Devuelve el próximo número GLOBAL para el punto de venta dado,
-        calculándolo a partir del máximo usado en Factura (campo compro),
-        y actualiza el registro en Numero de forma atómica.
+        Obtiene el próximo número de comprobante para la combinación de punto_venta,
+        código AFIP (comprobante_afip) y letra, usando exclusivamente el modelo Numero.
         """
         with transaction.atomic():
-            # Bloquear/crear registro en Numero (usando punto_venta, comprobante_afip y letra)
+            # Bloquear/crear registro en Numero
             numero_obj, created = Numero.objects.select_for_update().get_or_create(
                 id_punto_venta=punto_venta,
                 comprobante=comprobante_afip,
@@ -1264,36 +1311,12 @@ class NumeracionService:
                 defaults={'numero': 0, 'lineas': 1, 'copias': 1}
             )
 
-            # 🔥 Calcular máximo real en Factura para este punto de venta, compro y letra
-            max_actual = Factura.objects.filter(
-                id_punto_venta=punto_venta,
-                compro=compro,
-                letra_comprobante=letra
-            ).aggregate(Max('numero_comprobante'))['numero_comprobante__max'] or 0
-
-            # Actualizar Numero si está atrasado
-            if numero_obj.numero < max_actual:
-                numero_obj.numero = max_actual
-                numero_obj.save(update_fields=['numero'])
-
-            # Incrementar y guardar
+            # Incrementar el número actual
             nuevo_numero = numero_obj.numero + 1
             numero_obj.numero = nuevo_numero
             numero_obj.save(update_fields=['numero'])
 
-            # Verificación extra: si el número ya existe en Factura (mismo punto_venta, compro, letra), forzar siguiente
-            while Factura.objects.filter(
-                id_punto_venta=punto_venta,
-                compro=compro,
-                letra_comprobante=letra,
-                numero_comprobante=nuevo_numero
-            ).exists():
-                nuevo_numero += 1
-                numero_obj.numero = nuevo_numero
-                numero_obj.save(update_fields=['numero'])
-
             return nuevo_numero
-
 
 @login_required
 @require_POST
