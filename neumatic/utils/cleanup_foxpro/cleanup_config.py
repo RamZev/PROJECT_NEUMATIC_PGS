@@ -24,7 +24,7 @@ MODELOS_CAMPOS = {
 	'maestros.ProductoModelo': ['nombre_modelo'],
 	
 	#-- App: ventas.
-	'ventas.Factura': ['observa_comprobante'],
+	'ventas.Factura': ['observa_comprobante', 'nombre_factura'],
 	'ventas.DetalleFactura': ['producto_venta'],
 	
 }

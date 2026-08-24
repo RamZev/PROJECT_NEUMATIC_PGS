@@ -25,10 +25,10 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib import colors
 
+from apps.maestros.models.base_models import ProductoDeposito, ProductoStock, ProductoEstado
 from apps.maestros.models.cliente_models import Cliente
-from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.maestros.models.producto_models import Producto
-from apps.maestros.models.base_models import ProductoDeposito, ProductoStock
+from apps.ventas.models.factura_models import Factura, DetalleFactura
 from apps.ventas.models.venta_models import StockCliente
 
 
@@ -171,7 +171,6 @@ class ConsultaProductosView(TemplateView):
 				# ========== FILTRO PARA VENDEDORES ==========
 				if usuario.id_vendedor:
 					#-- Buscar IDs de los estados "Disponible" y "Ofertas".
-					from apps.maestros.models.base_models import ProductoEstado
 					
 					#-- Buscar estado "Disponible".
 					try:
@@ -286,11 +285,12 @@ class ConsultaProductosView(TemplateView):
 						for deposito in depositos:
 							stock = producto_stock.get(deposito.id_producto_deposito, 0)
 							producto.stock_total += stock
-							
-							producto.stock_por_deposito_list.append({
-								'deposito': deposito.nombre_producto_deposito,
-								'stock': stock
-							})
+
+							if stock > 0:
+								producto.stock_por_deposito_list.append({
+									'deposito': deposito.nombre_producto_deposito,
+									'stock': stock
+								})
 						
 						#-- Cantidad en tránsito.
 						producto.cantidad_transito = transito_dict.get(producto.id_producto, 0)

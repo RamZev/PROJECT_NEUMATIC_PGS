@@ -156,7 +156,7 @@ class ResumenCtaCteManager(models.Manager):
 		saldo_acumulado = Decimal('0.00')
 		
 		for item in resultados_raw:
-			saldo_movimiento = Decimal(str(item.saldo_movimiento)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
+			saldo_movimiento = Decimal(str(item.total)) - Decimal(str(item.entrega)) if hasattr(item, 'saldo_movimiento') and item.saldo_movimiento is not None else Decimal('0.00')
 			saldo_acumulado += saldo_movimiento
 			item.saldo_acumulado = saldo_acumulado
 			resultados.append(item)
