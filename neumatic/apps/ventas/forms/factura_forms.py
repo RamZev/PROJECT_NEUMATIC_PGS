@@ -1,6 +1,6 @@
 # neumatic\apps\ventas\forms\factura_forms.py
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import ValidationError, inlineformset_factory
 from datetime import date
 from django.db.models import Q
 
@@ -212,7 +212,21 @@ class FacturaForm(forms.ModelForm):
 
     def clean_discrimina_iva(self):
         # Siempre retorna True o False, incluso si el checkbox está deshabilitado
-        return bool(self.data.get('discrimina_iva', False))    
+        return bool(self.data.get('discrimina_iva', False))
+
+
+    def clean(self):
+        cleaned_data = super().clean()
+        stock_clie = cleaned_data.get('stock_clie')
+        comprobante = cleaned_data.get('id_comprobante_venta')
+
+        if stock_clie and comprobante:
+            # Obtener mult_venta y tipo del comprobante
+            if comprobante.mult_venta <= 0 or comprobante.tipo_comprobante != 'FACTURA':
+                raise ValidationError(
+                    'El campo "Stock Cliente" solo puede activarse para comprobantes de tipo FACTURA con mult_venta > 0.'
+                )
+        return cleaned_data    
        
 class DetalleFacturaForm(forms.ModelForm):
     gravado = forms.DecimalField(

@@ -2513,7 +2513,33 @@
 						console.error('Error al obtener código:', error);
 						document.getElementById('id_compro').value = '';
 					});
-					
+				
+				////
+				// Obtener el checkbox
+				var stockClieCheckbox = document.getElementById('id_stock_clie');
+				if (!stockClieCheckbox) return;
+
+				// Obtener los diccionarios
+				var multVentaDict = JSON.parse(document.getElementById('multventa-data').dataset.multventa);
+				var tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+
+				// Obtener valores para el comprobante seleccionado
+				var multVenta = multVentaDict[comprobanteId];
+				var tipoComp = tipoComprobanteDict[comprobanteId];
+
+				// Evaluar condición
+				var habilitado = (multVenta > 0 && tipoComp === 'FACTURA');
+
+				if (habilitado) {
+					stockClieCheckbox.disabled = false;
+					stockClieCheckbox.removeAttribute('readonly');
+					// Si se habilita, no se modifica su valor (puede estar marcado o no)
+				} else {
+					stockClieCheckbox.disabled = true;
+					stockClieCheckbox.checked = false; // Desmarcar si no cumple
+					stockClieCheckbox.setAttribute('readonly', 'readonly'); // Por si acaso
+				}
+				////
 			}
 			
 			// Verificar Remito
