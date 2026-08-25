@@ -25,6 +25,8 @@ from ...maestros.models.descuento_vendedor_models import DescuentoRevendedor
 
 from entorno.constantes_base import TIPO_VENTA
 
+from apps.ventas.views.stock_cliente_utils import crear_stock_cliente_desde_factura
+
 modelo = Factura
 
 #-- Usar esta forma cuando el modelo esté compuesto de una sola palabra: Ej. Color.
@@ -918,6 +920,11 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 				# 7. Guardado en el modelo Detallefactura y DetalleSerial
 				formset_detalle.instance = self.object
 				detalles = formset_detalle.save()
+
+				# 7.1 Crear Stock del cliente
+				if form.cleaned_data.get('stock_clie'):
+					print("Creación del Stock de Cliente")
+					crear_stock_cliente_desde_factura(self.object)
 				
 				formset_serial.instance = self.object 
 				formset_serial.save() 						
