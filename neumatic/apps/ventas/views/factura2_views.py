@@ -293,6 +293,10 @@ class FacturaManualCreateView(MaestroDetalleCreateView):
 
 		data['descuento_revendedor_dict'] = json.dumps(descuento_revendedor_dict)
 
+		# Obtener todos los comprobantes con sus valores stock_clie
+		stock_clie_dict = {str(c.id_comprobante_venta): c.stock_clie for c in ComprobanteVenta.objects.all()}
+		data['stock_clie_dict'] = json.dumps(stock_clie_dict)
+
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante
 		
@@ -1278,6 +1282,21 @@ class FacturaManualUpdateView(MaestroDetalleUpdateView):
 		# Obtener todos los operarios con sus id
 		operario_dict = {str(o.id_operario): o.nombre_operario for o in Operario.objects.all()}
 		data['operario_dict'] = json.dumps(operario_dict)
+
+		# Obtener los descuentos de revendedor
+		descuento_revendedor_dict = {}
+		descuentos = DescuentoRevendedor.objects.filter(estatus_descuento_revendedor=True)
+
+		for desc in descuentos:
+			# Crear una clave compuesta "marca_id-familia_id" para búsqueda rápida
+			key = f"{desc.id_marca_id}-{desc.id_familia_id}"
+			descuento_revendedor_dict[key] = float(desc.descuento)
+
+		data['descuento_revendedor_dict'] = json.dumps(descuento_revendedor_dict)
+
+		# Obtener todos los comprobantes con sus valores stock_clie
+		stock_clie_dict = {str(c.id_comprobante_venta): c.stock_clie for c in ComprobanteVenta.objects.all()}
+		data['stock_clie_dict'] = json.dumps(stock_clie_dict)
 
 		# Tipo de Comprobante
 		data['tipo_comprobante'] = self.tipo_comprobante

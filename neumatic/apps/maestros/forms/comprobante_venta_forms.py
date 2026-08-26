@@ -68,6 +68,7 @@ class ComprobanteVentaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
 			'compro_asociado': 
 				forms.TextInput(attrs={**formclasstext, 'oninput': 'this.value = this.value.toUpperCase()'}),
+			"stock_clie": forms.CheckboxInput(attrs={**formclasscheck}),
 		}
 		
 		error_messages = {

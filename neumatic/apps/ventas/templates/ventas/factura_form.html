@@ -218,6 +218,9 @@
 			<!-- Div oculto con los descuentos de revendedor -->
 			<div id="descuento-revendedor-data" data-descuento-revendedor='{{ descuento_revendedor_dict|safe }}'></div>
 
+			<!-- Div oculto con el diccionario de stockclie -->
+			<div id="stockclie-data" data-stockclie='{{ stock_clie_dict|safe }}'></div>
+
 			<div class="container-fluid tbl-container">
 				<!-- Formulario Encabezado Detalle - Inicio -->
 				<form method="post" id="factura-form" enctype="multipart/form-data">
@@ -2519,16 +2522,14 @@
 				var stockClieCheckbox = document.getElementById('id_stock_clie');
 				if (!stockClieCheckbox) return;
 
-				// Obtener los diccionarios
-				var multVentaDict = JSON.parse(document.getElementById('multventa-data').dataset.multventa);
-				var tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+				// Obtener el diccionario
+				var stockClieDict = JSON.parse(document.getElementById('stockclie-data').dataset.stockclie);
 
-				// Obtener valores para el comprobante seleccionado
-				var multVenta = multVentaDict[comprobanteId];
-				var tipoComp = tipoComprobanteDict[comprobanteId];
+				// Obtener valor para el comprobante seleccionado
+				var stockClieComp = stockClieDict[comprobanteId];
 
-				// Evaluar condición
-				var habilitado = (multVenta > 0 && tipoComp === 'FACTURA');
+				// Único filtro
+				var habilitado = (stockClieComp === true);				
 
 				if (habilitado) {
 					stockClieCheckbox.disabled = false;

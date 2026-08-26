@@ -183,7 +183,7 @@
 								</button>
 								
 								<!-- ====== NUEVA CONDICIÓN PARA BOTONES DE STOCK ====== -->
-								{% if factura.id_comprobante_venta.tipo_comprobante == "FACTURA" %}
+								{% if factura.id_comprobante_venta.stock_clie %}
 									<!-- Botón: Crear Stock Cliente -->
 									{% if not factura.stock_clie %}
 										<form method="post" 

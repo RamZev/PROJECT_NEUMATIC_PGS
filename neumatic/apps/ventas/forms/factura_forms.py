@@ -221,10 +221,9 @@ class FacturaForm(forms.ModelForm):
         comprobante = cleaned_data.get('id_comprobante_venta')
 
         if stock_clie and comprobante:
-            # Obtener mult_venta y tipo del comprobante
-            if comprobante.mult_venta <= 0 or comprobante.tipo_comprobante != 'FACTURA':
+            if not comprobante.stock_clie:  # Única condición
                 raise ValidationError(
-                    'El campo "Stock Cliente" solo puede activarse para comprobantes de tipo FACTURA con mult_venta > 0.'
+                    'El campo "Stock Cliente" solo puede activarse para comprobantes que tengan habilitado el stock de cliente.'
                 )
         return cleaned_data    
        

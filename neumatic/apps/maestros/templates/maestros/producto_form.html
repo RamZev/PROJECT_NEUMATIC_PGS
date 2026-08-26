@@ -66,14 +66,6 @@
 														</label>
 														{{ form.codigo_producto }}
 													</div>
-													
-													<div class="col-md-4">
-														<label class="form-label text-primary mb-0" for="{{ form.nombre_producto.id_for_label }}">
-															{{ form.nombre_producto.label }}
-														</label>
-														{{ form.nombre_producto }}
-													</div>
-													
 													<!-- ******** -->
 													 
 													{% if form.instance.pk %}
@@ -194,7 +186,15 @@
 														</label>
 														{{ form.descuento }}
 													</div>
+
+													<div class="col-md-3">
+														<label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
+															{{ form.stock_clie.label }}
+														</label>
+														{{ form.stock_clie }}
+													</div>
 												</div>
+
 												<div class="row">
 													<div class="col-md-2">
 														<label class="form-label text-primary mb-0" for="{{ form.stock.id_for_label }}">

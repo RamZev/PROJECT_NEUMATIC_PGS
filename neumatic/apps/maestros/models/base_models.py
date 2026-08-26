@@ -550,6 +550,11 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		blank=True,
 		null=True
 	)
+	stock_clie = models.BooleanField(
+		verbose_name="stockclie",
+		null=True,
+		blank=True
+	)
 	
 	class Meta:
 		db_table = 'comprobante_venta'
