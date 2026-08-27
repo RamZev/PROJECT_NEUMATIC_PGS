@@ -328,6 +328,8 @@
 			const libroIvaCheckbox = document.getElementById('{{ form.libro_iva.id_for_label }}');
 			const codigoAfipA = document.getElementById('{{ form.codigo_afip_a.id_for_label }}');
 			const codigoAfipB = document.getElementById('{{ form.codigo_afip_b.id_for_label }}');
+			const multStock = document.getElementById('{{ form.mult_stock.id_for_label }}');
+			const stockClieCheckbox = document.getElementById('{{ form.stock_clie.id_for_label }}');
 			
 			// Función para actualizar el estado de los campos AFIP.
 			function actualizarCamposAFIP() {
@@ -357,6 +359,17 @@
 					codigoAfipB.value = codigoAfipA.value;
 				}
 			});
+
+			function actualizarStockCliente() {
+				const permiteStockCliente = multStock.value === '-1';
+				if (!permiteStockCliente) {
+					stockClieCheckbox.checked = false;
+				}
+				stockClieCheckbox.disabled = !permiteStockCliente;
+			}
+
+			actualizarStockCliente();
+			multStock.addEventListener('change', actualizarStockCliente);
 			
 		});
 	</script>

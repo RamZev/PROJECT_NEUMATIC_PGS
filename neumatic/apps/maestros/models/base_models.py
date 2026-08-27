@@ -584,6 +584,11 @@ class ComprobanteVenta(ModeloBaseGenerico):
 		
 		if self.mult_stock != -1 and self.mult_stock != 0 and self.mult_stock != 1:
 			errors.update({'mult_stock': "Los valores permitidos son: -1, 0 y 1"})
+
+		if self.stock_clie and self.mult_stock != -1:
+			errors.update({
+				'stock_clie': 'Solo puede marcar Stock Cliente cuando Mult. Stock es -1.'
+			})
 		
 		if self.mult_comision != -1 and self.mult_comision != 0 and self.mult_comision != 1:
 			errors.update({'mult_comision': "Los valores permitidos son: -1, 0 y 1"})
