@@ -181,7 +181,11 @@
 								<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
 									<i class="bi bi-eye"></i> Ver
 								</button>
-								
+
+								<!-- Botón Imprimir (siempre) -->
+								<button type="button" class="btn btn-sm btn-outline-primary	 ms-1" title="Imprimir">
+									<i class="bi bi-printer"></i>
+								</button>
 								<!-- ====== NUEVA CONDICIÓN PARA BOTONES DE STOCK ====== -->
 								{% if factura.id_comprobante_venta.stock_clie %}
 									<!-- Botón: Crear Stock Cliente -->
@@ -204,6 +208,8 @@
 										class="btn btn-sm btn-info ms-1">
 										<i class="bi bi-box-seam"></i> Gestionar Stock
 									</a>
+
+									
 								{% endif %}
 								<!-- ====== FIN DE CONDICIÓN ====== -->
 								
