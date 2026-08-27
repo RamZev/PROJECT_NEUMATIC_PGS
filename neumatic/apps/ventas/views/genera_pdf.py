@@ -13,12 +13,13 @@ from reportlab.platypus import Table, TableStyle, Paragraph
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
 from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 
 from ..models.factura_models import Factura, DetalleFactura, SerialFactura
 from ..models.recibo_models import DetalleRecibo, RetencionRecibo, DepositoRecibo, TarjetaRecibo, ChequeRecibo
 from apps.maestros.models.empresa_models import Empresa
 from apps.maestros.models.base_models import Leyenda
-from utils.utils import formato_argentino, numero_a_letras, obtener_logo
+from utils.utils import formato_argentino, numero_a_letras, obtener_logo, generar_qr
 
 
 class GeneraPDFView(View):
@@ -50,7 +51,7 @@ class GeneraPDFView(View):
 		elif compro in remitos:
 			return self._generar_pdf_remito(comprobante)
 	
-	def _generar_pdf_factura(self, factura):
+	def _generar_pdf_factura(self, factura: Factura):
 		#-- Obtener datos principales.
 		detalles = DetalleFactura.objects.filter(id_factura=factura)
 		
@@ -72,6 +73,36 @@ class GeneraPDFView(View):
 		if not empresa:
 			return HttpResponse("No se encontraron datos de empresa configurados", status=400)
 
+		#-- Determinar el Código ARCA para el comprobante.
+		codigo_comprobante = ''
+		if factura.letra_comprobante == 'A':
+			codigo_comprobante = factura.id_comprobante_venta.codigo_afip_a
+		elif factura.letra_comprobante == 'B':
+			codigo_comprobante = factura.id_comprobante_venta.codigo_afip_b
+		
+		#-- Generar QR si el comprobante es Electrónico:
+		qr = None
+		if factura.id_comprobante_venta.electronica:
+			qr_data = {
+				"ver": 1,
+				"fecha": factura.fecha_comprobante.strftime('%Y-%m-%d'),
+				"cuit": empresa.cuit,
+				"ptoVta": int(factura.id_punto_venta.punto_venta),
+				"tipoCmp": int(codigo_comprobante),
+				"nroCmp": factura.numero_comprobante,
+				"importe": float(factura.total),
+				"moneda": "PES",
+				"ctz": 1.0,
+				"tipoDocRec": int(factura.id_cliente.id_tipo_documento_identidad.ws_afip),
+				"nroDocRec": factura.id_cliente.cuit,
+				"tipoCodAut": "E",
+				"codAut": factura.cae
+			}
+
+			qr = generar_qr(qr_data)
+		
+		#-----------------------------------------------
+		
 		buffer = BytesIO()
 		c = canvas.Canvas(buffer, pagesize=portrait(A4))
 		file = f"{factura.compro}_{factura.letra_comprobante}_{factura.numero_comprobante_formateado}"
@@ -98,13 +129,7 @@ class GeneraPDFView(View):
 		c.drawCentredString(x_line, y_letter_box+4*mm, factura.letra_comprobante)
 		c.setFont("Helvetica", 6)
 		
-		cod = ""
-		if factura.letra_comprobante == 'A':
-			cod = f"Cód.{factura.id_comprobante_venta.codigo_afip_a}"
-		elif factura.letra_comprobante == 'B':
-			cod = f"Cód.{factura.id_comprobante_venta.codigo_afip_b}"
-		
-		c.drawCentredString(x_line, y_letter_box+1*mm, cod)
+		c.drawCentredString(x_line, y_letter_box+1*mm, codigo_comprobante)
 		c.setFont("Helvetica", 8)
 		
 		#-- Línea vertical divisoria.
@@ -117,7 +142,7 @@ class GeneraPDFView(View):
 		#-- Posicionamiento inicial.
 		y_position = height - margin
 		y_position -= 10*mm  # Margen superior adicional
-
+		
 		#-- Posicionar el logo.
 		try:
 			c.drawImage(
@@ -558,7 +583,9 @@ class GeneraPDFView(View):
 			x_qr = margin + 2*mm
 			y_qr = margin
 			
-			c.drawImage(path.join(settings.BASE_DIR, 'static', 'img', 'qr.png'), x_qr, y_qr, width=35*mm, height=35*mm, preserveAspectRatio=True)
+			# c.drawImage(path.join(settings.BASE_DIR, 'static', 'img', 'qr.png'), x_qr, y_qr, width=35*mm, height=35*mm, preserveAspectRatio=True)
+			if qr:
+				c.drawImage(ImageReader(qr), x_qr, y_qr, width=35*mm, height=35*mm, preserveAspectRatio=True)
 			
 			#-- Logo ARCA.
 			x_arca = x_qr+40*mm
@@ -644,7 +671,7 @@ class GeneraPDFView(View):
 		#-- Posicionamiento inicial.
 		y_position = height - margin
 		y_position -= 10*mm  # Margen superior adicional
-
+		
 		#-- Posicionar el logo.
 		try:
 			c.drawImage(
@@ -714,7 +741,6 @@ class GeneraPDFView(View):
 		
 		y_text -= 3*mm
 		c.drawString(x_text_left, y_text, f"I.V.A.: {cliente.id_tipo_iva}    {cliente.nombre_tipo_documento_identidad}: {cliente.cuit_formateado}")
-
 		
 		#-- Mostrar detalle del recibo si existe.
 		c.setFont("Helvetica", 7)
@@ -756,7 +782,6 @@ class GeneraPDFView(View):
 				y_detail -= 4*mm
 			
 			y_detail -= 4*mm
-		
 		
 		#-- Medios de Pago.
 		table_cols = ["Medio de Pago", "Número", "Fecha", "Cuotas", "Importe"]

@@ -633,6 +633,7 @@ class PDFGenerator:
 		"""Método para dibujar header y footer en cada página"""
 		
 		canvas_obj.saveState()
+		canvas_obj.setTitle(doc.contexto_reporte.get("titulo", "Reporte"))
 		width_total, height_total = doc.pagesize
 		
 		#-- Header Top (logo + título) (altura fija).

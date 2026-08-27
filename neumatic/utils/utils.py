@@ -1,5 +1,11 @@
 # neumatic\utils\utils.py
 import re, locale, unicodedata
+import base64
+import json
+import qrcode
+import os
+from io import BytesIO
+from typing import Any
 from datetime import date, datetime
 from decimal import Decimal
 from django.forms.models import model_to_dict
@@ -309,3 +315,41 @@ def format_user_display(user):
 		nombre_completo = user.username
 	
 	return f"[{user.id}] {nombre_completo}"
+
+
+def generar_qr(data: dict[str: Any]):
+	"""
+	Función que recibe un diccionario de datos y genera un código QR.
+	
+	Args:
+		data: Un diccionario con los datos a incluir en el QR.
+	Returns:
+		Imagen del QR.
+	"""
+	#-- 1. Convertir el diccionario a un string JSON compacto (sin espacios innecesarios)
+	json_string = json.dumps(data, separators=(',', ':'))
+	
+	#-- 2. Codificar el string JSON en Base64.
+	json_base64 = base64.urlsafe_b64encode(json_string.encode('utf-8')).decode('utf-8')
+	
+	#-- 3. Construir la URL oficial de ARCA/AFIP.
+	URL_ARCA_VERIFICAR_QR = os.getenv("URL_ARCA_VERIFICAR_QR")
+	url_qr = f"{URL_ARCA_VERIFICAR_QR}?p={json_base64}"
+	
+	#-- 4. Crear la imagen del código QR.
+	qr = qrcode.QRCode(
+		version=1,
+		error_correction=qrcode.constants.ERROR_CORRECT_M, # ARCA recomienda nivel M o H
+		box_size=10,
+		border=4,
+	)
+	qr.add_data(url_qr)
+	qr.make(fit=True)
+	
+	imagen_qr = qr.make_image(fill_color="black", back_color="white")
+	#-- Convertir a PNG en memoria para que ReportLab pueda leerlo sin archivos temporales.
+	buffer_qr = BytesIO()
+	imagen_qr.save(buffer_qr, format="PNG")
+	buffer_qr.seek(0)
+	
+	return buffer_qr
