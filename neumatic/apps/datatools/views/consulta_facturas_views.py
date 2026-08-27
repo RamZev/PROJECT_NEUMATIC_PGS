@@ -6,24 +6,22 @@ from datetime import date
 from io import BytesIO
 import re
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import TemplateView, View
-from django.db.models import Q, OuterRef, Exists
+from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
+from django.db.models import Q, OuterRef, Exists, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
-from django.db import transaction
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.db.models import Sum
 
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib import colors
 
 from apps.maestros.models.base_models import ProductoDeposito, ProductoStock, ProductoEstado
 from apps.maestros.models.cliente_models import Cliente

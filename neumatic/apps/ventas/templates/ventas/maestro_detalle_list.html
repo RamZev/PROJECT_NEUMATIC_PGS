@@ -62,8 +62,7 @@
 					<div class="container-fluid tbl-container">
 						
 						<div class="card border-secondary mb-3 mt-2">
-							<div class="card-header bg-primary bg-opacity-25 text-dark d-flex 
-									justify-content-between p-1">
+							<div class="card-header bg-primary bg-opacity-25 text-dark d-flex justify-content-between p-1">
 								<h4>{{ master_title }}</h4>
 								<!-- Botón cerrar lista -->
 								<button type="button" class="btn-close btn-close-blue" 
@@ -78,8 +77,7 @@
 									</div>
 									
 									<div class="col col-2">
-										<a href="{% url create_view_name %}" 
-												class="btn btn-primary opacity-75">
+										<a href="{% url create_view_name %}" class="btn btn-primary opacity-75">
 											Nuevo
 											<i class="bi bi-building-add"></i>
 										</a>
@@ -131,7 +129,8 @@
 													
 													<td>
 														<!-- Botón Actualizar -->
-														<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" data-form-index="{{ forloop.counter0 }}"
+														<button type="button" class="btn btn-outline-primary btn-sm btn-edit boton-oculto" 
+																data-form-index="{{ forloop.counter0 }}"
 																onclick="window.location.href='{% url update_view_name objeto.pk %}'" 
 																data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
 																style="font-size: 70%; padding: 0.1rem 0.3rem;">
@@ -139,13 +138,6 @@
 														</button>
 														
 														<!-- Botón Eliminar -->
-														{% comment %} <button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
-																data-bs-toggle="modal" data-bs-target="#deleteModal" title="Eliminar Registro"
-																data-bs-whatever-url="{% url delete_view_name objeto.pk %}" data-bs-whatever-name="{{ objeto }}"
-																style="font-size: 70%; padding: 0.1rem 0.3rem;">
-															<i class="bi bi-trash"></i>
-														</button> {% endcomment %}
-
 														{% if user.is_superuser %}
 															<button type="button" class="btn btn-outline-danger btn-sm btn-delete boton-oculto" 
 																data-bs-toggle="modal" title="Eliminar Registro" data-bs-target="#deleteModal" 
@@ -173,7 +165,7 @@
 																<i class="bi bi-printer"></i>
 															</a>
 														{% else %}
-															<a href="{% url 'generic_pdf' pk=objeto.pk %}" 
+															<a href="{% url 'generic_pdf' pk=objeto.pk %}"
 																	target="_blank"
 																	class="btn btn-outline-secondary btn-sm btn-print boton-oculto"
 																	data-bs-toggle="tooltip" 

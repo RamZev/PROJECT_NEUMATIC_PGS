@@ -103,194 +103,197 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid">
-				<h4>Comprobantes por Cliente</h4>
-
-				<!-- === NUEVO: AÑADE ESTE BLOQUE PARA MOSTRAR MENSAJES === -->
-				{% if messages %}
-				<div class="messages mb-3">
-					{% for message in messages %}
-					<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-						<strong>
-							{% if message.tags == 'success' %}
-								<i class="bi bi-check-circle"></i> Éxito:
-							{% elif message.tags == 'warning' %}
-								<i class="bi bi-exclamation-triangle"></i> Advertencia:
-							{% elif message.tags == 'error' %}
-								<i class="bi bi-x-circle"></i> Error:
-							{% else %}
-								<i class="bi bi-info-circle"></i> Información:
-							{% endif %}
-						</strong>
-						{{ message }}
-						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					<h4>Comprobantes por Cliente</h4>
+					
+					<!-- === NUEVO: AÑADE ESTE BLOQUE PARA MOSTRAR MENSAJES === -->
+					{% if messages %}
+						<div class="messages mb-3">
+							{% for message in messages %}
+							<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								<strong>
+									{% if message.tags == 'success' %}
+										<i class="bi bi-check-circle"></i> Éxito:
+									{% elif message.tags == 'warning' %}
+										<i class="bi bi-exclamation-triangle"></i> Advertencia:
+									{% elif message.tags == 'error' %}
+										<i class="bi bi-x-circle"></i> Error:
+									{% else %}
+										<i class="bi bi-info-circle"></i> Información:
+									{% endif %}
+								</strong>
+								{{ message }}
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+							{% endfor %}
+						</div>
+					{% endif %}
+					<!-- === FIN DEL BLOQUE DE MENSAJES === -->
+					
+					<!-- Formulario de búsqueda -->
+					<form method="get" class="row g-3 mb-4">
+						<div class="col-md-4">
+							<input type="text" id="buscar_por" name="buscar_por" class="form-control" placeholder="ID Cliente o CUIT" value="{{ request.GET.buscar_por }}">
+						</div>
+						
+						<!-- NUEVO CAMPO SELECT2 -->
+						<div class="col-md-4">
+							<select id="cliente_select2" style="width: 100%;">
+								<option value="">Buscar cliente por nombre...</option>
+							</select>
+						</div>
+						
+						<div class="col-md-2">
+							<button type="submit" class="btn btn-primary">
+								<i class="bi bi-search"></i> Buscar
+							</button>
+						</div>
+					</form>
+					
+					<!-- Tabla de facturas -->
+					<div class="table-responsive tbl-container">
+						<table class="table table-sm table-bordered table-striped">
+							<thead class="table-primary">
+								<tr>
+									<th>ID</th>
+									<th>Documento</th>
+									<th>Comp.</th>
+									<th>Letra</th>
+									<th>Número</th>
+									<th>Fecha</th>
+									<th>Cliente</th>
+									<th>Total</th>
+									<th>Detalles</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for factura in facturas %}
+									<tr>
+										<td>{{ factura.id_factura }}</td>
+										<td>{{ factura.id_comprobante_venta }}</td>
+										<td>{{ factura.compro }}</td>
+										<td>{{ factura.letra_comprobante }}</td>
+										<td>{{ factura.numero_comprobante }}</td>
+										<td>{{ factura.fecha_comprobante|date:"d/m/Y" }}</td>
+										<td>{{ factura.nombre_factura }}</td>
+										<td class="decimal"><strong>{{ factura.total|formato_es_ar }}</strong></td>
+										<td>
+											<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
+												<i class="bi bi-eye"></i> Ver
+											</button>
+											
+											<!-- Botón Imprimir (siempre) -->
+											<a href="{% url 'generic_pdf' pk=factura.id_factura %}"
+													target="_blank"
+													class="btn btn-sm btn-outline-primary ms-1"
+													title="Imprimir PDF">
+												<i class="bi bi-printer"></i>
+											</a>
+											
+											<!-- ====== NUEVA CONDICIÓN PARA BOTONES DE STOCK ====== -->
+											{% if factura.id_comprobante_venta.stock_clie %}
+												<!-- Botón: Crear Stock Cliente -->
+												{% if not factura.stock_clie %}
+													<form method="post" 
+														action="{% url 'crear_stock_cliente' factura.id_factura %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}"
+														style="display:inline;" class="ms-1">
+														{% csrf_token %}
+														<button type="submit" class="btn btn-sm btn-success" 
+																onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
+															<i class="bi bi-box-seam"></i> Crear Stock
+														</button>
+													</form>
+												{% else %}
+													<span class="badge bg-warning text-dark ms-1">Stock creado</span>
+												{% endif %}
+												
+												<!-- Botón: Gestionar Stock Cliente -->
+												<a href="{% url 'stock_cliente_detalle' factura.id_factura %}" 
+													class="btn btn-sm btn-info ms-1">
+													<i class="bi bi-box-seam"></i> Gestionar Stock
+												</a>
+												
+											{% endif %}
+											<!-- ====== FIN DE CONDICIÓN ====== -->
+											
+										</td>
+									</tr>
+									<tr class="collapse" id="detalles{{ factura.id_factura }}">
+										<td colspan="9">
+											<div class="table-responsive mt-2">
+												<table class="table table-sm table-bordered">
+													<thead class="table-primary">
+														<tr>
+															<th>Marca</th>
+															<th>Medida</th>
+															<th>Descripción</th>
+															<th>Cantidad</th>
+															<th>Precio</th>
+															<th>Descuento</th>
+															<th>Total</th>
+															<th>Reventa</th>
+															<th>Operario</th>
+														</tr>
+													</thead>
+													<tbody>
+														{% for detalle in detalles_factura|get_item:factura.id_factura %}
+															<tr>
+																<td>{{ detalle.id_producto.id_marca.nombre_producto_marca|default:"-" }}</td>
+																<td>{{ detalle.id_producto.medida|default:"-" }}</td>
+																<td>{{ detalle.producto_venta }}</td>
+																<td class="decimal">{{ detalle.cantidad|formato_es_ar }}</td>
+																<td class="decimal">{{ detalle.precio|formato_es_ar }}</td>
+																<td class="decimal">{{ detalle.descuento|formato_es_ar }}</td>
+																<td class="decimal"><strong>{{ detalle.total|formato_es_ar }}</strong></td>
+																<td>{{ detalle.reventa|default:"-" }}</td>
+																<td>{{ detalle.id_operario.nombre_operario|default:"SIN OPERARIO" }}</td>
+															</tr>
+														{% empty %}
+															<tr><td colspan="4">No hay detalles para esta comprobante.</td></tr>
+														{% endfor %}
+													</tbody>
+												</table>
+											</div>
+										</td>
+									</tr>
+								{% empty %}
+									<tr><td colspan="9">No se encontraron facturas para este cliente.</td></tr>
+								{% endfor %}
+							</tbody>
+						</table>
 					</div>
-					{% endfor %}
-				</div>
-				{% endif %}
-                <!-- === FIN DEL BLOQUE DE MENSAJES === -->
-				
-				<!-- Formulario de búsqueda -->
-				<form method="get" class="row g-3 mb-4">
-					<div class="col-md-4">
-						<input type="text" id="buscar_por" name="buscar_por" class="form-control" placeholder="ID Cliente o CUIT" value="{{ request.GET.buscar_por }}">
-					</div>
-
-					<!-- NUEVO CAMPO SELECT2 -->
-					<div class="col-md-4">
-						<select id="cliente_select2" style="width: 100%;">
-							<option value="">Buscar cliente por nombre...</option>
-						</select>
+					
+					<div class="pagination-container mt-3 pt-3 border-top">
+						{% if page_obj.has_other_pages %}
+							<nav aria-label="Paginación">
+								<ul class="pagination justify-content-center">
+									{% if page_obj.has_previous %}
+										<li class="page-item">
+											<a class="page-link" href="?buscar_por={{ buscar_por }}&page=1">&laquo; Primero</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.previous_page_number }}">Anterior</a>
+										</li>
+									{% else %}
+										<li class="page-item disabled"><span class="page-link">Anterior</span></li>
+									{% endif %}
+									
+									<li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+									
+									{% if page_obj.has_next %}
+										<li class="page-item">
+											<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.next_page_number }}">Siguiente</a>
+										</li>
+										<li class="page-item">
+											<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
+										</li>
+									{% else %}
+										<li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+									{% endif %}
+								</ul>
+							</nav>
+						{% endif %}
 						
 					</div>
-
-					<div class="col-md-2">
-						<button type="submit" class="btn btn-primary">
-							<i class="bi bi-search"></i> Buscar
-						</button>
-					</div>
-				</form>
-
-				<!-- Tabla de facturas -->
-				<div class="table-responsive tbl-container">
-					<table class="table table-sm table-bordered table-striped">
-					<thead class="table-primary">
-						<tr>
-						<th>ID</th>
-						<th>Documento</th>
-						<th>Comp.</th>
-						<th>Letra</th>
-						<th>Número</th>
-						<th>Fecha</th>
-						<th>Cliente</th>
-						<th>Total</th>
-						<th>Detalles</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for factura in facturas %}
-						<tr>
-							<td>{{ factura.id_factura }}</td>
-							<td>{{ factura.id_comprobante_venta }}</td>
-							<td>{{ factura.compro }}</td>
-							<td>{{ factura.letra_comprobante }}</td>
-							<td>{{ factura.numero_comprobante }}</td>
-							<td>{{ factura.fecha_comprobante|date:"d/m/Y" }}</td>
-							<td>{{ factura.nombre_factura }}</td>
-							<td class="decimal"><strong>{{ factura.total|formato_es_ar }}</strong></td>
-							<td>
-								<button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#detalles{{ factura.id_factura }}">
-									<i class="bi bi-eye"></i> Ver
-								</button>
-
-								<!-- Botón Imprimir (siempre) -->
-								<button type="button" class="btn btn-sm btn-outline-primary	 ms-1" title="Imprimir">
-									<i class="bi bi-printer"></i>
-								</button>
-								<!-- ====== NUEVA CONDICIÓN PARA BOTONES DE STOCK ====== -->
-								{% if factura.id_comprobante_venta.stock_clie %}
-									<!-- Botón: Crear Stock Cliente -->
-									{% if not factura.stock_clie %}
-										<form method="post" 
-											action="{% url 'crear_stock_cliente' factura.id_factura %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}"
-											style="display:inline;" class="ms-1">
-											{% csrf_token %}
-											<button type="submit" class="btn btn-sm btn-success" 
-													onclick="return confirm('¿Desea generar el stock del cliente a partir de los productos de esta factura?');">
-												<i class="bi bi-box-seam"></i> Crear Stock
-											</button>
-										</form>
-									{% else %}
-										<span class="badge bg-warning text-dark ms-1">Stock creado</span>
-									{% endif %}
-
-									<!-- Botón: Gestionar Stock Cliente -->
-									<a href="{% url 'stock_cliente_detalle' factura.id_factura %}" 
-										class="btn btn-sm btn-info ms-1">
-										<i class="bi bi-box-seam"></i> Gestionar Stock
-									</a>
-
-									
-								{% endif %}
-								<!-- ====== FIN DE CONDICIÓN ====== -->
-								
-							</td>
-						</tr>
-						<tr class="collapse" id="detalles{{ factura.id_factura }}">
-							<td colspan="9">
-							<div class="table-responsive mt-2">
-								<table class="table table-sm table-bordered">
-									<thead class="table-primary">
-										<tr>
-											<th>Marca</th>
-											<th>Medida</th>
-											<th>Descripción</th>
-											<th>Cantidad</th>
-											<th>Precio</th>
-											<th>Descuento</th>
-											<th>Total</th>
-											<th>Reventa</th>
-											<th>Operario</th>
-										</tr>
-									</thead>
-									<tbody>
-										{% for detalle in detalles_factura|get_item:factura.id_factura %}
-											<tr>
-												<td>{{ detalle.id_producto.id_marca.nombre_producto_marca|default:"-" }}</td>
-												<td>{{ detalle.id_producto.medida|default:"-" }}</td>
-												<td>{{ detalle.producto_venta }}</td>
-												<td class="decimal">{{ detalle.cantidad|formato_es_ar }}</td>
-												<td class="decimal">{{ detalle.precio|formato_es_ar }}</td>
-												<td class="decimal">{{ detalle.descuento|formato_es_ar }}</td>
-												<td class="decimal"><strong>{{ detalle.total|formato_es_ar }}</strong></td>
-												<td>{{ detalle.reventa|default:"-" }}</td>
-												<td>{{ detalle.id_operario.nombre_operario|default:"SIN OPERARIO" }}</td>
-											</tr>
-										{% empty %}
-											<tr><td colspan="4">No hay detalles para esta comprobante.</td></tr>
-										{% endfor %}
-									</tbody>
-								</table>
-							</div>
-							</td>
-						</tr>
-						{% empty %}
-						<tr><td colspan="9">No se encontraron facturas para este cliente.</td></tr>
-						{% endfor %}
-					</tbody>
-					</table>
-				</div>
-
-				<div class="pagination-container mt-3 pt-3 border-top">
-					{% if page_obj.has_other_pages %}
-					<nav aria-label="Paginación">
-						<ul class="pagination justify-content-center">
-							{% if page_obj.has_previous %}
-							<li class="page-item">
-								<a class="page-link" href="?buscar_por={{ buscar_por }}&page=1">&laquo; Primero</a>
-							</li>
-							<li class="page-item">
-								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.previous_page_number }}">Anterior</a>
-							</li>
-							{% else %}
-							<li class="page-item disabled"><span class="page-link">Anterior</span></li>
-							{% endif %}
-
-							<li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-
-							{% if page_obj.has_next %}
-							<li class="page-item">
-								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.next_page_number }}">Siguiente</a>
-							</li>
-							<li class="page-item">
-								<a class="page-link" href="?buscar_por={{ buscar_por }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a>
-							</li>
-							{% else %}
-							<li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-							{% endif %}
-						</ul>
-					</nav>
-					{% endif %}
-
 				</div>
 				
 			</main>
@@ -299,11 +302,11 @@
 {% endblock maincomponent %}
 
 {% block script %}
-    {{ block.super }}
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
-
+	{{ block.super }}
+	<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
+	
 	<script>
 		$(document).ready(function() {
 			$('#cliente_select2').select2({
@@ -336,7 +339,7 @@
 					return cliente.id + ' - ' + cliente.text;
 				}
 			});
-
+			
 			// Al seleccionar, llenar el input con el ID
 			$('#cliente_select2').on('select2:select', function(e) {
 				var clienteId = e.params.data.id;
@@ -344,11 +347,11 @@
 				// (Opcional) Enviar formulario automáticamente:
 				// $(this).closest('form').submit();
 			});
-
+			
 			// Al limpiar, vaciar el input
 			$('#cliente_select2').on('select2:clearing', function(e) {
 				$('#buscar_por').val('');          // <--- CORREGIDO
 			});
-		});		
+		});
 	</script>
 {% endblock %}

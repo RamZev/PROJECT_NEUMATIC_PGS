@@ -74,6 +74,8 @@ class GeneraPDFView(View):
 
 		buffer = BytesIO()
 		c = canvas.Canvas(buffer, pagesize=portrait(A4))
+		file = f"{factura.compro}_{factura.letra_comprobante}_{factura.numero_comprobante_formateado}"
+		c.setTitle(file)
 		width, height = portrait(A4)
 		margin = 10*mm
 		
@@ -594,7 +596,6 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		file = f"{factura.compro}_{factura.letra_comprobante}_{factura.numero_comprobante_formateado}"
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
@@ -620,6 +621,8 @@ class GeneraPDFView(View):
 		
 		buffer = BytesIO()
 		c = canvas.Canvas(buffer, pagesize=portrait(A4))
+		file = f"{recibo.compro}_{recibo.letra_comprobante}_{recibo.numero_comprobante_formateado}"
+		c.setTitle(file)
 		width, height = portrait(A4)
 		margin = 10*mm
 		
@@ -908,7 +911,6 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		file = f"{recibo.compro}_{recibo.letra_comprobante}_{recibo.numero_comprobante_formateado}"
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
 	
@@ -921,6 +923,8 @@ class GeneraPDFView(View):
 		
 		buffer = BytesIO()
 		c = canvas.Canvas(buffer, pagesize=portrait(A4))
+		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
+		c.setTitle(file)
 		width, height = portrait(A4)
 		margin = 10*mm
 		
@@ -1117,6 +1121,5 @@ class GeneraPDFView(View):
 		
 		buffer.seek(0)
 		response = HttpResponse(buffer, content_type='application/pdf')
-		file = f"{remito.compro}_{remito.letra_comprobante}_{remito.numero_comprobante_formateado}"
 		response['Content-Disposition'] = f'inline; filename="{file}.pdf"'
 		return response
