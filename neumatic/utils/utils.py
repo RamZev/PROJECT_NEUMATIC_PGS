@@ -106,33 +106,37 @@ def format_date(date_value):
 
 def normalizar(nombre):
 	"""
-	Normalize a string by removing Unicode diacritics and unsafe characters to produce
-	a filesystem/identifier-friendly name.
-	Parameters
+	Normaliza una cadena eliminando signos diacríticos Unicode y caracteres no seguros para producir
+	un nombre apto para sistemas de archivos o identificadores.
+	
+	Parámetros
 	----------
 	nombre : str
-		The input string to normalize. Expected to be a Unicode/text string.
-	Returns
+		La cadena de entrada a normalizar. Debe ser una cadena de texto Unicode.
+	
+	Retorna
 	-------
 	str
-		A normalized string where:
-		- Unicode characters are decomposed using NFKD and diacritical marks (e.g. accents, dieresis)
-		  are removed.
-		- Specific replacements are applied: 'ñ' -> 'n', 'Ñ' -> 'N', and spaces -> '_'.
-		- Any remaining characters that are not word characters, hyphens or dots (i.e. not matching
-		  the regular expression class [^\w\-.]) are removed.
-	Raises
+		Una cadena normalizada donde:
+		- Los caracteres Unicode se descomponen usando NFKD y se eliminan las marcas diacríticas
+		  (ej. tildes, diéresis).
+		- Se aplican reemplazos específicos: 'ñ' -> 'n', 'Ñ' -> 'N', y espacios -> '_'.
+		- Cualquier carácter restante que no sea alfanumérico, guion o punto (es decir, que no coincida
+		  con la clase de expresión regular se elimina.
+	
+	Excepciones
 	------
 	TypeError
-		If `nombre` is not an instance of `str`.
-	Notes
+		Si `nombre` no es una instancia de `str`.
+	
+	Notas
 	-----
-	- Implementation relies on `unicodedata.normalize('NFKD', ...)` to separate base characters
-	  from combining diacritical marks, and then filters out combining characters.
-	- A final regular-expression pass removes characters that could be problematic in filenames
-	  or identifiers, preserving alphanumeric characters, underscore, hyphen and dot.
-	- This function is suitable for generating safe filenames, URL slugs for simple use-cases,
-	  or other identifiers where accents and special punctuation should be stripped.
+	- La implementación utiliza `unicodedata.normalize('NFKD', ...)` para separar los caracteres base
+	  de las marcas diacríticas combinantes, y luego filtra los caracteres combinantes.
+	- Un pase final con expresión regular elimina caracteres que podrían ser problemáticos en nombres
+	  de archivo o identificadores, conservando caracteres alfanuméricos, guion bajo, guion medio y punto.
+	- Esta función es adecuada para generar nombres de archivo seguros, slugs para URL en casos de uso
+	  simples, u otros identificadores donde se deban eliminar tildes y puntuaciones especiales.
 	"""
 	
 	#-- Normaliza los caracteres Unicode (descompone acentos en caracteres base + acento).
@@ -203,12 +207,9 @@ def numero_a_letras(numero):
 def convertir_decenas(numero):
 	"""Convierte números entre 1-99 a letras"""
 	
-	unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", 
-				"seis", "siete", "ocho", "nueve"]
-	especiales = ["diez", "once", "doce", "trece", "catorce", "quince",
-				 "dieciséis", "diecisiete", "dieciocho", "diecinueve"]
-	decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta",
-			  "sesenta", "setenta", "ochenta", "noventa"]
+	unidades = ["", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete", "ocho", "nueve"]
+	especiales = ["diez", "once", "doce", "trece", "catorce", "quince", "dieciséis", "diecisiete", "dieciocho", "diecinueve"]
+	decenas = ["", "diez", "veinte", "treinta", "cuarenta", "cincuenta", "sesenta", "setenta", "ochenta", "noventa"]
 	
 	if numero < 10:
 		return unidades[numero]
@@ -228,9 +229,7 @@ def convertir_centenas(numero):
 	
 	if numero == 100:
 		return "cien"
-	centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos",
-			   "quinientos", "seiscientos", "setecientos", "ochocientos",
-			   "novecientos"]
+	centenas = ["", "ciento", "doscientos", "trescientos", "cuatrocientos", "quinientos", "seiscientos", "setecientos", "ochocientos", "novecientos"]
 	c = numero // 100
 	resto = numero % 100
 	if resto == 0:
@@ -326,17 +325,17 @@ def generar_qr(data: dict[str: Any]):
 	Returns:
 		Imagen del QR.
 	"""
-	#-- 1. Convertir el diccionario a un string JSON compacto (sin espacios innecesarios)
+	#-- Convertir el diccionario a un string JSON compacto (sin espacios innecesarios)
 	json_string = json.dumps(data, separators=(',', ':'))
 	
-	#-- 2. Codificar el string JSON en Base64.
+	#-- Codificar el string JSON en Base64.
 	json_base64 = base64.urlsafe_b64encode(json_string.encode('utf-8')).decode('utf-8')
 	
-	#-- 3. Construir la URL oficial de ARCA/AFIP.
+	#-- Construir la URL oficial de ARCA/AFIP.
 	URL_ARCA_VERIFICAR_QR = os.getenv("URL_ARCA_VERIFICAR_QR")
 	url_qr = f"{URL_ARCA_VERIFICAR_QR}?p={json_base64}"
 	
-	#-- 4. Crear la imagen del código QR.
+	#-- Crear la imagen del código QR.
 	qr = qrcode.QRCode(
 		version=1,
 		error_correction=qrcode.constants.ERROR_CORRECT_M, # ARCA recomienda nivel M o H
@@ -347,6 +346,7 @@ def generar_qr(data: dict[str: Any]):
 	qr.make(fit=True)
 	
 	imagen_qr = qr.make_image(fill_color="black", back_color="white")
+	
 	#-- Convertir a PNG en memoria para que ReportLab pueda leerlo sin archivos temporales.
 	buffer_qr = BytesIO()
 	imagen_qr.save(buffer_qr, format="PNG")

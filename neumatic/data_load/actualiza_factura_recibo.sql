@@ -15,7 +15,7 @@ INSERT INTO factura (
     NULL,      -- usuario
     NULL,      -- estacion
     NULL,      -- fcontrol
-    1737462,   -- id_factura
+    11,        -- id_factura
     NULL,      -- id_orig
     TRUE,      -- estatus_comprobante ('t')
     NULL,      -- jerarquia
@@ -68,5 +68,5 @@ INSERT INTO factura (
     NULL       -- id_vendedor_id
 );
 
--- Script para asignar la factura creada (id_factura=1) a los detalles de recibo sin id_factura_cobrada_id:
-UPDATE detalle_recibo SET id_factura_cobrada_id = 1 WHERE id_factura_cobrada_id is null;
+-- Script para asignar la factura creada (id_factura=11) a los detalles de recibo sin id_factura_cobrada_id:
+UPDATE detalle_recibo SET id_factura_cobrada_id = 11 WHERE id_factura_cobrada_id is null;

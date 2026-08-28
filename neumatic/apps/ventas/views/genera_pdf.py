@@ -33,7 +33,8 @@ class GeneraPDFView(View):
 	def get(self, request, pk):
 		
 		comprobante = Factura.objects.filter(pk=pk).first()
-		compro = comprobante.id_comprobante_venta.codigo_comprobante_venta
+		# compro = comprobante.id_comprobante_venta.codigo_comprobante_venta
+		compro = comprobante.id_comprobante_venta
 		electronicos = ("FF", "CF", "DF", "FR", "FC", "CE", "DE", "FT")
 		manuales = ("FA", "NC", "ND")
 		presupuestos = ("PR",)
@@ -42,13 +43,16 @@ class GeneraPDFView(View):
 		recibos = ("RB", "RR", "RC", "RE", "RS", "RN")
 		remitos = ("RF", "RD", "RT", "RM", "DM", "MR", "MD", "MS", "MM", "MI")
 		
-		if compro in facturas:
+		# if compro in facturas:
+		if compro.codigo_comprobante_venta in facturas:
 			return self._generar_pdf_factura(comprobante)
 		
-		elif compro in recibos:
+		# elif compro in recibos:
+		elif compro.recibo:
 			return self._generar_pdf_recibo(comprobante)
 		
-		elif compro in remitos:
+		# elif compro in remitos:
+		elif compro.remito or compro.interno:
 			return self._generar_pdf_remito(comprobante)
 	
 	def _generar_pdf_factura(self, factura: Factura):
