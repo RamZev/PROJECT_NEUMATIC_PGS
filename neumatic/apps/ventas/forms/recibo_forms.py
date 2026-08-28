@@ -214,7 +214,7 @@ class FacturaReciboForm(forms.ModelForm):
             }),
             "domicilio_factura": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
 
-            "fecha_comprobante": forms.TextInput(attrs={**formclassdate, 'type': 'date'}),
+            "fecha_comprobante": forms.TextInput(attrs={**formclassdate, 'type': 'date', 'readonly': 'readonly'}),
             "compro": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "letra_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly', 'type': 'number', 'step': 'any'}),
