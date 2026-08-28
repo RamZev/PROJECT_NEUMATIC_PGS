@@ -305,51 +305,45 @@ class ReciboCreateView(MaestroDetalleCreateView):
 				self.object = form.save()
 				
 				# 9. REGISTRAR EN CAJA SOLO SI HAY EFECTIVO
-				# if efectivo_recibo > 0:
-				# 	usuario = self.request.user
-				# 	fecha_comprobante = form.cleaned_data.get('fecha_comprobante')
+				if efectivo_recibo > 0:
+					usuario = self.request.user
+					fecha_comprobante = form.cleaned_data.get('fecha_comprobante')
 					
-				# 	# IMPORTANTE: Corrección del campo - usar caja_cerrada en lugar de estado
-				# 	caja_activa = Caja.objects.filter(
-				# 		id_sucursal=usuario.id_sucursal,
-				# 		caja_cerrada=False,  
-				# 		fecha_caja=fecha_comprobante
-				# 	).first()
+					# IMPORTANTE: Corrección del campo - usar caja_cerrada en lugar de estado
+					caja_activa = Caja.objects.filter(
+						id_sucursal=usuario.id_sucursal,
+						caja_cerrada=False,  
+						fecha_caja=fecha_comprobante
+					).first()
 					
-				# 	if caja_activa:
-				# 		print(f"DEBUG - Registrando en caja #{caja_activa.numero_caja}")
+					if caja_activa:
+						print(f"DEBUG - Registrando en caja #{caja_activa.numero_caja}")
 						
-				# 		# Quitar cálculo de totales de caja si no lo quieres
-				# 		# caja_activa.ingresos += efectivo_recibo
-				# 		# caja_activa.saldo = caja_activa.saldoanterior + caja_activa.ingresos - caja_activa.egresos
-				# 		# caja_activa.save()
+						# Quitar cálculo de totales de caja si no lo quieres
+						# caja_activa.ingresos += efectivo_recibo
+						# caja_activa.saldo = caja_activa.saldoanterior + caja_activa.ingresos - caja_activa.egresos
+						# caja_activa.save()
 						
-				# 		# Importar FormaPago para el campo id_forma_pago
-				# 		from apps.maestros.models.base_models import FormaPago
-				# 		forma_pago_efectivo = FormaPago.objects.get(id_forma_pago=1)
+						# Importar FormaPago para el campo id_forma_pago
+						from apps.maestros.models.base_models import FormaPago
+						forma_pago_efectivo = FormaPago.objects.get(id_forma_pago=1)
 						
-				# 		# Crear detalle de caja con campos correctos según el modelo
-				# 		CajaDetalle.objects.create(
-				# 			id_caja=caja_activa,
-				# 			idventas=self.object.id_factura,
-				# 			tipo_movimiento=1,  # 1 para ingresos
-				# 			id_forma_pago=forma_pago_efectivo,  # Campo requerido
-				# 			importe=efectivo_recibo,  # Cambiar valor por importe si ese es el nombre real
-				# 			observacion=f"Recibo #{self.object.numero_comprobante}"
-				# 		)
+						# Crear detalle de caja con campos correctos según el modelo
+						CajaDetalle.objects.create(
+							id_caja=caja_activa,
+							idventas=self.object.id_factura,
+							tipo_movimiento=1,  # 1 para ingresos
+							id_forma_pago=forma_pago_efectivo,  # Campo requerido
+							importe=efectivo_recibo,  # Cambiar valor por importe si ese es el nombre real
+							observacion=f"Recibo #{self.object.numero_comprobante}"
+						)
 						
-				# 		messages.info(
-				# 			self.request,
-				# 			f'💰 Se registró efectivo de ${efectivo_recibo:.2f} '
-				# 			f'en la Caja #{caja_activa.numero_caja}'
-				# 		)
-
-				# ===== NUEVO: ASIGNAR id_caja SI CORRESPONDE =====
-				if caja_activa:
-					self.object.id_caja = caja_activa
-					self.object.save(update_fields=['id_caja'])
-					print(f"DEBUG - Caja #{caja_activa.id_caja} asignada a recibo #{self.object.id_factura}")
-
+						messages.info(
+							self.request,
+							f'💰 Se registró efectivo de ${efectivo_recibo:.2f} '
+							f'en la Caja #{caja_activa.numero_caja}'
+						)
+					
 				# 10. Guardar los formsets
 				for formset in formsets:
 					formset.instance = self.object
