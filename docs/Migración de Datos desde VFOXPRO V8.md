@@ -425,15 +425,15 @@ actualiza_ventas_null.sql
 
 /////
 
-**actualiza_factura_recibo.sql (no usada, pero revisar)**
+**actualiza_factura_recibo.sql (importante)**
 
 /////
 
 **medidas_estados_sin_cai.sql** (Nuevo)
 
-ejecutar numero_migra.py (RE-Nuevo)
+**ejecutar numero_migra.py (RE-Nuevo)** (encabezados de excel en minúsculas)
 
-actualiza_factura_punto_venta.sql (Nuevo)
+**actualiza_factura_punto_venta.sql (Nuevo)**
 
 **Sincronización de secuencias de ID** (OJO)
 

@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict h5meWcDXFLdeyujNUbBLrtLjtmxkWO7sE6XgMdnowdYLZph8Jn8D2giI3BFaS70
+\restrict 5BOJGaGvWtzhi3QQ7vLpmrUQHiWfTFJxgDl0MZnhdZwSSa9lgyY6dSjexqTvA8J
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-08-19 11:10:19
+-- Started on 2026-09-01 00:40:25
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5390 (class 0 OID 54351)
+-- TOC entry 5390 (class 0 OID 59412)
 -- Dependencies: 295
 -- Data for Name: menu_menuitem_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -501,6 +501,9 @@ INSERT INTO public.menu_menuitem_groups VALUES (13, 187, 1);
 INSERT INTO public.menu_menuitem_groups VALUES (14, 187, 2);
 INSERT INTO public.menu_menuitem_groups VALUES (15, 187, 4);
 INSERT INTO public.menu_menuitem_groups VALUES (16, 187, 6);
+INSERT INTO public.menu_menuitem_groups VALUES (17, 188, 6);
+INSERT INTO public.menu_menuitem_groups VALUES (19, 147, 5);
+INSERT INTO public.menu_menuitem_groups VALUES (21, 147, 4);
 
 
 --
@@ -509,14 +512,14 @@ INSERT INTO public.menu_menuitem_groups VALUES (16, 187, 6);
 -- Name: menu_menuitem_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.menu_menuitem_groups_id_seq', 16, true);
+SELECT pg_catalog.setval('public.menu_menuitem_groups_id_seq', 21, true);
 
 
--- Completed on 2026-08-19 11:10:19
+-- Completed on 2026-09-01 00:40:26
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict h5meWcDXFLdeyujNUbBLrtLjtmxkWO7sE6XgMdnowdYLZph8Jn8D2giI3BFaS70
+\unrestrict 5BOJGaGvWtzhi3QQ7vLpmrUQHiWfTFJxgDl0MZnhdZwSSa9lgyY6dSjexqTvA8J
 

@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict QeTlh6qkEpOny2pmCwgXtuZ6Bakpfzu841H801EGfXrYXt4Wt3QFDXMhGEsEkuJ
+\restrict WaCQvFmzv6wJ21PlyuxVXl8Ow0YuJr25K8TkZeeh0OGuhgq0DawDOLA1tv9g8UU
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-08-19 11:09:43
+-- Started on 2026-09-01 00:39:03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5388 (class 0 OID 54340)
+-- TOC entry 5388 (class 0 OID 59401)
 -- Dependencies: 294
 -- Data for Name: menu_menuitem; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -135,7 +135,6 @@ INSERT INTO public.menu_menuitem VALUES (141, 'Stock', '', '', '', true, 11, 0, 
 INSERT INTO public.menu_menuitem VALUES (142, 'Compras', '', '', '', true, 0, 0, 4, NULL);
 INSERT INTO public.menu_menuitem VALUES (143, 'Detalle de Compras por Proveedor', 'vldetallecompraproveedor_informe_list', '', '', false, 2, 0, NULL, 142);
 INSERT INTO public.menu_menuitem VALUES (144, 'Comprobantes Ingresados', 'vlcompraingresada_informe_list', '', '', false, 3, 0, NULL, 142);
-INSERT INTO public.menu_menuitem VALUES (147, 'Ficha de Seguimiento de Stock', 'vlfichaseguimientostock_informe_list', '', '', false, 4, 0, NULL, 141);
 INSERT INTO public.menu_menuitem VALUES (148, 'Comprobantes de Compra', 'comprobantecompra_informe_list', '', '', false, 0, 0, NULL, 142);
 INSERT INTO public.menu_menuitem VALUES (149, 'Proveedores', 'proveedor_informe_list', '', '', false, 1, 0, NULL, 142);
 INSERT INTO public.menu_menuitem VALUES (150, 'Caja', 'caja_list', '', '', false, 0, 0, 9, NULL);
@@ -194,6 +193,8 @@ INSERT INTO public.menu_menuitem VALUES (185, 'Comprobantes por Clientes', 'cons
 INSERT INTO public.menu_menuitem VALUES (126, 'Tablas para Estadísticas', 'vltabladinamicaestadistica_informe_list', '', '', false, 3, 0, 8, NULL);
 INSERT INTO public.menu_menuitem VALUES (187, 'Comprobantes Segun Remitos', 'buscar_remito', '', '', false, 3, 0, 11, NULL);
 INSERT INTO public.menu_menuitem VALUES (186, 'Consultas de Precios', 'consulta_productos_stock', '', '', false, 2, 0, 11, NULL);
+INSERT INTO public.menu_menuitem VALUES (188, 'Cambio de Precios por Porcentaje', 'actualizar_precios_productos', '', '', false, 5, 0, NULL, 138);
+INSERT INTO public.menu_menuitem VALUES (147, 'Ficha de Seguimiento de Stock', 'vlfichaseguimientostock_informe_list', '', '', false, 4, 0, NULL, 141);
 
 
 --
@@ -202,14 +203,14 @@ INSERT INTO public.menu_menuitem VALUES (186, 'Consultas de Precios', 'consulta_
 -- Name: menu_menuitem_id_menu_item_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.menu_menuitem_id_menu_item_seq', 187, true);
+SELECT pg_catalog.setval('public.menu_menuitem_id_menu_item_seq', 188, true);
 
 
--- Completed on 2026-08-19 11:09:43
+-- Completed on 2026-09-01 00:39:03
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict QeTlh6qkEpOny2pmCwgXtuZ6Bakpfzu841H801EGfXrYXt4Wt3QFDXMhGEsEkuJ
+\unrestrict WaCQvFmzv6wJ21PlyuxVXl8Ow0YuJr25K8TkZeeh0OGuhgq0DawDOLA1tv9g8UU
 

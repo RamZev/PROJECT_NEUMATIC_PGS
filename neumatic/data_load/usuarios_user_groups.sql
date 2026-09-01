@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict L4uQhuwnx7IxVOGjkUnpJS1im6c9OwahtIdTpNuWjavyG150IMfknacJwk2zyQX
+\restrict BgrYfnHSihde1dRw8b4G3xGN1hDaepp9NGF7UM0LRhwTYMLAIK2glB7kXAs6IGN
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-08-19 11:08:34
+-- Started on 2026-09-01 00:37:52
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5390 (class 0 OID 54607)
+-- TOC entry 5390 (class 0 OID 59668)
 -- Dependencies: 351
 -- Data for Name: usuarios_user_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -43,7 +43,6 @@ INSERT INTO public.usuarios_user_groups VALUES (14, 17, 2);
 INSERT INTO public.usuarios_user_groups VALUES (16, 18, 4);
 INSERT INTO public.usuarios_user_groups VALUES (19, 20, 2);
 INSERT INTO public.usuarios_user_groups VALUES (20, 21, 5);
-INSERT INTO public.usuarios_user_groups VALUES (21, 22, 2);
 INSERT INTO public.usuarios_user_groups VALUES (22, 23, 2);
 INSERT INTO public.usuarios_user_groups VALUES (25, 15, 2);
 INSERT INTO public.usuarios_user_groups VALUES (26, 8, 2);
@@ -64,6 +63,8 @@ INSERT INTO public.usuarios_user_groups VALUES (43, 37, 1);
 INSERT INTO public.usuarios_user_groups VALUES (44, 1, 6);
 INSERT INTO public.usuarios_user_groups VALUES (45, 38, 5);
 INSERT INTO public.usuarios_user_groups VALUES (46, 36, 4);
+INSERT INTO public.usuarios_user_groups VALUES (6, 2, 2);
+INSERT INTO public.usuarios_user_groups VALUES (15, 22, 5);
 
 
 --
@@ -72,14 +73,14 @@ INSERT INTO public.usuarios_user_groups VALUES (46, 36, 4);
 -- Name: usuarios_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.usuarios_user_groups_id_seq', 1, false);
+SELECT pg_catalog.setval('public.usuarios_user_groups_id_seq', 15, true);
 
 
--- Completed on 2026-08-19 11:08:34
+-- Completed on 2026-09-01 00:37:52
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict L4uQhuwnx7IxVOGjkUnpJS1im6c9OwahtIdTpNuWjavyG150IMfknacJwk2zyQX
+\unrestrict BgrYfnHSihde1dRw8b4G3xGN1hDaepp9NGF7UM0LRhwTYMLAIK2glB7kXAs6IGN
 
