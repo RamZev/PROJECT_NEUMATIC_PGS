@@ -213,6 +213,8 @@ class ReciboCreateView(MaestroDetalleCreateView):
 		return data
 
 	def form_valid(self, form):
+		caja_activa = None
+
 		# 1. OBTENER EFECTIVO DEL FORMULARIO
 		efectivo_recibo = form.cleaned_data.get('efectivo_recibo', 0.0)
 		print(f"DEBUG - efectivo_recibo obtenido: {efectivo_recibo}")
