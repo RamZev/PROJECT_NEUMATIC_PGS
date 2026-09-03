@@ -435,12 +435,16 @@ actualiza_ventas_null.sql
 
 **actualiza_factura_punto_venta.sql (Nuevo)**
 
+descuento_revendedor.sql (Nuevo)
+
 **Sincronización de secuencias de ID** (OJO)
+
+sincro_base_models_id_seq.sql
 
 sincro_maestros_id_seq.sql
 sincro_ventas_id_seq.sql
 
-sincro_mebu_id_seq.sql
+sincro_menu_id_seq.sql
 
 UPDATE numero
 SET letra = 'R'

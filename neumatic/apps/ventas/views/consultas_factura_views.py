@@ -1364,3 +1364,27 @@ def actualizar_campos_remito(request, pk):
         return JsonResponse({'success': False, 'error': 'Formato JSON inválido.'}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+from django.http import JsonResponse
+from apps.ventas.models.factura_models import Factura
+
+def verificar_numero_comprobante(request):
+    """
+    Verifica si la combinación compro + letra_comprobante + numero_comprobante
+    ya existe en la tabla Factura.
+    """
+    compro = request.GET.get('compro')
+    letra = request.GET.get('letra')
+    numero = request.GET.get('numero')
+    
+    if not all([compro, letra, numero]):
+        return JsonResponse({'existe': False, 'error': 'Faltan parámetros'}, status=400)
+    
+    existe = Factura.objects.filter(
+        compro=compro,
+        letra_comprobante=letra,
+        numero_comprobante=numero
+    ).exists()
+    
+    return JsonResponse({'existe': existe})
