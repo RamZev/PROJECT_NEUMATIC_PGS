@@ -79,8 +79,9 @@ class DataViewList():
 		'nombre_producto': (4, 'Nombre producto'),
 		'medida': (2, 'Medida'),
 		'id_cai': (2, 'CAI'),
+		'tipo_producto': (1, 'Prod./Serv.'),
 		
-		'acciones': (2, 'Acciones'),
+		'acciones': (1, 'Acciones'),
 	}
 	
 	table_data = [
@@ -89,6 +90,7 @@ class DataViewList():
 		{'field_name': 'nombre_producto', 'date_format': None},
 		{'field_name': 'medida', 'date_format': None},
 		{'field_name': 'id_cai', 'date_format': None},
+		{'field_name': 'tipo_producto', 'date_format': None},
 	]
 
 
