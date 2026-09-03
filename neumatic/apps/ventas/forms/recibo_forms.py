@@ -217,7 +217,7 @@ class FacturaReciboForm(forms.ModelForm):
             "fecha_comprobante": forms.TextInput(attrs={**formclassdate, 'type': 'date', 'readonly': 'readonly'}),
             "compro": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             "letra_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
-            "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly', 'type': 'number', 'step': 'any'}),
+            "numero_comprobante": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly', 'type': 'number', 'step': 'any', 'autocomplete': 'nope'}),
             "comprobante_remito": forms.Select(attrs={**formclassselect}),            
             "remito": forms.TextInput(attrs={**formclasstext, 'readonly': 'readonly'}),
             
@@ -239,9 +239,9 @@ class FacturaReciboForm(forms.ModelForm):
             }),
         }
 
+    ##################
     def __init__(self, *args, **kwargs):
-        usuario = kwargs.pop('usuario', None)  # Pasar el usuario desde la vista
-        # Validar que el usuario exista
+        usuario = kwargs.pop('usuario', None)
         if not usuario:
             raise ValueError("Se requiere un usuario para crear o actualizar el recibo")
 
@@ -254,40 +254,32 @@ class FacturaReciboForm(forms.ModelForm):
 
         # Asignar valores iniciales para los campos personalizados
         if usuario:
-             self.fields['nombre_sucursal'].initial = usuario.id_sucursal
-             self.fields['punto_venta'].initial = usuario.id_punto_venta
-             print("Entró al init de la sucursal")
+            self.fields['nombre_sucursal'].initial = usuario.id_sucursal
+            self.fields['punto_venta'].initial = usuario.id_punto_venta
+            print("Entró al init de la sucursal")
         else:
-             print("No asignó nombre sucursal y nombre de punto de venta")
-    
-        
+            print("No asignó nombre sucursal y nombre de punto de venta")
+
         if usuario and usuario.id_sucursal:
             print("entro al filtro de deposito")
             deposito_queryset = ProductoDeposito.objects.filter(
                 id_sucursal=usuario.id_sucursal
             ).order_by('id_producto_deposito')
             self.fields['id_deposito'].queryset = deposito_queryset
-            # Establecer el primer depósito como valor inicial
             if deposito_queryset.exists() and not self.initial.get('id_deposito'):
                 self.initial['id_deposito'] = deposito_queryset.first().id_producto_deposito
         else:
             print("NO entro al filtro de deposito")
             self.fields['id_deposito'].queryset = ProductoDeposito.objects.none()
 
-        
-        # Establecer la fecha actual si no se proporciona un valor inicial
         if not self.initial.get("fecha_comprobante"):
             self.initial["fecha_comprobante"] = date.today().isoformat()
-        
-        # ← Agregar aquí la lógica para modo edición:
-        if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
-            self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
 
         if self.instance and self.instance.id_cliente and self.instance.id_cliente.id_vendedor:
             self.fields['vendedor_factura'].initial = self.instance.id_cliente.id_vendedor.nombre_vendedor
             self.fields['tipo_venta'].initial = self.instance.id_cliente.id_vendedor.tipo_venta
-        
-        # Filtrar los comprobantes electrónicos y de remito
+
+        # Filtrar los comprobantes de recibo
         self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
             Q(recibo=True)
         )
@@ -300,6 +292,7 @@ class FacturaReciboForm(forms.ModelForm):
         self.fields['total_cheques'].initial = 0.00
         self.fields['total_formas_pago'].initial = 0.00
         self.fields['resto_cobrar'].initial = 0.00
+    ##################
     
     def clean_discrimina_iva(self):
         # Siempre retorna True o False, incluso si el checkbox está deshabilitado

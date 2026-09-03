@@ -71,6 +71,7 @@ from .views.consultas_factura_views import (
     validar_autorizacion,
     anular_remito,
     actualizar_campos_remito,
+    verificar_numero_comprobante,
 )
 from .views.consultas_compra_views import (
 	obtener_numero_compra,
@@ -185,5 +186,7 @@ urlpatterns = [
     path('remito/actualizar-campos/<int:pk>/', actualizar_campos_remito, name='actualizar_campos_remito'),
 
 	path('verificar-unicidad-remito/', verificar_unicidad_remito, name='verificar_unicidad_remito'),
+
+	path('verificar-numero-comprobante/', verificar_numero_comprobante, name='verificar_numero_comprobante'),
 
 ]

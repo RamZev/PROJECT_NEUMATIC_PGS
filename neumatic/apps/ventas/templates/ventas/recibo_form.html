@@ -174,6 +174,9 @@
     {% block principalcomponent %}
     <div id="layoutSidenav_content">
 		<main>
+            <!-- Div oculto con el diccionario manual para cada comprobante -->
+            <div id="manual-data" data-manual='{{ manual_dict|safe }}'></div>
+            
             <!-- Elemento HTML para almacenar el valor de is_edit -->
             <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
 
@@ -2391,6 +2394,12 @@
                         document.getElementById('id_compro').value = '';
                     });
 
+                // Habilitar/deshabilitar número de comprobante según manual
+                const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+                const manual = manualDict[comprobanteId] ?? false;
+                //alert("Valor de manual: " + manual);
+                document.getElementById('id_numero_comprobante').readOnly = !manual;
+
             }
 
             ///
@@ -2739,6 +2748,7 @@
 
             // Función para completar la selección del cliente (extraída del código original)
             function completarSeleccionCliente(seleccion) {
+                alert("completarSeleccionCliente");
                 const id_cliente = seleccion.getAttribute('data-id');
                 const cuit = seleccion.getAttribute('data-cuit');
                 const nombre = seleccion.getAttribute('data-nombre');
@@ -2796,8 +2806,27 @@
                 const id_sucursal = document.getElementById('id_id_sucursal').value;
                 const id_punto_venta = document.getElementById('id_id_punto_venta').value;
                 const compro = document.getElementById('id_compro').value;
+
+                // 👇 NUEVO: Obtener el ID del comprobante y verificar si es manual
+                const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+                const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+                const manual = manualDict[comprobanteId] ?? false;
+
+                alert(
+                    `🔍 VALORES OBTENIDOS:\n` +
+                    `comprobanteId: ${comprobanteId}\n` +
+                    `manual: ${manual}\n` +
+                    `id_sucursal: ${document.getElementById('id_id_sucursal').value}\n` +
+                    `id_punto_venta: ${document.getElementById('id_id_punto_venta').value}\n` +
+                    `compro: ${document.getElementById('id_compro').value}`
+                );
+
+                // ===== ALERT 2: Contenido del diccionario manual (para verificar) =====
+                alert(`📄 Contenido de manual-data:\n${JSON.stringify(manualDict, null, 2)}`);
             
-                if (id_sucursal && id_punto_venta && compro) {
+                if (!manual && id_sucursal && id_punto_venta && compro) {
+                    alert("Entro aqui");
+                    
                     const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
                     url.searchParams.append('id_sucursal', id_sucursal);
                     url.searchParams.append('id_punto_venta', id_punto_venta);
@@ -2827,6 +2856,10 @@
                             }
                         }
                     });
+                } else if (manual) {
+                    // Si es manual, dejar el campo vacío y asegurar que sea editable
+                    document.getElementById('id_numero_comprobante').value = '';
+                    document.getElementById('id_numero_comprobante').readOnly = false;
                 }
             
                 // Cerrar el modal de agenda
@@ -3301,8 +3334,13 @@
                     const id_punto_venta = document.getElementById('id_id_punto_venta').value;
                     const compro = document.getElementById('id_compro').value;
 
+                    // Obtener estado manual del comprobante
+                    const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+                    const manualDict = JSON.parse(document.getElementById('manual-data').dataset.manual);
+                    const manual = manualDict[comprobanteId] ?? false;
+
                     // Validar parámetros
-                    if (id_sucursal && id_punto_venta && compro) {
+                    if (!manual && id_sucursal && id_punto_venta && compro) {
                         console.log("Ha entrado a la vista!");
                         const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
                         url.searchParams.append('id_sucursal', id_sucursal);
@@ -3340,6 +3378,10 @@
                             console.error('Error al obtener número de comprobante:', error);
                             alert(`Error al obtener número de comprobante: ${error.message}`);
                         });
+                    } else if (manual) {
+                        // Si es manual, dejar vacío y editable
+                        document.getElementById('id_numero_comprobante').value = '';
+                        document.getElementById('id_numero_comprobante').readOnly = false;
                     } else {
                         if (!id_sucursal) alert('Error: El campo Sucursal no está definido.');
                         if (!id_punto_venta) alert('Error: El campo Punto de Venta no está definido.');
@@ -3633,6 +3675,61 @@
             }, 100);
         }
     });
+
+    
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // =========================================================
+            // VALIDACIÓN EN BLUR PARA NÚMERO DE COMPROBANTE MANUAL
+            // =========================================================
+            const numeroInput = document.getElementById('id_numero_comprobante');
+            if (!numeroInput) return;
+
+            numeroInput.addEventListener('blur', function() {
+                const numero = this.value.trim();
+                if (!numero) return;
+                // Si el campo está deshabilitado (automático) no validar
+                if (this.disabled) return;
+
+                const compro = document.getElementById('id_compro')?.value;
+                const letra = document.getElementById('id_letra_comprobante')?.value;
+                if (!compro || !letra) return; // faltan datos
+
+                // Construir URL con parámetros
+                const url = new URL('/ventas/verificar-numero-comprobante/', window.location.origin);
+                url.searchParams.append('compro', compro);
+                url.searchParams.append('letra', letra);
+                url.searchParams.append('numero', numero);
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la respuesta del servidor');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.existe) {
+                        alert('⚠️ El número ya existe para ese comprobante y letra.');
+                        numeroInput.classList.add('is-invalid');
+                        numeroInput.focus();
+                    } else {
+                        numeroInput.classList.remove('is-invalid');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al verificar número:', error);
+                });
+            });
+        });
     </script>
    
 {% endblock script %}

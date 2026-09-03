@@ -7,11 +7,9 @@ from django.db import DatabaseError
 from django.utils import timezone
 from django.contrib import messages
 from django.db.models import Q
-import json
 
 from .msdt_views_generics import *
 
-from apps.maestros.models.base_models import ComprobanteVenta
 from ...maestros.models.numero_models import Numero
 from ..models.factura_models import Factura
 from ..models.caja_models import Caja, CajaDetalle
@@ -211,10 +209,6 @@ class ReciboCreateView(MaestroDetalleCreateView):
 		
 		#-- Título de la página.
 		data['titulo'] = "Crear Recibo"
-
-		# Obtener todos los comprobantes con sus valores manual
-		manual_dict = {str(c.id_comprobante_venta): c.manual for c in ComprobanteVenta.objects.all()}
-		data['manual_dict'] = json.dumps(manual_dict)
 		
 		return data
 
@@ -271,76 +265,28 @@ class ReciboCreateView(MaestroDetalleCreateView):
 
 		try:
 			with transaction.atomic():
-				###########################
-				# ============================================================
-				# 5. NUMERACIÓN CONDICIONAL (según manual del comprobante)
-				# ============================================================
-				comprobante_venta = form.cleaned_data.get('id_comprobante_venta')
-				if not comprobante_venta:
-					form.add_error('id_comprobante_venta', 'Debe seleccionar un comprobante de venta')
-					return self.form_invalid(form)
+				# 5. Obtener datos para la numeración
+				sucursal = form.cleaned_data['id_sucursal']
+				punto_venta = form.cleaned_data['id_punto_venta']
+				comprobante = form.cleaned_data['compro']
+				letra = form.cleaned_data['letra_comprobante']
 
-				# Determinar tipo de numeración (igual que en factura_views)
-				if comprobante_venta.electronica:
-					tipo_numeracion = 'electronica'   # (no aplica a recibos, se tratará como automática)
-				elif comprobante_venta.manual:
-					tipo_numeracion = 'manual'
-				else:
-					tipo_numeracion = 'automatica'
+				# 6. Obtener o crear el número en el modelo Numero
+				numero_obj, created = Numero.objects.select_for_update(
+					nowait=True
+				).get_or_create(
+					id_sucursal=sucursal,
+					id_punto_venta=punto_venta,
+					comprobante=comprobante,
+					letra=letra,
+					defaults={'numero': 0}
+				)
 
-				nuevo_numero = None
-
-				if tipo_numeracion == 'manual':
-					# Obtener el número ingresado por el usuario
-					numero_ingresado = form.cleaned_data.get('numero_comprobante')
-					if not numero_ingresado:
-						form.add_error('numero_comprobante', 'Debe ingresar un número de comprobante')
-						return self.form_invalid(form)
-
-					# Validar unicidad: compro + letra_comprobante + numero_comprobante
-					compro = form.cleaned_data['compro']
-					letra = form.cleaned_data['letra_comprobante']
-
-					existe = Factura.objects.filter(
-						compro=compro,
-						letra_comprobante=letra,
-						numero_comprobante=numero_ingresado
-					).exists()
-					# Si se desea filtrar por sucursal/punto de venta, descomentar:
-					# id_sucursal=form.cleaned_data['id_sucursal'],
-					# id_punto_venta=form.cleaned_data['id_punto_venta']
-
-					if existe:
-						form.add_error(
-							'numero_comprobante',
-							f'El número {numero_ingresado} ya existe para el comprobante {compro} y letra {letra}'
-						)
-						return self.form_invalid(form)
-
-					nuevo_numero = numero_ingresado
-
-				else:
-					# Numeración automática (igual que el código original)
-					sucursal = form.cleaned_data['id_sucursal']
-					punto_venta = form.cleaned_data['id_punto_venta']
-					comprobante = form.cleaned_data['compro']
-					letra = form.cleaned_data['letra_comprobante']
-
-					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
-						id_sucursal=sucursal,
-						id_punto_venta=punto_venta,
-						comprobante=comprobante,
-						letra=letra,
-						defaults={'numero': 0}
-					)
-
-					nuevo_numero = numero_obj.numero + 1
-					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
-
-				# Asignar el número al modelo
+				# 7. Calcular el nuevo número y actualizar el modelo Numero
+				nuevo_numero = numero_obj.numero + 1
+				Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
 				form.instance.numero_comprobante = nuevo_numero
 				form.instance.full_clean()
-				###########################
 
 				# Asignar total_cobrado a entrega
 				total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
@@ -607,10 +553,6 @@ class ReciboUpdateView(MaestroDetalleUpdateView):
 		
 		#-- Título de la página.
 		data['titulo'] = "Ver Recibo"
-
-		# Obtener todos los comprobantes con sus valores manual
-		manual_dict = {str(c.id_comprobante_venta): c.manual for c in ComprobanteVenta.objects.all()}
-		data['manual_dict'] = json.dumps(manual_dict)
 		
 		return data
 

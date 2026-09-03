@@ -53,9 +53,10 @@ class ConfigViews():
 
 class DataViewList():
 	search_fields = [
-		'id_valida',
-		'id_cliente'
-	]
+        'id_valida',
+        'id_cliente__nombre_cliente',
+        'id_cliente__cuit',          
+    ]
 	
 	ordering = ['-id_valida']
 	
