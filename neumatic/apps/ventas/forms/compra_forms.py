@@ -82,8 +82,7 @@ class CompraForm(GenericForm):
 			# Fechas
 			"fecha_comprobante": forms.TextInput(attrs={
 				**formclassdate,
-				'type': 'date',
-				'readonly': 'readonly'
+				'type': 'date'
 			}),
 			"fecha_registro": forms.TextInput(attrs={
 				**formclassdate,
