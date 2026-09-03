@@ -654,49 +654,37 @@ def descargar_pdf_entrega(request, factura_id):
 	return generar_pdf_entrega(datos_entrega)
 
 
+# 
+
 class CrearStockClienteView(View):
     def post(self, request, id_factura):
         factura = get_object_or_404(Factura, id_factura=id_factura)
-        
-        # VERIFICACIÓN 1: Ya existe stock (ADVERTENCIA)
+
+        # Verificar si ya existe stock
         if StockCliente.objects.filter(id_factura=factura).exists():
-            messages.warning(request, "❌ Ya se generó el stock del cliente para esta factura.")
-        
-        # VERIFICACIÓN 2: No hay detalles válidos (ERROR)
+            messages.warning(request, "⚠️ Ya se generó el stock del cliente para esta factura.")
         else:
-            detalles = DetalleFactura.objects.filter(id_factura=factura, cantidad__gt=0)
-            if not detalles.exists():
-                messages.error(request, "⚠️ La factura no tiene productos con cantidad válida para generar stock.")
-            
-            # CREACIÓN EXITOSA (ÉXITO)
+            # Verificar si hay productos físicos (no servicios)
+            tiene_productos = factura.detallefactura_set.filter(
+                cantidad__gt=0,
+                id_producto__tipo_producto='P'
+            ).exists()
+
+            if not tiene_productos:
+                messages.error(request, "⚠️ La factura no tiene productos físicos para generar stock (solo contiene servicios).")
             else:
-                with transaction.atomic():
-                    for detalle in detalles:
-                        StockCliente.objects.create(
-                            id_factura=factura,
-                            id_producto=detalle.id_producto,
-                            cantidad=detalle.cantidad,
-                            retirado=0,
-                            numero=0,
-                            comentario="Generado desde factura"
-                        )
-                    factura.stock_clie = True
-                    factura.save(update_fields=['stock_clie'])
-                messages.success(request, "✅ Stock del cliente generado exitosamente.")
-        
-        # REDIRECCIÓN MANTENIENDO TODOS LOS PARÁMETROS
-        # Esto funciona para los 3 casos: advertencia, error y éxito
+                from apps.ventas.views.stock_cliente_utils import crear_stock_cliente_desde_factura
+                creados = crear_stock_cliente_desde_factura(factura)
+                if creados > 0:
+                    messages.success(request, f"✅ Stock del cliente generado exitosamente ({creados} productos).")
+                else:
+                    messages.warning(request, "⚠️ No se pudo generar stock. Verifique los productos.")
+
+        # Redirigir manteniendo los parámetros de búsqueda
         params = request.GET.urlencode()
         base_url = reverse('consulta_facturas_cliente')
-        
-        # Construir URL con parámetros
-        if params:
-            redirect_url = f"{base_url}?{params}"
-        else:
-            redirect_url = base_url
-        
+        redirect_url = f"{base_url}?{params}" if params else base_url
         return redirect(redirect_url)
-
 
 class AdministrarStockClienteView(TemplateView):
 	template_name = 'datatools/stock_cliente_detalle.html'

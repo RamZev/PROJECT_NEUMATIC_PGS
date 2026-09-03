@@ -7,7 +7,6 @@ def crear_stock_cliente_desde_factura(factura):
     """
     Crea registros de StockCliente para una factura dada, a partir de sus detalles
     que sean productos físicos (tipo_producto='P') y con cantidad > 0.
-    Retorna el número de registros creados (0 si no se creó ninguno).
     Verifica la existencia real en la tabla, no confía en factura.stock_clie.
     """
     print("🔍 [DEBUG] Entrando a crear_stock_cliente_desde_factura")
@@ -24,7 +23,7 @@ def crear_stock_cliente_desde_factura(factura):
         if not factura.stock_clie:
             factura.stock_clie = True
             factura.save(update_fields=['stock_clie'])
-        return 0  # No creó ninguno porque ya existían
+        return
 
     # Si no hay registros, proceder a crearlos (independientemente de stock_clie)
     print("🔍 [DEBUG] No hay registros, procediendo a crear...")
@@ -41,7 +40,7 @@ def crear_stock_cliente_desde_factura(factura):
         if factura.stock_clie:
             factura.stock_clie = False
             factura.save(update_fields=['stock_clie'])
-        return 0  # No creó ninguno porque no hay productos físicos
+        return
 
     with transaction.atomic():
         creados = 0
@@ -68,5 +67,3 @@ def crear_stock_cliente_desde_factura(factura):
             factura.stock_clie = False
             factura.save(update_fields=['stock_clie'])
             print("⚠️ No se crearon registros, stock_clie = False")
-
-        return creados  # Retorna el número de registros creados (puede ser 0)
