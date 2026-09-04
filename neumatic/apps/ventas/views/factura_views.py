@@ -950,39 +950,91 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						
 						# return self.form_invalid(form)
 
+						# # Otros errores - mostrar y salir
+						# print("\n" + "=" * 60)
+						# print("❌ ERRORES DE ARCA:")
+						# print("=" * 60)
+						# mensaje_error = "Error al obtener CAE de ARCA: "
+						# errores = resultado.get('errores', [])
+						# if errores:
+						# 	mensaje_error += ", ".join(errores)
+						# else:
+						# 	mensaje_error += str(resultado)
+
+						# for error in errores:
+						# 	print(f"   • {error}")
+
+						# if not errores:
+						# 	print(f"   • Resultado completo: {resultado}")
+
+						# # Guardar archivo de error para debug
+						# archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_ERROR.txt"
+						# with open(archivo_error, 'w', encoding='utf-8') as f:
+						# 	f.write("RESPUESTA COMPLETA:\n")
+						# 	f.write(f"  aprobado: {resultado.get('aprobado')}\n")
+						# 	f.write(f"  errores: {errores}\n")
+						# 	f.write(f"  cae: {resultado.get('cae')}\n")
+						# 	f.write(f"  vencimiento: {resultado.get('vencimiento')}\n")
+						# 	f.write(f"  eventos: {resultado.get('eventos', [])}\n")
+						# 	f.write(f"\nRESPUESTA XML:\n{respuesta}\n")
+						# print(f"📄 Error guardado en: {archivo_error}")
+
+						# # 👇 REDIRIGIR CON MENSAJE DE ERROR
+						# messages.error(self.request, mensaje_error)
+						# return redirect(self.get_success_url())
+
+						###################
 						# Otros errores - mostrar y salir
 						print("\n" + "=" * 60)
 						print("❌ ERRORES DE ARCA:")
 						print("=" * 60)
-						mensaje_error = "Error al obtener CAE de ARCA: "
-						errores = resultado.get('errores', [])
-						if errores:
-							mensaje_error += ", ".join(errores)
+
+						# Extraer observaciones del XML de respuesta
+						observaciones = []
+						if resultado.get('respuesta_completa'):
+							import xml.etree.ElementTree as ET
+							try:
+								root = ET.fromstring(resultado['respuesta_completa'])
+								# Definir el namespace de AFIP
+								ns = {'fe': 'http://ar.gov.afip.dif.FEV1/'}
+								# Buscar nodos Obs usando el namespace
+								for obs in root.findall('.//fe:Obs', ns):
+									code = obs.find('fe:Code', ns)
+									msg = obs.find('fe:Msg', ns)
+									if code is not None and msg is not None:
+										observaciones.append(f"<Code>{code.text}</Code> <Msg>{msg.text}</Msg>")
+									elif msg is not None:
+										observaciones.append(msg.text)
+							except ET.ParseError:
+								pass
+
+						# Construir mensaje de error
+						if observaciones:
+							mensaje_error = "Error al obtener CAE de ARCA:\n" + "\n".join(observaciones)
 						else:
-							mensaje_error += str(resultado)
+							mensaje_error = "Error al obtener CAE de ARCA: No se recibió respuesta detallada. Verifique los datos."
 
-						for error in errores:
-							print(f"   • {error}")
+						for obs in observaciones:
+							print(f"   • {obs}")
+						if not observaciones:
+							print("   • Sin observaciones extraídas, se muestra mensaje genérico.")
 
-						if not errores:
-							print(f"   • Resultado completo: {resultado}")
-
-						# Guardar archivo de error para debug
+						# Guardar archivo de error para debug (opcional)
 						archivo_error = xml_dir / f"{cbte_tipo}_{pto_vta}_{proximo_numero:08d}_ERROR.txt"
 						with open(archivo_error, 'w', encoding='utf-8') as f:
 							f.write("RESPUESTA COMPLETA:\n")
 							f.write(f"  aprobado: {resultado.get('aprobado')}\n")
-							f.write(f"  errores: {errores}\n")
+							f.write(f"  errores: {resultado.get('errores', [])}\n")
 							f.write(f"  cae: {resultado.get('cae')}\n")
 							f.write(f"  vencimiento: {resultado.get('vencimiento')}\n")
 							f.write(f"  eventos: {resultado.get('eventos', [])}\n")
-							f.write(f"\nRESPUESTA XML:\n{respuesta}\n")
+							f.write(f"\nRESPUESTA XML:\n{resultado.get('respuesta_completa', '')}\n")
 						print(f"📄 Error guardado en: {archivo_error}")
 
 						# 👇 REDIRIGIR CON MENSAJE DE ERROR
 						messages.error(self.request, mensaje_error)
-						return redirect(self.get_success_url())
-
+						return redirect(self.get_success_url())						
+						###################
 					
 					# ===== FIN BUCLE DE REINTENTOS =====
 					

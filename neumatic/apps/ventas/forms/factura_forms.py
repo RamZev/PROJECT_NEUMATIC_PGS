@@ -119,7 +119,7 @@ class FacturaForm(forms.ModelForm):
             "id_comprobante_asociado": forms.HiddenInput(),
             "comprobante_asociado": forms.Select(attrs={**formclassselect}),    
             "numero_asociado": forms.TextInput(attrs={**formclasstext}),
-            "email_factura": forms.TextInput(attrs={**formclasstext}),
+            "email_factura": forms.EmailInput(attrs={**formclasstext}),
             "observa_comprobante": forms.Textarea(attrs={
                 **formclasstext,
                 'rows': 3,  # Altura inicial
