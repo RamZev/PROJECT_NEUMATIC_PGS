@@ -210,3 +210,56 @@ DELETE FROM medidas_estados where id_cai_id is NULL
 
 ##################################################################################################################################
 Creada Factura 1111-11111111 (id_factura=1) para ser asignada a los registros con id_factura_cobrada en null en detalle_recibo.
+
+##################################################################################################################################
+
+DIFERENCIAS EN REPORTES
+
+Tablas Dinámicas
+	- T.D. - Ventas por Comprobantes:
+	  · CheckBox "Solo Comprobantes Impositivos" Marcado:
+	    Cuadra todo al "pelo".
+	  · CheckBox "Solo Comprobantes Impositivos" Desmarcado:
+	    No coincide (Col. Total) porque mi consulta trae los Recibo (RB)
+	  	
+	  Parám. Consulta:
+	  · Vista SQL:
+	    Sin Params.
+	  · Manager:
+	    - Fecha Comprobante: desde - hasta.
+	    - Comprobantes Impositivos: libro_iva = True | Flase
+	  
+	  Propuesta de Solución:
+	    · incluir los comprobantes que afecten el libro IVA y los que no afecten el libro de IVA y son Remitos y si son Presupuestos
+		  [ WHERE (libro_iva = True) OR (libro_iva = False AND remito) OR (libro_iva = False AND presupuesto) ]
+	
+	- T.D. - Detalle de Ventas por Productos:
+	  · CheckBox "Solo Comprobantes Impositivos" Marcado:
+	    Cuadra todo al "pelo" excepto las cols. "Gravado" y "No Gravado" porque en el Excel de Mario los montos de las bases no gravadas están en la col. Gravado.
+		(Corregir en el VFP pasar a col. No Gravado si Alíc. IVA es cero o negarivo)
+	  · CheckBox "Solo Comprobantes Impositivos" Desmarcado:
+	    Igual a la condición anterior además de que en mi consulta me aparecen los "Movimientos Internos"
+	
+	  Parám. Consulta:
+	  · Vista SQL:
+	    Sin Params.
+	  · Manager:
+	    - Fecha Comprobante: desde - hasta.
+	    - Comprobantes Impositivos: libro_iva = True | Flase
+	  
+	
+	- T.D. - Tabla para Estadísticas:
+	  · CheckBox "Solo Comprobantes Impositivos" Marcado:
+	    No coinciden porque en el VFP no aplica el filtro de "Solo Comprobantes Impositivos" además de las diferencias en las columnas "Gravado" y "No Gravado" (Como los casos anteriores).
+	  · CheckBox "Solo Comprobantes Impositivos" Desmarcado:
+	    Cuadra todo al "pelo" excepto las cols. "Gravado" y "No Gravado" porque en el Excel de Mario los montos de las bases no gravadas están en la col. Gravado.
+	    (Corregir en el VFP pasar a col. No Gravado si Alíc. IVA es cero o negarivo)
+	  
+	  Parám. Consulta:
+	  · Vista SQL:
+	    - cv.mult_estadistica <> 0 AND f.no_estadist = False
+	  · Manager:
+	    - Fecha Comprobante: desde - hasta.
+	    - Comprobantes Impositivos: libro_iva = True | Flase
+	
+	

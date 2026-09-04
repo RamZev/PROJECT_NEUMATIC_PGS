@@ -632,6 +632,13 @@ def headers_titles(agrupar, mostrar):
 	
 	headers.update({
 		"id_cliente_id": {
+			"label": "ID Cliente",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"nombre_cliente": {
 			"label": "Cliente",
 			"col_width_pdf": 0,
 			"pdf": False,

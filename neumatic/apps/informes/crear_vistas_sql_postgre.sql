@@ -782,15 +782,17 @@ CREATE VIEW VLEstadisticasVentas AS
 		ROUND(((df.cantidad * df.precio) + (df.cantidad * df.precio * df.descuento / 100.0)) * cv.mult_estadistica, 2) AS total,
 		f.fecha_comprobante,
 		f.id_cliente_id,
+		c.nombre_cliente,
 		f.id_sucursal_id
 	FROM 
 		detalle_factura df
-		LEFT JOIN factura f ON df.id_factura_id = f.id_factura
-		LEFT JOIN producto p ON df.id_producto_id = p.id_producto
-		LEFT JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
-		LEFT JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
-		LEFT JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
-		LEFT JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+		JOIN factura f ON df.id_factura_id = f.id_factura
+		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		JOIN producto p ON df.id_producto_id = p.id_producto
+		JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+		JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+		JOIN producto_marca m ON p.id_marca_id = m.id_producto_marca
+		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE 
 		df.id_producto_id <> 0

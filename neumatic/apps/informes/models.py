@@ -1726,6 +1726,8 @@ class EstadisticasVentasManager(models.Manager):
 			SELECT 
 				ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
 				{select_columns[agrupar]},
+				id_cliente_id,
+				nombre_cliente,
 				SUM(cantidad) AS cantidad,
 				SUM(total) AS total
 			FROM 
@@ -1748,7 +1750,7 @@ class EstadisticasVentasManager(models.Manager):
 			params.append(id_cliente)
 		
 		#-- Agregar GROUP BY.
-		query += f" GROUP BY {select_columns[agrupar]}"
+		query += f" GROUP BY {select_columns[agrupar]}, id_cliente_id, nombre_cliente"
 		
 		if mostrar:
 			match mostrar:
@@ -1773,6 +1775,7 @@ class VLEstadisticasVentas(models.Model):
 	total = models.DecimalField(max_digits=14, decimal_places=2)
 	fecha_comprobante = models.DateField()
 	id_cliente_id = models.IntegerField()
+	nombre_cliente = models.CharField(max_length=50)
 	id_sucursal_id = models.IntegerField()
 	
 	objects = EstadisticasVentasManager()
