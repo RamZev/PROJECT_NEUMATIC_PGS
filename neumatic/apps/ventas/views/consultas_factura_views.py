@@ -357,84 +357,161 @@ def obtener_numero_comprobante(request):
 		}, status=500)
 
 
+# def validar_vencimientos_cliente(request, cliente_id):
+# 	try:
+# 		cliente = Cliente.objects.filter(pk=cliente_id).first()
+# 		if not cliente:
+# 			return JsonResponse({'error': 'Cliente no encontrado', 'requiere_autorizacion': False}, status=404)
+
+# 		# 1. Primero buscar factura en cuenta corriente 
+# 		factura_antigua = Factura.objects.filter(
+# 			id_cliente_id=cliente_id,
+# 			condicion_comprobante=2,
+# 			total__gt=0
+# 		).exclude(
+# 			total=F('entrega')
+# 		).select_related('id_vendedor', 'id_comprobante_venta'
+# 		).order_by('fecha_comprobante').first()
+
+# 		if factura_antigua:
+# 			dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
+# 			fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
+# 			dias_vencidos = (date.today() - fecha_vencimiento).days
+
+# 			return JsonResponse({
+# 				'requiere_autorizacion': dias_vencidos > 0,
+# 				'datos_comprobante': {
+# 					'tipo_comprobante': factura_antigua.id_comprobante_venta.nombre_comprobante_venta if factura_antigua.id_comprobante_venta else 'N/A',
+# 					'letra_comprobante': factura_antigua.letra_comprobante or 'N/A',
+# 					'numero_comprobante': factura_antigua.numero_comprobante or 'N/A',
+# 					'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%d/%m/%Y') if factura_antigua.fecha_comprobante else 'N/A',
+# 					'dias_credito': dias_credito,
+# 					'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+# 					'dias_vencidos': dias_vencidos,
+# 					'monto_pendiente': float((factura_antigua.total or 0) - (factura_antigua.entrega or 0)),
+# 					'vendedor': factura_antigua.id_vendedor.nombre_vendedor if factura_antigua.id_vendedor else 'No asignado'
+# 				}
+# 			})
+
+# 		# 2. Solo si no hay factura pendiente, buscar remito (nueva lógica)
+# 		remito_pendiente = Factura.objects.filter(
+# 			id_cliente_id=cliente_id,
+# 			estado="",
+# 			id_comprobante_venta__mult_venta=0,
+# 			id_comprobante_venta__mult_stock__lt=0
+# 		).select_related('id_vendedor', 'id_comprobante_venta'
+# 		).order_by('fecha_comprobante').first()
+
+# 		if remito_pendiente:
+# 			dias_credito = remito_pendiente.id_vendedor.vence_remito if remito_pendiente.id_vendedor else 0
+# 			fecha_vencimiento = remito_pendiente.fecha_comprobante + timedelta(days=dias_credito)
+# 			dias_vencidos = (date.today() - fecha_vencimiento).days
+
+# 			return JsonResponse({
+# 				'requiere_autorizacion': dias_vencidos > 0,
+# 				'datos_comprobante': {
+# 					'tipo_comprobante': remito_pendiente.id_comprobante_venta.nombre_comprobante_venta if remito_pendiente.id_comprobante_venta else 'N/A',
+# 					'letra_comprobante': remito_pendiente.letra_comprobante or 'N/A',
+# 					'numero_comprobante': remito_pendiente.numero_comprobante or 'N/A',
+# 					'fecha_comprobante': remito_pendiente.fecha_comprobante.strftime('%d/%m/%Y') if remito_pendiente.fecha_comprobante else 'N/A',
+# 					'dias_credito': dias_credito,
+# 					'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+# 					'dias_vencidos': dias_vencidos,
+# 					'monto_pendiente': 0,  # Remitos no tienen monto pendiente
+# 					'vendedor': remito_pendiente.id_vendedor.nombre_vendedor if remito_pendiente.id_vendedor else 'No asignado'
+# 				}
+# 			})
+
+# 		# Si no hay ningún documento pendiente
+# 		return JsonResponse({'requiere_autorizacion': False})
+	
+# 	except Exception as e:
+# 		print(f"Error completo en validar_vencimientos_cliente - Cliente ID: {cliente_id}: {str(e)}", exc_info=True)
+# 		return JsonResponse({
+# 			'error': 'Error interno al validar vencimientos',
+# 			'requiere_autorizacion': True,  # Importante: fallar hacia la seguridad
+# 			'detalle_error': str(e),
+# 			'cliente_id': cliente_id  # Para debugging
+# 		}, status=500)
+
 def validar_vencimientos_cliente(request, cliente_id):
-	try:
-		cliente = Cliente.objects.filter(pk=cliente_id).first()
-		if not cliente:
-			return JsonResponse({'error': 'Cliente no encontrado', 'requiere_autorizacion': False}, status=404)
+    try:
+        cliente = Cliente.objects.filter(pk=cliente_id).first()
+        if not cliente:
+            return JsonResponse({'error': 'Cliente no encontrado', 'requiere_autorizacion': False}, status=404)
 
-		# 1. Primero buscar factura en cuenta corriente 
-		factura_antigua = Factura.objects.filter(
-			id_cliente_id=cliente_id,
-			condicion_comprobante=2,
-			total__gt=0
-		).exclude(
-			total=F('entrega')
-		).select_related('id_vendedor', 'id_comprobante_venta'
-		).order_by('fecha_comprobante').first()
+        # =========================================================
+        # 1. BUSCAR FACTURA PENDIENTE (prioridad)
+        # =========================================================
+        factura_pendiente = Factura.objects.filter(
+            id_cliente_id=cliente_id,
+            id_comprobante_venta__mult_saldo__gt=0,   # ← filtro SQL mult_saldo > 0
+            total__gt=F('entrega')                    # ← saldo pendiente (total != entrega)
+        ).select_related('id_vendedor', 'id_comprobante_venta'
+        ).order_by('fecha_comprobante').first()
 
-		if factura_antigua:
-			dias_credito = factura_antigua.id_vendedor.vence_factura if factura_antigua.id_vendedor else 0
-			fecha_vencimiento = factura_antigua.fecha_comprobante + timedelta(days=dias_credito)
-			dias_vencidos = (date.today() - fecha_vencimiento).days
+        if factura_pendiente:
+            dias_credito = factura_pendiente.id_vendedor.vence_factura if factura_pendiente.id_vendedor else 0
+            fecha_vencimiento = factura_pendiente.fecha_comprobante + timedelta(days=dias_credito)
+            dias_vencidos = (date.today() - fecha_vencimiento).days
 
-			return JsonResponse({
-				'requiere_autorizacion': dias_vencidos > 0,
-				'datos_comprobante': {
-					'tipo_comprobante': factura_antigua.id_comprobante_venta.nombre_comprobante_venta if factura_antigua.id_comprobante_venta else 'N/A',
-					'letra_comprobante': factura_antigua.letra_comprobante or 'N/A',
-					'numero_comprobante': factura_antigua.numero_comprobante or 'N/A',
-					'fecha_comprobante': factura_antigua.fecha_comprobante.strftime('%d/%m/%Y') if factura_antigua.fecha_comprobante else 'N/A',
-					'dias_credito': dias_credito,
-					'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
-					'dias_vencidos': dias_vencidos,
-					'monto_pendiente': float((factura_antigua.total or 0) - (factura_antigua.entrega or 0)),
-					'vendedor': factura_antigua.id_vendedor.nombre_vendedor if factura_antigua.id_vendedor else 'No asignado'
-				}
-			})
+            return JsonResponse({
+                'requiere_autorizacion': dias_vencidos > 0,
+                'datos_comprobante': {
+                    'tipo_comprobante': factura_pendiente.id_comprobante_venta.nombre_comprobante_venta if factura_pendiente.id_comprobante_venta else 'N/A',
+                    'letra_comprobante': factura_pendiente.letra_comprobante or 'N/A',
+                    'numero_comprobante': factura_pendiente.numero_comprobante or 'N/A',
+                    'fecha_comprobante': factura_pendiente.fecha_comprobante.strftime('%d/%m/%Y') if factura_pendiente.fecha_comprobante else 'N/A',
+                    'dias_credito': dias_credito,
+                    'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+                    'dias_vencidos': dias_vencidos,
+                    'monto_pendiente': float((factura_pendiente.total or 0) - (factura_pendiente.entrega or 0)),
+                    'vendedor': factura_pendiente.id_vendedor.nombre_vendedor if factura_pendiente.id_vendedor else 'No asignado'
+                }
+            })
 
-		# 2. Solo si no hay factura pendiente, buscar remito (nueva lógica)
-		remito_pendiente = Factura.objects.filter(
-			id_cliente_id=cliente_id,
-			estado="",
-			id_comprobante_venta__mult_venta=0,
-			id_comprobante_venta__mult_stock__lt=0
-		).select_related('id_vendedor', 'id_comprobante_venta'
-		).order_by('fecha_comprobante').first()
+        # =========================================================
+        # 2. BUSCAR REMITO PENDIENTE (solo si no hay factura)
+        # =========================================================
+        remito_pendiente = Factura.objects.filter(
+            id_cliente_id=cliente_id,
+            id_comprobante_venta__remito=True,      # ← filtro SQL remito = True
+            estado__in=['', None]                   # ← estado vacío o nulo
+        ).select_related('id_vendedor', 'id_comprobante_venta'
+        ).order_by('fecha_comprobante').first()
 
-		if remito_pendiente:
-			dias_credito = remito_pendiente.id_vendedor.vence_remito if remito_pendiente.id_vendedor else 0
-			fecha_vencimiento = remito_pendiente.fecha_comprobante + timedelta(days=dias_credito)
-			dias_vencidos = (date.today() - fecha_vencimiento).days
+        if remito_pendiente:
+            dias_credito = remito_pendiente.id_vendedor.vence_remito if remito_pendiente.id_vendedor else 0
+            fecha_vencimiento = remito_pendiente.fecha_comprobante + timedelta(days=dias_credito)
+            dias_vencidos = (date.today() - fecha_vencimiento).days
 
-			return JsonResponse({
-				'requiere_autorizacion': dias_vencidos > 0,
-				'datos_comprobante': {
-					'tipo_comprobante': remito_pendiente.id_comprobante_venta.nombre_comprobante_venta if remito_pendiente.id_comprobante_venta else 'N/A',
-					'letra_comprobante': remito_pendiente.letra_comprobante or 'N/A',
-					'numero_comprobante': remito_pendiente.numero_comprobante or 'N/A',
-					'fecha_comprobante': remito_pendiente.fecha_comprobante.strftime('%d/%m/%Y') if remito_pendiente.fecha_comprobante else 'N/A',
-					'dias_credito': dias_credito,
-					'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
-					'dias_vencidos': dias_vencidos,
-					'monto_pendiente': 0,  # Remitos no tienen monto pendiente
-					'vendedor': remito_pendiente.id_vendedor.nombre_vendedor if remito_pendiente.id_vendedor else 'No asignado'
-				}
-			})
+            return JsonResponse({
+                'requiere_autorizacion': dias_vencidos > 0,
+                'datos_comprobante': {
+                    'tipo_comprobante': remito_pendiente.id_comprobante_venta.nombre_comprobante_venta if remito_pendiente.id_comprobante_venta else 'N/A',
+                    'letra_comprobante': remito_pendiente.letra_comprobante or 'N/A',
+                    'numero_comprobante': remito_pendiente.numero_comprobante or 'N/A',
+                    'fecha_comprobante': remito_pendiente.fecha_comprobante.strftime('%d/%m/%Y') if remito_pendiente.fecha_comprobante else 'N/A',
+                    'dias_credito': dias_credito,
+                    'fecha_vencimiento': fecha_vencimiento.strftime('%d/%m/%Y') if fecha_vencimiento else 'N/A',
+                    'dias_vencidos': dias_vencidos,
+                    'monto_pendiente': 0,  # Remitos no tienen monto pendiente
+                    'vendedor': remito_pendiente.id_vendedor.nombre_vendedor if remito_pendiente.id_vendedor else 'No asignado'
+                }
+            })
 
-		# Si no hay ningún documento pendiente
-		return JsonResponse({'requiere_autorizacion': False})
-	
-	except Exception as e:
-		print(f"Error completo en validar_vencimientos_cliente - Cliente ID: {cliente_id}: {str(e)}", exc_info=True)
-		return JsonResponse({
-			'error': 'Error interno al validar vencimientos',
-			'requiere_autorizacion': True,  # Importante: fallar hacia la seguridad
-			'detalle_error': str(e),
-			'cliente_id': cliente_id  # Para debugging
-		}, status=500)
+        # No hay documentos pendientes
+        return JsonResponse({'requiere_autorizacion': False})
 
-	
+    except Exception as e:
+        print(f"Error en validar_vencimientos_cliente: {str(e)}", exc_info=True)
+        return JsonResponse({
+            'error': 'Error interno al validar vencimientos',
+            'requiere_autorizacion': True,  # Fallo seguro: pedir autorización
+            'detalle_error': str(e)
+        }, status=500)
+
+
 # ===============================================
 # AUTORIZACIÓN PARA NOTAS DE FACTURAS Y REMITOS #
 # ===============================================
