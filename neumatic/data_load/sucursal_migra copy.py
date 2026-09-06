@@ -1,8 +1,10 @@
 import os
 import sys
 import django
+import time  # Para medir el tiempo de procesamiento
 from dbfread import DBF
 from django.db import connection
+from datetime import date
 
 # Añadir el directorio base del proyecto al sys.path
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,84 +14,113 @@ sys.path.append(BASE_DIR)
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'neumatic.settings')
 django.setup()
 
+# Importación de los modelos
+from apps.maestros.models.base_models import Provincia, Localidad
 from apps.maestros.models.sucursal_models import Sucursal
-from apps.maestros.models.base_models import Localidad, Provincia 
+
+# Ruta de la tabla de Visual FoxPro
+dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'sucursal.DBF')
 
 def reset_sucursal():
-    """Elimina los datos existentes en la tabla Sucursal y resetea su ID en SQLite."""
-    Sucursal.objects.all().delete()  # Eliminar los datos existentes
+    """Elimina los datos existentes en la tabla Sucursal y resetea su ID."""
+    Sucursal.objects.all().delete()
     print("Tabla Sucursal limpiada.")
 
-    # Reiniciar el autoincremento en SQLite
+    # Detectar el motor de base de datos
+    from django.conf import settings
+    engine = settings.DATABASES['default']['ENGINE']
+    
     with connection.cursor() as cursor:
-        cursor.execute("DELETE FROM sqlite_sequence WHERE name='sucursal';")
-    print("Secuencia de ID reseteada.")
+        if 'sqlite' in engine:
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='sucursal';")
+            print("Secuencia de ID reseteada (SQLite).")
+        elif 'postgresql' in engine:
+            cursor.execute("SELECT setval(pg_get_serial_sequence('sucursal', 'id_sucursal'), 1, false);")
+            print("Secuencia de ID reseteada (PostgreSQL).")
+        elif 'mssql' in engine or 'sql_server' in engine:
+            cursor.execute("DBCC CHECKIDENT ('sucursal', RESEED, 0);")
+            print("Secuencia de ID reseteada (SQL Server).")
+        elif 'mysql' in engine:
+            cursor.execute("ALTER TABLE sucursal AUTO_INCREMENT = 1;")
+            print("Secuencia de ID reseteada (MySQL).")
+        else:
+            print(f"Motor {engine} no requiere reset manual de secuencia.")
 
-def cargar_datos():
-    """Lee los datos de la tabla sucursal.DBF, verifica consecutividad de ID,
-    migra los registros al modelo Sucursal y añade pendientes si hay saltos en los códigos."""
-    reset_sucursal()  # Limpiar datos existentes
+# Resen de la tabla sucursal
+reset_sucursal()
 
-    # Ruta de la tabla de Visual FoxPro
-    dbf_path = os.path.join(BASE_DIR, 'data_load', 'datavfox', 'sucursal.DBF')
+# Abrir la tabla de Visual FoxPro usando dbfread
+table = DBF(dbf_path, encoding='latin-1')
 
-    # Abrir la tabla de Visual FoxPro y ordenarla por ID
-    table = sorted(DBF(dbf_path, encoding='latin-1'), key=lambda r: r['ID'])
+total_registros = len(table)
+print(f"Total de registros a procesar: {total_registros}")
 
-    # Obtener objetos de Localidad y Provincia
-    localidad_default = Localidad.objects.get(id_localidad=1)  # Localidad con ID 1
-    provincia_default = Provincia.objects.get(id_provincia=13)  # Provincia con ID 13
+codigo_inicio = 1
+# codigo_final = None
+codigo_final = 12
 
-    expected_id = 1  # ID esperado para verificar consecutividad
+# Filtrar y ordenar la tabla DBF
+table = sorted(
+    [
+        record
+        for record in table
+        if int(record.get('ID', 0)) >= codigo_inicio and 
+           (codigo_final is None or int(record.get('ID', 0)) <= codigo_final)
+    ],
+    key=lambda record: int(record.get('ID', 0))
+)
 
-    for record in table:
-        sucursal_id = record['ID']
-        nombre = record['NOMBRE'].strip()
-        domicilio = record['DOMICILIO'].strip()
-        telefono = record['TELEFONO'].strip()
-        localidad = localidad_default
-        provincia = provincia_default
-        email = record['EMAIL'].strip()
-        inicio_actividad = record['INICIOACT']
-        codigo_michelin = record['MICHELIN']
+# Datos de ajuste
+sucursales = {
+    1: {"id_provincia": 13, "id_localidad": 2349, "codigo_postal": "3040"},
+    2: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
+    3: {"id_provincia": 6, "id_localidad": 2574, "codigo_postal": "3100"},
+    4: {"id_provincia": 13, "id_localidad": 909, "codigo_postal": "2000"},
+    5: {"id_provincia": 13, "id_localidad": 2289, "codigo_postal": "3018"},
+    6: {"id_provincia": 13, "id_localidad": 1043, "codigo_postal": "2152"},
+    7: {"id_provincia": 13, "id_localidad": 1170, "codigo_postal": "2300"},
+    8: {"id_provincia": 13, "id_localidad": 5658, "codigo_postal": "3560"},
+    9: {"id_provincia": 13, "id_localidad": 1043, "codigo_postal": "2152"},
+    10: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
+    11: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
+    12: {"id_provincia": 13, "id_localidad": 2202, "codigo_postal": "3000"},
+}
 
-        # Verificar si el ID es consecutivo
-        while expected_id < sucursal_id:
-            # Insertar registro pendiente si falta un ID
-            Sucursal.objects.create(
-                estatus_sucursal=True,
-                nombre_sucursal="PENDIENTE DE ELIMINACIÓN",
-                codigo_michelin=0,
-                domicilio_sucursal="",
-                id_localidad=localidad,
-                id_provincia=provincia,
-                telefono_sucursal="",
-                email_sucursal="",
-                inicio_actividad=None
-            )
-            print(f"Se insertó registro pendiente para el ID faltante: {expected_id}")
-            expected_id += 1
+for idx, record in enumerate(table):
+    # Extraer y procesar los datos según las reglas
+    
+    ##################################
+    # Código ID origen y tabla destino
+    
+    # Obtener el código de la tabla origen
+    codigo_origen = int(record.get("ID", 0))
+    print("codigo_origen", codigo_origen)
 
-        # Crear el registro actual
-        Sucursal.objects.create(
-            estatus_sucursal=True,
-            nombre_sucursal=nombre,
-            codigo_michelin=codigo_michelin,
-            domicilio_sucursal=domicilio,
-            id_localidad=localidad,
-            id_provincia=provincia,
-            telefono_sucursal=telefono,
-            email_sucursal=email,
-            inicio_actividad=inicio_actividad
-        )
+    # Definir el marcador de posición (id)
+    # nuevo_id = codigo_origen - 1
+    # sql_consult = f"UPDATE sqlite_sequence SET seq = {nuevo_id} WHERE name = 'sucursal';"
+    
+    # Reiniciar el autoincremento en la tabla destino
+    # with connection.cursor() as cursor:
+    #     cursor.execute(sql_consult)
+    ##################################
+    
+    pk_provincia = sucursales[idx+1]["id_provincia"]
+    pk_localidad = sucursales[idx+1]["id_localidad"]
+    
+    Sucursal.objects.create(
+        id_sucursal = codigo_origen,
+        estatus_sucursal=True,
+        nombre_sucursal = record.get('NOMBRE', '').strip(),
+        codigo_michelin = int(record.get('MICHELIN', 0)),
+        domicilio_sucursal = record.get('DOMICILIO', '').strip(),
 
-        expected_id += 1
-
-    # Opcional: Eliminar los registros pendientes si es necesario
-    Sucursal.objects.filter(nombre_sucursal="PENDIENTE DE ELIMINACIÓN").delete()
-
-    print(f"Se han migrado {len(table)} registros de Sucursal de forma exitosa.")
-
-if __name__ == '__main__':
-    cargar_datos()
-    print("Migración de Sucursal completada.")
+        codigo_postal = sucursales[idx+1]["codigo_postal"],
+        id_provincia = Provincia.objects.get(pk=pk_provincia),
+        id_localidad = Localidad.objects.get(pk=pk_localidad),
+        
+        telefono_sucursal = record.get('TELEFONO', '').strip(),
+        email_sucursal = record.get('EMAIL', '').strip(),
+        inicio_actividad = record.get('INICIOACT', None)
+            
+    )
