@@ -229,10 +229,8 @@ Tablas Dinámicas
 	    - Fecha Comprobante: desde - hasta.
 	    - Comprobantes Impositivos: libro_iva = True | Flase
 	  
-	  Propuesta de Solución:
-	    · incluir los comprobantes que afecten el libro IVA y los que no afecten el libro de IVA y son Remitos y si son Presupuestos
-		  [ WHERE (libro_iva = True) OR (libro_iva = False AND remito) OR (libro_iva = False AND presupuesto) ]
-	
+	  RESUELTO: ASÍ QUEDA!
+	  
 	- T.D. - Detalle de Ventas por Productos:
 	  · CheckBox "Solo Comprobantes Impositivos" Marcado:
 	    Cuadra todo al "pelo" excepto las cols. "Gravado" y "No Gravado" porque en el Excel de Mario los montos de las bases no gravadas están en la col. Gravado.
@@ -247,6 +245,7 @@ Tablas Dinámicas
 	    - Fecha Comprobante: desde - hasta.
 	    - Comprobantes Impositivos: libro_iva = True | Flase
 	  
+  	  RESUELTO: ASÍ QUEDA!
 	
 	- T.D. - Tabla para Estadísticas:
 	  · CheckBox "Solo Comprobantes Impositivos" Marcado:
@@ -261,5 +260,9 @@ Tablas Dinámicas
 	  · Manager:
 	    - Fecha Comprobante: desde - hasta.
 	    - Comprobantes Impositivos: libro_iva = True | Flase
+		
+	  RESUELTO: ASÍ QUEDA!
+
+		
 	
 	

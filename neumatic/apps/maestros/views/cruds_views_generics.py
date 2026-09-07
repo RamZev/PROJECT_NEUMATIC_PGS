@@ -224,6 +224,34 @@ class MaestroUpdateView(AuditoriaMixin, PermissionRequiredMixin, UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
+class MaestroDetailView(PermissionRequiredMixin, DetailView):
+	"""
+	Vista para consultar/detalle de un registro sin permisos de edición.
+	"""
+	list_view_name = None
+	template_name = None
+	
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		
+		registro = self.get_object()
+		
+		context.update({
+			"accion": f"Consultar {self.model._meta.verbose_name} - {registro.pk}",
+			"list_view_name": self.list_view_name,
+			"fecha": timezone.now(),
+			"is_view_only": True,  # Bandera para identificar modo solo lectura
+		})
+		
+		return context
+	
+	def handle_no_permission(self):
+		"""Maneja cuando el usuario no tiene permisos"""
+		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		return redirect(self.list_view_name or 'home')
+
+
+@method_decorator(login_required, name='dispatch')
 class MaestroDeleteView(PermissionRequiredMixin, DeleteView):
 	list_view_name = None
 	

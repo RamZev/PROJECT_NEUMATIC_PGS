@@ -24,16 +24,21 @@ class ConfigViews():
 	#-- Permisos.
 	permission_add = f"{app_label}.add_{model.__name__.lower()}"
 	permission_change = f"{app_label}.change_{model.__name__.lower()}"
+	permission_view = f"{app_label}.view_{model.__name__.lower()}"
 	permission_delete = f"{app_label}.delete_{model.__name__.lower()}"
 	
 	#-- Vistas del CRUD del modelo.
 	list_view_name = f"{model_string}_list"
 	create_view_name = f"{model_string}_create"
 	update_view_name = f"{model_string}_update"
+	detail_view_name = f"{model_string}_detail"
 	delete_view_name = f"{model_string}_delete"
 	
 	#-- Plantilla para crear o actualizar el modelo.
 	template_form = f"{app_label}/{model_string}_form.html"
+	
+	#-- Plantilla para solo ver el registro del modelo.
+	template_detail = f"{app_label}/{model_string}_detail.html"
 	
 	#-- Plantilla para confirmar eliminación de un registro.
 	template_delete = "base_confirm_delete.html"
@@ -87,6 +92,7 @@ class ActividadListView(MaestroListView):
 		"list_view_name": ConfigViews.list_view_name,
 		"create_view_name": ConfigViews.create_view_name,
 		"update_view_name": ConfigViews.update_view_name,
+		"detail_view_name": ConfigViews.detail_view_name,
 		"delete_view_name": ConfigViews.delete_view_name,
 		"table_headers": DataViewList.table_headers,
 		"table_data": DataViewList.table_data,
@@ -102,6 +108,15 @@ class ActividadCreateView(MaestroCreateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
+
+
+class ActividadDetailView(MaestroDetailView):
+	model = ConfigViews.model
+	list_view_name = ConfigViews.list_view_name
+	template_name = ConfigViews.template_detail
+	
+	#-- Indicar el permiso que requiere para ejecutar la acción.
+	permission_required = ConfigViews.permission_view
 
 
 class ActividadUpdateView(MaestroUpdateView):

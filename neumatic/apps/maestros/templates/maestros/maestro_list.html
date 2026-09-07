@@ -161,12 +161,22 @@
 													{% endif %}
 													
 													<!-- Botón Ver -->
+													{% comment %}
+													<!--
 													<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
 															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
 															style="font-size: 70%; padding: 0.1rem 0.3rem;">
 														<i class="fa fa-eye"></i>
 													</button>
+													--> 
 													
+													<button type="button" class="btn btn-outline-success btn-sm btn-view boton-oculto"
+															onclick="window.location.href='{% url detail_view_name objeto.pk %}'" 
+															data-bs-toggle="tooltip" data-bs-placement="top" title="Ver Registro"
+															style="font-size: 70%; padding: 0.1rem 0.3rem;">
+														<i class="fa fa-eye"></i>
+													</button>
+													{% endcomment %}
 												</td>
 											</tr>
 										{% endfor %}

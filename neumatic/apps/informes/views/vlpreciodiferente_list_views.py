@@ -157,6 +157,13 @@ class ConfigViews:
 			"excel": True,
 			"csv": True
 		},
+		"adicional": {
+			"label": "Adicional.",
+			"col_width_pdf": 40,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 	}
 
 

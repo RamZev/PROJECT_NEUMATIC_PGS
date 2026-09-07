@@ -1,0 +1,85 @@
+<!-- neumatic\apps\maestros\templates\maestros\actividad_detail.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+{% block maincomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a 
+									class="me-2 text-white" 
+									data-bs-toggle="modal" 
+									data-bs-target="#helpModal" 
+									style="cursor: pointer;">
+								<i class="bi bi-question-lg"></i></a>
+								
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<div class="container">
+								<!-- Mostrar los datos en modo solo lectura -->
+								<div class="row mb-3">
+									<div class="col-md-2">
+										<label class="form-label text-primary fw-bold">Estatus</label>
+										<div class="form-control-plaintext">
+											{% if object.estatus_actividad %}
+												<span class="badge bg-success">Activo</span>
+											{% else %}
+												<span class="badge bg-danger">Inactivo</span>
+											{% endif %}
+										</div>
+									</div>
+									
+									<div class="col-md-4">
+										<label class="form-label text-primary fw-bold">Descripción</label>
+										<div class="form-control-plaintext">{{ object.descripcion_actividad }}</div>
+									</div>
+									
+									<div class="col-md-2">
+										<label class="form-label text-primary fw-bold">Fecha Registro</label>
+										<div class="form-control-plaintext">{{ object.fecha_registro_actividad|date:"d/m/Y H:i" }}</div>
+									</div>
+								</div>
+								
+								<!-- Información de auditoría -->
+								<div class="row mt-3 pt-3 border-top">
+									<div class="col-md-3">
+										<small class="text-muted">Creado por: {{ object.usuario|default:"-" }}</small>
+									</div>
+									<div class="col-md-3">
+										<small class="text-muted">Fecha creación: {{ object.fcontrol|date:"d/m/Y H:i" }}</small>
+									</div>
+									<div class="col-md-3">
+										<small class="text-muted">Última modificación: {{ object.fmodify|date:"d/m/Y H:i"|default:"-" }}</small>
+									</div>
+									<div class="col-md-3">
+										<small class="text-muted">Usuario modificación: {{ object.user_modify|default:"-" }}</small>
+									</div>
+								</div>
+							</div>
+							
+							<div class="container mt-3">
+								<a class="btn btn-secondary" href="{% url list_view_name %}">
+									Volver
+								</a>
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
+{% endblock maincomponent %}
