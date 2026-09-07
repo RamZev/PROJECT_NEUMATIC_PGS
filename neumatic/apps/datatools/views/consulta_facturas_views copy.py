@@ -4,31 +4,29 @@ import json
 import glob
 from datetime import date
 from io import BytesIO
-from decimal import Decimal
+import re
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic import TemplateView, View
-from django.db.models import Q, OuterRef, Exists
+from django.views.decorators.csrf import csrf_exempt
+from django.db import transaction
+from django.db.models import Q, OuterRef, Exists, Sum
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.paginator import Paginator
 from django.utils import timezone
 from django.urls import reverse
 from django.conf import settings
-from django.db import transaction
 from django.contrib import messages
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.db.models import Sum
 
+from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
-from reportlab.lib import colors
 
+from apps.maestros.models.base_models import ProductoDeposito, ProductoStock, ProductoEstado
 from apps.maestros.models.cliente_models import Cliente
+from apps.maestros.models.producto_models import Producto
 from apps.ventas.models.factura_models import Factura, DetalleFactura
-from apps.maestros.models.producto_models import Producto, ProductoStock
-from apps.maestros.models.base_models import ProductoDeposito
 from apps.ventas.models.venta_models import StockCliente
 
 
@@ -73,7 +71,7 @@ class ConsultaFacturasClienteView(TemplateView):
 				if cliente:
 					facturas = Factura.objects.filter(
 						id_cliente=cliente,
-						id_comprobante_venta__libro_iva=True
+						# id_comprobante_venta__libro_iva=True
 					).select_related(
 						'id_comprobante_venta',
 						'id_cliente'
@@ -89,7 +87,11 @@ class ConsultaFacturasClienteView(TemplateView):
 						facturas_ids = [f.id_factura for f in facturas]
 						detalles = DetalleFactura.objects.filter(
 							id_factura__in=facturas_ids
-						).select_related('id_producto')
+						).select_related(
+							'id_producto',          # Producto en sí
+							'id_producto__id_marca',# Marca del producto
+							'id_operario'           # Operario
+						)
 						
 						# Organizar detalles por factura
 						detalles_factura = {
@@ -154,6 +156,9 @@ class ConsultaProductosView(TemplateView):
 				#-- Construir filtros base.
 				filters = Q()
 				
+				#-- Añadir filtro de estatus - solo productos activos.
+				filters &= Q(estatus_producto=True)
+				
 				if medida:
 					filters &= Q(medida__icontains=medida)
 				if nombre:
@@ -164,7 +169,6 @@ class ConsultaProductosView(TemplateView):
 				# ========== FILTRO PARA VENDEDORES ==========
 				if usuario.id_vendedor:
 					#-- Buscar IDs de los estados "Disponible" y "Ofertas".
-					from apps.maestros.models.base_models import ProductoEstado
 					
 					#-- Buscar estado "Disponible".
 					try:
@@ -249,7 +253,7 @@ class ConsultaProductosView(TemplateView):
 					}
 					
 					#-- Obtener depósitos.
-					depositos = ProductoDeposito.objects.all()
+					depositos = ProductoDeposito.objects.filter(estatus_producto_deposito=True)
 					
 					#-- Obtener stock para estos productos específicos.
 					stock_data = ProductoStock.objects.filter(
@@ -279,11 +283,12 @@ class ConsultaProductosView(TemplateView):
 						for deposito in depositos:
 							stock = producto_stock.get(deposito.id_producto_deposito, 0)
 							producto.stock_total += stock
-							
-							producto.stock_por_deposito_list.append({
-								'deposito': deposito.nombre_producto_deposito,
-								'stock': stock
-							})
+
+							if stock > 0:
+								producto.stock_por_deposito_list.append({
+									'deposito': deposito.nombre_producto_deposito,
+									'stock': stock
+								})
 						
 						#-- Cantidad en tránsito.
 						producto.cantidad_transito = transito_dict.get(producto.id_producto, 0)
@@ -303,7 +308,8 @@ class ConsultaProductosView(TemplateView):
 			'cai': cai,
 			'filtro_marca': filtro_marca,
 			'error': error,
-			'fecha': timezone.now()
+			'fecha': timezone.now(),
+			'titulo': 'Consulta de Precios'
 		})
 		return context
 
@@ -382,116 +388,129 @@ def stock_cliente_detalle(request, factura_id):
 @csrf_exempt
 @transaction.atomic
 def generar_entrega_cliente(request, factura_id):
-	"""Vista para procesar los retiros y generar entrega"""
-	if request.method == 'POST':
-		try:
-			factura = get_object_or_404(Factura, id_factura=factura_id)
-			cliente = factura.id_cliente
-			
-			datos_entrega = {
-				'cliente_id': cliente.id_cliente,
-				'cliente_nombre': cliente.nombre_cliente,
-				'cliente_direccion': getattr(cliente, 'direccion', 'No especificada'),
-				'factura_id': factura.id_factura,
-				'factura_numero': factura.numero_comprobante,
-				'fecha_entrega': date.today().strftime('%d/%m/%Y'),
-				'fecha_entrega_iso': date.today().isoformat(),
-				'productos': [],
-				'total_items': 0
-			}
-			
-			# Procesar retiros
-			items_procesados = []
-			for key, value in request.POST.items():
-				if key.startswith('retirar_'):
-					stock_id = key.replace('retirar_', '')
-					cantidad_retirar = float(value) if value else 0
-					
-					if cantidad_retirar > 0:
-						stock_item = StockCliente.objects.select_for_update().get(
-							id_stock_cliente=stock_id,
-							id_factura=factura
-						)
-						
-						# Calcular saldo disponible
-						# saldo = (stock_item.cantidad or 0) - (stock_item.retirado or 0)
-						cantidad = stock_item.cantidad or Decimal('0')
-						retirado = stock_item.retirado or Decimal('0')
-						saldo = cantidad - retirado
-						
-						if cantidad_retirar <= saldo:
-							# Actualizar retirado y fecha_retiro
-							nuevo_retirado = (stock_item.retirado or 0) + cantidad_retirar
-							stock_item.retirado = nuevo_retirado
-							stock_item.fecha_retiro = date.today()
-							stock_item.save()
-							
-							# Agregar a datos de entrega
-							producto_data = {
-								'stock_id': stock_item.id_stock_cliente,
-								'producto_id': stock_item.id_producto.id_producto,
-								'producto_nombre': stock_item.id_producto.nombre_producto,
-								'medida': getattr(stock_item.id_producto, 'medida', 'N/A'),
-								'cantidad_original': float(stock_item.cantidad or 0),
-								'retirado_anterior': float(stock_item.retirado or 0) - cantidad_retirar,
-								'cantidad_retirada': cantidad_retirar,
-								'retirado_total': nuevo_retirado,
-								'saldo_restante': saldo - cantidad_retirar
-							}
-							datos_entrega['productos'].append(producto_data)
-							datos_entrega['total_items'] += cantidad_retirar
-							items_procesados.append(stock_id)
-						else:
-							return JsonResponse({
-								'success': False,
-								'error': f'No se puede retirar {cantidad_retirar}. Saldo disponible: {saldo}'
-							})
-			
-			if not datos_entrega['productos']:
-				return JsonResponse({
-					'success': False,
-					'error': 'No hay cantidades válidas para retirar'
-				})
-			
-			# GENERAR ARCHIVO JSON CON NOMBRE CORRELATIVO
-			correlativo = obtener_proximo_correlativo(factura_id)
-			json_filename = f"sc_{factura_id}_{correlativo}.json"
-			
-			# Ruta completa del archivo JSON
-			json_dir = os.path.join(settings.BASE_DIR, 'data', 'json')
-			os.makedirs(json_dir, exist_ok=True)  # Asegurar que existe
-			json_path = os.path.join(json_dir, json_filename)
-			
-			# Guardar JSON
-			with open(json_path, 'w', encoding='utf-8') as f:
-				json.dump(datos_entrega, f, indent=2, ensure_ascii=False)
-			
-			print(f"✅ JSON guardado: {json_path}")  # Para debug
-			
-			# Guardar datos en session para el PDF
-			request.session['ultima_entrega'] = datos_entrega
-			request.session['json_filename'] = json_filename  # Guardar nombre para referencia
-			
-			return JsonResponse({
-				'success': True,
-				'message': f'Entrega generada: {len(datos_entrega["productos"])} productos, {datos_entrega["total_items"]} unidades',
-				'pdf_url': f'/stock/cliente/{factura_id}/descargar-pdf/',
-				'json_filename': json_filename,
-				'total_unidades': datos_entrega['total_items']
-			})
-			
-		except StockCliente.DoesNotExist:
-			return JsonResponse({
-				'success': False,
-				'error': 'Uno de los productos no existe en el stock'
-			})
-		except Exception as e:
-			return JsonResponse({
-				'success': False,
-				'error': f'Error del sistema: {str(e)}'
-			})
-	
-	return JsonResponse({'success': False, 'error': 'Método no permitido'})
+    """Vista para procesar los retiros y generar entrega"""
+    if request.method == 'POST':
+        try:
+            from decimal import Decimal
+            
+            factura = get_object_or_404(Factura, id_factura=factura_id)
+            cliente = factura.id_cliente
+            
+            datos_entrega = {
+                'cliente_id': cliente.id_cliente,
+                'cliente_nombre': cliente.nombre_cliente,
+                'cliente_direccion': getattr(cliente, 'direccion', 'No especificada'),
+                'factura_id': factura.id_factura,
+                'factura_numero': factura.numero_comprobante,
+                'fecha_entrega': date.today().strftime('%d/%m/%Y'),
+                'fecha_entrega_iso': date.today().isoformat(),
+                'productos': [],
+                'total_items': Decimal('0')  # Decimal desde el inicio
+            }
+            
+            # Procesar retiros
+            items_procesados = []
+            for key, value in request.POST.items():
+                if key.startswith('retirar_'):
+                    stock_id = key.replace('retirar_', '')
+                    
+                    # CONVERTIR A DECIMAL DE FORMA SEGURA
+                    try:
+                        # Primero limpiar el valor
+                        valor_limpio = str(value).strip() if value else '0'
+                        cantidad_retirar = Decimal(valor_limpio)
+                    except:
+                        cantidad_retirar = Decimal('0')
+                    
+                    if cantidad_retirar > 0:
+                        stock_item = StockCliente.objects.select_for_update().get(
+                            id_stock_cliente=stock_id,
+                            id_factura=factura
+                        )
+                        
+                        # OBTENER VALORES COMO DECIMAL (NUNCA FLOAT)
+                        cantidad_db = stock_item.cantidad if stock_item.cantidad is not None else Decimal('0')
+                        retirado_db = stock_item.retirado if stock_item.retirado is not None else Decimal('0')
+                        saldo_db = cantidad_db - retirado_db
+                        
+                        # COMPARACIÓN DECIMAL vs DECIMAL
+                        if cantidad_retirar <= saldo_db:
+                            # ACTUALIZAR - TODO EN DECIMAL
+                            nuevo_retirado_db = retirado_db + cantidad_retirar
+                            stock_item.retirado = nuevo_retirado_db
+                            stock_item.fecha_retiro = date.today()
+                            stock_item.save()
+                            
+                            # Para el JSON, convertir a float al final
+                            producto_data = {
+                                'stock_id': stock_item.id_stock_cliente,
+                                'producto_id': stock_item.id_producto.id_producto,
+                                'producto_nombre': stock_item.id_producto.nombre_producto,
+                                'medida': getattr(stock_item.id_producto, 'medida', 'N/A'),
+                                'cantidad_original': float(cantidad_db),
+                                'retirado_anterior': float(retirado_db),
+                                'cantidad_retirada': float(cantidad_retirar),
+                                'retirado_total': float(nuevo_retirado_db),
+                                'saldo_restante': float(saldo_db - cantidad_retirar)
+                            }
+                            datos_entrega['productos'].append(producto_data)
+                            datos_entrega['total_items'] += cantidad_retirar  # Decimal
+                            items_procesados.append(stock_id)
+                        else:
+                            return JsonResponse({
+                                'success': False,
+                                'error': f'No se puede retirar {float(cantidad_retirar):.2f}. Saldo disponible: {float(saldo_db):.2f}'
+                            })
+            
+            if not datos_entrega['productos']:
+                return JsonResponse({
+                    'success': False,
+                    'error': 'No hay cantidades válidas para retirar'
+                })
+            
+            # Convertir total_items a float para JSON
+            datos_entrega['total_items'] = float(datos_entrega['total_items'])
+            
+            # GENERAR ARCHIVO JSON
+            correlativo = obtener_proximo_correlativo(factura_id)
+            json_filename = f"sc_{factura_id}_{correlativo}.json"
+            
+            json_dir = os.path.join(settings.BASE_DIR, 'data', 'json')
+            os.makedirs(json_dir, exist_ok=True)
+            json_path = os.path.join(json_dir, json_filename)
+            
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(datos_entrega, f, indent=2, ensure_ascii=False)
+            
+            print(f"✅ JSON guardado: {json_path}")
+            
+            # Guardar en session
+            request.session['ultima_entrega'] = datos_entrega
+            request.session['json_filename'] = json_filename
+            
+            return JsonResponse({
+                'success': True,
+                'message': f'Entrega generada: {len(datos_entrega["productos"])} productos, {datos_entrega["total_items"]} unidades',
+                'pdf_url': f'/stock/cliente/{factura_id}/descargar-pdf/',
+                'json_filename': json_filename,
+                'total_unidades': datos_entrega['total_items']
+            })
+            
+        except StockCliente.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'Uno de los productos no existe en el stock'
+            })
+        except Exception as e:
+            import traceback
+            error_trace = traceback.format_exc()
+            print(f"🔴 ERROR DETALLADO:\n{error_trace}")
+            return JsonResponse({
+                'success': False,
+                'error': f'Error del sistema: {str(e)}'
+            })
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
 def generar_pdf_entrega(datos_entrega):
@@ -563,8 +582,8 @@ def generar_pdf_entrega(datos_entrega):
 		table = Table(data, colWidths=[doc.width*0.3, doc.width*0.14, doc.width*0.14, 
 									doc.width*0.14, doc.width*0.14, doc.width*0.14])
 		table.setStyle(TableStyle([
-			('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
-			('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+			('BACKGROUND', (0, 0), (-1, 0), colors.whitesmoke),
+			('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
 			('ALIGN', (0, 0), (-1, -1), 'CENTER'),
 			('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
 			('FONTSIZE', (0, 0), (-1, 0), 9),
@@ -635,46 +654,37 @@ def descargar_pdf_entrega(request, factura_id):
 	return generar_pdf_entrega(datos_entrega)
 
 
+# 
+
 class CrearStockClienteView(View):
-	def post(self, request, id_factura):
-		factura = get_object_or_404(Factura, id_factura=id_factura)
+    def post(self, request, id_factura):
+        factura = get_object_or_404(Factura, id_factura=id_factura)
 
-		print("Entró a crear stock cliente")
-		
-		# Verificar si ya existe stock para esta factura
-		if StockCliente.objects.filter(id_factura=factura).exists():
-			print("Ya existe stock para esta factura***")
-			messages.warning(request, "No se pudo realizar la operación, el Documento ya tiene stock generado")
-		else:
-			detalles = DetalleFactura.objects.filter(id_factura=factura, cantidad__gt=0)
-			if not detalles.exists():
-				print("No hay detalles con cantidad válida")
-				messages.error(request, "La factura no tiene productos con cantidad válida para generar stock.")
-			else:
-				with transaction.atomic():
-					for detalle in detalles:
-						StockCliente.objects.create(
-							id_factura=factura,
-							id_producto=detalle.id_producto,
-							cantidad=detalle.cantidad,
-							retirado=0,
-							numero=0,  # o define lógica de numeración si aplica
-							comentario="Generado desde factura"
-						)
-					# Opcional: marcar la bandera en la factura
-					factura.stock_clie = True
-					factura.save(update_fields=['stock_clie'])
-					
-				messages.success(request, "Stock del cliente generado exitosamente.")
-		
-		# Redirigir de vuelta a la búsqueda, manteniendo el parámetro
-		buscar_por = request.GET.get('buscar_por', '')
-		page = request.GET.get('page', '')
-		url = f"{reverse('consulta_facturas_cliente')}?buscar_por={buscar_por}"
-		if page:
-			url += f"&page={page}"
-		return redirect(url)
+        # Verificar si ya existe stock
+        if StockCliente.objects.filter(id_factura=factura).exists():
+            messages.warning(request, "⚠️ Ya se generó el stock del cliente para esta factura.")
+        else:
+            # Verificar si hay productos físicos (no servicios)
+            tiene_productos = factura.detallefactura_set.filter(
+                cantidad__gt=0,
+                id_producto__tipo_producto='P'
+            ).exists()
 
+            if not tiene_productos:
+                messages.error(request, "⚠️ La factura no tiene productos físicos para generar stock (solo contiene servicios).")
+            else:
+                from apps.ventas.views.stock_cliente_utils import crear_stock_cliente_desde_factura
+                creados = crear_stock_cliente_desde_factura(factura)
+                if creados > 0:
+                    messages.success(request, f"✅ Stock del cliente generado exitosamente ({creados} productos).")
+                else:
+                    messages.warning(request, "⚠️ No se pudo generar stock. Verifique los productos.")
+
+        # Redirigir manteniendo los parámetros de búsqueda
+        params = request.GET.urlencode()
+        base_url = reverse('consulta_facturas_cliente')
+        redirect_url = f"{base_url}?{params}" if params else base_url
+        return redirect(redirect_url)
 
 class AdministrarStockClienteView(TemplateView):
 	template_name = 'datatools/stock_cliente_detalle.html'
@@ -705,3 +715,130 @@ class AdministrarStockClienteView(TemplateView):
 		})
 		return context
 
+
+class BuscarRemitoView(TemplateView):
+    template_name = 'datatools/buscar_remito.html'
+
+    def _normalizar_remito(self, valor):
+        """
+        Normaliza un número de remito al formato XXXX-XXXXXXXX.
+        Ejemplos:
+            '3600011660'  -> '0036-00011660'
+            '0036-00011660' -> '0036-00011660'
+            '36-00011660' -> '0036-00011660'
+        """
+        if not valor:
+            return None
+
+        # Eliminar guiones y espacios
+        limpio = re.sub(r'[-\s]', '', valor.strip())
+
+        if not limpio.isdigit():
+            return None
+
+        # Asegurar 12 dígitos (rellenar con ceros a la izquierda)
+        padded = limpio.zfill(12)
+
+        # Formatear como XXXX-XXXXXXXX
+        return f"{padded[:4]}-{padded[4:]}"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        remito_input = self.request.GET.get('remito', '').strip()
+        accion = self.request.GET.get('accion', '')
+        error = None
+        aviso_duplicados = None
+        remito_actual = None
+        comprobante_asociado = None
+        puede_siguiente = False
+
+        # --- Navegación "Siguiente" ---
+        if accion == 'siguiente' and remito_input:
+            remito_actual_formateado = self._normalizar_remito(remito_input)
+            if remito_actual_formateado:
+                # Buscar siguiente remito con número mayor (orden alfabético)
+                siguiente = Factura.objects.filter(
+                    remito__gt=remito_actual_formateado
+                ).exclude(
+                    remito__isnull=True
+                ).exclude(
+                    remito=''
+                ).select_related(
+                    'id_cliente', 'id_vendedor', 'id_user'
+                ).order_by('remito').first()
+
+                if siguiente:
+                    # Redirigir con el número sin guiones
+                    url = f"{reverse('buscar_remito')}?remito={siguiente.remito.replace('-', '')}"
+                    return redirect(url)
+                else:
+                    error = "No hay más remitos posteriores."
+                    # Cargar el remito actual para mostrarlo
+                    remito_actual = Factura.objects.filter(
+                        remito=remito_actual_formateado
+                    ).select_related(
+                        'id_cliente', 'id_vendedor', 'id_user'
+                    ).first()
+                    if not remito_actual:
+                        error = "El remito actual ya no existe."
+            else:
+                error = "Número de remito inválido."
+
+        # --- Búsqueda exacta ---
+        if remito_input and not accion:
+            remito_normalizado = self._normalizar_remito(remito_input)
+            if remito_normalizado:
+                remitos = Factura.objects.filter(
+                    remito=remito_normalizado
+                ).select_related(
+                    'id_cliente', 'id_vendedor', 'id_user',
+                    'id_comprobante_venta'
+                ).order_by('id_factura')
+
+                count = remitos.count()
+                if count == 0:
+                    error = f"No se encontró ningún remito con el número {remito_input}."
+                else:
+                    if count > 1:
+                        aviso_duplicados = f"Se encontraron {count} remitos con ese número. Se muestra el primero."
+                    remito_actual = remitos.first()
+
+                    # Obtener comprobante asociado
+                    if remito_actual.id_comprobante_asociado:
+                        try:
+                            comprobante_asociado = Factura.objects.select_related(
+                                'id_cliente', 'id_vendedor', 'id_user'
+                            ).get(id_factura=remito_actual.id_comprobante_asociado)
+                        except Factura.DoesNotExist:
+                            comprobante_asociado = None
+                            error = "El comprobante asociado al remito ya no existe en la base de datos."
+                    else:
+                        comprobante_asociado = None
+
+                    # Verificar si existe siguiente
+                    siguiente = Factura.objects.filter(
+                        remito__gt=remito_actual.remito
+                    ).exclude(
+                        remito__isnull=True
+                    ).exclude(
+                        remito=''
+                    ).order_by('remito').first()
+                    puede_siguiente = siguiente is not None
+            else:
+                error = "El número de remito debe ser un valor numérico."
+
+        # --- Primera carga (formulario vacío) ---
+        if not remito_actual and not error and not remito_input:
+            pass
+
+        context.update({
+            'remito_actual': remito_actual,
+            'comprobante_asociado': comprobante_asociado,
+            'error': error,
+            'aviso_duplicados': aviso_duplicados,
+            'puede_siguiente': puede_siguiente,
+            'remito_input': remito_input,
+            'remito_formateado': remito_actual.remito if remito_actual else '',
+        })
+        return context

@@ -656,15 +656,40 @@ def descargar_pdf_entrega(request, factura_id):
 
 # 
 
+from datetime import date, timedelta
+from django.views import View
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse
+from django.contrib import messages
+
+from apps.ventas.models.factura_models import Factura
+from apps.ventas.models.venta_models import StockCliente
+
+
 class CrearStockClienteView(View):
     def post(self, request, id_factura):
         factura = get_object_or_404(Factura, id_factura=id_factura)
 
-        # Verificar si ya existe stock
+        # ========== VALIDACIÓN DE ANTIGÜEDAD ==========
+        hoy = date.today()
+        if factura.fecha_comprobante:
+            dias_antiguedad = (hoy - factura.fecha_comprobante).days
+        else:
+            dias_antiguedad = 999  # Si no tiene fecha, no permitir
+
+        if dias_antiguedad > 2:
+            messages.error(
+                request,
+                f"❌ No se puede generar stock. La factura tiene {dias_antiguedad} días de antigüedad. "
+                f"Solo se permite para documentos con máximo 2 días (fecha: {factura.fecha_comprobante.strftime('%d/%m/%Y')})."
+            )
+            return redirect(self.get_redirect_url(request))
+
+        # ========== VALIDACIÓN DE STOCK EXISTENTE ==========
         if StockCliente.objects.filter(id_factura=factura).exists():
             messages.warning(request, "⚠️ Ya se generó el stock del cliente para esta factura.")
         else:
-            # Verificar si hay productos físicos (no servicios)
+            # ========== VALIDACIÓN DE PRODUCTOS FÍSICOS ==========
             tiene_productos = factura.detallefactura_set.filter(
                 cantidad__gt=0,
                 id_producto__tipo_producto='P'
@@ -680,11 +705,13 @@ class CrearStockClienteView(View):
                 else:
                     messages.warning(request, "⚠️ No se pudo generar stock. Verifique los productos.")
 
-        # Redirigir manteniendo los parámetros de búsqueda
+        # Redirigir
+        return redirect(self.get_redirect_url(request))
+
+    def get_redirect_url(self, request):
         params = request.GET.urlencode()
         base_url = reverse('consulta_facturas_cliente')
-        redirect_url = f"{base_url}?{params}" if params else base_url
-        return redirect(redirect_url)
+        return f"{base_url}?{params}" if params else base_url
 
 class AdministrarStockClienteView(TemplateView):
 	template_name = 'datatools/stock_cliente_detalle.html'

@@ -441,6 +441,22 @@ Cuando lo haga, en el script usuarios_user.sql, **elimine** el primer insert (us
   SET letra = 'R'
   WHERE comprobante = 'RB';
 
+* -- marcar los comprobantes internos
+  UPDATE comprobante_venta 
+  SET interno='true' 
+  WHERE remito='true' AND nombre_comprobante_venta ILIKE '%int%';
+  
+  -- marcar los comprobantes manuales
+  UPDATE 
+  comprobante_venta 
+  SET manual='true' 
+  WHERE nombre_comprobante_venta ILIKE '%manual%';
+  
+  -- marcar los comprobantes que se puede dejar mercaderia en stock de clientes
+  UPDATE comprobante_venta 
+  SET stock_clie='true' 
+  WHERE mult_stock < 0 AND interno = 'false' AND ncr_ndb = 'false' AND codigo_comprobante_venta <> 'MM'
+
 **Sincronización de secuencias de ID** (OJO)
 
 sincro_base_models_id_seq.sql
@@ -449,8 +465,6 @@ sincro_maestros_id_seq.sql
 sincro_ventas_id_seq.sql
 
 sincro_menu_id_seq.sql
-
-
 
 **Al finalizar las migraciones:**
 

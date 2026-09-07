@@ -21,3 +21,4 @@ class MaestrosConfig(AppConfig):
 		import apps.maestros.signals.signals
 		import apps.maestros.models.vendedor_comision_models
 		import apps.maestros.models.valida_models
+		import apps.maestros.models.padron_models
