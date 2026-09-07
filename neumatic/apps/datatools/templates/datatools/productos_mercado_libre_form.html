@@ -1,0 +1,121 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+
+{% block style %}
+    body { background-color: rgb(0, 204, 255); }
+    .tbl-container { width: 100%; max-width: 100%; margin: 0; padding: 0; }
+    .tbl-fixed { overflow-x: auto; max-height: 65vh; margin-top: 5px; }
+    table th { position: sticky; top: 0; background-color: #0d6efd; color: white; z-index: 10; }
+    .pagination { margin-top: 20px; }
+{% endblock %}
+
+{% block maincomponent %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid">
+            <h4>Exportar productos para carrito WEB</h4>
+
+            <form method="get" class="row g-3 mb-4">
+                <!-- Primera fila -->
+                <div class="col-md-3">
+                    {{ form.tipo_producto.label_tag }}
+                    {{ form.tipo_producto }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.marca.label_tag }}
+                    {{ form.marca }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.familia.label_tag }}
+                    {{ form.familia }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.modelo.label_tag }}
+                    {{ form.modelo }}
+                </div>
+
+                <!-- Segunda fila -->
+                <div class="col-md-3">
+                    {{ form.medida.label_tag }}
+                    {{ form.medida }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.cai.label_tag }}
+                    {{ form.cai }}
+                </div>
+                <div class="col-md-3">
+                    {{ form.busqueda.label_tag }}
+                    {{ form.busqueda }}
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <div class="form-check me-3">
+                        {{ form.solo_con_stock }}
+                        <label class="form-check-label" for="{{ form.solo_con_stock.id_for_label }}">Solo con stock</label>
+                    </div>
+                </div>
+
+                <!-- Botones -->
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary me-2">Filtrar</button>
+                    <a href="?" class="btn btn-secondary">Limpiar</a>
+                </div>
+            </form>
+
+            <!-- Tabla de resultados -->
+            <div class="table-responsive tbl-container">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Medida</th>
+                            <th>Marca</th>
+                            <th>Familia</th>
+                            <th>Modelo</th>
+                            <th>Nombre</th>
+                            <th>Carrito</th>
+                            <th>Detalle</th>
+                            <th>CAI</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if productos %}
+                            {% for prod in productos %}
+                            <tr>
+                                <td>{{ prod.codigo_producto }}</td>
+                                <td>{{ prod.medida }}</td>
+                                <td>{{ prod.id_marca.nombre_producto_marca }}</td>
+                                <td>{{ prod.id_familia.nombre_producto_familia }}</td>
+                                <td>{{ prod.id_modelo.nombre_modelo }}</td>
+                                <td>{{ prod.nombre_producto }}</td>
+                                <td>{{ prod.carrito|yesno:"Sí,No" }}</td>
+                                <td>{{ prod.descripcion_producto }}</td>
+                                <td>{{ prod.id_cai.cai|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr><td colspan="9" class="text-center">No hay productos para mostrar. Aplique filtros.</td></tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj and page_obj.has_other_pages %}
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1&{{ request.GET.urlencode }}">&laquo; Primero</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">Anterior</a></li>
+                    {% endif %}
+                    <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                    {% if page_obj.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Siguiente</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}">Última &raquo;</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </main>
+</div>
+{% endblock %}
