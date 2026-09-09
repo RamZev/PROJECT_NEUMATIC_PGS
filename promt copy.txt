@@ -263,6 +263,11 @@ Tablas Dinámicas
 		
 	  RESUELTO: ASÍ QUEDA!
 
-		
-	
-	
+##################################################################################################################################
+Opciones nuevas del Menú:
+Archivos -> Productos ->
+	Nombre: E-Commerce (Mercado Libre)
+	URL: exportar_productos_carrito
+Archivos -> Productos ->
+	Nombre: Exportar Productos E-Commerce
+	URL: exportar_productos_archivo

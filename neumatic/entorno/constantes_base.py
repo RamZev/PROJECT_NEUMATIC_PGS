@@ -385,3 +385,14 @@ LETRAS_AUTOMATICAS = {
     'RM': 'R',
     'RR': 'R',
 }
+
+FORMATOS_CHOICES = [
+	('csv', 'CSV'),
+	('json', 'JSON'),
+	('txt', 'TXT'),
+]
+
+SEPARADOR_DECIMAL_CHOICES = [
+	('punto', 'Punto (.)'),
+	('coma', 'Coma (,)'),
+]
