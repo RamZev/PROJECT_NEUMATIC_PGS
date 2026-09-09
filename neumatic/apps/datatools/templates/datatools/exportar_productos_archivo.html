@@ -1,4 +1,4 @@
-<!-- neumatic\apps\datatools\templates\datatools\exportar_productos_archivo.html -->
+<!-- neumatic/apps/datatools/templates/datatools/exportar_productos_archivo.html -->
 {% extends 'datatool_form.html' %}
 {% load static %}
 
@@ -8,7 +8,7 @@
 	.form-container {
 		max-width: 800px;
 		margin: 0 auto;
-		background: #c7d2e0;  /* Más oscuro que #f0f4f8 */
+		background: #d9e4f1;
 		padding: 30px;
 		border-radius: 10px;
 		box-shadow: 0 4px 15px rgba(0,0,0,0.15);
@@ -82,11 +82,11 @@
 {% block maincomponent %}
 	<div id="layoutSidenav_content">
 		<main>
-			<div class="container-fluid mt-4">
-				<div class="form-container">
+			<div class="container-fluid">
+				<div class="form-container mt-4">
 					<h4>
 						<i class="fas fa-file-export me-2"></i>
-						Exportar productos para carrito (E-Commerce)
+						Exportar productos para carrito WEB
 					</h4>
 					
 					<!-- Mostrar mensajes -->
@@ -162,30 +162,6 @@
 							</div>
 						</div>
 						
-						<!-- Ruta del archivo -->
-						<div class="mb-3">
-							<label class="form-label fw-bold">
-								<i class="fas fa-folder me-1"></i>
-								{{ form.ruta_archivo.label }}
-								<span class="text-danger">*</span>
-							</label>
-							<div class="input-group">
-								<span class="input-group-text">media/exports/</span>
-								{{ form.ruta_archivo }}
-							</div>
-							{% if form.ruta_archivo.errors %}
-								<div class="text-danger small mt-1">
-									{{ form.ruta_archivo.errors }}
-								</div>
-							{% endif %}
-							<div class="help-text">
-								<i class="fas fa-info-circle me-1"></i>
-								{{ form.ruta_archivo.help_text }}
-								<br>
-								<small>Se agregará automáticamente un timestamp al nombre del archivo.</small>
-							</div>
-						</div>
-						
 						<!-- Botones -->
 						<div class="d-flex gap-2 mt-4">
 							<button type="submit" class="btn btn-primary" id="btnExportar">
@@ -224,43 +200,43 @@
 	</div>
 {% endblock %}
 
-<!-- exportar_productos_archivo.html -->
 {% block script %}
 	{{ block.super }}
 	<script>
 		$(document).ready(function() {
 			// --- Validar que al menos un estado esté seleccionado ---
-			$('#exportForm').on('submit', function(e) {
+			$('#btnExportar').on('click', function(e) {
+				var btn = $(this);
+				var form = $('#exportForm');
+				
+				// Validar que al menos un estado esté seleccionado
 				var seleccionados = $('input[name="estados"]:checked').length;
 				if (seleccionados === 0) {
-					e.preventDefault();
 					alert('Por favor seleccione al menos un estado de producto.');
+					e.preventDefault();
 					return false;
 				}
 				
-				// Si la validación es exitosa, mostrar el spinner
-				var btn = $('#btnExportar');
+				// Cambiar estado del botón
 				btn.html('<i class="fas fa-spinner fa-spin me-1"></i> Exportando...');
 				btn.prop('disabled', true);
 				
-				// El formulario se enviará normalmente
-				return true;
+				// El formulario se enviará y generará la descarga
+				// Después de 3 segundos, restaurar el botón
+				setTimeout(function() {
+					btn.html('<i class="fas fa-file-export me-1"></i> Exportar');
+					btn.prop('disabled', false);
+				}, 3000);
+				
+				// Enviar el formulario
+				form.submit();
 			});
 			
-			// --- Restaurar botón si hay errores (los mensajes de Django se muestran) ---
-			// Si hay mensajes de error, restaurar el botón
+			// --- Restaurar botón si hay mensajes de error ---
 			{% if messages %}
-				{% for message in messages %}
-					{% if 'error' in message.tags or 'warning' in message.tags %}
-						$('#btnExportar').html('<i class="fas fa-file-export me-1"></i> Exportar');
-						$('#btnExportar').prop('disabled', false);
-					{% endif %}
-				{% endfor %}
+				$('#btnExportar').html('<i class="fas fa-file-export me-1"></i> Exportar');
+				$('#btnExportar').prop('disabled', false);
 			{% endif %}
-			
-			// --- Si el formulario se envió y hay errores de validación de Django ---
-			// El botón se restaura automáticamente porque la página recarga
-			// y el JavaScript se ejecuta de nuevo con el estado inicial
 		});
 	</script>
 {% endblock %}

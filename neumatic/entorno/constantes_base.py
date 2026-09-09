@@ -388,6 +388,7 @@ LETRAS_AUTOMATICAS = {
 
 FORMATOS_CHOICES = [
 	('csv', 'CSV'),
+	('xlsx', 'Excel (XLSX)'),
 	('json', 'JSON'),
 	('txt', 'TXT'),
 ]

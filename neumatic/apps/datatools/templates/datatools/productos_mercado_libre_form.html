@@ -1,6 +1,7 @@
 <!-- neumatic\apps\datatools\templates\datatools\productos_mercado_libre_form.html -->
 {% extends 'datatool_form.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block style %}
 	body { background-color: rgb(0, 204, 255); }
@@ -41,6 +42,11 @@
 	.btn-accion-masiva:hover .badge-contador {
 		background: rgba(255, 255, 255, 0.4);
 	}
+	
+	.decimal {
+		text-align: right;
+	}
+
 {% endblock %}
 
 {% block maincomponent %}
@@ -124,7 +130,7 @@
 					<div class="row g-3 mb-3">
 						<div class="col-md-8">
 							<div class="input-group">
-								<select class="form-select" id="accionMasiva">
+								<select class="form-select  me-3" id="accionMasiva">
 									<option value="">Seleccionar acción masiva...</option>
 									<option value="activar_carrito">Activar "Carrito"</option>
 									<option value="desactivar_carrito">Desactivar "Carrito"</option>
@@ -162,13 +168,13 @@
 								<th style="width: 40px;">
 									<input type="checkbox" id="checkboxSeleccionarTodos" class="form-check-input">
 								</th>
-								<th>Código</th>
 								<th>CAI</th>
 								<th>Medida</th>
 								<th>Marca</th>
 								<th>Familia</th>
 								<th>Modelo</th>
 								<th>Nombre</th>
+								<th class="decimal">Stock</th>
 								<th style="width: 100px; text-align: center;">Carrito</th>
 							</tr>
 						</thead>
@@ -180,13 +186,13 @@
 											<input type="checkbox" class="form-check-input checkbox-producto" 
 												data-id="{{ prod.id_producto }}">
 										</td>
-										<td>{{ prod.codigo_producto }}</td>
 										<td>{{ prod.id_cai.cai|default:"-" }}</td>
 										<td>{{ prod.medida }}</td>
 										<td>{{ prod.id_marca.nombre_producto_marca }}</td>
 										<td>{{ prod.id_familia.nombre_producto_familia }}</td>
 										<td>{{ prod.id_modelo.nombre_modelo }}</td>
 										<td>{{ prod.nombre_producto }}</td>
+										<td class="decimal">{{ prod.stock_total|formato_es_ar_entero|default:"0" }}</td>
 										<td style="text-align: center;">
 											<div class="form-check d-flex justify-content-center">
 												<input type="checkbox" 

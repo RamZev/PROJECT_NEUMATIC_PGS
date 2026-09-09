@@ -106,20 +106,3 @@ class ExportarProductosArchivoForm(forms.Form):
 		label='Separador decimal'
 	)
 	
-	ruta_archivo = forms.CharField(
-		widget=forms.TextInput(attrs={
-			'class': 'form-control',
-			'placeholder': 'ej: exportaciones/productos_carrito'
-		}),
-		required=True,
-		label='Ruta y nombre del archivo',
-		help_text='No incluir la extensión. El archivo se guardará en la carpeta media/exports/'
-	)
-	
-	def clean_ruta_archivo(self):
-		ruta = self.cleaned_data.get('ruta_archivo')
-		#-- Limpiar la ruta: eliminar espacios, barras al inicio/final.
-		ruta = ruta.strip().strip('/')
-		#-- Reemplazar espacios por guiones bajos.
-		ruta = ruta.replace(' ', '_')
-		return ruta
