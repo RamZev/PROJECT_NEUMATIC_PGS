@@ -1,121 +1,663 @@
+<!-- neumatic\apps\datatools\templates\datatools\productos_mercado_libre_form.html -->
 {% extends 'datatool_form.html' %}
 {% load static %}
+{% load custom_tags %}
 
 {% block style %}
-    body { background-color: rgb(0, 204, 255); }
-    .tbl-container { width: 100%; max-width: 100%; margin: 0; padding: 0; }
-    .tbl-fixed { overflow-x: auto; max-height: 65vh; margin-top: 5px; }
-    table th { position: sticky; top: 0; background-color: #0d6efd; color: white; z-index: 10; }
-    .pagination { margin-top: 20px; }
+	/* ========== ESTILOS GENERALES ========== */
+	body { background-color: rgb(0, 204, 255); }
+	
+	/* ========== CONTENEDOR PRINCIPAL ========== */
+	.form-container {
+		max-width: 100%;
+		margin: 0 auto;
+		background: #d9e4f1;
+		padding: 30px;
+		border-radius: 10px;
+		box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+	}
+	
+	/* ========== CONTENEDOR DE LA TABLA ========== */
+	.tbl-container {
+		background: white;
+		border-radius: 8px;
+		overflow: hidden;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+		border: 1px solid #c5d9f0;
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.tbl-container table {
+		margin-bottom: 0;
+		border-collapse: collapse;
+		width: 100%;
+	}
+	
+	/* ========== ENCABEZADO DE LA TABLA ========== */
+	.tbl-container table thead th {
+		position: sticky;
+		top: 0;
+		background: linear-gradient(180deg, #0d6efd 0%, #0a58ca 100%);
+		color: white;
+		z-index: 10;
+		padding: 10px 8px;
+		font-weight: 600;
+		text-transform: uppercase;
+		font-size: 0.8rem;
+		letter-spacing: 0.5px;
+		border: none;
+	}
+	
+	/* ========== CELDAS DE DATOS ========== */
+	.tbl-container table td {
+		border: 1px solid #dce6f0;
+		padding: 8px;
+		vertical-align: middle;
+	}
+	
+	/* ========== FILAS ALTERNADAS ========== */
+	.tbl-container table.table-striped > tbody > tr:nth-of-type(odd) {
+		background-color: #f8fbff;
+	}
+	
+	.tbl-container table.table-striped > tbody > tr:nth-of-type(even) {
+		background-color: #ffffff;
+	}
+	
+	.tbl-container table tbody tr:hover {
+		background-color: #e3f0ff !important;
+		cursor: default;
+	}
+	
+	/* ========== NUMEROS ========== */
+	.decimal {
+		text-align: right;
+		font-family: 'Consolas', 'Courier New', monospace;
+		font-weight: 500;
+	}
+	
+	/* ========== CHECKBOXES ========== */
+	#checkboxSeleccionarTodos {
+		transform: scale(1.1);
+		cursor: pointer;
+	}
+	
+	.checkbox-producto {
+		transform: scale(1.1);
+		cursor: pointer;
+	}
+	
+	.carrito-checkbox {
+		transition: all 0.2s ease;
+		transform: scale(1.1);
+		cursor: pointer;
+		width: 1.5rem;
+		height: 1.5rem;
+		margin-top: 0.15rem;
+	}
+	
+	.carrito-checkbox:checked {
+		background-color: #198754;
+		border-color: #198754;
+	}
+	
+	.carrito-checkbox:checked:hover {
+		background-color: #157347;
+		border-color: #157347;
+	}
+	
+	/* ========== BOTÓN DE ACCIÓN MASIVA ========== */
+	.btn-accion-masiva {
+		min-width: 220px;
+		transition: all 0.3s ease;
+	}
+	
+	.btn-accion-masiva .badge-contador {
+		background: rgba(255, 255, 255, 0.25);
+		padding: 2px 10px;
+		border-radius: 20px;
+		margin-left: 8px;
+		font-weight: 700;
+	}
+	
+	.btn-accion-masiva:hover .badge-contador {
+		background: rgba(255, 255, 255, 0.4);
+	}
+	
+	/* ========== PAGINACIÓN ========== */
+	.pagination {
+		margin-top: 20px;
+	}
+	
+	/* ========== TABLA FIXED (para scroll) ========== */
+	.tbl-fixed {
+		overflow-x: auto;
+		max-height: 65vh;
+		margin-top: 5px;
+	}
 {% endblock %}
 
 {% block maincomponent %}
-<div id="layoutSidenav_content">
-    <main>
-        <div class="container-fluid">
-            <h4>Exportar productos para carrito WEB</h4>
+	<div id="layoutSidenav_content">
+		<main>
+			<div class="container-fluid">
+				<div class="form-container mt-2">
+					<h4>Gestión de productos para carrito (E-Commerce)</h4>
+					
+					<!-- Mostrar mensajes -->
+					{% if messages %}
+						{% for message in messages %}
+							<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+								{{ message }}
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>
+						{% endfor %}
+					{% endif %}
+					
+					<form method="get" class="row g-3 mb-4" id="filtrosForm">
+						<!-- Primera fila -->
+						<div class="col-md-3">
+							{{ form.tipo_producto.label_tag }}
+							{{ form.tipo_producto }}
+						</div>
+						<div class="col-md-3">
+							{{ form.marca.label_tag }}
+							{{ form.marca }}
+						</div>
+						<div class="col-md-3">
+							{{ form.familia.label_tag }}
+							{{ form.familia }}
+						</div>
+						<div class="col-md-3">
+							{{ form.modelo.label_tag }}
+							{{ form.modelo }}
+						</div>
+						
+						<!-- Segunda fila -->
+						<div class="col-md-3">
+							{{ form.medida.label_tag }}
+							{{ form.medida }}
+						</div>
+						<div class="col-md-3">
+							{{ form.cai.label_tag }}
+							{{ form.cai }}
+						</div>
+						<div class="col-md-3">
+							{{ form.busqueda.label_tag }}
+							{{ form.busqueda }}
+						</div>
+						<div class="col-md-2">
+							{{ form.carrito.label_tag }}
+							{{ form.carrito }}
+						</div>
+						<div class="col-md-1 d-flex align-items-end">
+							<div class="form-check me-2">
+								{{ form.solo_con_stock }}
+								<label class="form-check-label" for="{{ form.solo_con_stock.id_for_label }}">Stock</label>
+							</div>
+						</div>
+						
+						<!-- Botones de filtro -->
+						<div class="col-12">
+							<button type="submit" class="btn btn-primary me-2" id="btnFiltrar">
+								<i class="fas fa-search me-1"></i> Filtrar
+							</button>
+							<a href="?" class="btn btn-secondary me-2" id="btnLimpiar">
+								<i class="fas fa-undo me-1"></i> Limpiar
+							</a>
+							<button type="button" class="btn btn-info" id="btnSeleccionarTodos">
+								<i class="fas fa-check-double me-1"></i> Seleccionar todos
+							</button>
+							<button type="button" class="btn btn-warning" id="btnDeseleccionarTodos">
+								<i class="fas fa-times me-1"></i> Deseleccionar todos
+							</button>
+						</div>
+					</form>
+					
+					<!-- Acciones masivas -->
+					{% if productos %}
+						<div class="row g-3 mb-3">
+							<div class="col-md-8">
+								<div class="input-group">
+									<select class="form-select  me-3" id="accionMasiva">
+										<option value="">Seleccionar acción masiva...</option>
+										<option value="activar_carrito">Activar "Carrito"</option>
+										<option value="desactivar_carrito">Desactivar "Carrito"</option>
+										<option value="toggle_carrito">Invertir estado "Carrito"</option>
+									</select>
+									<button class="btn btn-primary btn-accion-masiva" type="button" id="btnAplicarAccionMasiva">
+										<i class="fas fa-play me-1"></i> 
+										<span id="textoAccion">Aplicar a seleccionados</span>
+										<span class="badge-contador" id="cantidadSeleccionados">0</span>
+									</button>
+								</div>
+								<small class="text-muted">
+									<i class="fas fa-info-circle me-1"></i>
+									La acción se aplicará SOLO a los productos seleccionados en la tabla
+								</small>
+							</div>
+							<div class="col-md-4 text-end">
+								<span class="badge bg-secondary p-2 me-1">
+									<i class="fas fa-database me-1"></i>
+									Total: {{ total_registros }}
+								</span>
+								<span class="badge bg-info p-2">
+									<i class="fas fa-list me-1"></i>
+									Pág. {{ page_obj.number }}/{{ total_paginas }}
+								</span>
+							</div>
+						</div>
+					{% endif %}
+					
+					<!-- Tabla de resultados -->
+					<div class="table-responsive tbl-container">
+						<table class="table table-sm table-bordered table-striped" id="tablaProductos">
+							<thead>
+								<tr>
+									<th style="width: 40px;">
+										<input type="checkbox" id="checkboxSeleccionarTodos" class="form-check-input">
+									</th>
+									<th>CAI</th>
+									<th>Medida</th>
+									<th>Marca</th>
+									<th>Familia</th>
+									<th>Modelo</th>
+									<th>Nombre</th>
+									<th class="decimal">Stock</th>
+									<th style="width: 100px; text-align: center;">Carrito</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% if productos %}
+									{% for prod in productos %}
+										<tr data-producto-id="{{ prod.id_producto }}">
+											<td>
+												<input type="checkbox" class="form-check-input checkbox-producto" 
+													data-id="{{ prod.id_producto }}">
+											</td>
+											<td>{{ prod.id_cai.cai|default:"-" }}</td>
+											<td>{{ prod.medida }}</td>
+											<td>{{ prod.id_marca.nombre_producto_marca }}</td>
+											<td>{{ prod.id_familia.nombre_producto_familia }}</td>
+											<td>{{ prod.id_modelo.nombre_modelo }}</td>
+											<td>{{ prod.nombre_producto }}</td>
+											<td class="decimal">{{ prod.stock_total|formato_es_ar_entero|default:"0" }}</td>
+											<td style="text-align: center;">
+												<div class="form-check d-flex justify-content-center">
+													<input type="checkbox" 
+														class="form-check-input carrito-checkbox form-check-input-large"
+														data-id="{{ prod.id_producto }}"
+														{% if prod.carrito %}checked{% endif %}>
+												</div>
+											</td>
+										</tr>
+									{% endfor %}
+								{% else %}
+									<tr><td colspan="10" class="text-center">
+										<i class="fas fa-info-circle me-1"></i>
+										No hay productos para mostrar. Aplique filtros.
+									</td></tr>
+								{% endif %}
+							</tbody>
+						</table>
+					</div>
+					
+					<!-- Paginación mejorada -->
+					{% if page_obj and page_obj.has_other_pages %}
+						<nav aria-label="Paginación de productos">
+							<ul class="pagination justify-content-center">
+								<!-- Primera página -->
+								{% if page_obj.has_previous %}
+									<li class="page-item">
+										<a class="page-link page-link-pagination" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page=1" aria-label="Primera">
+											<span aria-hidden="true">&laquo;&laquo;</span>
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">&laquo;&laquo;</span>
+									</li>
+								{% endif %}
+								
+								<!-- Anterior -->
+								{% if page_obj.has_previous %}
+									<li class="page-item">
+										<a class="page-link page-link-pagination" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.previous_page_number }}" aria-label="Anterior">
+											<span aria-hidden="true">&laquo;</span>
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">&laquo;</span>
+									</li>
+								{% endif %}
+								
+								<!-- Números de página -->
+								{% for num in rango_paginas %}
+									{% if page_obj.number == num %}
+										<li class="page-item active">
+											<span class="page-link">{{ num }}</span>
+										</li>
+									{% else %}
+										<li class="page-item">
+											<a class="page-link page-link-pagination" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ num }}">{{ num }}</a>
+										</li>
+									{% endif %}
+								{% endfor %}
+								
+								<!-- Siguiente -->
+								{% if page_obj.has_next %}
+									<li class="page-item">
+										<a class="page-link page-link-pagination" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.next_page_number }}" aria-label="Siguiente">
+											<span aria-hidden="true">&raquo;</span>
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">&raquo;</span>
+									</li>
+								{% endif %}
+								
+								<!-- Última página -->
+								{% if page_obj.has_next %}
+									<li class="page-item">
+										<a class="page-link page-link-pagination" href="?{% for key, value in request.GET.items %}{% if key != 'page' %}{{ key }}={{ value|urlencode }}&{% endif %}{% endfor %}page={{ page_obj.paginator.num_pages }}" aria-label="Última">
+											<span aria-hidden="true">&raquo;&raquo;</span>
+										</a>
+									</li>
+								{% else %}
+									<li class="page-item disabled">
+										<span class="page-link">&raquo;&raquo;</span>
+									</li>
+								{% endif %}
+							</ul>
+							<div class="text-center text-muted small">
+								Mostrando {{ page_obj.start_index }} - {{ page_obj.end_index }} de {{ total_registros }} productos
+							</div>
+						</nav>
+					{% elif page_obj %}
+						<div class="text-center text-muted small mt-3">
+							Mostrando {{ total_registros }} productos
+						</div>
+					{% endif %}
 
-            <form method="get" class="row g-3 mb-4">
-                <!-- Primera fila -->
-                <div class="col-md-3">
-                    {{ form.tipo_producto.label_tag }}
-                    {{ form.tipo_producto }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.marca.label_tag }}
-                    {{ form.marca }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.familia.label_tag }}
-                    {{ form.familia }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.modelo.label_tag }}
-                    {{ form.modelo }}
-                </div>
+				</div>
+			</div>
+		</main>
+	</div>
+{% endblock %}
 
-                <!-- Segunda fila -->
-                <div class="col-md-3">
-                    {{ form.medida.label_tag }}
-                    {{ form.medida }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.cai.label_tag }}
-                    {{ form.cai }}
-                </div>
-                <div class="col-md-3">
-                    {{ form.busqueda.label_tag }}
-                    {{ form.busqueda }}
-                </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <div class="form-check me-3">
-                        {{ form.solo_con_stock }}
-                        <label class="form-check-label" for="{{ form.solo_con_stock.id_for_label }}">Solo con stock</label>
-                    </div>
-                </div>
-
-                <!-- Botones -->
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary me-2">Filtrar</button>
-                    <a href="?" class="btn btn-secondary">Limpiar</a>
-                </div>
-            </form>
-
-            <!-- Tabla de resultados -->
-            <div class="table-responsive tbl-container">
-                <table class="table table-sm table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Código</th>
-                            <th>Medida</th>
-                            <th>Marca</th>
-                            <th>Familia</th>
-                            <th>Modelo</th>
-                            <th>Nombre</th>
-                            <th>Carrito</th>
-                            <th>Detalle</th>
-                            <th>CAI</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if productos %}
-                            {% for prod in productos %}
-                            <tr>
-                                <td>{{ prod.codigo_producto }}</td>
-                                <td>{{ prod.medida }}</td>
-                                <td>{{ prod.id_marca.nombre_producto_marca }}</td>
-                                <td>{{ prod.id_familia.nombre_producto_familia }}</td>
-                                <td>{{ prod.id_modelo.nombre_modelo }}</td>
-                                <td>{{ prod.nombre_producto }}</td>
-                                <td>{{ prod.carrito|yesno:"Sí,No" }}</td>
-                                <td>{{ prod.descripcion_producto }}</td>
-                                <td>{{ prod.id_cai.cai|default:"-" }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr><td colspan="9" class="text-center">No hay productos para mostrar. Aplique filtros.</td></tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Paginación -->
-            {% if page_obj and page_obj.has_other_pages %}
-            <nav>
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
-                    <li class="page-item"><a class="page-link" href="?page=1&{{ request.GET.urlencode }}">&laquo; Primero</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&{{ request.GET.urlencode }}">Anterior</a></li>
-                    {% endif %}
-                    <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-                    {% if page_obj.has_next %}
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&{{ request.GET.urlencode }}">Siguiente</a></li>
-                    <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&{{ request.GET.urlencode }}">Última &raquo;</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-            {% endif %}
-        </div>
-    </main>
-</div>
+{% block script %}
+	{{ block.super }}
+	<script>
+		$(document).ready(function() {
+			// --- CLAVE PARA sessionStorage ---
+			var STORAGE_KEY = 'productos_seleccionados';
+			
+			// --- TODOS LOS IDs FILTRADOS (desde el contexto de Django) ---
+			var TODOS_IDS = {{ todos_ids|safe }};
+			
+			// --- FUNCIONES DE UTILIDAD ---
+			
+			function getSeleccionados() {
+				try {
+					var data = sessionStorage.getItem(STORAGE_KEY);
+					return data ? JSON.parse(data) : [];
+				} catch(e) {
+					return [];
+				}
+			}
+			
+			function setSeleccionados(ids) {
+				sessionStorage.setItem(STORAGE_KEY, JSON.stringify(ids));
+				actualizarContador(ids.length);
+			}
+			
+			function actualizarContador(cantidad) {
+				if (cantidad !== undefined) {
+					$('#cantidadSeleccionados').text(cantidad);
+				} else {
+					var seleccionados = getSeleccionados();
+					$('#cantidadSeleccionados').text(seleccionados.length);
+				}
+				
+				var total = parseInt($('#cantidadSeleccionados').text());
+				
+				// Actualizar el texto del botón
+				if (total > 0) {
+					$('#textoAccion').text('Aplicar a ' + total + ' seleccionados');
+				} else {
+					$('#textoAccion').text('Aplicar a seleccionados');
+				}
+			}
+			
+			function restaurarSeleccion() {
+				var seleccionados = getSeleccionados();
+				
+				// Marcar los checkboxes que están en la lista
+				$('.checkbox-producto').each(function() {
+					var id = parseInt($(this).data('id'));
+					if (seleccionados.includes(id)) {
+						$(this).prop('checked', true);
+					}
+				});
+				
+				// Actualizar contador
+				actualizarContador(seleccionados.length);
+				
+				// Actualizar "Seleccionar todos" de la página actual
+				var totalPagina = $('.checkbox-producto').length;
+				var seleccionadosPagina = $('.checkbox-producto:checked').length;
+				$('#checkboxSeleccionarTodos').prop('checked', totalPagina > 0 && totalPagina === seleccionadosPagina);
+			}
+			
+			// --- INICIALIZACIÓN ---
+			
+			// Restaurar selección al cargar la página
+			restaurarSeleccion();
+			
+			// --- FUNCIONALIDAD DE CHECKBOXES INDIVIDUALES ---
+			
+			// Actualizar carrito individualmente (AJAX)
+			$('.carrito-checkbox').on('change', function() {
+				var checkbox = $(this);
+				var productoId = checkbox.data('id');
+				var valor = checkbox.prop('checked');
+				
+				checkbox.prop('disabled', true);
+				
+				var icono = checkbox.closest('td').find('.fa-spinner');
+				if (!icono.length) {
+					checkbox.after(' <i class="fas fa-spinner fa-spin text-primary"></i>');
+				}
+				
+				$.ajax({
+					url: window.location.href,
+					method: 'POST',
+					data: {
+						'producto_id': productoId,
+						'valor': valor,
+						'csrfmiddlewaretoken': '{{ csrf_token }}'
+					},
+					success: function(response) {
+						if (!response.success) {
+							checkbox.prop('checked', !valor);
+							// Si hay error, recargar la página para mostrar el mensaje de Django
+							location.reload();
+						}
+						// Si es exitoso, no hacemos nada, el checkbox ya cambió
+					},
+					error: function(xhr) {
+						checkbox.prop('checked', !valor);
+						// Recargar para mostrar mensaje de error de Django
+						location.reload();
+					},
+					complete: function() {
+						checkbox.prop('disabled', false);
+						checkbox.closest('td').find('.fa-spinner').remove();
+					}
+				});
+			});
+			
+			// --- FUNCIONALIDAD DE SELECCIÓN ---
+			
+			// Marcar/desmarcar producto individual
+			$('.checkbox-producto').on('change', function() {
+				var checkbox = $(this);
+				var productoId = parseInt(checkbox.data('id'));
+				var estaSeleccionado = checkbox.prop('checked');
+				
+				var seleccionados = getSeleccionados();
+				
+				if (estaSeleccionado) {
+					if (!seleccionados.includes(productoId)) {
+						seleccionados.push(productoId);
+					}
+				} else {
+					var index = seleccionados.indexOf(productoId);
+					if (index !== -1) {
+						seleccionados.splice(index, 1);
+					}
+				}
+				
+				setSeleccionados(seleccionados);
+				
+				// Actualizar checkbox "Seleccionar todos" de la página actual
+				var totalPagina = $('.checkbox-producto').length;
+				var seleccionadosPagina = $('.checkbox-producto:checked').length;
+				$('#checkboxSeleccionarTodos').prop('checked', totalPagina > 0 && totalPagina === seleccionadosPagina);
+			});
+			
+			// Checkbox "Seleccionar todos" de la página actual (encabezado de la tabla)
+			$('#checkboxSeleccionarTodos').on('change', function() {
+				var estaSeleccionado = $(this).prop('checked');
+				var seleccionados = getSeleccionados();
+				
+				$('.checkbox-producto').each(function() {
+					var id = parseInt($(this).data('id'));
+					$(this).prop('checked', estaSeleccionado);
+					
+					if (estaSeleccionado) {
+						if (!seleccionados.includes(id)) {
+							seleccionados.push(id);
+						}
+					} else {
+						var index = seleccionados.indexOf(id);
+						if (index !== -1) {
+							seleccionados.splice(index, 1);
+						}
+					}
+				});
+				
+				setSeleccionados(seleccionados);
+			});
+			
+			// --- BOTONES "SELECCIONAR TODOS" Y "DESELECCIONAR TODOS" ---
+			
+			// Botón "Seleccionar todos" - Selecciona TODOS los registros filtrados
+			$('#btnSeleccionarTodos').on('click', function() {
+				if (TODOS_IDS.length === 0) {
+					alert('No hay productos filtrados para seleccionar.');
+					return;
+				}
+				
+				// Marcar todos los checkboxes de la página actual
+				$('.checkbox-producto').prop('checked', true);
+				
+				// Guardar TODOS los IDs en sessionStorage
+				setSeleccionados(TODOS_IDS);
+				
+				// Actualizar checkbox "Seleccionar todos" del encabezado
+				var totalPagina = $('.checkbox-producto').length;
+				var seleccionadosPagina = $('.checkbox-producto:checked').length;
+				$('#checkboxSeleccionarTodos').prop('checked', totalPagina > 0 && totalPagina === seleccionadosPagina);
+				
+				// Mostrar mensaje de éxito (sin alert)
+				console.log('Se seleccionaron ' + TODOS_IDS.length + ' productos');
+			});
+			
+			// Botón "Deseleccionar todos" - Deselecciona TODOS los registros filtrados
+			$('#btnDeseleccionarTodos').on('click', function() {
+				if (TODOS_IDS.length === 0) {
+					alert('No hay productos filtrados para deseleccionar.');
+					return;
+				}
+				
+				// Desmarcar todos los checkboxes de la página actual
+				$('.checkbox-producto').prop('checked', false);
+				
+				// Obtener la lista actual de seleccionados
+				var seleccionados = getSeleccionados();
+				
+				// Remover TODOS los IDs filtrados de la selección
+				TODOS_IDS.forEach(function(id) {
+					var index = seleccionados.indexOf(id);
+					if (index !== -1) {
+						seleccionados.splice(index, 1);
+					}
+				});
+				
+				// Guardar la selección actualizada
+				setSeleccionados(seleccionados);
+				
+				// Actualizar checkbox "Seleccionar todos" del encabezado
+				$('#checkboxSeleccionarTodos').prop('checked', false);
+				
+				// Mostrar mensaje de éxito
+				console.log('Se deseleccionaron ' + TODOS_IDS.length + ' productos');
+			});
+			
+			// --- ACCIÓN MASIVA ---
+			
+			$('#btnAplicarAccionMasiva').on('click', function() {
+				var accion = $('#accionMasiva').val();
+				if (!accion) {
+					alert('Por favor seleccione una acción.');
+					return;
+				}
+				
+				var seleccionados = getSeleccionados();
+				
+				if (seleccionados.length === 0) {
+					alert('Por favor seleccione al menos un producto.');
+					return;
+				}
+				
+				var mensaje = '¿Está seguro de aplicar la acción "' + 
+							$('#accionMasiva option:selected').text() + 
+							'" a ' + seleccionados.length + ' productos?';
+				
+				if (confirm(mensaje)) {
+					var url = window.location.pathname;
+					var params = new URLSearchParams(window.location.search);
+					params.set('accion', accion);
+					params.set('productos_ids', seleccionados.join(','));
+					
+					// Limpiar selección después de aplicar la acción
+					sessionStorage.removeItem(STORAGE_KEY);
+					
+					window.location.href = url + '?' + params.toString();
+				}
+			});
+			
+			// --- LIMPIAR SELECCIÓN AL CAMBIAR FILTROS ---
+			
+			$('#btnFiltrar').on('click', function(e) {
+				if (getSeleccionados().length > 0) {
+					if (!confirm('Al aplicar nuevos filtros se perderá la selección actual. ¿Continuar?')) {
+						e.preventDefault();
+						return;
+					}
+				}
+				sessionStorage.removeItem(STORAGE_KEY);
+			});
+			
+			$('#btnLimpiar').on('click', function(e) {
+				sessionStorage.removeItem(STORAGE_KEY);
+			});
+		});
+	</script>
 {% endblock %}

@@ -30,7 +30,7 @@ from .views.actualizar_estados_views import (
 	ActualizarEstadosErroresView,
 	ActualizarEstadosView
 )
-from .views.productos_mercado_libre_views import ExportarProductosCarritoView
+from .views.productos_mercado_libre_views import ExportarProductosCarritoView, ExportarProductosArchivoView
 
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
@@ -65,6 +65,7 @@ urlpatterns = [
 	path('actualizar/estados/errores/', ActualizarEstadosErroresView.as_view(), name='actualizar_estados_errores'),
 	path('actualizar/estados/', ActualizarEstadosView.as_view(), name='actualizar_estados'),
 
-	# Exportar Productos para Mercado Libre
-    path('exportar-productos-carrito/', ExportarProductosCarritoView.as_view(), name='exportar_productos_carrito'),
+	#-- Exportar Productos para Mercado Libre (E-Commerce).
+	path('exportar-productos-carrito/', ExportarProductosCarritoView.as_view(), name='exportar_productos_carrito'),
+	path('exportar-productos-archivo/', ExportarProductosArchivoView.as_view(), name='exportar_productos_archivo'),
 ]
