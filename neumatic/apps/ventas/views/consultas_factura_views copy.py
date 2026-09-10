@@ -1473,106 +1473,135 @@ def verificar_numero_comprobante(request):
 
 @require_GET
 def consultar_padron_percepcion(request):
-    sucursal_id = request.GET.get('sucursal_id')
-    cuit = request.GET.get('cuit')
-    fecha_comprobante = request.GET.get('fecha_comprobante')
+	"""
+	Endpoint para consultar si un cliente (por CUIT y provincia) aplica percepción,
+	y obtener su alícuota, monto y mínimo correspondientes.
+	Parámetros GET: provincia_id, cuit (opcional: fecha_comprobante)
+	"""
+	print("consultar_padron_percepcion")
 
-    if not sucursal_id or not cuit:
-        return JsonResponse({
-            'aplica_percepcion': False,
-            'alicuota_percepcion': 0.00,
-            'minimo_percepcion': None,
-            'error': 'Faltan parámetros sucursal_id o cuit'
-        }, status=400)
+	provincia_id = request.GET.get('provincia_id')
+	cuit = request.GET.get('cuit')
 
-    try:
-        sucursal_id = int(sucursal_id)
-        cuit = int(cuit)
-    except ValueError:
-        return JsonResponse({
-            'aplica_percepcion': False,
-            'alicuota_percepcion': 0.00,
-            'minimo_percepcion': None,
-            'error': 'sucursal_id y cuit deben ser numéricos'
-        }, status=400)
+	if not provincia_id or not cuit:
+		return JsonResponse({
+			'aplica_percepcion': False,
+			'alicuota_percepcion': 0.00,
+			'monto': None,
+			'minimo': None,
+			'error': 'Faltan parámetros provincia_id o cuit'
+		}, status=400)
 
-    # Obtener provincia desde la sucursal
-    from apps.maestros.models.sucursal_models import Sucursal
-    try:
-        sucursal = Sucursal.objects.select_related('id_provincia').get(id_sucursal=sucursal_id)
-        provincia = sucursal.id_provincia
-        if not provincia:
-            return JsonResponse({
-                'aplica_percepcion': False,
-                'alicuota_percepcion': 0.00,
-                'minimo_percepcion': None,
-                'error': 'La sucursal no tiene provincia asociada'
-            }, status=400)
-        provincia_id = provincia.id_provincia
-        minimo_provincia = float(provincia.minimo_percepcion) if provincia.minimo_percepcion is not None else 0.0
-    except Sucursal.DoesNotExist:
-        return JsonResponse({
-            'aplica_percepcion': False,
-            'alicuota_percepcion': 0.00,
-            'minimo_percepcion': None,
-            'error': 'Sucursal no encontrada'
-        }, status=404)
+	try:
+		provincia_id = int(provincia_id)
+		cuit = int(cuit)
+	except ValueError:
+		return JsonResponse({
+			'aplica_percepcion': False,
+			'alicuota_percepcion': 0.00,
+			'monto': None,
+			'minimo': None,
+			'error': 'provincia_id y cuit deben ser numéricos'
+		}, status=400)
 
-    # 1. Verificar configuración PADRON_CONFIG
-    config = PADRON_CONFIG.get(provincia_id)
-    if not config:
-        return JsonResponse({
-            'aplica_percepcion': False,
-            'alicuota_percepcion': 0.00,
-            'minimo_percepcion': minimo_provincia,
-            'mensaje': f'Provincia {provincia_id} no tiene padrón configurado'
-        })
+	# 1. Verificar si la provincia existe en la configuración
+	config = PADRON_CONFIG.get(provincia_id)
+	if not config:
+		return JsonResponse({
+			'aplica_percepcion': False,
+			'alicuota_percepcion': 0.00,
+			'monto': None,
+			'minimo': None,
+			'mensaje': f'Provincia {provincia_id} no tiene padrón configurado'
+		})
 
-    # 2. Obtener modelo dinámico
-    try:
-        ModeloPadron = apps.get_model(config['app'], config['modelo'])
-    except LookupError:
-        return JsonResponse({
-            'aplica_percepcion': False,
-            'alicuota_percepcion': 0.00,
-            'minimo_percepcion': minimo_provincia,
-            'error': f'Modelo {config["modelo"]} no encontrado'
-        }, status=500)
+	# 2. Obtener el modelo dinámicamente
+	try:
+		ModeloPadron = apps.get_model(config['app'], config['modelo'])
+	except LookupError:
+		return JsonResponse({
+			'aplica_percepcion': False,
+			'alicuota_percepcion': 0.00,
+			'monto': None,
+			'minimo': None,
+			'error': f'Modelo {config["modelo"]} no encontrado'
+		}, status=500)
 
-    campos = config['campos']
-    fecha_actual = timezone.now().date()
-    if fecha_comprobante:
-        try:
-            fecha_busqueda = datetime.strptime(fecha_comprobante, '%Y-%m-%d').date()
-        except ValueError:
-            fecha_busqueda = fecha_actual
-    else:
-        fecha_busqueda = fecha_actual
+	campos = config['campos']
+	fecha_actual = timezone.now().date()
 
-    # 3. Buscar en el padrón
-    filtros = {
-        campos['cuit']: cuit,
-        f"{campos['fecha_desde']}__lte": fecha_busqueda,
-        f"{campos['fecha_hasta']}__gte": fecha_busqueda,
-    }
-    registro = ModeloPadron.objects.filter(**filtros).first()
+	# Si se pasa fecha_comprobante, usarla
+	fecha_comprobante_str = request.GET.get('fecha_comprobante')
+	if fecha_comprobante_str:
+		try:
+			fecha_busqueda = datetime.strptime(fecha_comprobante_str, '%Y-%m-%d').date()
+		except ValueError:
+			fecha_busqueda = fecha_actual
+	else:
+		fecha_busqueda = fecha_actual
 
-    if registro:
-        alicuota = getattr(registro, campos.get('alicuota_percepcion', 'alicuota_percepcion'), 0.0)
-        alicuota = float(alicuota) if alicuota is not None else 0.0
-        aplica = alicuota > 0
+	# 3. Buscar en el padrón
+	filtros = {
+		campos['cuit']: cuit,
+		f"{campos['fecha_desde']}__lte": fecha_busqueda,
+		f"{campos['fecha_hasta']}__gte": fecha_busqueda,
+	}
+	registro = ModeloPadron.objects.filter(**filtros).first()
 
-        return JsonResponse({
-            'aplica_percepcion': aplica,
-            'alicuota_percepcion': alicuota,
-            'minimo_percepcion': minimo_provincia if aplica else None,
-            'razon_social': getattr(registro, campos.get('razon_social', ''), ''),
-            'mensaje': None
-        })
-    else:
-        return JsonResponse({
-            'aplica_percepcion': False,
-            'alicuota_percepcion': 0.0,
-            'minimo_percepcion': minimo_provincia,
-            'mensaje': 'CUIT no encontrado en el padrón'
-        })
+	if registro:
+		alicuota = getattr(registro, campos.get('alicuota_percepcion', 'alicuota_percepcion'), 0.0)
+		alicuota = float(alicuota) if alicuota is not None else 0.0
+		aplica = alicuota > 0  # Solo aplica si alícuota > 0
+
+		# --- NUEVO: Obtener monto y mínimo del cliente ---
+		monto = None
+		minimo = None
+		id_tipo_percepcion = None
+		descripcion_tipo_percepcion = None
+		mensaje = None		
+		if aplica:
+			try:
+				# cliente = Cliente.objects.get(cuit=cuit)
+				id_cliente = request.GET.get('id_cliente')
+				print(f"🔍 id_cliente recibido: {id_cliente}")
+				print(f"🔍 tipo de id_cliente: {type(id_cliente)}")
+
+				cliente = Cliente.objects.filter(id_cliente=id_cliente).first() if id_cliente else None
+
+				if cliente.id_percepcion_ib:
+					tipo_percepcion = cliente.id_percepcion_ib
+					# Obtener ID y descripción
+					id_tipo_percepcion = tipo_percepcion.id_tipo_percepcion_ib
+					descripcion_tipo_percepcion = tipo_percepcion.descripcion_tipo_percepcion_ib
+					# Obtener monto y mínimo
+					if tipo_percepcion.monto is not None:
+						monto = float(tipo_percepcion.monto)
+					if tipo_percepcion.minimo is not None:
+						minimo = float(tipo_percepcion.minimo)
+				else:
+					# El cliente no tiene tipo de percepción asignado
+					aplica = False
+					mensaje = 'El cliente no tiene tipo de percepción asignado, debe asignarle para emitir un documento válido!'
+			except Cliente.DoesNotExist:
+				aplica = False
+				mensaje = 'Cliente no encontrado'
+
+
+		return JsonResponse({
+			'aplica_percepcion': aplica,
+			'alicuota_percepcion': alicuota,
+			'razon_social': getattr(registro, campos.get('razon_social', ''), ''),
+			'monto': monto,
+			'minimo': minimo,
+			'id_tipo_percepcion': id_tipo_percepcion,
+			'descripcion_tipo_percepcion': descripcion_tipo_percepcion, 
+			'mensaje': mensaje, 
+		})
+	else:
+		return JsonResponse({
+			'aplica_percepcion': False,
+			'alicuota_percepcion': 0.0,
+			'mensaje': 'CUIT no encontrado en el padrón',
+			'monto': None,
+			'minimo': None,
+		})

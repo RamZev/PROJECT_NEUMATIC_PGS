@@ -221,6 +221,9 @@
 			<!-- Div oculto con el diccionario de stockclie -->
 			<div id="stockclie-data" data-stockclie='{{ stock_clie_dict|safe }}'></div>
 
+			<!-- Div oculto con la configuración del padrón por provincia -->
+			<div id="padron-config-data" data-padron='{{ padron_config|safe }}'></div>
+
 			<div class="container-fluid tbl-container">
 				<!-- Formulario Encabezado Detalle - Inicio -->
 				<form method="post" id="factura-form" enctype="multipart/form-data">
@@ -535,6 +538,14 @@
 											
 											<div class="col-md-2">
 												{{ form.discrimina_iva }}
+												<input type="hidden" id="id_nombre_tipo_iva" value="">
+												<input type="hidden" id="id_provincia_cliente" value="">
+												<input type="hidden" id="id_aplica_percepcion" value="false">
+												<input type="hidden" id="id_alicuota_percepcion" name="alicuota_percepcion" value="0.00">
+												<input type="hidden" id="id_monto_percepcion" value="">
+												<input type="hidden" id="id_minimo_percepcion" value="">
+												<input type="hidden" id="id_tipo_percepcion_id" value="">
+												<input type="hidden" id="id_descripcion_tipo_percepcion" value="">
 												<label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
 													DIVA
 												</label>
@@ -1399,22 +1410,20 @@
 			const container = document.getElementById('iva-message-container');
 			const textSpan = document.getElementById('iva-message-text');
 			const checkbox = document.getElementById('id_discrimina_iva');
+			const nombreIVA = document.getElementById('id_nombre_tipo_iva').value;
 			const idCliente = document.getElementById('id_id_cliente');
 
-			// Solo mostrar si hay un cliente seleccionado
 			if (!container || !textSpan || !checkbox || !idCliente) return;
 
 			if (idCliente.value) {
-				if (checkbox.checked) {
-					textSpan.textContent = 'IVA Responsable Inscripto';
-				} else {
-					textSpan.textContent = 'IVA Consumidor Final';
-				}
+				let mensaje = nombreIVA || 'Tipo de IVA no definido';
+				mensaje += checkbox.checked ? ' - Discrimina IVA' : ' - No Discrimina IVA';
+				textSpan.textContent = mensaje;
 				container.style.display = 'block';
 			} else {
 				container.style.display = 'none';
 			}
-		}
+		}		
 
 		function ocultarMensajeIVA() {
 			const container = document.getElementById('iva-message-container');
@@ -1513,6 +1522,27 @@
 					totalExento += no_gravado;
 					totalIva += iva;
 				});
+
+				////////////////
+				// --- Cálculo de percepción de IIBB (Ingresos Brutos) ---
+
+				// Obtener los valores de percepción desde los campos ocultos del formulario
+				const aplicaPercepcion = document.getElementById('id_aplica_percepcion')?.value === 'true';
+				const alicuotaPercepcion = parseFloat(document.getElementById('id_alicuota_percepcion')?.value || 0);
+				const minimoPercepcion = parseFloat(document.getElementById('id_minimo_percepcion')?.value || 0);
+
+				// Reiniciamos la variable existente a 0 (por si no se cumple la condición)
+				totalPercepIb = 0;
+
+				// Calcular el monto de percepción solo si corresponde
+				if (aplicaPercepcion && alicuotaPercepcion > 0 && totalGravado >= minimoPercepcion) {
+					totalPercepIb = totalGravado * (alicuotaPercepcion / 100);
+					totalPercepIb = Math.round(totalPercepIb * 100) / 100;
+				}
+
+				// Añadir la percepción al total general del comprobante
+				totalFactura += totalPercepIb;							
+				////////////////
 				
 				// 2. Guardar valores numéricos puros
 				document.getElementById('id_gravado').value = totalGravado.toFixed(2);
@@ -3720,10 +3750,12 @@
 										nombre_vendedor: data.nombre_vendedor,
 										tipo_venta: data.tipo_venta,
 										condicion_venta: data.condicion_venta,
+										nombre_iva: data.nombre_iva,
 										discrimina_iva: data.discrimina_iva,
 										vip: data.vip,
 										id_sucursal: data.id_sucursal
 									};
+
 									
 									// 5. Configurar botón de confirmación
 									const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
@@ -3823,7 +3855,75 @@
 					document.getElementById('id_tipo_venta').value = data.tipo_venta || '';
 					document.getElementById('id_condicion_comprobante').value = data.condicion_venta || '';
 					document.getElementById('id_discrimina_iva').checked = data.discrimina_iva;
+					document.getElementById('id_nombre_tipo_iva').value = data.nombre_iva || '';
+					document.getElementById('id_provincia_cliente').value = data.id_provincia || '';
 
+					// alert(data.id_provincia);
+					// alert(data.nombre_iva);
+					// alert(data.discrimina_iva);
+
+					// if (data.discrimina_iva){
+					//	alert(data.id_provincia);
+					//	alert("data.id_provincia");
+					// }
+					/////////////////////////
+					if (data.discrimina_iva) {
+						const sucursalId = document.getElementById('id_id_sucursal').value; // ← obtener sucursal del formulario
+						const cuit = data.cuit;
+						const fechaComprobante = document.getElementById('id_fecha_comprobante').value;
+
+						// Si falta sucursalId o cuit, asignar valores por defecto y no continuar (sin return)
+						if (!sucursalId || !cuit) {
+							document.getElementById('id_aplica_percepcion').value = 'false';
+							document.getElementById('id_alicuota_percepcion').value = '0.00';
+							document.getElementById('id_minimo_percepcion').value = '';
+							// No mostrar alert
+						} else {
+							const url = new URL('/ventas/consultar-padron/', window.location.origin);
+							url.searchParams.append('sucursal_id', sucursalId);
+							url.searchParams.append('cuit', cuit);
+							if (fechaComprobante) {
+								url.searchParams.append('fecha_comprobante', fechaComprobante);
+							}
+
+							fetch(url)
+								.then(response => {
+									if (!response.ok) throw new Error('Error en la respuesta del servidor');
+									return response.json();
+								})
+								.then(padronData => {
+									const aplica = padronData.aplica_percepcion === true;
+									const alicuota = padronData.alicuota_percepcion || 0.00;
+									const minimo = padronData.minimo_percepcion !== undefined && padronData.minimo_percepcion !== null
+												? padronData.minimo_percepcion : '';
+
+									// Actualizar solo los campos que existen en el HTML
+									document.getElementById('id_aplica_percepcion').value = aplica ? 'true' : 'false';
+									document.getElementById('id_alicuota_percepcion').value = alicuota.toFixed(2);
+									document.getElementById('id_minimo_percepcion').value = minimo;
+									// Los demás campos (monto, tipo, descripción) los dejamos vacíos o sin cambios
+									// porque ya no se usan.
+									document.getElementById('id_monto_percepcion').value = '';
+									document.getElementById('id_tipo_percepcion_id').value = '';
+									document.getElementById('id_descripcion_tipo_percepcion').value = '';
+
+									// Mostrar alert solo si hay mensaje (ej. CUIT no encontrado)
+									if (padronData.mensaje && !aplica) {
+										alert(`⚠️ ${padronData.mensaje}`);
+									} else if (aplica) {
+										alert(`✅ CUIT encontrado - Alícuota: ${alicuota.toFixed(2)}% - Mínimo: ${minimo}`);
+									}
+								})
+								.catch(error => {
+									console.error('Error al consultar padrón:', error);
+									document.getElementById('id_aplica_percepcion').value = 'false';
+									document.getElementById('id_alicuota_percepcion').value = '0.00';
+									document.getElementById('id_minimo_percepcion').value = '';
+								});
+						}
+					}					
+					/////////////////////////
+					
 					actualizarMensajeIVA();
 					
 					// Verificación de sucursal
@@ -3898,6 +3998,28 @@
 				
 				const checkbox = document.getElementById('id_discrimina_iva');
 				if (checkbox) checkbox.checked = false;
+
+				const nombreIva = document.getElementById('id_nombre_tipo_iva')
+				if (nombreIva) nombreIva.value = "";
+
+				// Limpiar campos de percepción
+				const aplicaPercepcion = document.getElementById('id_aplica_percepcion');
+				if (aplicaPercepcion) aplicaPercepcion.value = 'false';
+				
+				const alicuotaPercepcion = document.getElementById('id_alicuota_percepcion');
+				if (alicuotaPercepcion) alicuotaPercepcion.value = '0.00';
+				
+				const montoPercepcion = document.getElementById('id_monto_percepcion');
+				if (montoPercepcion) montoPercepcion.value = '';
+				
+				const minimoPercepcion = document.getElementById('id_minimo_percepcion');
+				if (minimoPercepcion) minimoPercepcion.value = '';
+				
+				const tipoPercepcionId = document.getElementById('id_tipo_percepcion_id');
+				if (tipoPercepcionId) tipoPercepcionId.value = '';
+				
+				const descripcionPercepcion = document.getElementById('id_descripcion_tipo_percepcion');
+				if (descripcionPercepcion) descripcionPercepcion.value = '';				
 				
 				const numeroDefinitivo = document.getElementById('id_numero_definitivo');
 				if (numeroDefinitivo) numeroDefinitivo.value = '';

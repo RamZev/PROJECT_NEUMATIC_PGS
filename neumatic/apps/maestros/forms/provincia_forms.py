@@ -21,6 +21,8 @@ class ProvinciaForm(CrudGenericForm):
 				forms.TextInput(attrs={**formclasstext}),
 			'nombre_provincia': 
 				forms.TextInput(attrs={**formclasstext}),
+			'minimo_percepcion': 
+				forms.NumberInput(attrs={**formclasstext,'min': 0.00}),
 		}
 		
 		error_messages = {

@@ -1,10 +1,8 @@
-# neumatic\entorno\constantes_padron.py
+# neumatic/entorno/constantes_padron.py
 
-# Consiguración de los modelos para búsqueda 
-# De Percepciones y Retenciones
 PADRON_CONFIG = {
     6: {  # ← id_provincia de Entre Ríos
-        'modelo': 'PadronIIBBEntreRios',
+        'modelo': 'PadronEntreRiosIIBB',   # ← Cambiado
         'app': 'maestros',
         'campos': {
             'cuit': 'cuit',
@@ -16,7 +14,7 @@ PADRON_CONFIG = {
         }
     },
     13: {  # ← id_provincia de Santa Fe
-        'modelo': 'PadronIIBBSantaFe',
+        'modelo': 'PadronSantaFeIIBB',     # ← Cambiado
         'app': 'maestros',
         'campos': {
             'cuit': 'cuit',

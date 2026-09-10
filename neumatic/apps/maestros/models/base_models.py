@@ -752,6 +752,15 @@ class Provincia(ModeloBaseGenerico):
 		verbose_name="Nombre",
 		max_length=30
 	)
+	minimo_percepcion = models.DecimalField(
+		verbose_name="Mínimo Percepción",
+		max_digits=12,
+		decimal_places=2,
+		null=True,
+		blank=True,
+		default=0.00
+	)
+
 	
 	class Meta:
 		db_table = 'provincia'

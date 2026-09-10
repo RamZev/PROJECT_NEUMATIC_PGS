@@ -90,7 +90,7 @@ from .views.compra_retencion_views import (
 	CompraRetencionDeleteView
 )
 from .views.pdf_retenciones import PDFRetencionView
-
+from .views.consultas_factura_views import consultar_padron_percepcion
 
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
@@ -188,5 +188,7 @@ urlpatterns = [
 	path('verificar-unicidad-remito/', verificar_unicidad_remito, name='verificar_unicidad_remito'),
 
 	path('verificar-numero-comprobante/', verificar_numero_comprobante, name='verificar_numero_comprobante'),
+
+	path('consultar-padron/', consultar_padron_percepcion, name='consultar_padron'),
 
 ]

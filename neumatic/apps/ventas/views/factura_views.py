@@ -29,6 +29,7 @@ from apps.ventas.models.caja_models import Caja, CajaDetalle
 from ...maestros.models.descuento_vendedor_models import DescuentoRevendedor
 
 from entorno.constantes_base import TIPO_VENTA, LETRAS_AUTOMATICAS
+from entorno.constantes_padron import PADRON_CONFIG
 
 from services.fe_arca import FacturadorARCA
 
@@ -308,6 +309,9 @@ class FacturaCreateView(MaestroDetalleCreateView):
 		
 		#-- Título de la página.
 		data['titulo'] = "Crear Comprobante"
+
+		# Configuración del padrón
+		data['padron_config'] = json.dumps(PADRON_CONFIG)
 		
 		return data
 
@@ -598,7 +602,8 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						imp_tot_conc = form.cleaned_data['exento']
 						imp_neto = form.cleaned_data['gravado']
 						imp_op_ex = '0.00'
-						imp_trib = '0.00'
+						# imp_trib = '0.00'
+						imp_trib = form.cleaned_data['percep_ib']
 						imp_iva = form.cleaned_data['iva']
 
 						# Fechas de Servicio y vencimiento
@@ -666,12 +671,33 @@ class FacturaCreateView(MaestroDetalleCreateView):
 						total_gravado_calc = sum(float(item['iva_base_imp']) for item in datos_impuestos)
 						total_iva_calc = sum(float(item['iva_importe']) for item in datos_impuestos)
 						imp_tot_conc_float = float(imp_tot_conc)
-						
+						imp_trib_float = float(imp_trib or 0)
+
 						imp_neto = total_gravado_calc
 						imp_iva = total_iva_calc
-						imp_total = imp_neto + imp_iva + imp_tot_conc_float
-						
-						print(f"✅ Valores recalculados - Neto: {imp_neto:.2f}, IVA: {imp_iva:.2f}, Total: {imp_total:.2f}")
+						imp_total = imp_neto + imp_iva + imp_tot_conc_float + imp_trib_float
+
+						print(f"✅ Valores recalculados - Neto: {imp_neto:.2f}, IVA: {imp_iva:.2f}, Trib: {imp_trib_float:.2f}, Total: {imp_total:.2f}")
+
+						##################
+						# ============================================
+						# CONSTRUIR LISTA DE TRIBUTOS (PERCEPCIÓN IIBB)
+						# ============================================
+						tributos = []
+						if float(imp_trib or 0) > 0:
+							try:
+								alicuota_perc = float(self.request.POST.get('alicuota_percepcion') or 0)
+							except (TypeError, ValueError):
+								alicuota_perc = 0.0
+
+							tributos.append({
+								'tributo_id': 2, 
+								'desc': 'Per.Ingresos Brutos',
+								'base_imp': f"{imp_neto:.2f}",
+								'alic': f"{alicuota_perc:.2f}",
+								'importe': f"{float(imp_trib):.2f}",
+							})						
+						##################
 
 						# Datos de cabecera del comprobante
 						datos_comprobante = {
@@ -810,6 +836,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 							comprobante=datos_comprobante,
 							cliente=datos_cliente,
 							impuestos=datos_impuestos,
+							tributos=tributos,
 							comprobante_asociado=comprobante_asociado_data 
 						)
 
@@ -1426,7 +1453,7 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			raise
 
 
-	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos,  comprobante_asociado=None):
+	def generar_xml_afiparca(self, auth, comprobante, cliente, impuestos, tributos=None, comprobante_asociado=None):
 		# =========================================================
 		# 🔍 DEBUG - VER QUÉ RECIBE LA FUNCIÓN
 		# =========================================================
@@ -1556,6 +1583,21 @@ class FacturaCreateView(MaestroDetalleCreateView):
 			SubElement(cbte_asoc_node, "CbteFch").text = str(comprobante_asociado.get('fecha', ''))
 			SubElement(cbte_asoc_node, "Cuit").text = auth['cuit']
 
+		############################
+		# =========================================================
+		# TRIBUTOS (PERCEPCIÓN IIBB)
+		# =========================================================
+		if tributos:
+			tributos_node = SubElement(det, "Tributos")
+			for trib in tributos:
+				tributo_node = SubElement(tributos_node, "Tributo")
+				SubElement(tributo_node, "Id").text = str(trib.get('tributo_id', 2))
+				SubElement(tributo_node, "Desc").text = str(trib.get('desc', ''))
+				SubElement(tributo_node, "BaseImp").text = str(trib.get('base_imp', '0.00'))
+				SubElement(tributo_node, "Alic").text = str(trib.get('alic', '0.00'))
+				SubElement(tributo_node, "Importe").text = str(trib.get('importe', '0.00'))
+		############################
+
 		# IVA - Usamos tus claves tal cual
 		iva_node = SubElement(det, "Iva")
 		if impuestos:
@@ -1661,6 +1703,9 @@ class FacturaUpdateView(MaestroDetalleUpdateView):
 		
 		#-- Título de la página.
 		data['titulo'] = "Ver Comprobante"
+
+		# Configuración del padrón
+		data['padron_config'] = json.dumps(PADRON_CONFIG)
 		
 		return data
 

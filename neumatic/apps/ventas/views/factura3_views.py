@@ -24,6 +24,7 @@ from ...maestros.models.base_models import AlicuotaIva
 from ...maestros.models.descuento_vendedor_models import DescuentoRevendedor
 
 from entorno.constantes_base import TIPO_VENTA
+from entorno.constantes_padron import PADRON_CONFIG
 
 modelo = Factura
 
@@ -251,6 +252,9 @@ class PresupuestoCreateView(MaestroDetalleCreateView):
 		
 		#-- Título de la página.
 		data['titulo'] = "Crear Comprobante"
+
+		# Configuración del padrón
+		data['padron_config'] = json.dumps(PADRON_CONFIG)
 
 		return data
 
@@ -1080,6 +1084,9 @@ class PresupuestoUpdateView(MaestroDetalleUpdateView):
 		
 		#-- Título de la página.
 		data['titulo'] = "Ver Comprobante"
+
+		# Configuración del padrón
+		data['padron_config'] = json.dumps(PADRON_CONFIG)
 
 		return data
 

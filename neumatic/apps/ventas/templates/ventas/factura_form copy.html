@@ -103,6 +103,63 @@
 		text-align: right;
 		font-familily: monospace;
 	}
+
+	/* ============================================
+	FORZAR SELECT2 A USAR MISMO ESTILO QUE LOS INPUTS
+	(Igual que form-control-sm border-primary)
+	============================================ */
+
+	/* Contenedor principal */
+	.select2-container--bootstrap-5 .select2-selection {
+		min-height: 31px !important;
+		height: 31px !important;
+		border: 1px solid #0d6efd !important;
+		border-radius: 0.2rem !important;
+		background-color: #fff !important;
+		font-size: 0.875rem !important;
+		padding: 0 !important;
+	}
+
+	/* Texto interno (rendered) */
+	.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+		line-height: 29px !important;  /* height - 2px de borde */
+		padding: 0 0.5rem !important;
+		font-size: 0.875rem !important;
+		color: #212529 !important;
+	}
+
+	/* Placeholder */
+	.select2-container--bootstrap-5 .select2-selection__placeholder {
+		color: #6c757d !important;
+		font-size: 0.875rem !important;
+	}
+
+	/* Flecha de despliegue */
+	.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+		height: 29px !important;
+	}
+
+	/* Margen inferior (igual a mb-2) */
+	.select2-container--bootstrap-5 {
+		margin-bottom: 8px !important;
+	}
+
+	/* Focus (igual que inputs con border-primary) */
+	.select2-container--bootstrap-5.select2-container--focus .select2-selection {
+		border-color: #86b7fe !important;
+		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+	}
+
+	/* Dropdown */
+	.select2-container--bootstrap-5 .select2-dropdown {
+		border-color: #dee2e6 !important;
+		border-radius: 0.2rem !important;
+	}
+
+	.select2-container--bootstrap-5 .select2-results__option {
+		font-size: 0.875rem !important;
+		padding: 0.25rem 0.5rem !important;
+	}	
 	
 {% endblock style %}
 
@@ -158,6 +215,15 @@
 			<!-- Div oculto con el diccionario de operarios -->
 			<div id="operario-data" data-operario='{{ operario_dict|safe }}'></div>
 
+			<!-- Div oculto con los descuentos de revendedor -->
+			<div id="descuento-revendedor-data" data-descuento-revendedor='{{ descuento_revendedor_dict|safe }}'></div>
+
+			<!-- Div oculto con el diccionario de stockclie -->
+			<div id="stockclie-data" data-stockclie='{{ stock_clie_dict|safe }}'></div>
+
+			<!-- Div oculto con la configuración del padrón por provincia -->
+			<div id="padron-config-data" data-padron='{{ padron_config|safe }}'></div>
+
 			<div class="container-fluid tbl-container">
 				<!-- Formulario Encabezado Detalle - Inicio -->
 				<form method="post" id="factura-form" enctype="multipart/form-data">
@@ -181,9 +247,17 @@
 												<label for="{{ form.estatus_comprobante.id_for_label }}">Estatus</label>
 											</div>
 
-											<div class="col-md-5">
+											<div class="col-md-3">
 												{{ form.id_valida }}
 												{{ form.estatus_comprobante }}
+											</div>
+
+											<div class="col-md-2">
+												<label for="{{ form.id_marketing_origen.id_for_label }}">Marketing</label>
+											</div>
+
+											<div class="col-md-4">
+												{{ form.id_marketing_origen }}
 											</div>
 										</div>
 
@@ -219,9 +293,20 @@
 												<label for="{{ form.id_comprobante_venta.id_for_label }}">Comprobante</label>
 											</div>                                            
 											
-											<div class="col-md-9">
+											<div class="col-md-6">
 												{{ form.id_comprobante_venta }}
 											</div>
+
+											<div class="col-md-3">
+												{% if tipo_comprobante != 'presupuesto' %}
+												<button type="button" class="btn btn-outline-primary btn-sm" 
+													id="btnAutorizaciones" data-bs-toggle="modal" 
+													data-bs-target="#autorizacionesModal" disabled>
+													Autorizaciones
+												</button>
+												{% endif %}
+											</div>
+
 										</div>
 
 										<div class="row my-1">
@@ -230,11 +315,17 @@
 												<label for="{{ form.buscar_cliente.id_for_label }}">Buscar Cliente</label>
 											</div>
 										
-											<div class="col-md-6">
+											<div class="col-md-3">
 												{{ form.buscar_cliente }}
 											</div>
 
-											<div class="col-md-3 d-flex justify-content-end">
+											<div class="col-md-6">
+												<!-- Nuevo campo Select2 para búsqueda de clientes -->
+												<input type="text" id="cliente_select2" class="form-control form-control-sm" placeholder="Buscar cliente por nombre..." style="width: 100%;">
+												<!-- El campo oculto id_cliente ya existe más abajo -->
+											</div>
+
+											{% comment %} <div class="col-md-3 d-flex justify-content-end">
 												<button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Validar" id="validarBtn" disabled>
 													<i class="bi bi-card-checklist"></i>
 												</button>
@@ -242,14 +333,14 @@
 												<button type="button" class="btn btn-outline-primary btn-sm me-2 h-75" title="Listar" data-bs-toggle="modal" data-bs-target="#agendaModal" id="listar_agenda" disabled>
 													<i class="bi bi-card-list"></i>
 												</button>
-												{% comment %} <button type="button" class="btn btn-outline-primary btn-sm me-2" id="listarBtn">Listar</button> {% endcomment %}
+												
 												
 												<a id="crearClienteBtn" href="{% url 'cliente_create' %}" target="_blank" title="Crear Cliente"
 													class="btn btn-outline-primary btn-sm me-2  h-75 d-flex align-items-center text-decoration-none">
 													<i class="bi bi-building-add"></i>
 												</a>
 												
-											</div>
+											</div> {% endcomment %}
 										</div>
 
 										<div class="row my-1">
@@ -290,6 +381,16 @@
 												
 											</div>
 										</div>
+
+										<!-- Mensaje de IVA (inicialmente oculto) -->
+										<div id="iva-message-container" class="row my-1" style="display: none;">
+											<div class="col-md-12">
+												<div class="alert alert-warning alert-dismissible fade show mb-0 py-1" role="alert">
+													<span id="iva-message-text">IVA Responsable Inscripto</span>
+													<button type="button" class="btn-close py-0" data-bs-dismiss="alert" aria-label="Close"></button>
+												</div>
+											</div>
+										</div>										
 										
 									</div>
 									<!-- sector izquierdo del encabezado end -->
@@ -422,6 +523,9 @@
 											</div>
 
 											<div class="col-md-3">
+												<label for="{{ form.movil_factura.id_for_label }}" class="visually-hidden">
+													Móvil factura
+												</label>
 												{{ form.movil_factura }}
 											</div>
 
@@ -434,6 +538,14 @@
 											
 											<div class="col-md-2">
 												{{ form.discrimina_iva }}
+												<input type="hidden" id="id_nombre_tipo_iva" value="">
+												<input type="hidden" id="id_provincia_cliente" value="">
+												<input type="hidden" id="id_aplica_percepcion" value="false">
+												<input type="hidden" id="id_alicuota_percepcion" value="0.00">
+												<input type="hidden" id="id_monto_percepcion" value="">
+												<input type="hidden" id="id_minimo_percepcion" value="">
+												<input type="hidden" id="id_tipo_percepcion_id" value="">
+												<input type="hidden" id="id_descripcion_tipo_percepcion" value="">
 												<label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
 													DIVA
 												</label>
@@ -469,28 +581,62 @@
 						</div>
 
 						<div class="container my-3">
-							<div class="d-flex justify-content-end align-items-center">
-								<!-- Nuevo botón para agregar serial -->
-								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
-									Agregar Seriales
-									<i class="bi bi-upc-scan"></i>
-								</button>
+							<div class="d-flex align-items-center">
+								<!-- Botón Anular a la izquierda -->
+								{% comment %} <div class="me-auto">
+									{% if is_edit and object.id_comprobante_venta.remito and object.estatus_comprobante and object.estado != 'F' %}
+										<button type="button" class="btn btn-danger btn-sm" 
+												id="btnAnularRemito" 
+												data-url="{% url 'remito_anular' object.pk %}">
+											Anular <i class="bi bi-x-circle"></i>
+										</button>
+									{% endif %}
+								</div> {% endcomment %}
 
-								<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
-									Agregar Detalle
-									<i class="bi bi-file-earmark-plus"></i>
-								</button>
+								<div class="me-auto">
+									{% if is_edit and object.id_comprobante_venta.remito and object.estatus_comprobante %}
+										{% if object.estado != 'F' %}
+											<!-- Botón Anular (rojo) -->
+											<button type="button" class="btn btn-danger btn-sm me-2" 
+													id="btnAnularRemito" 
+													data-url="{% url 'remito_anular' object.pk %}">
+												Anular <i class="bi bi-x-circle"></i>
+											</button>
+										{% endif %}
+										{% if not object.estado and request.user.jerarquia == 'A' or request.user.is_superuser %}
+											<button type="button" class="btn btn-success btn-sm" 
+													id="btnCancelarRemito" 
+													data-bs-toggle="modal" 
+													data-bs-target="#cancelarRemitoModal">
+												Cancelar Remito <i class="bi bi-check-circle"></i>
+											</button>
+										{% endif %}										
+									{% endif %}
+								</div>
+
+								<!-- Botones a la derecha -->
+								<div>
+									<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarSerial" data-bs-toggle="modal" data-bs-target="#serialModal">
+										Agregar Seriales
+										<i class="bi bi-upc-scan"></i>
+									</button>
+									<button type="button" class="btn btn-outline-primary btn-sm me-2" id="btnAgregarDetalle">
+										Agregar Detalle
+										<i class="bi bi-file-earmark-plus"></i>
+									</button>
+								</div>
 							</div>
 						</div>
+
 						
 						<div class="accordion-item">
 							<h2 class="accordion-header">
-								<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
+								<button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="true" aria-controls="panelsStayOpen-collapseTwo">
 									Detalle del Comprobante de Venta
 								</button>
 							</h2>
 							
-							<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
+							<div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse show">
 								<div class="accordion-body">
 									
 									
@@ -554,20 +700,21 @@
 													<td colspan="100%">
 														<!-- Fila de Totales - Mismo estilo que el encabezado -->
 														<div class="row align-items-center g-2 py-2" style="background-color: #f8f9fa; border-top: 2px solid #dee2e6;">
-															<!-- Botones (3 columnas) -->
-															<div class="col-md-2">
-																<div class="d-flex flex-column gap-2">
-																	<button type="submit" class="btn btn-outline-success btn-sm">
-																		{% if is_edit %}Actualizar{% else %}Guardar{% endif %}
-																		<i class="bi bi-floppy"></i>
-																	</button>
-																	{% comment %} <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm"> {% endcomment %}
-																	<a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">  <!-- Retorna a la lista de origen -->
-																		Cancelar
-																		<i class="bi bi-x-circle"></i>
-																	</a>
-																</div>
+														<!-- Botones (3 columnas) -->
+														<div class="col-md-2">
+															<div class="d-flex flex-column gap-2">
+																<button type="submit" class="btn btn-outline-success btn-sm" 
+																	{% if is_edit %}disabled{% endif %}>
+																	{% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+																	<i class="bi bi-floppy"></i>
+																</button>
+																{% comment %} <a href="{% url 'factura_list' %}" class="btn btn-outline-secondary btn-sm"> {% endcomment %}
+																<a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">  <!-- Retorna a la lista de origen -->
+																	Cancelar
+																	<i class="bi bi-x-circle"></i>
+																</a>
 															</div>
+														</div>
 															
 															<!-- Gravado (2 columnas) -->
 															<div class="col-md-2">
@@ -834,15 +981,16 @@
 						<div class="table-responsive tbl-fixed" style="max-height: 30vh; overflow-y: auto;">
 							<table class="table table-striped small-text" id="tabla-resultados">
 								<thead class="table-primary fs-7">
-									<th style="width: 12%;">Marca</th>
-									<th style="width: 12%;">Medida</th>
-									<th style="width: 10%;">CAI</th>
-									<th style="width: 25%;">Nombre</th>
-									<th style="width: 10%;">Precio</th>
+									<th style="width: 8%;">ID</th>  <!-- NUEVA COLUMNA -->
+									<th style="width: 10%;">Marca</th>
+									<th style="width: 10%;">Medida</th>
+									<th style="width: 8%;">CAI</th>
+									<th style="width: 20%;">Nombre</th>
+									<th style="width: 8%;">Precio</th>
 									<th style="width: 8%;">Stock</th>
 									<th style="width: 8%;">Mínimo</th>
 									<th style="width: 8%;">Detalle</th>
-									<th style="width: 8%;">...</th>
+									<th style="width: 8%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
 								</thead>
 								
 								<tbody>
@@ -971,11 +1119,11 @@
 		</div>
 	</div>
 	
-	<!-- Modal de Autorización -->
+	<!-- Modal de Autorización de Documentos Vencidos -->
 	<div class="modal fade" id="autorizacionModal" tabindex="-1" aria-labelledby="autorizacionModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-lg">
 			<div class="modal-content">
-				<div class="modal-header text-white bg-danger py-2">
+				<div class="modal-header text-white bg-primary bg-opacity-75 py-2">
 					<h5 class="modal-title fs-6" id="autorizacionModalLabel">
 						<i class="bi bi-exclamation-triangle-fill me-2"></i>
 						<span id="modalTitulo">Autorización Requerida</span>
@@ -1062,21 +1210,229 @@
 					</form>
 				</div>
 				<div class="modal-footer py-2">
-					<button type="submit" class="btn btn-danger btn-sm" id="btnConfirmarAutorizacion">
-						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
-					</button>
 					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
 						<i class="bi bi-x-circle-fill me-2"></i>Cancelar
+					</button>
+					<button type="submit" class="btn btn-primary btn-sm" id="btnConfirmarAutorizacion">
+						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
 					</button>
 				</div>
 			</div>
 		</div>
 	</div>
 
+	<!-- Modal simple para Nota de Crédito (NCR) -->
+	<div class="modal fade" id="autorizacionNcModal" tabindex="-1" aria-labelledby="autorizacionNcModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header text-white bg-primary bg-opacity-75 py-2">
+					<h5 class="modal-title fs-6" id="autorizacionNcModalLabel">
+						<i class="bi bi-exclamation-triangle-fill me-2"></i>
+						Autorización Requerida - Nota de Crédito
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-warning mb-3">
+						<i class="bi bi-shield-lock me-2"></i>
+						<strong>Nota de Crédito</strong><br>
+						Se requiere autorización de supervisor para emitir una Nota de Crédito.
+					</div>
+					<div class="mb-3">
+						<label for="codigoAutorizacionNc" class="form-label">Código de Autorización:</label>
+						<input type="password" class="form-control" id="codigoAutorizacionNc" autocomplete="off" required>
+						<div id="mensajeErrorNc" class="invalid-feedback"></div>
+					</div>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">
+						<i class="bi bi-x-circle-fill me-2"></i>Cancelar
+					</button>
+					<button type="button" class="btn btn-primary btn-sm" id="btnConfirmarNc">
+						<i class="bi bi-check-circle-fill me-2"></i>Confirmar
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
+	<!-- Modal de Autorizaciones (versión compacta) -->
+	<div class="modal fade" id="autorizacionesModal" tabindex="-1" aria-labelledby="autorizacionesModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-md"> <!-- ← modal-md (más compacto) -->
+			<div class="modal-content">
+				<div class="modal-header text-white bg-primary bg-opacity-75 py-2">
+					<h5 class="modal-title fs-6" id="autorizacionesModalLabel">
+						<i class="bi bi-shield-lock me-2"></i>Gestión de Autorizaciones
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<p class="text-muted small">Ingrese los IDs de autorización. Al perder el foco se validarán.</p>
+
+					<!-- Los tres campos en una fila horizontal -->
+					<div class="row g-2">
+						<!-- Vencimiento -->
+						<div class="col-md-4">
+							<label for="{{ form.id_valida_vencimiento.id_for_label }}" class="form-label small fw-bold">
+								<i class="bi bi-clock-history me-1"></i>Vencimiento
+							</label>
+							<div class="input-group input-group-sm">
+								{{ form.id_valida_vencimiento }}
+								<span class="input-group-text" id="status-vencimiento">⏳</span>
+							</div>
+							<small id="info-vencimiento" class="text-muted d-block text-truncate" style="font-size: 0.7rem;"></small>
+						</div>
+
+						<!-- Nota de Crédito -->
+						<div class="col-md-4">
+							<label for="{{ form.id_valida_nota_credito.id_for_label }}" class="form-label small fw-bold">
+								<i class="bi bi-pencil-square me-1"></i>Nota Crédito
+							</label>
+							<div class="input-group input-group-sm">
+								{{ form.id_valida_nota_credito }}
+								<span class="input-group-text" id="status-nc">⏳</span>
+							</div>
+							<small id="info-nc" class="text-muted d-block text-truncate" style="font-size: 0.7rem;"></small>
+						</div>
+
+						<!-- Límite de crédito -->
+						<div class="col-md-4">
+							<label for="{{ form.id_valida_limite_credito.id_for_label }}" class="form-label small fw-bold">
+								<i class="bi bi-credit-card me-1"></i>Límite
+							</label>
+							<div class="input-group input-group-sm">
+								{{ form.id_valida_limite_credito }}
+								<span class="input-group-text" id="status-limite">⏳</span>
+							</div>
+							<small id="info-limite" class="text-muted d-block text-truncate" style="font-size: 0.7rem;"></small>
+						</div>
+					</div>
+
+					<div class="alert alert-info small mt-3 mb-0">
+						<i class="bi bi-info-circle me-1"></i>
+						La validación es automática al salir del campo. Si el ID es válido, se mostrarán los datos.
+					</div>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Cancelar Remito -->
+	<div class="modal fade" id="cancelarRemitoModal" tabindex="-1" aria-labelledby="cancelarRemitoModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header text-white bg-success bg-opacity-75 py-2">
+					<h5 class="modal-title fs-6" id="cancelarRemitoModalLabel">
+						<i class="bi bi-pencil-square me-2"></i>Cancelar Remito
+					</h5>
+					<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<!-- NO hay <form> aquí -->
+					<input type="hidden" id="cancelarRemitoId" value="{{ object.pk }}">
+					
+					<div class="mb-3">
+						<label for="estadoRemito" class="form-label">Estado</label>
+						<select class="form-select" id="estadoRemito">
+							<option value="" {% if not object.estado %}selected{% endif %}>Vacío</option>
+							<option value="C" {% if object.estado == 'C' %}selected{% endif %}>C</option>
+							<option value="F" {% if object.estado == 'F' %}selected{% endif %}>F</option>
+							<option value="R" {% if object.estado == 'R' %}selected{% endif %}>R</option>
+						</select>
+					</div>
+					
+					<div class="mb-3 form-check">
+						<input type="checkbox" class="form-check-input" id="productosCamiones" {% if object.productos_camiones %}checked{% endif %}>
+						<label class="form-check-label" for="productosCamiones">Productos de Camiones</label>
+					</div>
+					
+					<div class="mb-3">
+						<label for="comisionRemito" class="form-label">Comisión</label>
+						<select class="form-select" id="comisionRemito">
+							<option value="" {% if not object.comision %}selected{% endif %}>Vacío</option>
+							<option value="C" {% if object.comision == 'C' %}selected{% endif %}>C</option>
+						</select>
+					</div>
+
+					<div id="mensajeCancelarRemito" class="mt-2"></div>
+				</div>
+				<div class="modal-footer py-2">
+					<button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+					<button type="button" class="btn btn-success btn-sm" id="btnGuardarCancelarRemito">Guardar</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- Modal de Información del Cliente -->
+	<div class="modal fade" id="clienteInfoModal" tabindex="-1" aria-labelledby="clienteInfoModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="clienteInfoModalLabel">Información del Cliente</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body" id="clienteInfoModalBody">
+					<!-- El contenido se llenará dinámicamente -->
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+				</div>
+			</div>
+		</div>
+	</div>	
 {% endblock modals %}
 
 {% block script %}
+	<script>
+		// Función auxiliar para obtener el token CSRF
+		function getCookie(name) {
+			let cookieValue = null;
+			if (document.cookie && document.cookie !== '') {
+				const cookies = document.cookie.split(';');
+				for (let i = 0; i < cookies.length; i++) {
+					const cookie = cookies[i].trim();
+					if (cookie.substring(0, name.length + 1) === (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+
+		////////////
+		// ===== FUNCIONES PARA MENSAJE DE IVA =====
+		function actualizarMensajeIVA() {
+			const container = document.getElementById('iva-message-container');
+			const textSpan = document.getElementById('iva-message-text');
+			const checkbox = document.getElementById('id_discrimina_iva');
+			const nombreIVA = document.getElementById('id_nombre_tipo_iva').value;
+			const idCliente = document.getElementById('id_id_cliente');
+
+			if (!container || !textSpan || !checkbox || !idCliente) return;
+
+			if (idCliente.value) {
+				let mensaje = nombreIVA || 'Tipo de IVA no definido';
+				mensaje += checkbox.checked ? ' - Discrimina IVA' : ' - No Discrimina IVA';
+				textSpan.textContent = mensaje;
+				container.style.display = 'block';
+			} else {
+				container.style.display = 'none';
+			}
+		}		
+
+		function ocultarMensajeIVA() {
+			const container = document.getElementById('iva-message-container');
+			if (container) container.style.display = 'none';
+		}
+		////////////
+
+	</script>
+
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const formsetContainer = document.getElementById('formset-container');
@@ -1181,7 +1537,9 @@
 			
 			// Recalcular total general dinámicamente
 			formsetContainer.addEventListener('input', function (event) {
-				if (['cantidad', 'precio', 'descuento'].some(field => event.target.name.includes(field))) {
+				// alert("LISTENER 1 - INPUT: " + event.target.name);  // ← PONER AQUÍ
+				//if (['cantidad', 'precio', 'descuento'].some(field => event.target.name.includes(field))) {
+				if (['cantidad', 'precio'].some(field => event.target.name.includes(field))) {
 					const row = event.target.closest('tr');
 					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
 					const precio = parseFloat(row.querySelector('[name*="-precio"]').value) || 0;
@@ -1209,6 +1567,48 @@
 					actualizarTotalFactura();
 				}
 			});
+
+			// Capturar eventos blur en la fase de captura (funciona con elementos dinámicos)
+			formsetContainer.addEventListener('blur', function(event) {
+				// Verificar si el elemento que perdió el foco es un input de descuento
+				if (event.target.matches && event.target.matches('input[name*="descuento"]')) {
+					
+					// alert("✅ Blur detectado en descuento (fase de captura)");
+					
+					const descuentoInput = event.target;
+					const row = descuentoInput.closest('tr');
+					//const precioInput = row.querySelector('input[name*="precio"]');
+					const precioInput = row.querySelector('input[name*="-precio"][type="number"]');
+					const descuentoManual = parseFloat(descuentoInput.value) || 0;
+					
+					// Validar el descuento
+					if (descuentoManual < 0 || descuentoManual > 99) {
+						alert("❌ El descuento manual debe estar entre 0 y 99.");
+						descuentoInput.value = "0";
+						descuentoInput.focus();
+						return;
+					}
+					
+					// Solo proceder si hay un descuento válido mayor a 0
+					if (descuentoManual > 0) {
+						const precioActual = parseFloat(precioInput.value) || 0;
+						
+						// 1. Modificar el PRECIO (aplica el descuento UNA VEZ)
+						const nuevoPrecio = precioActual * (1 - descuentoManual/100);
+						precioInput.value = nuevoPrecio.toFixed(2);
+						
+						// 2. Poner el DESCUENTO EN CERO
+						descuentoInput.value = "0";
+						
+						// 3. Forzar RECÁLCULO de la fila
+						const inputEvent = new Event('input', { bubbles: true });
+						precioInput.dispatchEvent(inputEvent);
+						
+						// 4. Mostrar confirmación
+						alert(`✅ Descuento del ${descuentoManual}% aplicado correctamente`);
+					}
+				}
+			}, true); // ← El TRUE es crucial para capturar en fase de captura
 			
 			////////////
 			// Manejo de eliminación de Detalle de Factura
@@ -1286,6 +1686,7 @@
 			
 			// Listener principal para cambios en los inputs
 			formsetContainer.addEventListener('input', function(event) {
+				// alert("LISTENER 2 - INPUT: " + event.target.name);  // ← PONER AQUÍ
 				const target = event.target;
 				const row = target.closest('tr');
 				
@@ -1310,13 +1711,14 @@
 				}
 				
 				// Recalcular solo si es un campo relevante
-				if (target.matches('[name*="-cantidad"], [name*="-precio"], [name*="-descuento"]')) {
+				if (target.matches('[name*="-cantidad"], [name*="-precio"]')) {
 					recalcularFilaCompleta(row);
 					actualizarTotalFactura();
 				}
 			});
 			
 			formsetContainer.addEventListener('change', function(event) {
+				// alert("LISTENER 3 - CHANGE: " + event.target.name);  // ← PONER AQUÍ
 				if (event.target.name.includes('reventa')) {
 					const oldValue = event.target.getAttribute('data-prev-value') || 'M';
 					const newValue = event.target.value;
@@ -1366,7 +1768,8 @@
 						descuento_vendedor: parseFloat(checkbox.dataset.descuentoVendedor),
 						alicuota_iva: parseFloat(checkbox.dataset.alicuotaIva).toFixed(2),
 						tipo_producto: checkbox.dataset.tipoProducto,
-						obliga_operario: checkbox.dataset.obligaOperario === 'true'
+						obliga_operario: checkbox.dataset.obligaOperario === 'true',
+						descuento_revendedor: parseFloat(checkbox.dataset.descuentoRevendedor || 0)
 					});
 				});
 				
@@ -1378,11 +1781,36 @@
 				productosSeleccionados.forEach(producto => {
 					const currentIndex = formsetContainer.querySelectorAll('.detalle-form tbody tr').length;
 					
+					// ===== OBTENER TIPO DE COMPROBANTE =====
+					const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+					const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+					const tipoComprobante = tipoComprobanteDict[comprobanteId] || '';
+					// alert("comprobanteId: " + comprobanteId + "\ntipoComprobante: " + tipoComprobante);
+					
+					// Detectar si es FACTURA
+					// const esFactura = (tipoComprobante === "FACTURA");
+					// const precioEditable = esFactura ? '' : 'readonly';
+					// ========================================
+
+					// Detectar si el precio debe ser editable (FACTURA o PRESUPUESTO)
+					const esEditable = (tipoComprobante === "FACTURA" || tipoComprobante === "PRESUPUESTO");
+					const precioEditable = esEditable ? '' : 'readonly';
+					
 					// Cálculos iniciales
 					const precioListaOriginal = parseFloat(producto.precio); // Precio SIN descuento
 					//alert(`Precio Lista Original: ${precioListaOriginal}`)
 					const descVendedor = parseFloat(producto.descuento_vendedor);
-					const precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
+					let precioConDescuento = precioListaOriginal * (1 - (descVendedor / 100));
+
+					// alert(descVendedor);
+					// alert(precioConDescuento);
+					
+					// 👇 NUEVO: aplicar descuento de revendedor si existe
+					const descRevendedor = parseFloat(producto.descuento_revendedor || 0);
+					// alert(descRevendedor);
+					if (descRevendedor > 0) {
+						precioConDescuento = precioConDescuento * (1 - (descRevendedor / 100));
+					}
 					
 					const precioFinal = parseFloat(precioConDescuento.toFixed(2));
 					
@@ -1434,7 +1862,7 @@
 					
 					// Clase reutilizable
 					const formControlClass = 'form-control form-control-sm border border-primary small-font';
-					
+
 					// Crear y insertar la fila de detalle de factura
 					const newFormHTML = `
 					<tr data-form-index="${currentIndex}" class="small-font">
@@ -1472,7 +1900,7 @@
 						</td>
 						<td>
 							<input type="number" name="detallefactura_set-${currentIndex}-precio" 
-								class="${formControlClass} text-end" value="${precioFinal}" ${nombreInputAttributes}
+								class="${formControlClass} text-end" value="${precioFinal}" ${precioEditable}
 								min="0" step="0.01">
 						</td>
 						<td>
@@ -1582,7 +2010,7 @@
 				};
 				
 				// Ejecutar con pequeño retraso
-				setTimeout(manageAccordions, 10);
+				// setTimeout(manageAccordions, 10);
 				
 				//
 			});
@@ -1595,23 +2023,28 @@
 				if (event.target.matches('input[name*="-precio"]')) {
 					event.preventDefault();
 					const row = event.target.closest('tr');
-					
+
 					// 1. Obtener valores base
 					const precioLista = parseFloat(row.querySelector('[name*="-precio_lista"]').value);
 					const descVendedor = parseFloat(row.querySelector('[name*="-desc_vendedor"]').value);
+					// ===== NUEVO: Obtener descuento de revendedor ===== INICIO
+					const descRevendedor = parseFloat(row.querySelector('[name*="-desc_revendedor"]')?.value || 0);
+					// ===== NUEVO: Obtener descuento de revendedor ===== FIN
 					const precioFinal = parseFloat(event.target.value);
 					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 1;
 					
 					// 2. Calcular precios intermedios
 					const precioConDescuentoVendedor = precioLista * (1 - descVendedor/100);
+					// ===== NUEVO: Calcular precio con ambos descuentos ===== INICIO
+					const precioConAmbosDescuentos = precioConDescuentoVendedor * (1 - (descRevendedor / 100));
+					// ===== NUEVO: Calcular precio con ambos descuentos ===== FIN
 					
-					// 3. Calcular diferencias REALES (pueden ser + o -)
-					const difLista = precioFinal - precioLista;
-					const difVendedor = precioFinal - precioConDescuentoVendedor;
+					// 3. Calcular total fila
+					const totalFila = cantidad * precioFinal;
 					
-					// 4. Calcular porcentajes
-					const pctLista = (difLista / precioLista) * 100;
-					const pctVendedor = (difVendedor / precioConDescuentoVendedor) * 100;
+					// 4. Calcular descuento total
+					const montoDescuentoTotal = (precioLista - precioFinal) * cantidad;
+					const porcentajeDescuentoTotal = ((precioLista - precioFinal) / precioLista) * 100;
 					
 					// 5. Formateador
 					const formatNumber = (num) => num.toLocaleString('es-AR', {
@@ -1619,43 +2052,46 @@
 						maximumFractionDigits: 2
 					});
 					
-					// 6. Construir mensaje
+					// 6. Construir mensaje (AHORA CON DESCUENTO REVENDEDOR)
 					let mensaje = `📊 Diferencias Reales de Precio\n\n`;
 					mensaje += `Precio Lista: $ ${formatNumber(precioLista)}\n`;
 					mensaje += `Descuento Vendedor: ${descVendedor}%\n`;
 					mensaje += `Precio c/desc. vendedor: $ ${formatNumber(precioConDescuentoVendedor)}\n`;
+					// ===== NUEVO: Mostrar descuento de revendedor si existe ===== INICIO
+					if (descRevendedor > 0) {
+						mensaje += `Descuento Revendedor: ${descRevendedor}%\n`;
+						mensaje += `Precio c/ambos descuentos: $ ${formatNumber(precioConAmbosDescuentos)}\n`;
+					}
+					// ===== NUEVO: Mostrar descuento de revendedor si existe ===== FIN
 					mensaje += `Precio Actual: $ ${formatNumber(precioFinal)}\n`;
 					mensaje += `Cantidad: ${cantidad}\n`;
-					mensaje += `Total Fila: $ ${formatNumber(cantidad * precioFinal)}\n\n`;
-					
-					mensaje += `🔷 Comparación con Precio Lista:\n`;
-					mensaje += `• Diferencia: $ ${difLista >= 0 ? '+' : ''}${formatNumber(difLista)}\n`;
-					mensaje += `• Porcentaje: ${pctLista >= 0 ? '+' : ''}${pctLista.toFixed(2)}%\n\n`;
-					
-					mensaje += `🔶 Comparación con Precio Vendedor:\n`;
-					mensaje += `• Diferencia: $ ${difVendedor >= 0 ? '+' : ''}${formatNumber(difVendedor)}\n`;
-					mensaje += `• Porcentaje: ${pctVendedor >= 0 ? '+' : ''}${pctVendedor.toFixed(2)}%`;
+					mensaje += `Total Fila: $ ${formatNumber(totalFila)}\n\n`;
+					mensaje += `━━━━━━━━━━━━━━━━━━━━━\n`;
+					mensaje += `💰 DESCUENTO TOTAL\n`;
+					mensaje += `Monto Descuento: $ ${formatNumber(montoDescuentoTotal)}\n`;
+					mensaje += `% Descuento Total: ${porcentajeDescuentoTotal.toFixed(2)}%`;
 					
 					// 7. Actualizar el total de la fila (por si hubo cambios)
-					const total = cantidad * precioFinal;
-					row.querySelector('[name*="-total"]').value = total.toFixed(2);
+					row.querySelector('[name*="-total"]').value = totalFila.toFixed(2);
 					
 					// 8. Actualizar campos relacionados (IVA, gravado)
 					const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
-					const gravado = total / (1 + (alicIva / 100));
+					const gravado = totalFila / (1 + (alicIva / 100));
 					row.querySelector('[name*="-gravado"]').value = gravado.toFixed(2);
-					row.querySelector('[name*="-iva"]').value = (total - gravado).toFixed(2);
+					row.querySelector('[name*="-iva"]').value = (totalFila - gravado).toFixed(2);
 					
 					// 9. Actualizar total general de la factura
 					actualizarTotalFactura();
 					
-					// 10. Mostrar alerta con toda la información
+					// 10. Mostrar alerta
 					alert(mensaje);
+					
 				}
 			});
 			
 			// Mantener el evento de cambio para reventa si es necesario
 			formsetContainer.addEventListener('change', function(event) {
+				// alert("LISTENER 5 - CHANGE: " + event.target.name);  // ← PONER AQUÍ
 				if (event.target.matches('[name*="-reventa"]')) {
 					const row = event.target.closest('tr');
 					const nombreProducto = row.querySelector('[name*="-nombre"]').value;
@@ -1716,15 +2152,13 @@
 					});
 					
 					data.forEach(producto => {
-						const precioNumerico = parseFloat(producto.precio); // Asegura que sea número
+						const precioNumerico = parseFloat(producto.precio);
 						const precioFormateado = formateadorPrecio.format(producto.precio);
 						const descuentoVendedor = parseFloat(producto.descuento_vendedor);
-
-						// alert(`Precio numérico: ${precioNumerico}`);
-						// alert(`Descuento: ${descuentoVendedor}`);
 						
 						const fila = `
 							<tr>
+								<td class="text-center">${producto.id}</td>  <!-- NUEVA COLUMNA: ID -->
 								<td>${producto.marca}</td>
 								<td>${producto.medida}</td>
 								<td>${producto.cai || 'N/A'}</td>
@@ -1738,12 +2172,11 @@
 										data-id="${producto.id}" 
 										data-nombre="${producto.nombre}"
 										data-cai="${producto.cai || 'N/A'}">
-										
-										<i class="bi bi-eye"></i> <!-- Icono de Bootstrap -->
+										<i class="bi bi-eye"></i>
 									</button>
 								</td>
 						
-								<td>
+								<td class="text-center">
 									<input type="checkbox" class="seleccionar-producto"
 											data-id="${producto.id}" 
 											data-codigo="${producto.codigo}" 
@@ -1756,13 +2189,13 @@
 											data-id-alicuota-iva="${producto.id_alicuota_iva}"
 											data-alicuota-iva="${producto.alicuota_iva}"
 											data-tipo-producto="${producto.tipo_producto}"
-											data-obliga-operario="${producto.obliga_operario}">
-											
+											data-obliga-operario="${producto.obliga_operario}"
+											data-descuento-revendedor="${producto.descuento_revendedor || 0}">
 								</td>
 							</tr>
 						`;
 						tablaResultados.insertAdjacentHTML('beforeend', fila);
-					});
+					});					
 					
 					// Agregar eventos a los nuevos botones de actualización
 					document.querySelectorAll('.actualizar-detalle').forEach(button => {
@@ -1853,17 +2286,21 @@
 			// Funcionalidad del Remito
 			
 			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+			const btnAutorizaciones = document.getElementById('btnAutorizaciones');
 			
 			if (comprobanteSelect) {
 				// Asignar el event listener
 				comprobanteSelect.addEventListener('change', function() {
 					actualizarDatosComprobante(this);
+					btnAutorizaciones.removeAttribute('disabled');
 				});
 				
 				// Ejecutar al cargar si ya hay un valor seleccionado
 				if (comprobanteSelect.value) {
 					actualizarDatosComprobante(comprobanteSelect);
+					
 				}
+
 			}
 			
 			function actualizarDatosComprobante(selectElement) {
@@ -1910,17 +2347,19 @@
 					buscarCliente.removeAttribute('readonly');
 				}
 				
+				$('#cliente_select2').prop('disabled', false);
+
 				// 2. Botón de validar
-				const validarBtn = document.getElementById('validarBtn');
-				if (validarBtn) {
-					validarBtn.removeAttribute('disabled');
-				}
+				// const validarBtn = document.getElementById('validarBtn');
+				// if (validarBtn) {
+				// 	validarBtn.removeAttribute('disabled');
+				// }
 				
 				// 3. Botón de listar agenda
-				const listarAgenda = document.getElementById('listar_agenda');
-				if (listarAgenda) {
-					listarAgenda.removeAttribute('disabled');
-				}
+				// const listarAgenda = document.getElementById('listar_agenda');
+				// if (listarAgenda) {
+				// 	listarAgenda.removeAttribute('disabled');
+				// }
 				
 				// 4. habilitar o inhabilitar el input Factura Asociada
 				const numeroAsociadoInput = document.getElementById('id_numero_asociado');
@@ -2086,7 +2525,31 @@
 						console.error('Error al obtener código:', error);
 						document.getElementById('id_compro').value = '';
 					});
-					
+				
+				////
+				// Obtener el checkbox
+				var stockClieCheckbox = document.getElementById('id_stock_clie');
+				if (!stockClieCheckbox) return;
+
+				// Obtener el diccionario
+				var stockClieDict = JSON.parse(document.getElementById('stockclie-data').dataset.stockclie);
+
+				// Obtener valor para el comprobante seleccionado
+				var stockClieComp = stockClieDict[comprobanteId];
+
+				// Único filtro
+				var habilitado = (stockClieComp === true);				
+
+				if (habilitado) {
+					stockClieCheckbox.disabled = false;
+					stockClieCheckbox.removeAttribute('readonly');
+					// Si se habilita, no se modifica su valor (puede estar marcado o no)
+				} else {
+					stockClieCheckbox.disabled = true;
+					stockClieCheckbox.checked = false; // Desmarcar si no cumple
+					stockClieCheckbox.setAttribute('readonly', 'readonly'); // Por si acaso
+				}
+				////
 			}
 			
 			// Verificar Remito
@@ -2425,6 +2888,16 @@
 			
 			// Captura del submit de todo el formulario
 			facturaForm.addEventListener('submit', function(e) {
+				 // ===== VALIDACIÓN PRIORITARIA: Verificar si hay detalles =====
+				const filasDetalle = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
+				
+				if (filasDetalle.length === 0) {
+					e.preventDefault(); // Detener el envío del formulario
+					alert('❌ No se puede guardar el comprobante\n\nDebe agregar al menos un detalle al comprobante antes de guardar.');
+					return false; // Salir del evento inmediatamente
+				}
+				// ===== FIN VALIDACIÓN PRIORITARIA =====
+				
 				const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
 				
 				// No se ejecuta porque numeroComprobante tiene required
@@ -2433,6 +2906,7 @@
 					alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
 					return false;
 				}
+				
 				
 				/////////////////////////--->
 				// Evitar envío hasta obtener estados
@@ -2470,6 +2944,154 @@
 			///
 			
 		});
+
+		// Función para detectar si el comprobante seleccionado es Nota de Crédito
+		function esNotaCredito() {
+			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+			if (!comprobanteSelect || !comprobanteSelect.value) return false;
+			
+			const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+			const tipoComprobante = tipoComprobanteDict[comprobanteSelect.value] || '';
+			return tipoComprobante === "NOTA DE CRÉDITO";
+		}
+		// Función para detectar si el comprobante seleccionado es Presupuesto
+		function esPresupuesto() {
+			const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
+			if (!comprobanteSelect || !comprobanteSelect.value) return false;
+			
+			const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+			const tipoComprobante = tipoComprobanteDict[comprobanteSelect.value] || '';
+			return tipoComprobante === "PRESUPUESTO";
+		}		
+		///
+		// Función para mostrar modal de autorización de Nota de Crédito
+		////////////////
+		function mostrarModalAutorizacionNc(dataCliente, callback) {
+			const modalElement = document.getElementById('autorizacionNcModal');
+			const modal = new bootstrap.Modal(modalElement);
+			const btnConfirmar = document.getElementById('btnConfirmarNc');
+			const codigoInput = document.getElementById('codigoAutorizacionNc');
+			const mensajeError = document.getElementById('mensajeErrorNc');
+			
+			// Limpiar campos
+			codigoInput.value = '';
+			mensajeError.style.display = 'none';
+			codigoInput.classList.remove('is-invalid');
+			
+			// Remover evento anterior y clonar botón
+			const nuevoBtnConfirmar = btnConfirmar.cloneNode(true);
+			btnConfirmar.parentNode.replaceChild(nuevoBtnConfirmar, btnConfirmar);
+						
+			nuevoBtnConfirmar.onclick = function() {
+				const codigo = codigoInput.value.trim();
+				
+				// ✅ Validar que el código no esté vacío
+				if (!codigo) {
+					mensajeError.textContent = 'Ingrese el código de autorización';
+					mensajeError.style.display = 'block';
+					codigoInput.classList.add('is-invalid');
+					return;
+				}
+				
+				// ✅ Validar que el código sea numérico
+				if (!/^\d+$/.test(codigo)) {
+					mensajeError.textContent = 'El código debe ser un número entero';
+					mensajeError.style.display = 'block';
+					codigoInput.classList.add('is-invalid');
+					return;
+				}
+				
+				// ✅ Limpiar error anterior
+				mensajeError.style.display = 'none';
+				codigoInput.classList.remove('is-invalid');
+				
+				// ✅ Deshabilitar botón durante la validación
+				nuevoBtnConfirmar.disabled = true;
+				nuevoBtnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
+				
+				fetch('/ventas/clientes/autorizacion-ncr/', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': getCookie('csrftoken')
+					},
+					body: JSON.stringify({
+						codigo: codigo,
+						cliente_id: dataCliente.id_cliente,
+						sucursal_id: document.getElementById('id_id_sucursal').value,
+						fecha_comprobante: document.getElementById('id_fecha_comprobante').value,
+						comprobante_id: document.getElementById('id_id_comprobante_venta').value
+					})
+				})
+				.then(response => {
+					// ✅ VERIFICAR EL ESTADO DE LA RESPUESTA
+					if (!response.ok) {
+						// Si el servidor devuelve error HTTP (404, 403, 500, etc.)
+						return response.json().then(data => {
+							throw new Error(data.mensaje || 'Error en el servidor');
+						});
+					}
+					return response.json();
+				})
+				.then(authData => {
+					// ✅ Aquí la respuesta es exitosa y se puede procesar
+					if (authData.valido) {
+						// ✅ Autorización válida - guardar y cerrar
+						document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
+						modal.hide();
+						callback(true);
+					} else {
+						// ❌ Autorización inválida (código incorrecto o ya usado)
+						mensajeError.textContent = authData.mensaje || 'Código de autorización incorrecto';
+						mensajeError.style.display = 'block';
+						codigoInput.classList.add('is-invalid');
+						
+						// ✅ RESTAURAR BOTÓN
+						nuevoBtnConfirmar.disabled = false;
+						nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
+						
+						// ✅ Limpiar y enfocar el input
+						codigoInput.value = '';
+						codigoInput.focus();
+					}
+				})
+				.catch(error => {
+					// ✅ ERROR: captura cualquier error (HTTP, red, etc.)
+					console.error('Error en validación:', error);
+					mensajeError.textContent = error.message || 'Error de conexión al validar';
+					mensajeError.style.display = 'block';
+					codigoInput.classList.add('is-invalid');
+					
+					// ✅ RESTAURAR BOTÓN
+					nuevoBtnConfirmar.disabled = false;
+					nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
+					
+					// ✅ Limpiar y enfocar el input
+					codigoInput.value = '';
+					codigoInput.focus();
+				});
+			};
+			
+			// ✅ Limpiar al cerrar el modal
+			modalElement.addEventListener('hidden.bs.modal', function onHidden() {
+				modalElement.removeEventListener('hidden.bs.modal', onHidden);
+				codigoInput.value = '';
+				mensajeError.style.display = 'none';
+				codigoInput.classList.remove('is-invalid');
+				
+				// ✅ Asegurar que el botón esté restaurado
+				nuevoBtnConfirmar.disabled = false;
+				nuevoBtnConfirmar.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i>Confirmar';
+				
+				if (callback && !document.getElementById('id_id_valida').value) {
+					callback(false);
+				}
+			}, { once: true });
+			
+			modal.show();
+		}		
+		////////////////
+		///
 	</script>
 	
 	<script>
@@ -2488,6 +3110,7 @@
 	</script>
 	
 	<script>
+		/*
 		document.addEventListener('DOMContentLoaded', function () {
 			document.getElementById('validarBtn').addEventListener('click', function() {
 				const nroDocIdentidad = document.getElementById('id_cuit').value;
@@ -2518,22 +3141,8 @@
 				.catch(error => console.error('Error:', error));
 			});
 			
-			// Función para obtener el token CSRF del cookie
-			function getCookie(name) {
-				let cookieValue = null;
-				if (document.cookie && document.cookie !== '') {
-					const cookies = document.cookie.split(';');
-					for (let i = 0; i < cookies.length; i++) {
-						const cookie = cookies[i].trim();
-						if (cookie.substring(0, name.length + 1) === (name + '=')) {
-							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-							break;
-						}
-					}
-				}
-				return cookieValue;
-			}
 		});
+		*/
 		
 	</script>
 	{% comment %} SCRIPTS JS End {% endcomment %}
@@ -2687,7 +3296,7 @@
 								// Verifica en consola (opcional)
 								// alert(`Sucursal: ${sucursal_id} | Fecha: ${fecha_comprobante}`);
 								
-								fetch('/ventas/clientes/validar-autorizacion/', {
+								fetch('/ventas/clientes/autorizacion-fac-rem/', {
 									method: 'POST',
 									headers: {
 										'Content-Type': 'application/json',
@@ -2697,7 +3306,8 @@
 										codigo: codigo,
 										cliente_id: clienteId,
 										sucursal_id: sucursal_id,
-										fecha_comprobante: fecha_comprobante
+										fecha_comprobante: fecha_comprobante,
+										comprobante_id: document.getElementById('id_id_comprobante_venta').value
 									})
 								})
 								.then(response => response.json())
@@ -2940,7 +3550,7 @@
 				}
 				
 				if (id_sucursal_cliente !== id_sucursal_factura) {
-					alert('Atención: El cliente pertenece a otra sucursal.');
+					alert('Atención: El cliente pertenece a otra sucursal.****');
 				}
 				
 				if (vip) {
@@ -2954,13 +3564,14 @@
 				const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
 				modal.hide();
 			}
+
+			// Función para limpiar TODOS los campos del cliente (versión completa)
+			
 			
 			// Selección del Cliente desde buscar_cliente
 			const buscarClienteInput = document.getElementById('buscar_cliente');
 			buscarClienteInput.addEventListener('blur', function () {
 				let busqueda = buscarClienteInput.value.trim();
-				
-				// alert("Aquí es");
 				
 				// Si está vacío, no hacer nada
 				if (!busqueda) return;
@@ -2997,6 +3608,46 @@
 							buscarClienteInput.focus();
 							return;
 						}
+
+						///-
+						// VERIFICAR NOTA DE CRÉDITO (NCR)
+						if (esNotaCredito()) {
+							// CASO 1: Nota de Crédito
+							mostrarModalAutorizacionNc(data, function(autorizada) {
+								if (autorizada) {
+									completarDatosCliente(data);  // ✅ Siempre completar datos
+								} else {
+									// Canceló - limpiar TODOS los campos
+									// alert("Autorización cancelada. Se ha limpiado la selección del cliente.");
+									limpiarCamposCliente();  // ← Una sola línea hace todo
+									
+									const buscarClienteInput = document.getElementById('buscar_cliente');
+									if (buscarClienteInput) {
+										buscarClienteInput.disabled = false;
+										buscarClienteInput.focus();
+									}
+									
+									/*
+									const validarBtn = document.getElementById('validarBtn');
+									if (validarBtn) validarBtn.disabled = false;
+									
+									const listarAgenda = document.getElementById('listar_agenda');
+									if (listarAgenda) listarAgenda.disabled = false;
+									*/
+									
+									return;
+								}
+							});
+						} else {
+							// alert("No es nota de Crédito!");
+						}
+						///-
+
+						// EXCEPCIÓN PARA PRESUPUESTO: no validar vencimientos
+						if (esPresupuesto()) {
+							completarDatosCliente(data);
+							return; // Salir sin ejecutar validación
+						}						
 						
 						// Validar vencimientos de documentos
 						const clienteId = data.id_cliente;
@@ -3004,25 +3655,151 @@
 							fetch(`/ventas/clientes/${clienteId}/validar-vencimientos/`)
 							.then(response => response.json())
 							.then(vencimientoData => {
-								if (vencimientoData.requiere_autorizacion) {
-									// Mostrar alerta con los detalles del vencimiento
-									const comprobante = vencimientoData.datos_comprobante || {};
-									let mensaje = `⚠️ CLIENTE CON DOCUMENTO VENCIDO ⚠️\n\n`;
-									mensaje += `Comprobante: ${comprobante.tipo_comprobante || 'N/A'}\n`;
-									mensaje += `Número: ${comprobante.numero_comprobante || 'N/A'}\n`;
-									mensaje += `Fecha Emisión: ${comprobante.fecha_comprobante || 'N/A'}\n`;
-									mensaje += `Días Vencidos: ${comprobante.dias_vencidos || 0}\n`;
-									mensaje += `Monto Pendiente: $${(comprobante.monto_pendiente || 0).toLocaleString('es-AR')}\n\n`;
-									mensaje += `Contacte a un supervisor para autorización.`;
+								///
+								// Limpiar el campo buscar_cliente cuando se cierra el modal (ya sea por cancelar o por X)
+								const modalElement = document.getElementById('autorizacionModal');
+								modalElement.addEventListener('hidden.bs.modal', function () {
+									// Limpiar el campo de búsqueda de cliente
+									const buscarClienteInput = document.getElementById('buscar_cliente');
+									if (buscarClienteInput) {
+										buscarClienteInput.value = '';
+										buscarClienteInput.focus();
+									}
 									
-									alert(mensaje);
-									buscarClienteInput.value = '';
-									buscarClienteInput.focus();
-									return;
+									// Limpiar también el campo oculto id_cliente por si acaso
+									// const idClienteInput = document.getElementById('id_id_cliente');
+									// if (idClienteInput) {
+									// 	idClienteInput.value = '';
+									// }
+									
+									// Limpiar campos del modal para la próxima vez
+									document.getElementById('codigoAutorizacion').value = '';
+									document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
+								});                                
+								///
+								if (vencimientoData.requiere_autorizacion) {
+									// ========== MODAL DE AUTORIZACIÓN ==========
+									const autorizacionModal = new bootstrap.Modal(document.getElementById('autorizacionModal'));
+									const datosComprobante = vencimientoData.datos_comprobante || {};
+									
+									// 1. Actualizar título del modal
+									document.getElementById('modalTitulo').innerHTML = `
+										
+										Autorización Requerida - Documento Vencido
+									`;
+									
+									// 2. Actualizar mensaje principal
+									const mensajePrincipal = document.getElementById('mensajePrincipal');
+									mensajePrincipal.innerHTML = `
+										<div class="alert alert-warning mb-0">
+											<i class="bi bi-clock-history me-2"></i>
+											<strong>Cliente con documentos vencidos</strong><br>
+											El cliente <strong>${data.nombre || data.nombre_cliente}</strong> tiene documentos pendientes que requieren autorización de un supervisor.
+										</div>
+									`;
+									
+									// 3. Llenar datos del comprobante en el modal
+									document.getElementById('modalComprobante').textContent = 
+										`${datosComprobante.tipo_comprobante || 'N/A'}-${datosComprobante.letra_comprobante || 'N/A'}`;
+									document.getElementById('modalNumero').textContent = datosComprobante.numero_comprobante || 'N/A';
+									document.getElementById('modalFecha').textContent = datosComprobante.fecha_comprobante || 'N/A';
+									document.getElementById('modalDiasCredito').textContent = `${datosComprobante.dias_credito || 0} días`;
+									document.getElementById('modalVencimiento').textContent = datosComprobante.fecha_vencimiento || 'N/A';
+									
+									const diasVencidos = datosComprobante.dias_vencidos || 0;
+									const diasVencidosElement = document.getElementById('modalDiasVencidos');
+									diasVencidosElement.textContent = `${diasVencidos} días`;
+									if (diasVencidos > 0) {
+										diasVencidosElement.classList.add('text-danger', 'fw-bold');
+									}
+									
+									document.getElementById('modalMonto').textContent = 
+										`$${(datosComprobante.monto_pendiente || 0).toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+									document.getElementById('modalVendedor').textContent = datosComprobante.vendedor || 'No asignado';
+									
+									// 4. Guardar datos del cliente
+									const clienteData = {
+										id_cliente: data.id_cliente,
+										cuit: data.cuit,
+										nombre: data.nombre,
+										direccion: data.direccion,
+										movil: data.movil,
+										email: data.email,
+										id_vendedor: data.id_vendedor,
+										nombre_vendedor: data.nombre_vendedor,
+										tipo_venta: data.tipo_venta,
+										condicion_venta: data.condicion_venta,
+										nombre_iva: data.nombre_iva,
+										discrimina_iva: data.discrimina_iva,
+										vip: data.vip,
+										id_sucursal: data.id_sucursal
+									};
+
+									
+									// 5. Configurar botón de confirmación
+									const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
+									const nuevoBtnConfirmar = btnConfirmar.cloneNode(true);
+									btnConfirmar.parentNode.replaceChild(nuevoBtnConfirmar, btnConfirmar);
+									
+									nuevoBtnConfirmar.onclick = function() {
+										const codigo = document.getElementById('codigoAutorizacion').value.trim();
+										
+										if (!codigo) {
+											document.getElementById('mensajeErrorAutorizacion').textContent = 'Ingrese el código de autorización';
+											document.getElementById('mensajeErrorAutorizacion').style.display = 'block';
+											return;
+										}
+										
+										// ============================================
+										// ✅ FETCH ACTUALIZADO - FAC/REM
+										// ============================================
+										fetch('/ventas/clientes/autorizacion-fac-rem/', {
+											method: 'POST',
+											headers: {
+												'Content-Type': 'application/json',
+												'X-CSRFToken': getCookie('csrftoken')
+											},
+											body: JSON.stringify({
+												codigo: codigo,
+												cliente_id: clienteData.id_cliente,
+												sucursal_id: document.getElementById('id_id_sucursal').value,
+												fecha_comprobante: document.getElementById('id_fecha_comprobante').value,
+												comprobante_id: document.getElementById('id_id_comprobante_venta').value  // ← NUEVO
+											})
+										})
+										.then(response => response.json())
+										.then(authData => {
+											if (authData.valido) {
+												document.getElementById('id_id_valida').value = authData.datos_autorizacion.codigo;
+												autorizacionModal.hide();
+												document.getElementById('codigoAutorizacion').value = '';
+												document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
+												completarDatosCliente(clienteData);
+											} else {
+												document.getElementById('mensajeErrorAutorizacion').textContent = 
+													authData.mensaje || 'Código de autorización incorrecto';
+												document.getElementById('mensajeErrorAutorizacion').style.display = 'block';
+											}
+										})
+										.catch(error => {
+											console.error('Error:', error);
+											document.getElementById('mensajeErrorAutorizacion').textContent = 'Error de conexión';
+											document.getElementById('mensajeErrorAutorizacion').style.display = 'block';
+										});
+									};
+									
+									// 6. Limpiar y mostrar modal
+									document.getElementById('codigoAutorizacion').value = '';
+									document.getElementById('mensajeErrorAutorizacion').style.display = 'none';
+									autorizacionModal.show();
+									
+									return; // ← IMPORTANTE: Salir para no ejecutar el else
+									
 								} else {
 									// Continuar con el flujo normal si no hay vencimientos
 									completarDatosCliente(data);
-								}
+								}                                
+
 							})
 							.catch(error => {
 								console.error('Error validando vencimientos:', error);
@@ -3032,6 +3809,7 @@
 						} else {
 							completarDatosCliente(data);
 						}
+
 					}
 				})
 				.catch(error => {
@@ -3056,11 +3834,90 @@
 					document.getElementById('id_tipo_venta').value = data.tipo_venta || '';
 					document.getElementById('id_condicion_comprobante').value = data.condicion_venta || '';
 					document.getElementById('id_discrimina_iva').checked = data.discrimina_iva;
+					document.getElementById('id_nombre_tipo_iva').value = data.nombre_iva || '';
+					document.getElementById('id_provincia_cliente').value = data.id_provincia || '';
+
+					// alert(data.id_provincia);
+					// alert(data.nombre_iva);
+					// alert(data.discrimina_iva);
+
+					// if (data.discrimina_iva){
+					//	alert(data.id_provincia);
+					//	alert("data.id_provincia");
+					// }
+					/////////////////////////
+					if (data.discrimina_iva) {
+						const provinciaId = data.id_provincia;
+						const cuit = data.cuit;
+						const fechaComprobante = document.getElementById('id_fecha_comprobante').value;
+						
+						// Si falta provincia o cuit, asignar false y 0.00, y salir del if
+						if (!provinciaId || !cuit) {
+							document.getElementById('id_aplica_percepcion').value = 'false';
+							document.getElementById('id_alicuota_percepcion').value = '0.00';
+							// No mostrar alerts, solo asignar valores por defecto
+						} else {
+							// Construir URL para consultar el padrón
+							const url = new URL('/ventas/consultar-padron/', window.location.origin);
+							url.searchParams.append('provincia_id', provinciaId);
+							url.searchParams.append('cuit', cuit);
+							url.searchParams.append('id_cliente', data.id_cliente);
+							if (fechaComprobante) {
+								url.searchParams.append('fecha_comprobante', fechaComprobante);
+							}
+
+							// Realizar la consulta (asíncrona, no bloquea)
+							fetch(url)
+								.then(response => {
+									if (!response.ok) {
+										throw new Error('Error en la respuesta del servidor');
+									}
+									return response.json();
+								})
+								.then(padronData => {
+									const aplica = padronData.aplica_percepcion === true;
+									const alicuota = padronData.alicuota_percepcion || 0.00;
+
+									// Actualizar campos ocultos
+									document.getElementById('id_aplica_percepcion').value = aplica ? 'true' : 'false';
+									document.getElementById('id_alicuota_percepcion').value = alicuota.toFixed(2);
+									document.getElementById('id_monto_percepcion').value = padronData.monto !== null ? padronData.monto : '';
+    								document.getElementById('id_minimo_percepcion').value = padronData.minimo !== null ? padronData.minimo : '';
+									document.getElementById('id_tipo_percepcion_id').value = padronData.id_tipo_percepcion || '';
+    								document.getElementById('id_descripcion_tipo_percepcion').value = padronData.descripcion_tipo_percepcion || '';
+
+									// === ALERTS SOLICITADOS ===
+									// Mostrar alert si no aplica por falta de tipo de percepción
+									if (!aplica && padronData.mensaje) {
+										alert(`⚠️ ${padronData.mensaje}`);
+									}
+
+									if (aplica) {
+										// 1er alert: Padrón conseguido
+										// alert('✅ Padrón conseguido');
+										alert(`✅ Padrón conseguido - Provincia: ${provinciaId}`);
+										// 2do alert: CUIT encontrado con su alícuota
+										alert(`✅ CUIT encontrado - Alícuota: ${alicuota.toFixed(2)}%`);
+									}
+									// Si no aplica, no se muestran alerts (solo se actualizan los campos)
+								})
+								.catch(error => {
+									// En caso de error, asignar false y 0.00 (solo log en consola)
+									console.error('Error al consultar padrón:', error);
+									document.getElementById('id_aplica_percepcion').value = 'false';
+									document.getElementById('id_alicuota_percepcion').value = '0.00';
+									// No mostrar alerts en caso de error
+								});
+						}
+					}
+					/////////////////////////
+					
+					actualizarMensajeIVA();
 					
 					// Verificación de sucursal
-					const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+					/* const id_sucursal_factura = document.getElementById('id_id_sucursal').value;
 					if (data.id_sucursal !== id_sucursal_factura) {
-						alert('Atención: El cliente pertenece a otra sucursal.');
+						alert('Atención: El cliente pertenece a otra sucursal.////');
 					}
 					
 					// Verificación VIP
@@ -3068,10 +3925,34 @@
 						alert("⚠️ Este es un Cliente VIP - Trato Especial ⚠️");
 						document.getElementById('id_cliente_vip').value = "Cliente VIP"; 
 					}
+					*/
+					
+					// Sucursal, VIP y Saldo
+					var id_sucursal_factura = document.getElementById('id_id_sucursal').value;
+					var sucursalDiferente = (data.id_sucursal && data.id_sucursal != id_sucursal_factura);
+					var esVip = data.vip === true;
+
+					// Si el cliente es VIP, asignar el texto al campo correspondiente (ya existe en el código original)
+					if (esVip) {
+						document.getElementById('id_cliente_vip').value = "Cliente VIP";
+					}
+
+					// Obtener saldo del cliente
+					fetch(`/ventas/validar-limite-credito/?cliente_id=${data.id_cliente}`)
+						.then(response => response.json())
+						.then(saldoData => {
+							var saldo = saldoData.success ? saldoData.saldo : null;
+							mostrarInfoCliente(sucursalDiferente, esVip, saldo);
+						})
+						.catch(error => {
+							console.error('Error al obtener saldo:', error);
+							mostrarInfoCliente(sucursalDiferente, esVip, null);
+						});
 					
 					// Deshabilitar botones
-					document.getElementById('listar_agenda').disabled = true;
+					// document.getElementById('listar_agenda').disabled = true;
 					document.getElementById('buscar_cliente').disabled = true;
+					$('#cliente_select2').prop('disabled', true);
 					
 					///
 					calcularNumeroComprobante();
@@ -3079,21 +3960,65 @@
 				}
 			});
 			
-			// Función auxiliar para obtener el token CSRF
-			function getCookie(name) {
-				let cookieValue = null;
-				if (document.cookie && document.cookie !== '') {
-					const cookies = document.cookie.split(';');
-					for (let i = 0; i < cookies.length; i++) {
-						const cookie = cookies[i].trim();
-						if (cookie.substring(0, name.length + 1) === (name + '=')) {
-							cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-							break;
-						}
-					}
-				}
-				return cookieValue;
+			function limpiarCamposCliente() {
+				const camposTexto = [
+					'buscar_cliente',
+					'id_id_cliente',
+					'id_cuit',
+					'id_nombre_factura',
+					'id_domicilio_factura',
+					'id_movil_factura',
+					'id_email_factura',
+					'id_id_vendedor',
+					'id_vendedor_factura',
+					'id_tipo_venta',
+					'id_condicion_comprobante',
+					'id_cliente_vip',           // ← COMA agregada
+					'id_numero_comprobante',
+					'id_letra_comprobante',
+					'id_compro'
+				];
+				
+				camposTexto.forEach(id => {
+					const elemento = document.getElementById(id);
+					if (elemento) elemento.value = '';
+				});
+				
+				const checkbox = document.getElementById('id_discrimina_iva');
+				if (checkbox) checkbox.checked = false;
+
+				const nombreIva = document.getElementById('id_nombre_tipo_iva')
+				if (nombreIva) nombreIva.value = "";
+
+				// Limpiar campos de percepción
+				const aplicaPercepcion = document.getElementById('id_aplica_percepcion');
+				if (aplicaPercepcion) aplicaPercepcion.value = 'false';
+				
+				const alicuotaPercepcion = document.getElementById('id_alicuota_percepcion');
+				if (alicuotaPercepcion) alicuotaPercepcion.value = '0.00';
+				
+				const montoPercepcion = document.getElementById('id_monto_percepcion');
+				if (montoPercepcion) montoPercepcion.value = '';
+				
+				const minimoPercepcion = document.getElementById('id_minimo_percepcion');
+				if (minimoPercepcion) minimoPercepcion.value = '';
+				
+				const tipoPercepcionId = document.getElementById('id_tipo_percepcion_id');
+				if (tipoPercepcionId) tipoPercepcionId.value = '';
+				
+				const descripcionPercepcion = document.getElementById('id_descripcion_tipo_percepcion');
+				if (descripcionPercepcion) descripcionPercepcion.value = '';				
+				
+				const numeroDefinitivo = document.getElementById('id_numero_definitivo');
+				if (numeroDefinitivo) numeroDefinitivo.value = '';
+				
+				const idValida = document.getElementById('id_id_valida');
+				if (idValida) idValida.value = '';
+
+				ocultarMensajeIVA();
 			}
+
+			
 			//**-->>
 			
 			document.getElementById('tablaResultadosAgenda').addEventListener('click', function(e) {
@@ -3104,72 +4029,6 @@
 					alert(`⛔ Cliente en lista negra\nMotivo: ${motivo}`);
 					e.stopPropagation();
 				}
-			});
-			
-			const autorizacionForm = document.getElementById('autorizacionForm');
-			const codigoInput = document.getElementById('codigoAutorizacion');
-			const mensajeError = document.getElementById('mensajeErrorAutorizacion');
-			
-			// Configurar datos ocultos al mostrar el modal
-			document.getElementById('autorizacionModal').addEventListener('show.bs.modal', function() {
-				document.getElementById('validaClienteId').value = document.getElementById('id_id_cliente').value;
-				document.getElementById('validaSucursalId').value = document.getElementById('id_id_sucursal').value;
-				document.getElementById('validaFecha').value = document.getElementById('id_fecha_comprobante').value;
-			});
-			
-			// Manejar el envío del formulario
-			autorizacionForm.addEventListener('submit', function(e) {
-				e.preventDefault();
-				
-				// Validación básica
-				const codigo = codigoInput.value.trim();
-				if (!/^[1-9]\d*$/.test(codigo)) {
-					mensajeError.textContent = 'Ingrese un número entero positivo';
-					mensajeError.style.display = 'block';
-					return;
-				}
-				
-				// Deshabilitar botón durante la validación
-				const btnConfirmar = document.getElementById('btnConfirmarAutorizacion');
-				const btnOriginalHTML = btnConfirmar.innerHTML;
-				btnConfirmar.disabled = true;
-				btnConfirmar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Validando...';
-				
-				fetch('/ventas/valida-autorizacion/', {
-					method: 'POST',
-					headers: {
-						'X-CSRFToken': getCookie('csrftoken'),
-						'X-Requested-With': 'XMLHttpRequest'
-					},
-					body: new FormData(autorizacionForm)
-				})
-				.then(response => {
-					if (!response.ok) throw new Error('Error en la respuesta del servidor');
-					return response.json();
-				})
-				.then(data => {
-					if (data.valido) {
-						bootstrap.Modal.getInstance(document.getElementById('autorizacionModal')).hide();
-						// Continuar con el flujo después de validar
-					} else {
-						mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>${data.mensaje || 'Error en la validación'}`;
-						mensajeError.style.display = 'block';
-					}
-				})
-				.catch(error => {
-					mensajeError.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Error de conexión`;
-					mensajeError.style.display = 'block';
-				})
-				.finally(() => {
-					btnConfirmar.disabled = false;
-					btnConfirmar.innerHTML = btnOriginalHTML;
-				});
-			});
-			
-			// Resetear al cerrar el modal
-			document.getElementById('autorizacionModal').addEventListener('hidden.bs.modal', function() {
-				autorizacionForm.reset();
-				mensajeError.style.display = 'none';
 			});
 			
 		});
@@ -3446,9 +4305,9 @@
 				// Deshabilitar solo los campos de entrada y el botón "Agregar Detalle"
 				const inputs = document.querySelectorAll('#factura-form input, #factura-form select, #factura-form textarea');
 				
-				const validarBtn =  document.getElementById('validarBtn');
-				const listar_agenda =  document.getElementById('listar_agenda');
-				const crearClienteBtn =  document.getElementById('crearClienteBtn');
+				// const validarBtn =  document.getElementById('validarBtn');
+				// const listar_agenda =  document.getElementById('listar_agenda');
+				// const crearClienteBtn =  document.getElementById('crearClienteBtn');
 				
 				const btnAgregarDetalle = document.getElementById('btnAgregarDetalle');
 				const btnAgregarSerial = document.getElementById('btnAgregarSerial');
@@ -3458,6 +4317,7 @@
 					input.classList.add('readonly-select');  
 				});
 				
+				/*
 				if (validarBtn) {
 					validarBtn.disabled = true;
 				}
@@ -3472,6 +4332,7 @@
 					crearClienteBtn.removeAttribute('href'); // Eliminamos el href para que no sea clickeable
 					crearClienteBtn.classList.add('disabled'); // Añadimos clase visual
 				}
+				*/
 				
 				if (btnAgregarDetalle) {
 					btnAgregarDetalle.disabled = true;
@@ -3599,6 +4460,9 @@
 	</script>
 	
 	<script>
+		// ========================= //
+		// CONTROL DE LA TECLA ENTER //
+		// ========================= //
 		document.addEventListener('DOMContentLoaded', function() {
 			// Seleccionar todos los inputs editables (excluyendo hidden, buttons y submits)
 			const inputs = document.querySelectorAll(`
@@ -3606,17 +4470,21 @@
 				#factura-form select,
 				#factura-form textarea
 			`);
-			
+
 			// Agregar evento 'keydown' a cada campo
 			inputs.forEach((input, index) => {
 				input.addEventListener('keydown', function(e) {
 					if (e.key === 'Enter') {
-						e.preventDefault(); // Evitar envío del formulario
+						// Si es un textarea, no interferir (deja que inserte salto de línea)
+						if (this.tagName === 'TEXTAREA') {
+							return; // Permite el comportamiento nativo
+						}
+						e.preventDefault(); // Evitar envío del formulario para otros campos
 						
 						// Encontrar el siguiente campo disponible
 						let nextIndex = index + 1;
 						while (nextIndex < inputs.length && 
-							  (inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
+							(inputs[nextIndex].disabled || inputs[nextIndex].readOnly || inputs[nextIndex].offsetParent === null)) {
 							nextIndex++;
 						}
 						
@@ -3633,7 +4501,7 @@
 						}
 					}
 				});
-			});
+			});			
 			
 			// Bloqueo adicional para evitar envío por Enter en cualquier campo
 			const form = document.getElementById('factura-form');
@@ -3733,9 +4601,620 @@
 					}
 				}
 			});
+
+			//
+			// =========================================================
+			// CONTROL DE ENTER EN DETALLE DINÁMICO (delegación) - VERSIÓN MEJORADA
+			// =========================================================
+			const detalleTbody = document.querySelector('.detalle-form tbody');
+			if (detalleTbody) {
+				detalleTbody.addEventListener('keydown', function(e) {
+					if (e.key === 'Enter') {
+						const target = e.target;
+						// Solo interesa si es un input o select dentro de una fila, excluyendo hidden
+						if (!target.closest('tr') || target.matches('input[type="hidden"]')) {
+							return;
+						}
+						// Prevenir SIEMPRE el envío del formulario
+						e.preventDefault();
+
+						// Si es readonly o disabled, solo prevenimos el submit, no navegamos
+						if (target.readOnly || target.disabled) {
+							return;
+						}
+
+						// Navegación entre campos editables (no readonly, no disabled, no hidden)
+						const row = target.closest('tr');
+						const fields = row.querySelectorAll(
+							'input:not([type="hidden"]):not([disabled]):not([readonly]), ' +
+							'select:not([disabled]):not([readonly])'
+						);
+						const currentIndex = Array.from(fields).indexOf(target);
+						if (currentIndex === -1) return;
+
+						if (currentIndex < fields.length - 1) {
+							fields[currentIndex + 1].focus();
+							return;
+						}
+
+						// Si es el último campo editable de la fila, pasar a la siguiente fila
+						const nextRow = row.nextElementSibling;
+						if (nextRow) {
+							const nextFields = nextRow.querySelectorAll(
+								'input:not([type="hidden"]):not([disabled]):not([readonly]), ' +
+								'select:not([disabled]):not([readonly])'
+							);
+							if (nextFields.length) {
+								nextFields[0].focus();
+							}
+						}
+						// Opcional: si no hay siguiente fila, podrías agregar una nueva automáticamente
+						// document.getElementById('btnAgregarDetalle')?.click();
+					}
+				});
+			}			
 			//
 		});
 		
 	</script>
+
+	<script>
+	// =========================================================
+	// VALIDACIÓN DE AUTORIZACIONES CON BLOQUEO MUTUO Y LIMPIEZA OPCIONAL
+	// =========================================================
+	//////************
+	function configurarValidacionAutorizacion(campoId, infoId, statusId, motivo, campoBloqueadoId, limpiarSiInvalido = false) {
+		const campo = document.getElementById(campoId);
+		const info = document.getElementById(infoId);
+		const status = document.getElementById(statusId);
+		if (!campo) return;
+
+		// Habilitar campo (quita readonly y disabled)
+		function habilitar(elemento) {
+			if (!elemento) return;
+			elemento.removeAttribute('readonly');
+			elemento.removeAttribute('disabled');
+			elemento.disabled = false;
+			elemento.classList.remove('readonly-select');
+		}
+
+		// Bloquear/desbloquear el otro campo
+		function bloquearOtro(bloquear) {
+			if (!campoBloqueadoId) return;
+			const otro = document.getElementById(campoBloqueadoId);
+			if (!otro) return;
+			if (bloquear) {
+				otro.setAttribute('readonly', 'readonly');
+				otro.classList.add('readonly-select');
+			} else {
+				habilitar(otro);
+			}
+		}
+
+		// Limpiar estado de validación y habilitar
+		function limpiarEstado() {
+			campo.classList.remove('is-valid', 'is-invalid');
+			habilitar(campo);
+			info.innerHTML = '';
+			info.className = 'text-muted';
+			status.textContent = '⏳';
+			status.className = 'input-group-text text-muted';
+			bloquearOtro(false);
+		}
+
+		// Función de validación
+		function validar() {
+			const valor = campo.value.trim();
+			
+			// Si el campo está vacío, limpiar estado y salir
+			if (!valor) {
+				limpiarEstado();
+				return;
+			}
+
+			// Obtener datos del formulario
+			const clienteId = document.getElementById('id_id_cliente')?.value || '';
+			const comprobanteId = document.getElementById('id_id_comprobante_venta')?.value || '';
+			const fechaComprobante = document.getElementById('id_fecha_comprobante')?.value || '';
+
+			// Construir URL con parámetros
+			const url = new URL('/ventas/validar-autorizacion/', window.location.origin);
+			url.searchParams.append('id', valor);
+			if (clienteId) url.searchParams.append('cliente_id', clienteId);
+			if (comprobanteId) url.searchParams.append('comprobante_id', comprobanteId);
+			if (motivo) url.searchParams.append('motivo', motivo);
+			if (fechaComprobante) url.searchParams.append('fecha_comprobante', fechaComprobante);
+
+			// Cambiar estado a "validando..."
+			status.textContent = '⏳';
+			status.className = 'input-group-text text-warning';
+			info.innerHTML = 'Validando...';
+			info.className = 'text-muted';
+
+			// Realizar petición
+			fetch(url)
+				.then(response => response.json())
+				.then(data => {
+					if (data.valido) {
+						// ✅ Válido: mostrar datos y bloquear el otro campo
+						const datos = data.datos;
+						info.innerHTML = `
+							✅ <strong>${datos.cliente}</strong><br>
+							<small>${datos.tipo_documento}: ${datos.cuit}</small><br>
+							<small>${datos.motivo} · ${datos.comprobante} · ${datos.fecha}</small>
+						`;
+						info.className = 'text-success';
+						status.textContent = '✅';
+						status.className = 'input-group-text text-success';
+						campo.classList.remove('is-invalid');
+						campo.classList.add('is-valid');
+						habilitar(campo); // Asegurar que el campo actual esté habilitado
+						bloquearOtro(true); // Bloquear el otro campo
+					} else {
+						// ❌ Inválido: mostrar error y desbloquear
+						info.innerHTML = `❌ ${data.error}`;
+						info.className = 'text-danger';
+						status.textContent = '❌';
+						status.className = 'input-group-text text-danger';
+						campo.classList.add('is-invalid');
+						campo.classList.remove('is-valid');
+
+						// Desbloquear el otro campo y habilitar el actual
+						bloquearOtro(false);
+						habilitar(campo);
+
+						// 👉 Si se debe limpiar el valor (Límite o si lo deseas para todos)
+						if (limpiarSiInvalido) {
+							campo.value = '';
+							limpiarEstado();
+							info.innerHTML = `❌ ${data.error}`;
+							info.className = 'text-danger';
+							status.textContent = '❌';
+							status.className = 'input-group-text text-danger';
+						} else {
+							// Para Vencimiento y Nota de Crédito: no limpiar, pero enfocar para reescribir
+							campo.focus();
+							campo.select();
+						}
+					}
+				})
+				.catch(error => {
+					// ⚠️ Error de conexión
+					console.error('Error en validación:', error);
+					info.innerHTML = '⚠️ Error de conexión';
+					info.className = 'text-warning';
+					status.textContent = '⚠️';
+					status.className = 'input-group-text text-warning';
+					campo.classList.remove('is-valid', 'is-invalid');
+					
+					bloquearOtro(false);
+					habilitar(campo);
+
+					if (limpiarSiInvalido) {
+						campo.value = '';
+						limpiarEstado();
+						info.innerHTML = '⚠️ Error de conexión';
+						info.className = 'text-warning';
+						status.textContent = '⚠️';
+						status.className = 'input-group-text text-warning';
+					} else {
+						campo.focus();
+						campo.select();
+					}
+				});
+		}
+
+		// Eventos
+		campo.addEventListener('blur', validar);
+
+		campo.addEventListener('input', function() {
+			// Limpiar clases de validación mientras se escribe
+			this.classList.remove('is-valid', 'is-invalid');
+			habilitar(this); // Asegurar que esté habilitado
+			if (this.value.trim() === '') {
+				limpiarEstado();
+			}
+		});
+
+		// Al hacer clic, asegurar que esté habilitado
+		campo.addEventListener('focus', function() {
+			habilitar(this);
+		});
+
+		// Si el campo tiene valor al cargar, validarlo automáticamente
+		if (campo.value.trim()) {
+			setTimeout(validar, 100);
+		} else {
+			limpiarEstado();
+		}
+	}
+
+	// =========================================================
+	// CONFIGURAR LOS TRES CAMPOS AL CARGAR LA PÁGINA
+	// =========================================================
+	document.addEventListener('DOMContentLoaded', function() {
+		// 1. Límite de crédito → siempre limpia en error, no bloquea a nadie
+		configurarValidacionAutorizacion(
+			'id_id_valida_limite_credito',
+			'info-limite',
+			'status-limite',
+			'LIMITE_CREDITO',
+			null,          // sin bloqueo
+			true           // ✅ limpiar si inválido
+		);
+
+		// 2. Vencimiento → bloquea Nota de Crédito, NO limpia en error
+		configurarValidacionAutorizacion(
+			'id_id_valida_vencimiento',
+			'info-vencimiento',
+			'status-vencimiento',
+			'VENCIMIENTO',
+			'id_id_valida_nota_credito',
+			false          // ❌ no limpiar si inválido
+		);
+
+		// 3. Nota de Crédito → bloquea Vencimiento, NO limpia en error
+		configurarValidacionAutorizacion(
+			'id_id_valida_nota_credito',
+			'info-nc',
+			'status-nc',
+			'NOTA_CREDITO',
+			'id_id_valida_vencimiento',
+			false          // ❌ no limpiar si inválido
+		);
+
+		// 👉 Forzar habilitación al abrir el modal
+		const modal = document.getElementById('autorizacionesModal');
+		if (modal) {
+			modal.addEventListener('shown.bs.modal', function() {
+				['id_id_valida_vencimiento', 'id_id_valida_nota_credito', 'id_id_valida_limite_credito'].forEach(function(id) {
+					const el = document.getElementById(id);
+					if (el) {
+						el.removeAttribute('readonly');
+						el.removeAttribute('disabled');
+						el.disabled = false;
+						el.classList.remove('readonly-select');
+					}
+				});
+			});
+		}
+	});
+	//////************
+
+	</script>
+
+	<script>
+	// =========================================================
+	// ANULAR REMITO (con fetch y redirección)
+	// =========================================================
+	document.addEventListener('DOMContentLoaded', function() {
+		const btnAnular = document.getElementById('btnAnularRemito');
+		if (btnAnular) {
+			btnAnular.addEventListener('click', function(e) {
+				e.preventDefault();
+				
+				// Confirmación
+				if (!confirm('¿Está seguro de anular este remito? Se revertirán stock y movimientos de caja.')) {
+					return;
+				}
+				
+				const url = this.dataset.url;
+				
+				// Petición POST con fetch
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'X-CSRFToken': getCookie('csrftoken'),
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({}) // sin datos adicionales
+				})
+				.then(response => {
+					if (response.ok) {
+						return response.json();
+					} else {
+						return response.json().then(data => {
+							throw new Error(data.error || 'Error al anular el remito');
+						});
+					}
+				})
+				.then(data => {
+					if (data.success) {
+						alert(data.message || 'Remito anulado correctamente');
+						// Redirigir a la lista de facturas
+						window.location.href = "{% url 'factura_list' %}";
+					} else {
+						alert(data.error || 'Error al anular');
+					}
+				})
+				.catch(error => {
+					alert('Error: ' + error.message);
+				});
+			});
+		}
+	});			
+	</script>
+
+	{% comment %} <script>
+	$(document).ready(function() {
+		// Inicializar Select2 sobre el nuevo input
+		$('#cliente_select2').select2({
+			theme: 'bootstrap-5',
+			allowClear: true,
+			minimumInputLength: 2,
+			placeholder: 'Buscar cliente por nombre...',
+			ajax: {
+				url: '/maestros/buscar-cliente-select2/',
+				dataType: 'json',
+				delay: 300,
+				data: function(params) {
+					return { term: params.term, page: params.page || 1 };
+				},
+				processResults: function(data) {
+					return { results: data.results, pagination: { more: data.more } };
+				}
+			},
+			templateResult: function(cliente) {
+				if (cliente.loading) return cliente.text;
+				return $('<div><strong>' + cliente.id + '</strong> - ' + cliente.text + '</div>');
+			},
+			templateSelection: function(cliente) {
+				return cliente.id + ' - ' + cliente.text;
+			}
+		});
+
+		// Evento al seleccionar un cliente
+		$('#cliente_select2').on('select2:select', function(e) {
+			var data = e.params.data;
+			var clienteId = data.id;
+			var clienteNombre = data.text;
+
+			// 1. Asignar el ID al campo buscar_cliente (para que la lógica de blur lo use)
+			var $buscarCliente = $('#id_buscar_cliente');
+			$buscarCliente.val(clienteId);
+
+			// 2. Opcional: también asignar el ID al campo oculto id_cliente
+			$('#id_id_cliente').val(clienteId);
+
+			// 3. Actualizar el texto mostrado en el Select2 para que muestre "ID - Nombre"
+			var $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+			if ($span.length) {
+				$span.html(clienteId + ' - ' + clienteNombre);
+			}
+
+			// 4. Disparar el evento blur en buscar_cliente para que se ejecute toda la lógica
+			//    (validación de vencimientos, autorizaciones, llenado de campos)
+			$buscarCliente.trigger('blur');
+		});
+
+		// Evento al limpiar la selección
+		$('#cliente_select2').on('select2:clearing', function() {
+			$('#id_buscar_cliente').val('');
+			$('#id_id_cliente').val('');
+			$('#id_buscar_cliente').trigger('blur');
+		});
+
+		// Modo edición: si ya hay un cliente seleccionado, mostrar sus datos en el Select2
+		var clienteId = $('#id_id_cliente').val();
+		var clienteNombre = $('#id_buscar_cliente').val(); // Puede ser solo el ID o "ID - Nombre"
+		if (clienteId && clienteNombre) {
+			// Si el campo buscar_cliente tiene el formato "ID - Nombre", lo usamos.
+			// Si solo tiene el ID, podemos hacer una consulta AJAX para obtener el nombre,
+			// pero por simplicidad asumimos que el backend ya puso el formato correcto.
+			var displayText = clienteNombre.includes(' - ') ? clienteNombre : clienteId + ' - ' + clienteNombre;
+			setTimeout(function() {
+				var $span = $('#cliente_select2').next('.select2-container').find('.select2-selection__rendered');
+				if ($span.length) {
+					$span.html(displayText);
+				}
+			}, 100);
+		}
+	});
+	</script>	 {% endcomment %}
+
+	<script>
+	$(document).ready(function() {
+		// Inicializar Select2
+		$('#cliente_select2').select2({
+			theme: 'bootstrap-5',
+			allowClear: true,
+			minimumInputLength: 2,
+			placeholder: 'Buscar cliente por nombre...',
+			ajax: {
+				url: '/maestros/buscar-cliente-select2/',
+				dataType: 'json',
+				delay: 300,
+				data: function(params) {
+					return { term: params.term, page: params.page || 1 };
+				},
+				processResults: function(data) {
+					return { results: data.results, pagination: { more: data.more } };
+				}
+			},
+			templateResult: function(cliente) {
+				if (cliente.loading) return cliente.text;
+				return $('<div><strong>' + cliente.id + '</strong> - ' + cliente.text + '</div>');
+			},
+			templateSelection: function(cliente) {
+				return cliente.id + ' - ' + cliente.text;
+			}
+		});
+
+		// Si no hay comprobante seleccionado, deshabilitar Select2
+		if (!$('#id_id_comprobante_venta').val()) {
+			$('#cliente_select2').prop('disabled', true);
+		}
+
+		// Evento al seleccionar un cliente
+		$('#cliente_select2').on('select2:select', function(e) {
+			var data = e.params.data;
+			var clienteId = data.id;
+			var clienteNombre = data.text;
+
+			// Asignar el ID al campo buscar_cliente
+			var $buscar = $('#buscar_cliente');
+			$buscar.val(clienteId);
+
+			// Actualizar el texto mostrado en el Select2
+			var $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+			if ($span.length) {
+				$span.html(clienteId + ' - ' + clienteNombre);
+			}
+
+			// Forzar el blur (enfocar y perder foco para ejecutar el evento)
+			$buscar.focus();
+			$buscar.blur();
+		});
+
+		// Evento al limpiar la selección
+		$('#cliente_select2').on('select2:clearing', function() {
+			var $buscar = $('#buscar_cliente');
+			$buscar.val('');
+			$buscar.focus();
+			$buscar.blur();
+		});
+
+		// Modo edición: mostrar cliente actual en el Select2
+		var clienteId = $('#id_id_cliente').val();
+		var clienteNombre = $('#buscar_cliente').val();
+		if (clienteId && clienteNombre) {
+			var displayText = clienteNombre.includes(' - ') ? clienteNombre : clienteId + ' - ' + clienteNombre;
+			setTimeout(function() {
+				var $span = $('#cliente_select2').next('.select2-container').find('.select2-selection__rendered');
+				if ($span.length) {
+					$span.html(displayText);
+				}
+			}, 100);
+		}
+	});
+	</script>
 	
+	<script>
+	// =========================================================
+	// CANCELAR REMITO - Modal sin form anidado
+	// =========================================================
+	document.addEventListener('DOMContentLoaded', function() {
+		const btnGuardar = document.getElementById('btnGuardarCancelarRemito');
+		if (btnGuardar) {
+			btnGuardar.addEventListener('click', function() {
+				const remitoId = document.getElementById('cancelarRemitoId').value;
+				const estado = document.getElementById('estadoRemito').value;
+				const productosCamiones = document.getElementById('productosCamiones').checked;
+				const comision = document.getElementById('comisionRemito').value;
+				const mensajeDiv = document.getElementById('mensajeCancelarRemito');
+				
+				// Deshabilitar botón
+				btnGuardar.disabled = true;
+				btnGuardar.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...';
+				mensajeDiv.innerHTML = '';
+				
+				const url = `/ventas/remito/actualizar-campos/${remitoId}/`;
+				
+				fetch(url, {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						'X-CSRFToken': getCookie('csrftoken')
+					},
+					body: JSON.stringify({
+						estado: estado,
+						productos_camiones: productosCamiones,
+						comision: comision
+					})
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						mensajeDiv.innerHTML = `<div class="alert alert-success alert-dismissible fade show" role="alert">
+							${data.message}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>`;
+						// Recargar para reflejar cambios
+						setTimeout(() => location.reload(), 1500);
+					} else {
+						mensajeDiv.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+							Error: ${data.error}
+							<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+						</div>`;
+						btnGuardar.disabled = false;
+						btnGuardar.innerHTML = 'Guardar';
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					mensajeDiv.innerHTML = `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						Error de conexión.
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>`;
+					btnGuardar.disabled = false;
+					btnGuardar.innerHTML = 'Guardar';
+				});
+			});
+		}
+		
+		// Limpiar al cerrar el modal
+		const modal = document.getElementById('cancelarRemitoModal');
+		if (modal) {
+			modal.addEventListener('hidden.bs.modal', function() {
+				document.getElementById('mensajeCancelarRemito').innerHTML = '';
+				const btn = document.getElementById('btnGuardarCancelarRemito');
+				if (btn) {
+					btn.disabled = false;
+					btn.innerHTML = 'Guardar';
+				}
+			});
+		}
+	});		
+	</script>
+
+	<script>
+	function mostrarInfoCliente(sucursalDiferente, esVip, saldo) {
+		var body = document.getElementById('clienteInfoModalBody');
+		if (!body) return;
+
+		var html = '';
+
+		// Mensaje de sucursal diferente
+		if (sucursalDiferente) {
+			html += '<div class="alert alert-warning" role="alert">';
+			html += '<i class="bi bi-exclamation-triangle-fill me-2"></i>';
+			html += 'Atención: El cliente pertenece a otra sucursal.';
+			html += '</div>';
+		}
+
+		// Mensaje de VIP
+		if (esVip) {
+			html += '<div class="alert alert-info" role="alert">';
+			html += '<i class="bi bi-star-fill me-2"></i>';
+			html += '⚠️ Este es un Cliente VIP - Trato Especial ⚠️';
+			html += '</div>';
+		}
+
+		// Saldo del cliente
+		if (saldo !== null && saldo !== undefined) {
+			var saldoFormateado = saldo.toLocaleString('es-AR', {
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2
+			});
+			var color = saldo < 0 ? 'text-danger' : 'text-success';
+			html += '<div class="mt-3">';
+			html += '<h6>Saldo actual:</h6>';
+			html += '<p class="fs-4 fw-bold ' + color + '">$ ' + saldoFormateado + '</p>';
+			html += '</div>';
+		} else {
+			html += '<div class="mt-3 text-muted">No se pudo obtener el saldo del cliente.</div>';
+		}
+
+		// Si no hay ningún mensaje, mostrar un mensaje genérico
+		if (!html) {
+			html = '<p>No hay información adicional.</p>';
+		}
+
+		body.innerHTML = html;
+
+		// Mostrar la modal
+		var modal = new bootstrap.Modal(document.getElementById('clienteInfoModal'));
+		modal.show();
+	}
+	</script>
 {% endblock script %}
