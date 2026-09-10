@@ -4,7 +4,8 @@ from django import forms
 from entorno.constantes_base import (
 	TIPO_PRODUCTO_SERVICIO,
 	FORMATOS_CHOICES,
-	SEPARADOR_DECIMAL_CHOICES
+	SEPARADOR_DECIMAL_CHOICES,
+	SEPARADOR_COLUMNAS_CHOICES
 )
 from apps.maestros.models.base_models import (
 	ProductoMarca,
@@ -106,3 +107,11 @@ class ExportarProductosArchivoForm(forms.Form):
 		label='Separador decimal'
 	)
 	
+	separador_columnas = forms.ChoiceField(
+		choices=SEPARADOR_COLUMNAS_CHOICES,
+		widget=forms.Select(attrs={'class': 'form-select'}),
+		required=True,
+		initial='coma',
+		label='Separador de columnas',
+		help_text='Solo aplica para exportación a CSV.'
+	)

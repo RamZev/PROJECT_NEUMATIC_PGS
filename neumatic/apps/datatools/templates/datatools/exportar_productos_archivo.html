@@ -132,7 +132,7 @@
 						
 						<div class="row">
 							<!-- Formato de exportación -->
-							<div class="col-md-6 mb-3">
+							<div class="col-md-4 mb-3">
 								<label class="form-label fw-bold">
 									<i class="fas fa-file-alt me-1"></i>
 									{{ form.formato.label }}
@@ -147,7 +147,7 @@
 							</div>
 							
 							<!-- Separador decimal -->
-							<div class="col-md-6 mb-3">
+							<div class="col-md-4 mb-3">
 								<label class="form-label fw-bold">
 									<i class="fas fa-asterisk me-1"></i>
 									{{ form.separador_decimal.label }}
@@ -159,6 +159,25 @@
 										{{ form.separador_decimal.errors }}
 									</div>
 								{% endif %}
+							</div>
+							
+							<!-- Separador de columnas (NUEVO) -->
+							<div class="col-md-4 mb-3">
+								<label class="form-label fw-bold">
+									<i class="fas fa-columns me-1"></i>
+									{{ form.separador_columnas.label }}
+									<span class="text-danger">*</span>
+								</label>
+								{{ form.separador_columnas }}
+								{% if form.separador_columnas.errors %}
+									<div class="text-danger small mt-1">
+										{{ form.separador_columnas.errors }}
+									</div>
+								{% endif %}
+								<div class="help-text">
+									<i class="fas fa-info-circle me-1"></i>
+									{{ form.separador_columnas.help_text }}
+								</div>
 							</div>
 						</div>
 						

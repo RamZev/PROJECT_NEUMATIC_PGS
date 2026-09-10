@@ -397,3 +397,8 @@ SEPARADOR_DECIMAL_CHOICES = [
 	('punto', 'Punto (.)'),
 	('coma', 'Coma (,)'),
 ]
+
+SEPARADOR_COLUMNAS_CHOICES = [
+	('coma', 'Coma (,)'),
+	('puntoycoma', 'Punto y coma (;)'),
+]

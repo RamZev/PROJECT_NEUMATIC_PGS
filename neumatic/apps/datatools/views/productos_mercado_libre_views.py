@@ -1,7 +1,8 @@
 # neumatic\apps\datatools\views\productos_mercado_libre_views.py
 from django.views.generic import TemplateView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q, Sum
+from django.db.models import Q, Sum, Max, DecimalField, Value
+from django.db.models.functions import Coalesce
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -298,12 +299,19 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 	
 	def get_queryset_export(self, estados_seleccionados):
 		"""
-		Obtiene el queryset con los datos para exportar
+		Obtiene el queryset con los datos para exportar, agrupados por CAI.
+		
+		Esta consulta:
+		- Agrupa por CAI
+		- Suma el stock total de todos los productos del mismo CAI
+		- Toma un valor representativo (Min/Max) para nombre, medida, precio, descuento y estado
+		- Realiza UNA SOLA consulta a la base de datos
 		"""
-		#-- Filtrar productos activos y con carrito=True.
+		#-- Filtrar productos activos, con carrito=True y con CAI asignado.
 		productos = Producto.objects.filter(
 			estatus_producto=True,
-			carrito=True
+			carrito=True,
+			id_cai__isnull=False
 		)
 		
 		#-- Filtrar por estados seleccionados.
@@ -316,20 +324,26 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 				id_producto_estado__estado_producto__in=codigos_estado
 			)
 		
-		#-- Anotar el stock total.
-		productos = productos.annotate(
-			stock_total=Sum('productostock__stock')
-		)
-		
-		#-- Seleccionar los campos necesarios.
+		#-- Agrupar por CAI y anotar los campos agregados.
 		productos = productos.values(
-			'id_cai__cai',
-			'nombre_producto',
-			'medida',
-			'stock_total',
-			'descuento',
-			'precio',
-			'id_producto_estado__estado_producto'
+			'id_cai__cai'
+		).annotate(
+			#-- Stock: SUMA de todos los productos del mismo CAI
+			stock_total=Coalesce(
+				Sum('productostock__stock'),
+				Value(0),
+				output_field=DecimalField()
+			),
+			#-- Nombre: tomar uno representativo (el primero alfabéticamente)
+			nombre_producto=Max('nombre_producto'),
+			#-- Medida: tomar una representativa
+			medida=Max('medida'),
+			#-- Precio: tomar el MAYOR precio del grupo
+			precio=Max('precio'),
+			#-- Descuento: tomar el MAYOR descuento del grupo
+			descuento=Max('descuento'),
+			#-- Estado: tomar uno representativo
+			estado=Max('id_producto_estado__estado_producto'),
 		).order_by('id_cai__cai')
 		
 		return productos
@@ -376,6 +390,7 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 		estados_ids = form.cleaned_data.get('estados')
 		formato = form.cleaned_data.get('formato')
 		separador_decimal = form.cleaned_data.get('separador_decimal')
+		separador_columnas = form.cleaned_data.get('separador_columnas')  # <-- NUEVO
 		
 		#-- Obtener los datos.
 		datos = self.get_queryset_export(estados_ids)
@@ -389,17 +404,15 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 		timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 		nombre_base = f"productos_carrito_{timestamp}"
 		
-		#-- Preparar datos para exportación (CONVERTIR DECIMAL A FLOAT).
+		#-- Preparar datos para exportación.
 		datos_export = []
 		for item in datos_lista:
 			row = dict(item)
 			
-			#-- Obtener valores y convertir Decimal a float.
 			precio = row.get('precio')
 			descuento = row.get('descuento')
 			stock = row.get('stock_total')
 			
-			#-- Convertir Decimal a float si es necesario
 			if isinstance(precio, decimal.Decimal):
 				precio = float(precio)
 			if isinstance(descuento, decimal.Decimal):
@@ -407,33 +420,28 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 			if isinstance(stock, decimal.Decimal):
 				stock = float(stock)
 			
-			#-- Asegurar que no sean None
 			precio = precio or 0.0
 			descuento = descuento or 0.0
 			stock = stock or 0.0
 			
-			#-- Calcular oferta
 			oferta = round(precio - (precio * descuento / 100), 2)
 			
-			#-- Obtener CAI y Estado (pueden ser None)
-			cai = row.get('id_cai__cai') or ''
-			estado = row.get('id_producto_estado__estado_producto') or ''
-			
 			row_export = {
-				'CAI': cai,
+				'CAI': row.get('id_cai__cai') or '',
 				'Producto': row.get('nombre_producto') or '',
 				'Medida': row.get('medida') or '',
 				'Stock': stock,
 				'Descuento (%)': descuento,
 				'Oferta': oferta,
 				'Precio': precio,
-				'Estado': estado,
+				'Estado': row.get('estado') or '',
 			}
 			datos_export.append(row_export)
 		
 		#-- Exportar según formato.
 		if formato == 'csv':
-			return self.exportar_csv_descarga(request, datos_export, nombre_base, separador_decimal)
+			# <-- Pasar el separador de columnas a la función
+			return self.exportar_csv_descarga(request, datos_export, nombre_base, separador_decimal, separador_columnas)
 		elif formato == 'xlsx':
 			return self.exportar_excel_descarga(request, datos_export, nombre_base)
 		elif formato == 'json':
@@ -443,19 +451,25 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 		
 		messages.error(request, 'Formato de exportación no válido.')
 		return redirect('exportar_productos_archivo')
-	
-	def exportar_csv_descarga(self, request, datos, nombre_base, separador_decimal):
+
+	def exportar_csv_descarga(self, request, datos, nombre_base, separador_decimal, separador_columnas):
 		"""Exporta los datos a CSV y lo envía como descarga directa"""
 		
 		if not datos:
 			messages.warning(request, 'No hay datos para exportar.')
 			return redirect('exportar_productos_archivo')
 		
+		#-- Determinar el separador de columnas.
+		if separador_columnas == 'coma':
+			delimitador = ','
+		else:
+			delimitador = ';'
+		
 		#-- Crear archivo CSV en memoria.
 		output = StringIO()
 		headers = list(datos[0].keys())
 		
-		writer = csv.DictWriter(output, fieldnames=headers, delimiter=';')
+		writer = csv.DictWriter(output, fieldnames=headers, delimiter=delimitador)
 		writer.writeheader()
 		
 		#-- Escribir datos con formato numérico.
@@ -463,8 +477,12 @@ class ExportarProductosArchivoView(LoginRequiredMixin, TemplateView):
 			row_formateada = {}
 			for key, value in row.items():
 				if isinstance(value, (int, float)):
-					#-- Formatear numéricos con 2 decimales
-					if separador_decimal == 'coma':
+					#-- Si el separador decimal es coma Y el de columnas es coma,
+					#-- hay conflicto. En ese caso, usar punto para el decimal.
+					if separador_decimal == 'coma' and delimitador == ',':
+						#-- Conflicto: usar punto decimal para no romper el CSV
+						row_formateada[key] = f"{value:.2f}"
+					elif separador_decimal == 'coma':
 						row_formateada[key] = f"{value:.2f}".replace('.', ',')
 					else:
 						row_formateada[key] = f"{value:.2f}"
