@@ -1821,7 +1821,12 @@
 					// ========================================
 
 					// Detectar si el precio debe ser editable (FACTURA o PRESUPUESTO)
-					const esEditable = (tipoComprobante === "FACTURA" || tipoComprobante === "PRESUPUESTO");
+					// const esEditable = (tipoComprobante === "FACTURA" || tipoComprobante === "PRESUPUESTO");
+					const esEditable = (
+						tipoComprobante === "FACTURA" || 
+						tipoComprobante === "PRESUPUESTO" ||
+						tipoComprobante === "NOTA DE CRÉDITO"
+					);
 					const precioEditable = esEditable ? '' : 'readonly';
 					
 					// Cálculos iniciales
@@ -3914,7 +3919,7 @@
 
 									// Mostrar alert solo si hay mensaje (ej. CUIT no encontrado)
 									if (padronData.mensaje && !aplica) {
-										alert(`⚠️ ${padronData.mensaje}`);
+										// alert(`⚠️ ${padronData.mensaje}`);
 									} else if (aplica) {
 										alert(`✅ CUIT encontrado - Alícuota: ${alicuota.toFixed(2)}% - Mínimo: ${minimo}`);
 									}
@@ -3926,6 +3931,14 @@
 									document.getElementById('id_minimo_percepcion').value = '';
 								});
 						}
+					} else {
+						// No aplica percepción: limpiar campos por si tenían valores previos
+						document.getElementById('id_aplica_percepcion').value = 'false';
+						document.getElementById('id_alicuota_percepcion').value = '0.00';
+						document.getElementById('id_minimo_percepcion').value = '';
+						document.getElementById('id_monto_percepcion').value = '';
+						document.getElementById('id_tipo_percepcion_id').value = '';
+						document.getElementById('id_descripcion_tipo_percepcion').value = '';
 					}					
 					/////////////////////////
 					
