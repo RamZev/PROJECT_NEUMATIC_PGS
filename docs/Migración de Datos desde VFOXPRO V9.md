@@ -369,7 +369,20 @@ python 07_migra_detalle_recibo.py
 
 python 08_migra_caja.py  
 
-De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en SQLite3, luego de abrir la BD neumatic.
+
+
+**Migración de padrones para percepciones**
+
+1. En dataload: python padron_entrerios_migra.py
+2. En dataload: python padron_santafe_migra.py
+3. Actualizar la tabla provincia:
+   
+   UPDATE provincia SET minimo_percepcion = 20000 WHERE id_provincia = 6;
+   UPDATE provincia SET minimo_percepcion = 200000 WHERE id_provincia = 13;
+
+
+
+De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en pgAdmin, luego de abrir la BD neumatic.
 
 Cada vez que ejecute un script grabe los cambios
 

@@ -1524,24 +1524,31 @@
 				});
 
 				////////////////
+				////////////////
 				// --- Cálculo de percepción de IIBB (Ingresos Brutos) ---
 
-				// Obtener los valores de percepción desde los campos ocultos del formulario
-				const aplicaPercepcion = document.getElementById('id_aplica_percepcion')?.value === 'true';
-				const alicuotaPercepcion = parseFloat(document.getElementById('id_alicuota_percepcion')?.value || 0);
-				const minimoPercepcion = parseFloat(document.getElementById('id_minimo_percepcion')?.value || 0);
+				// Detectar si estamos en modo edición (los campos están deshabilitados)
+				const isEdit = document.getElementById('modo-edicion')?.dataset.isEdit === 'true';
 
-				// Reiniciamos la variable existente a 0 (por si no se cumple la condición)
-				totalPercepIb = 0;
+				if (isEdit) {
+					// MODO EDICIÓN: preservar el valor de percepción ya guardado en la BD
+					totalPercepIb = parseNumber(document.getElementById('id_percep_ib').value) || 0;
+				} else {
+					// MODO CREACIÓN: recalcular según alícuota, mínimo y gravado
+					const aplicaPercepcion = document.getElementById('id_aplica_percepcion')?.value === 'true';
+					const alicuotaPercepcion = parseFloat(document.getElementById('id_alicuota_percepcion')?.value || 0);
+					const minimoPercepcion = parseFloat(document.getElementById('id_minimo_percepcion')?.value || 0);
 
-				// Calcular el monto de percepción solo si corresponde
-				if (aplicaPercepcion && alicuotaPercepcion > 0 && totalGravado >= minimoPercepcion) {
-					totalPercepIb = totalGravado * (alicuotaPercepcion / 100);
-					totalPercepIb = Math.round(totalPercepIb * 100) / 100;
+					totalPercepIb = 0;
+					if (aplicaPercepcion && alicuotaPercepcion > 0 && totalGravado >= minimoPercepcion) {
+						totalPercepIb = totalGravado * (alicuotaPercepcion / 100);
+						totalPercepIb = Math.round(totalPercepIb * 100) / 100;
+					}
 				}
 
 				// Añadir la percepción al total general del comprobante
-				totalFactura += totalPercepIb;							
+				totalFactura += totalPercepIb;
+				////////////////				
 				////////////////
 				
 				// 2. Guardar valores numéricos puros
@@ -3858,16 +3865,14 @@
 					document.getElementById('id_nombre_tipo_iva').value = data.nombre_iva || '';
 					document.getElementById('id_provincia_cliente').value = data.id_provincia || '';
 
-					// alert(data.id_provincia);
-					// alert(data.nombre_iva);
-					// alert(data.discrimina_iva);
+					// Obtener el tipo de comprobante ya seleccionado
+					const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+					const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+					const tipoComprobante = tipoComprobanteDict[comprobanteId] || '';
+					// alert(tipoComprobante);
 
-					// if (data.discrimina_iva){
-					//	alert(data.id_provincia);
-					//	alert("data.id_provincia");
-					// }
 					/////////////////////////
-					if (data.discrimina_iva) {
+					if (data.discrimina_iva && (tipoComprobante === "FACTURA" || tipoComprobante === "NOTA DE CRÉDITO"))  {
 						const sucursalId = document.getElementById('id_id_sucursal').value; // ← obtener sucursal del formulario
 						const cuit = data.cuit;
 						const fechaComprobante = document.getElementById('id_fecha_comprobante').value;
