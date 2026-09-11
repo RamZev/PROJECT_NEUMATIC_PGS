@@ -145,11 +145,11 @@ class ClienteUpdateView(MaestroUpdateView):
 		'limite_credito'
 	]
 	
-	def dispatch(self, request, *args, **kwargs):
-		if request.user.jerarquia == "Z" and not request.user.is_superuser:
-			messages.error(request, "No tienes permiso para modificar clientes.")
-			return redirect(self.success_url)
-		return super().dispatch(request, *args, **kwargs)
+	# def dispatch(self, request, *args, **kwargs):
+	# 	if request.user.jerarquia == "Z" and not request.user.is_superuser:
+	# 		messages.error(request, "No tienes permiso para modificar clientes.")
+	# 		return redirect(self.success_url)
+	# 	return super().dispatch(request, *args, **kwargs)
 	
 	def get_form_kwargs(self):
 		kwargs = super().get_form_kwargs()
