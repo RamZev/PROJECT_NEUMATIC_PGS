@@ -31,6 +31,7 @@ from .views.actualizar_estados_views import (
 	ActualizarEstadosView
 )
 from .views.productos_mercado_libre_views import ExportarProductosCarritoView, ExportarProductosArchivoView
+from apps.datatools.views.recalcular_saldo_pendiente_views import RecalcularSaldoPendienteView
 
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
@@ -68,4 +69,7 @@ urlpatterns = [
 	#-- Exportar Productos para Mercado Libre (E-Commerce).
 	path('exportar-productos-carrito/', ExportarProductosCarritoView.as_view(), name='exportar_productos_carrito'),
 	path('exportar-productos-archivo/', ExportarProductosArchivoView.as_view(), name='exportar_productos_archivo'),
+	
+	#-- Recalcular Saldo Pendiente de un Cliente.
+	path('recalcular-saldo-pendiente/', RecalcularSaldoPendienteView.as_view(), name='recalcular_saldo_pendiente'),
 ]

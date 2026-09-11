@@ -1,0 +1,298 @@
+<!-- neumatic/apps/datatools/templates/datatools/recalcular_saldo_pendiente_cargar.html -->
+{% extends 'datatool_form.html' %}
+{% load static %}
+{% load custom_tags %}
+
+{% block title %}
+	{{ titulo }}
+{% endblock title %}
+
+{% block maincomponent %}
+	<div id="layoutSidenav_content">
+		<main>
+			<div class="container-fluid px-4">
+				
+				<!-- Encabezado -------------------------------------------------------- -->
+				<h3 class="mt-4">
+					<i class="fas fa-calculator me-2"></i>{{ titulo }}
+				</h3>
+				<ol class="breadcrumb mb-4">
+					<li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+					<li class="breadcrumb-item">Mantenimiento</li>
+					<li class="breadcrumb-item active">Recalcular Saldo Pendiente</li>
+				</ol>
+				
+				<!-- Card del formulario ----------------------------------------------- -->
+				<div class="card shadow-sm mb-4">
+					<div class="card-header bg-primary text-white">
+						<i class="fas fa-filter me-1"></i>
+						Seleccione el cliente a procesar
+					</div>
+					<div class="card-body">
+						
+						<form method="post" novalidate id="form-recalcular">
+							{% csrf_token %}
+							<div class="row">
+								<div class="col-md-2">
+									{{ form.id_cliente.label }}
+									<div class="d-flex align-items-stretch">
+										{{ form.id_cliente }}
+										<button 
+											type="button" 
+											class="btn btn-outline-primary btn-sm ms-2" 
+											title="Listar" 
+											data-bs-toggle="modal" 
+											data-bs-target="#agendaModal" 
+											style="height: calc(1.5em + 0.5rem + 2px);">
+												<i class="bi bi-card-list"></i>
+										</button>
+									</div>
+								</div>
+								
+								<div class="col-md-6">
+									{{ form.nombre_cliente.label }}
+									{{ form.nombre_cliente }}
+								</div>
+							</div>
+							
+							<div class="row">
+								<div class="col-sm-9 offset-sm-3">
+									<button type="submit" class="btn btn-primary">
+										<i class="fas fa-play me-1"></i> Ejecutar
+									</button>
+									<a href="{% url 'home' %}" class="btn btn-secondary">
+										<i class="fas fa-times me-1"></i> Cancelar
+									</a>
+								</div>
+							</div>
+						</form>
+						
+					</div>
+				</div>
+				
+				<!-- Card de resultado ------------------------------------------------- -->
+				{% if mostrar_resultado %}
+					<div class="card shadow-sm border-success mb-4">
+						<div class="card-header bg-success text-white">
+							<i class="fas fa-check-circle me-1"></i>
+							Resultado del proceso
+						</div>
+						<div class="card-body">
+							
+							<div class="row mb-3">
+								<div class="col-md-12">
+									<p class="mb-1">
+										<strong>Cliente:</strong> {{ cliente }}
+									</p>
+									<p class="mb-0 text-muted small">
+										Los comprobantes en cuenta corriente fueron reimputados de más
+										antiguo a más nuevo. Los que quedaron con estado <strong>"C"</strong>
+										están totalmente cancelados.
+									</p>
+								</div>
+							</div>
+							
+							<div class="row g-3">
+								<div class="col-md-3">
+									<div class="card text-bg-light h-100">
+										<div class="card-body text-center">
+											<div class="text-muted small">Comprobantes procesados</div>
+											<div class="fs-3 fw-bold">{{ resumen.procesados|formato_es_ar_entero }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card text-bg-light h-100">
+										<div class="card-body text-center">
+											<div class="text-muted small">Cancelados ("C")</div>
+											<div class="fs-3 fw-bold text-success">{{ resumen.cancelados|formato_es_ar_entero }}</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card text-bg-light h-100">
+										<div class="card-body text-center">
+											<div class="text-muted small">Saldo pendiente (a cobrar)</div>
+											<div class="fs-4 fw-bold text-danger">
+												$ {{ resumen.pendiente|formato_es_ar }}
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-3">
+									<div class="card text-bg-light h-100">
+										<div class="card-body text-center">
+											<div class="text-muted small">Saldo a favor del cliente</div>
+											<div class="fs-4 fw-bold text-info">
+												$ {{ resumen.a_favor|formato_es_ar }}
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+					</div>
+				{% endif %}
+				
+			</div>
+		</main>
+	</div>
+{% endblock %}
+
+<!-- Block JavaScrip ----------------------------------------------------- -->
+{% block script %}
+	{{ block.super }}
+	<script>
+		//---------------------------------------------------------------------------
+		// Abre el modal de errores automáticamente si el form trae errores
+		// o si la vista pasó un transaction_error.
+		//---------------------------------------------------------------------------
+		document.addEventListener('DOMContentLoaded', function () {
+			var modalEl = document.getElementById('errorModal');
+			if (!modalEl) return;
+			
+			var hasErrors = modalEl.dataset.hasErrors === 'true';
+			var hasTransactionError = {{ transaction_error|yesno:"true,false" }};
+			
+			if (hasErrors || hasTransactionError) {
+				var modal = new bootstrap.Modal(modalEl);
+				modal.show();
+			}
+			
+			
+			//---------------------------------------------------------------------------
+			//-- Funcionalidad para buscar un Cliente por su Id.
+			//---------------------------------------------------------------------------
+			const idClienteInput = document.getElementById("id_id_cliente");
+			
+			if (idClienteInput){
+				const nombreClienteInput = document.getElementById("id_nombre_cliente");
+				
+				idClienteInput.addEventListener("change", function() {
+					const idCliente = idClienteInput.value.trim();
+					
+					if (idCliente) {
+						fetch(`/informes/buscar/cliente/id/?id_cliente=${idCliente}`)
+							.then(response => {
+								if (!response.ok) {
+									throw new Error("Cliente no encontrado");
+								}
+								return response.json();
+							})
+							.then(data => {
+								nombreClienteInput.value = data.nombre_cliente || "Cliente sin nombre";
+							})
+							.catch(error => {
+								// console.error("Error al obtener el cliente:", error);
+								nombreClienteInput.value = "Cliente no encontrado";
+							});
+					} else {
+						nombreClienteInput.value = "";
+					}
+				});
+			}
+			
+			//---------------------------------------------------------------------------
+			//-- Funcionalidad que muestra el Modal para buscar un Cliente por filtrado.
+			//---------------------------------------------------------------------------
+			const buscarAgendaForm = document.getElementById('buscarAgendaForm');
+			
+			if (buscarAgendaForm) {
+				const tablaResultadosAgenda = document.getElementById('tablaResultadosAgenda').querySelector('tbody');
+				
+				buscarAgendaForm.addEventListener('submit', function (event) {
+					event.preventDefault();
+					
+					const busquedaGeneral = document.getElementById('busquedaGeneral').value;
+					
+					//-- Validar que la búsqueda tenga al menos 4 caracteres.
+					if (busquedaGeneral.length < 4) {
+						alert('Por favor, ingrese al menos 4 caracteres para realizar la búsqueda.');
+						return;
+					}
+					
+					const url = `/informes/buscar/cliente/?busqueda_general=${busquedaGeneral}`;
+					
+					fetch(url, {
+						method: 'GET',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+					})
+					.then(response => response.json())
+					.then(data => {
+						tablaResultadosAgenda.innerHTML = ''; //-- Limpiar tabla de resultados.
+						
+						data.forEach(agenda => {
+							
+							const fila = `
+								<tr>
+									<td>${agenda.id_cliente}</td>
+									<td>${agenda.cuit}</td>
+									<td>${agenda.nombre_cliente}</td>
+									<td>${agenda.movil_cliente || 'N/A'}</td>  <!-- Muestra Móvil -->
+									<td>${agenda.email_cliente || 'N/A'}</td>  <!-- Muestra Email -->
+									<td>${agenda.domicilio_cliente}</td>
+									<td>${agenda.codigo_postal}</td>
+									<td>
+										<input type="radio" name="seleccionar-agenda" 
+											class="seleccionar-agenda" 
+											data-id="${agenda.id_cliente}" 
+											data-cuit="${agenda.cuit}" 
+											data-nombre="${agenda.nombre_cliente}" 
+											data-direccion="${agenda.domicilio_cliente}" 
+											data-movil="${agenda.movil_cliente}"  
+											data-email="${agenda.email_cliente}"
+											data-cp="${agenda.codigo_postal}">
+									</td>
+								</tr>
+							`;
+							
+							tablaResultadosAgenda.insertAdjacentHTML('beforeend', fila);
+						});
+						
+					})
+					.catch(error => {
+						console.error('Error al buscar en agenda:', error);
+					});
+				});
+				
+				//-- Botón seleccionar de Lista de Clientes.
+				document.getElementById('seleccionarAgenda').addEventListener('click', function () {
+					const seleccion = document.querySelector('input[name="seleccionar-agenda"]:checked');
+					
+					if (seleccion) {
+						const id_cliente = seleccion.getAttribute('data-id');
+						const nombre = seleccion.getAttribute('data-nombre');
+						// const cuit = seleccion.getAttribute('data-cuit');
+						// const direccion = seleccion.getAttribute('data-direccion');
+						// const movil = seleccion.getAttribute('data-movil');
+						// const email = seleccion.getAttribute('data-email');
+						// const cp = seleccion.getAttribute('data-cp');
+						
+						document.getElementById('id_id_cliente').value = id_cliente || '';
+						document.getElementById('id_nombre_cliente').value = nombre || '';
+						// document.getElementById('id_domicilio_factura').value = direccion || '';
+						// document.getElementById('id_cuit').value = cuit || '';
+						// document.getElementById('id_movil_factura').value = movil || '';
+						// document.getElementById('id_email_factura').value = email || '';
+						// document.getElementById('id_id_vendedor').value = id_vendedor || '';
+						// document.getElementById('id_vendedor_factura').value = nombre_vendedor || '';
+						
+						//-- Cerrar el modal.
+						const modal = bootstrap.Modal.getInstance(document.getElementById('agendaModal'));
+						modal.hide();
+					}
+				});
+				
+				//-- Limpiar filtros y resultados cuando se cierra la ventana modal.
+				agendaModal.addEventListener('hidden.bs.modal', function () {
+					buscarAgendaForm.reset(); //-- Restablecer el formulario.
+					tablaResultadosAgenda.innerHTML = ''; //-- Limpiar la tabla de resultados.
+				});
+			}
+			
+		});
+	</script>
+{% endblock script %}

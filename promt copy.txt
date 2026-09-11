@@ -271,3 +271,103 @@ Archivos -> Productos ->
 Archivos -> Productos ->
 	Nombre: Exportar Productos E-Commerce
 	URL: exportar_productos_archivo
+
+Mantenimiento
+	Nombre: Recalcular Saldo Pendiente
+	URL: recalcular_saldo_pendiente
+
+
+Elemento				VFP				Django
+-----------------------------------------------------
+Tabla					Facturas.dbf	Factura
+Campo total				total			total
+Campo entrega			entrega			entrega
+Campo estado			estado			estado
+Campo mult				mult_cli		mult_saldo
+
+##################################################################################################################################
+Pestañas BBDD
+
+1 --------------------
+-- Comprobantes de Venta
+/*
+SELECT
+	id_comprobante_venta, estatus_comprobante_venta, codigo_comprobante_venta, nombre_comprobante_venta, tipo_comprobante, tipo_numeracion, compro_asociado, mult_venta, mult_saldo, mult_stock, mult_comision, mult_caja, mult_estadistica, libro_iva, estadistica, electronica, presupuesto, pendiente, info_michelin_auto, info_michelin_camion, codigo_afip_a, codigo_afip_b, remito, recibo, ncr_ndb, manual, mipyme, interno, stock_clie
+FROM
+	public.comprobante_venta
+WHERE
+	mult_saldo <> 0
+	and	estatus_comprobante_venta
+ORDER by
+	mult_saldo DESC, tipo_comprobante;
+*/
+-- Comprobantes del cliente 6169
+
+SELECT
+	f.id_factura, f.fecha_comprobante, cv.codigo_comprobante_venta, cv.nombre_comprobante_venta, f.letra_comprobante, f.numero_comprobante, f.total, f.entrega, f.estado,
+	(f.total - f.entrega)
+FROM factura f
+	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+WHERE id_cliente_id = 6169
+ORDER BY fecha_comprobante
+
+2 --------------------
+SELECT
+	f.id_factura, f.fecha_comprobante, cv.nombre_comprobante_venta, cv.codigo_comprobante_venta, f.numero_comprobante, f.total, f.entrega, f.estado, cv.mult_saldo, (f.total - f.entrega) as saldo
+FROM
+	factura f
+	JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
+WHERE
+	id_cliente_id = 159271
+	AND condicion_comprobante = 2
+	AND cv.mult_saldo <> 0
+ORDER BY
+	f.fecha_comprobante, f.id_factura;
+
+3 --------------------
+-- E-Commerce
+/*
+-- Consulta VFP
+SELECT
+	stock.codigo,
+	lista.codfabrica CAI,
+	lista.detalle,
+	lista.medida,
+	sum(stock.stock) Stock,
+	ROUND(lista.precio - (lista.precio * lista.descuento / 100),2) as oferta,
+	lista.precio
+FROM
+	stock 
+	INNER JOIN lista ON stock.codigo = lista.codigo
+WHERE
+	lista.estado$cEstado .AND. lista.carrito
+GROUP BY
+	lista.codfabrica
+ORDER BY cai
+INTO CURSOR
+	t1
+*/
+-- Consulta PostgreSQL
+select
+	producto.cai,
+	--producto.nombre_producto,
+	producto.medida,
+	sum(producto_stock.stock) as stock,
+	producto.descuento,
+	round(producto.precio - (producto.precio*producto.descuento/100),2) as oferta,
+	producto.precio,
+	producto_estado.estado_producto
+from
+	producto_stock
+	inner join producto on producto_stock.id_producto_id = producto.id_producto
+	inner join producto_estado on producto.id_producto_estado_id = producto_estado.id_producto_estado
+where
+	producto.carrito and producto_estado.estado_producto in ('D', 'E', 'O')
+group by
+	--producto.cai, producto.medida, producto.nombre_producto, producto.precio, oferta, producto.descuento, producto_estado.estado_producto
+	producto.cai, producto.medida, producto.precio, oferta, producto.descuento, producto_estado.estado_producto
+order by
+	producto.cai
+
+--select * from producto_estado
+SELECT p.id_producto, p.nombre_producto, p.precio, pc.cai FROM producto p JOIN producto_cai pc ON p.id_cai_id = pc.id_cai WHERE pc.cai ='' ORDER by pc.cai
