@@ -752,7 +752,6 @@
                                                         <td>
                                                             {{ formret.id_retencion_recibo }}
                                                             {{ formret.id_factura }}
-                                                            <input type="hidden" name="retencionrecibo_set-{{ forloop.counter0 }}-id_codigo_retencion" value="{{ formret.id_codigo_retencion.value|default:'' }}">
                                                             {{ formret.id_codigo_retencion }}
                                                         </td>
                                                         <td>{{ formret.certificado }}</td>
@@ -992,7 +991,6 @@
                                                         {{ form_cheque_input.codigo_banco_input.label }}
                                                     </label>
                                                     {{ form_cheque_input.codigo_banco_input }}
-                                                    <input type="hidden" name="codigo_banco_input" id="{{ form_cheque_input.codigo_banco_input.id_for_label }}">
                                                     
                                                 </div>
                                                 
@@ -1001,7 +999,6 @@
                                                         {{ form_cheque_input.id_banco_input2.label }}
                                                     </label>
                                                     {{ form_cheque_input.id_banco_input2 }}
-                                                    <input type="hidden" name="id_banco_input2" id="{{ form_cheque_input.id_banco_input2.id_for_label }}">
                                                     
                                                 </div>
 
@@ -1662,10 +1659,16 @@
                 const importe = formsetContainer3.querySelector('#id_importe_retencion_input').value;
                 const fecha = formsetContainer3.querySelector('#id_fecha_retencion_input').value;
 
-                if (!codigoRetencion || !certificado || !importe || !fecha) {
-                    alert('Por favor, complete todos los campos!!');
+                const camposFaltantes = [];
+                if (!codigoRetencion) camposFaltantes.push('Código de Retención');
+                if (!certificado) camposFaltantes.push('Certificado');
+                if (!importe) camposFaltantes.push('Importe');
+                if (!fecha) camposFaltantes.push('Fecha');
+
+                if (camposFaltantes.length > 0) {
+                    alert(`Por favor, complete los siguientes campos:\n- ${camposFaltantes.join('\n- ')}`);
                     return;
-                }
+                }                
 
                 const formIdx = parseInt(totalForms3.value);
                 const newFormHTML = `
@@ -1673,9 +1676,8 @@
                         <td>
                             <input type="hidden" name="retencionrecibo_set-${formIdx}-id_retencion_recibo">
                             <input type="hidden" name="retencionrecibo_set-${formIdx}-id_factura" value="">
-                            <input type="hidden" name="retencionrecibo_set-${formIdx}-id_codigo_retencion" value="${codigoRetencion}">
                             <select name="retencionrecibo_set-${formIdx}-id_codigo_retencion" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
-                                <option value="${codigoRetencion}">${formsetContainer3.querySelector('#id_id_codigo_retencion_input option:checked').text}</option>
+                                <option value="${codigoRetencion}" selected>${formsetContainer3.querySelector('#id_id_codigo_retencion_input option:checked').text}</option>
                             </select>
                         </td>
                         <td>
@@ -1749,11 +1751,17 @@
                 const importe = formsetContainer4.querySelector('#id_importe_deposito_input').value;
                 const detalle = formsetContainer4.querySelector('#id_detalle_deposito_input').value;
 
-                // if (!banco || !concepto || !fecha || !importe || !detalle) {
-                if (!banco || !concepto || !fecha || !importe) {
-                    alert('Por favor, complete todos los campos!!');
+                const camposFaltantes = [];
+                if (!banco) camposFaltantes.push('Cuenta Banco');
+                if (!concepto) camposFaltantes.push('Concepto');
+                if (!fecha) camposFaltantes.push('Fecha');
+                if (!importe) camposFaltantes.push('Importe');
+                // 'detalle_deposito' es opcional según regla de negocio
+
+                if (camposFaltantes.length > 0) {
+                    alert(`Por favor, complete los siguientes campos:\n- ${camposFaltantes.join('\n- ')}`);
                     return;
-                }
+                }                
 
                 const formIdx = parseInt(totalForms4.value);
                 const bancoText = formsetContainer4.querySelector('#id_id_cuenta_banco_input option:checked').text;
@@ -1764,13 +1772,11 @@
                         <td>
                             <input type="hidden" name="depositorecibo_set-${formIdx}-id_deposito_recibo">
                             <input type="hidden" name="depositorecibo_set-${formIdx}-id_factura" value="">
-                            <input type="hidden" name="depositorecibo_set-${formIdx}-id_cuenta_banco" value="${banco}">
-                            <select name="depositorecibo_set-${formIdx}-id_banco" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
-                                <option value="${banco}">${bancoText}</option>
+                            <select name="depositorecibo_set-${formIdx}-id_cuenta_banco" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
+                                <option value="${banco}" selected>${bancoText}</option>
                             </select>
                         </td>
                         <td>
-                            <input type="hidden" name="depositorecibo_set-${formIdx}-id_concepto_banco" value="${concepto}">
                             <select name="depositorecibo_set-${formIdx}-id_concepto_banco" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
                                 <option value="${concepto}">${conceptoText}</option>
                             </select>
@@ -1844,10 +1850,17 @@
                 const cuotas = formsetContainer5.querySelector('#id_cuotas_input').value;
                 const importe = formsetContainer5.querySelector('#id_importe_tarjeta_input').value;
 
-                if (!tarjeta || !cupon || !lote || !cuotas || !importe) {
-                    alert('Por favor, complete todos los campos!!');
+                const camposFaltantes = [];
+                if (!tarjeta) camposFaltantes.push('Tarjeta');
+                if (!cupon) camposFaltantes.push('Cupón');
+                if (!cuotas) camposFaltantes.push('Cuotas');
+                if (!importe) camposFaltantes.push('Importe');
+                // 'lote' es opcional según regla de negocio
+
+                if (camposFaltantes.length > 0) {
+                    alert(`Por favor, complete los siguientes campos:\n- ${camposFaltantes.join('\n- ')}`);
                     return;
-                }
+                }                
 
                 const formIdx = parseInt(totalForms5.value);
                 const tarjetaText = formsetContainer5.querySelector('#id_id_tarjeta_input option:checked').text;
@@ -1857,9 +1870,8 @@
                         <td>
                             <input type="hidden" name="tarjetarecibo_set-${formIdx}-id_tarjeta_recibo">
                             <input type="hidden" name="tarjetarecibo_set-${formIdx}-id_factura" value="">
-                            <input type="hidden" name="tarjetarecibo_set-${formIdx}-id_tarjeta" value="${tarjeta}">
                             <select name="tarjetarecibo_set-${formIdx}-id_tarjeta" class="form-control form-control-sm border border-primary" style="font-size: 0.8rem; padding: 0.25rem;">
-                                <option value="${tarjeta}">${tarjetaText}</option>
+                                <option value="${tarjeta}" selected>${tarjetaText}</option>
                             </select>
                         </td>
                         <td>
@@ -1948,8 +1960,6 @@
                 if (!sucursal) camposFaltantes.push('Sucursal');
                 if (!codigoPostal) camposFaltantes.push('Código Postal');
                 if (!numero) camposFaltantes.push('Número de Cheque');
-                // if (!cuenta) camposFaltantes.push('Cuenta');
-                // if (!cuit) camposFaltantes.push('CUIT');
                 if (!fecha1) camposFaltantes.push('Fecha de Emisión');
                 if (!fecha2) camposFaltantes.push('Fecha de Cobro');
                 if (!importe) camposFaltantes.push('Importe');
