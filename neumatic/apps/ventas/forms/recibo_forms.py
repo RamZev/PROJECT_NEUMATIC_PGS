@@ -469,12 +469,6 @@ class RetencionReciboForm(RetencionReciboInputForm):
         self.fields['certificado'].required = True
         self.fields['importe_retencion'].required = True
         self.fields['fecha_retencion'].required = True
-        
-        # Asegurar que fecha_retencion se inicialice correctamente
-        # if self.instance and self.instance.fecha_retencion:
-        #     self.initial['fecha_retencion'] = self.instance.fecha_retencion
-        # else:
-        #     self.initial['fecha_retencion'] = None  # O date.today() si deseas un valor predeterminado
 
 
 # Formularios de Depósitos
@@ -673,7 +667,7 @@ class TarjetaReciboForm(forms.ModelForm):
         self.fields['id_tarjeta'].empty_label = "Seleccione Tarjeta"
         self.fields['id_tarjeta'].required = True
         self.fields['cupon'].required = True
-        self.fields['lote'].required = True
+        self.fields['lote'].required = False
         self.fields['cuotas'].required = True
         self.fields['importe_tarjeta'].required = True
         
@@ -841,8 +835,8 @@ class ChequeReciboForm(forms.ModelForm):
         self.fields['sucursal'].required = True
         self.fields['codigo_postal'].required = True
         self.fields['numero_cheque_recibo'].required = True
-        self.fields['cuenta_cheque_recibo'].required = True
-        self.fields['cuit_cheque_recibo'].required = True
+        self.fields['cuenta_cheque_recibo'].required = False
+        self.fields['cuit_cheque_recibo'].required = False
         self.fields['fecha_cheque1'].required = True
         self.fields['fecha_cheque2'].required = True
         self.fields['importe_cheque'].required = True
