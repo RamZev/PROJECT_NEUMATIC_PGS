@@ -49,6 +49,10 @@ create_view_name = f"{model_string}_create"
 update_view_name = f"{model_string}_update"
 delete_view_name = f"{model_string}_delete"
 
+COMPROBANTES_COMPARTEN_NUMERACION = {
+    'RR': 'RB',   # Recibo sin comisión → usa numeración del Recibo
+}
+
 class ReciboListView(MaestroDetalleListView):
 	model = modelo
 	template_name = f"ventas/maestro_detalle_list.html"
@@ -338,6 +342,7 @@ class ReciboCreateView(MaestroDetalleCreateView):
 
 					nuevo_numero = numero_obj.numero + 1
 					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+
 
 				# Asignar el número al modelo
 				form.instance.numero_comprobante = nuevo_numero

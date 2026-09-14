@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 70f1Y6vxwpid4FKg7jpcZKqrEg1Cc8eKlzdIsTENvUHxOp3ezn7G9w7PswBPxWf
+\restrict 0BgQvaMXjpPyx05ZLyAiMBQ28eCxKu5DvbLkogS32aVdWUtMOWx3R8R6aygKrRn
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-09-01 00:35:57
+-- Started on 2026-09-13 20:41:05
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5390 (class 0 OID 59072)
+-- TOC entry 5398 (class 0 OID 69619)
 -- Dependencies: 223
 -- Data for Name: auth_group_permissions; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -1879,22 +1879,23 @@ INSERT INTO public.auth_group_permissions VALUES (1893, 6, 257);
 INSERT INTO public.auth_group_permissions VALUES (1894, 6, 258);
 INSERT INTO public.auth_group_permissions VALUES (1895, 6, 259);
 INSERT INTO public.auth_group_permissions VALUES (1896, 6, 260);
+INSERT INTO public.auth_group_permissions VALUES (1909, 2, 34);
 
 
 --
--- TOC entry 5397 (class 0 OID 0)
+-- TOC entry 5405 (class 0 OID 0)
 -- Dependencies: 224
 -- Name: auth_group_permissions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
+SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1909, true);
 
 
--- Completed on 2026-09-01 00:35:57
+-- Completed on 2026-09-13 20:41:05
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 70f1Y6vxwpid4FKg7jpcZKqrEg1Cc8eKlzdIsTENvUHxOp3ezn7G9w7PswBPxWf
+\unrestrict 0BgQvaMXjpPyx05ZLyAiMBQ28eCxKu5DvbLkogS32aVdWUtMOWx3R8R6aygKrRn
 

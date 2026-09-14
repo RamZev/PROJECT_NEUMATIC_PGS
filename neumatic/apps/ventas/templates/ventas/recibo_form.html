@@ -531,10 +531,10 @@
 
                                 <div class="col-md-2">
                                     <label class="form-label mb-0 text-primary">
-                                        <strong>Resto a Acreditar</strong>
+                                        <strong>Total Créditos</strong>
                                     </label>
                                     <div>
-                                        <input type="text" id="id_resto_acreditar" class="form-control form-control-sm text-end" 
+                                        <input type="text" id="id_total_creditos" class="form-control form-control-sm text-end" 
                                             value="0.00" readonly style="background-color: #fff3cd; font-weight: bold;">
                                     </div>
                                 </div>
@@ -1197,43 +1197,6 @@
         document.addEventListener('DOMContentLoaded', function () {
             const formsetContainer = document.getElementById('formset-container2');
             const isEdit = document.getElementById('modo-edicion').dataset.isEdit === 'true';
-            
-            /*
-            // Función para parsear valores (CRÍTICA)
-            function parseNumber(value) {
-                // Si es número, retornar directamente
-                if (typeof value === 'number') return value;
-                
-                // Si es string con formato "184.802,20"
-                if (typeof value === 'string' && value.includes('.') && value.includes(',')) {
-                    return parseFloat(
-                        value.replace(/\./g, '')  // Quita puntos de miles
-                             .replace(',', '.')   // Convierte coma decimal a punto
-                    );
-                }
-                
-                // Para strings numéricos simples "184802.20"
-                return parseFloat(value) || 0;
-            }
-            
-            // Función para formatear visualización
-            function formatNumber(value) {
-                const num = parseNumber(value);
-                return num.toLocaleString('es-AR', {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2
-                });
-            }
-            
-            // Actualizar visualización del total cobrado
-            function actualizarVisualizacion(campoId) {
-                const input = document.getElementById(campoId);
-                const span = input?.nextElementSibling;
-                if (input && span && span.classList.contains('formatted-number')) {
-                    span.textContent = input.value || "0.00"; // Sin formato por ahora
-                }
-            }
-            */
 
             ///
             function parseNumber(value) {
@@ -1274,31 +1237,121 @@
             }
             ///
 
-            
-            // Calcular el total cobrado
-            function actualizarTotalCobrado() {
-                let totalCobrado = 0;
-                const rows = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
-                
-                if (rows.length === 0) {
-                    document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
-                    actualizarVisualizacion('id_total_cobrado');
-                    return;
+            ////////////////////
+            function actualizarTotalFormasPago() {
+                const efectivo    = parseNumber(document.getElementById('id_efectivo_recibo')?.value) || 0;
+                const compensa    = parseNumber(document.getElementById('id_compensa_factura')?.value) || 0;
+                const retenciones = parseNumber(document.getElementById('id_total_retenciones')?.value) || 0;
+                const depositos   = parseNumber(document.getElementById('id_total_depositos')?.value) || 0;
+                const tarjetas    = parseNumber(document.getElementById('id_total_tarjetas')?.value) || 0;
+                const cheques     = parseNumber(document.getElementById('id_total_cheques')?.value) || 0;
+
+                const total = efectivo + compensa + retenciones + depositos + tarjetas + cheques;
+
+                const totalInput = document.getElementById('id_total_formas_pago');
+                if (totalInput) {
+                    totalInput.value = total.toFixed(2);
+                    actualizarVisualizacion('id_total_formas_pago');
                 }
 
+                return total;
+            }
+            
+            function actualizarTotalCreditos() {
+                let totalCreditos = 0;
+                const rows = document.querySelectorAll('#formset-container2 .detalle-form tbody tr:not([style*="display: none"])');
+
                 rows.forEach(row => {
-                    const montoInput = row.querySelector('[name*="-monto_cobrado"]');
-                    if (montoInput) {
-                        const monto = parseNumber(montoInput.value);
-                        // Obtener mult_saldo del atributo data-mult-saldo
-                        const multSaldo = parseInt(row.dataset.multSaldo) || 1; // por defecto 1
-                        totalCobrado += monto * multSaldo;
+                    const multSaldo = parseInt(row.dataset.multSaldo) || 1;
+                    if (multSaldo === -1) {
+                        const montoInput = row.querySelector('[name*="-monto_cobrado"]');
+                        if (montoInput) {
+                            totalCreditos += parseNumber(montoInput.value);
+                        }
                     }
                 });
-                
-                document.getElementById('id_total_cobrado').value = totalCobrado.toFixed(2);
-                actualizarVisualizacion('id_total_cobrado');
+
+                const totalInput = document.getElementById('id_total_creditos');
+                if (totalInput) {
+                    totalInput.value = totalCreditos.toFixed(2);
+                    actualizarVisualizacion('id_total_creditos');
+                }
+
+                return totalCreditos;
             }
+            
+            function actualizarPagosFacturas() {
+                let totalPagos = 0;
+                const rows = document.querySelectorAll('#formset-container2 .detalle-form tbody tr:not([style*="display: none"])');
+
+                rows.forEach(row => {
+                    const multSaldo = parseInt(row.dataset.multSaldo) || 1;
+                    if (multSaldo === 1) {
+                        const montoInput = row.querySelector('[name*="-monto_cobrado"]');
+                        if (montoInput) {
+                            totalPagos += parseNumber(montoInput.value);
+                        }
+                    }
+                });
+
+                // No se escribe en ningún campo visible. Solo se retorna el valor.
+                return totalPagos;
+            }
+            
+            function actualizarTotalCobrado() {
+                const totalFormasPago = actualizarTotalFormasPago();
+                const totalCreditos   = actualizarTotalCreditos();
+                const totalCobrado    = totalFormasPago + totalCreditos;
+
+                const totalInput = document.getElementById('id_total_cobrado');
+                if (totalInput) {
+                    totalInput.value = totalCobrado.toFixed(2);
+                    actualizarVisualizacion('id_total_cobrado');
+                }
+
+                return totalCobrado;
+            }
+            
+            function actualizarRestoCobrar() {
+                const totalCobradoInput = document.getElementById('id_total_cobrado');
+                const totalCobrado = parseNumber(totalCobradoInput?.value) || 0;
+                const pagosFacturas = actualizarPagosFacturas();
+                const restoCobrar = totalCobrado - pagosFacturas;
+
+                const restoInput = document.getElementById('id_resto_cobrar');
+                if (restoInput) {
+                    restoInput.value = restoCobrar.toFixed(2);
+                    actualizarVisualizacion('id_resto_cobrar');
+
+                    if (restoCobrar < 0) {
+                        restoInput.classList.add('is-invalid');
+                        restoInput.style.color = 'red';
+                    } else {
+                        restoInput.classList.remove('is-invalid');
+                        restoInput.style.color = '';
+                    }
+                }
+
+                return restoCobrar;
+            }
+            
+            function actualizarResumenPagos() {
+                // actualizarTotalCobrado() internamente llama a FormasPago y Créditos.
+                // actualizarRestoCobrar() internamente llama a PagosFacturas.
+                actualizarTotalCobrado();
+                actualizarRestoCobrar();
+            }
+            
+            function actualizarTodo() {
+                actualizarTotalRetenciones();
+                actualizarTotalDepositos();
+                actualizarTotalTarjetas();
+                actualizarTotalCheques();
+                actualizarResumenPagos();
+            }            
+            ////////////////////
+
+            
             ///
             function actualizarTotalRetenciones() {
                 let totalRetenciones = 0;
@@ -1333,31 +1386,6 @@
             }
             ///
 
-            /*
-            // Calcular el total de retenciones
-            function actualizarTotalRetenciones() {
-                let totalRetenciones = 0;
-                const container = document.querySelector('#formset-container3');
-                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
-                    document.getElementById('id_total_retenciones').value = totalRetenciones.toFixed(2);
-                    actualizarVisualizacion('id_total_retenciones');
-                    return;
-                }
-
-                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
-                rows.forEach(row => {
-                    const input = row.querySelector('[name*="-importe_retencion"]');
-                    if (input) {
-                        const value = parseNumber(input.value);
-                        totalRetenciones += value;
-                    }
-                });
-
-                document.getElementById('id_total_retenciones').value = totalRetenciones.toFixed(2);
-                actualizarVisualizacion('id_total_retenciones');
-            }
-            */
-
             // Calcular el total de depósitos
             function actualizarTotalDepositos() {
                 let totalDepositos = 0;
@@ -1391,31 +1419,6 @@
                 }
             }
 
-
-            /*
-            function actualizarTotalDepositos() {
-                let totalDepositos = 0;
-                const container = document.querySelector('#formset-container4');
-                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
-                    document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
-                    actualizarVisualizacion('id_total_depositos');
-                    return;
-                }
-
-                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
-                rows.forEach(row => {
-                    const input = row.querySelector('[name*="-importe_deposito"]');
-                    if (input) {
-                        const value = parseNumber(input.value);
-                        totalDepositos += value;
-                    }
-                });
-
-                document.getElementById('id_total_depositos').value = totalDepositos.toFixed(2);
-                actualizarVisualizacion('id_total_depositos');
-            }
-            */
-
             // Calcular el total de tarjetas
             function actualizarTotalTarjetas() {
                 let totalTarjetas = 0;
@@ -1448,54 +1451,6 @@
                     console.error("No se encontró el campo id_total_tarjetas");
                 }
             }
-            
-            /*
-            function actualizarTotalTarjetas() {
-                let totalTarjetas = 0;
-                const container = document.querySelector('#formset-container5');
-                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
-                    document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
-                    actualizarVisualizacion('id_total_tarjetas');
-                    return;
-                }
-
-                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
-                rows.forEach(row => {
-                    const input = row.querySelector('[name*="-importe_tarjeta"]');
-                    if (input) {
-                        const value = parseNumber(input.value);
-                        totalTarjetas += value;
-                    }
-                });
-
-                document.getElementById('id_total_tarjetas').value = totalTarjetas.toFixed(2);
-                actualizarVisualizacion('id_total_tarjetas');
-            }
-            */
-
-            
-            /*function actualizarTotalCheques() {
-                let totalCheques = 0;
-                const container = document.querySelector('#formset-container6');
-                if (!container || container.querySelectorAll('tbody tr:not([style*="display: none"])').length === 0) {
-                    document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
-                    actualizarVisualizacion('id_total_cheques');
-                    return;
-                }
-
-                const rows = container.querySelectorAll('tbody tr:not([style*="display: none"])');
-                rows.forEach(row => {
-                    const input = row.querySelector('[name*="-importe_cheque"]');
-                    if (input) {
-                        const value = parseNumber(input.value);
-                        totalCheques += value;
-                    }
-                });
-
-                document.getElementById('id_total_cheques').value = totalCheques.toFixed(2);
-                actualizarVisualizacion('id_total_cheques');
-            }
-            */
             ////
 
             // Calcular el total de cheques
@@ -1529,38 +1484,6 @@
                 } else {
                     console.error("No se encontró el campo id_total_cheques");
                 }
-            }
-
-            // Calcular total formas de pago y resto a cobrar
-            function actualizarResumenPagos() {
-                const totals = {
-                    efectivo: parseNumber(document.getElementById('id_efectivo_recibo')?.value) || 0,
-                    compensa: parseNumber(document.getElementById('id_compensa_factura')?.value) || 0,
-                    retenciones: parseNumber(document.getElementById('id_total_retenciones')?.value) || 0,
-                    depositos: parseNumber(document.getElementById('id_total_depositos')?.value) || 0,
-                    tarjetas: parseNumber(document.getElementById('id_total_tarjetas')?.value) || 0,
-                    cheques: parseNumber(document.getElementById('id_total_cheques')?.value) || 0
-                };
-                const totalFormasPago = Object.values(totals).reduce((sum, value) => sum + value, 0);
-                document.getElementById('id_total_formas_pago').value = totalFormasPago.toFixed(2);
-                actualizarVisualizacion('id_total_formas_pago');
-
-                const totalCobrado = parseNumber(document.getElementById('id_total_cobrado')?.value) || 0;
-                const restoCobrar = totalCobrado - totalFormasPago;
-                document.getElementById('id_resto_cobrar').value = restoCobrar.toFixed(2);
-                actualizarVisualizacion('id_resto_cobrar');
-            }
-
-            // Función principal para actualizar todo
-            function actualizarTodo() {
-                // alert("Entró a actualizarTodo1");
-                actualizarTotalCobrado();
-                actualizarTotalRetenciones();
-                actualizarTotalDepositos();
-                actualizarTotalTarjetas();
-                actualizarTotalCheques();
-                actualizarResumenPagos();
-                actualizarResumenPagos();
             }
             
             // Actualizar facturas pendientes
@@ -1621,20 +1544,39 @@
                 actualizarTodo();
             };
             //////////
-            // Manejar cambios en monto_cobrado
+            // Manejar cambios manuales en monto_cobrado
+            //  - Recibo / Nota de Crédito (mult_saldo = -1): no se valida contra Resto a Cobrar
+            //    (estos documentos suman fondos).
+            //  - Factura / Remito (mult_saldo = 1): si el monto tipeado hace que Resto a Cobrar
+            //    quede negativo, se recorta automáticamente al máximo permitido.
             formsetContainer.addEventListener('input', function (event) {
-                if (event.target.matches('[name*="-monto_cobrado"]')) {
-                    
-                    const row = event.target.closest('tr');
-                    const montoCobrado = parseNumber(event.target.value);
-                    const saldo = parseNumber(row.querySelector('[name*="-saldo"]').value);
-                    if (montoCobrado > saldo) {
-                        alert('El monto cobrado no puede ser mayor al saldo.');
-                        event.target.value = saldo.toFixed(2);
-                    }
-                    actualizarTodo();
+                if (!event.target.matches('[name*="-monto_cobrado"]')) {
+                    return;
                 }
-            });
+
+                const row = event.target.closest('tr');
+                const multSaldo = parseInt(row.dataset.multSaldo) || 1;
+
+                // Recalcular totales con el nuevo valor tipeado
+                actualizarTodo();
+
+                // Solo validar para facturas (mult_saldo = 1)
+                if (multSaldo === 1) {
+                    const restoCobrarInput = document.getElementById('id_resto_cobrar');
+                    const restoCobrar = parseNumber(restoCobrarInput?.value) || 0;
+
+                    if (restoCobrar < 0) {
+                        // El monto tipeado excede el disponible.
+                        // Recortar al máximo permitido: montoActual + restoNegativo.
+                        const montoActual = parseNumber(event.target.value) || 0;
+                        const montoMaximo = montoActual + restoCobrar; // restoCobrar es negativo
+                        event.target.value = Math.max(0, montoMaximo).toFixed(2);
+
+                        // Recalcular con el monto recortado
+                        actualizarTodo();
+                    }
+                }
+            });            
 
             // Manejar cambios en efectivo_recibo
             document.getElementById('id_efectivo_recibo').addEventListener('input', function () {
@@ -2140,11 +2082,11 @@
             const facturaForm = document.querySelector('#factura-form');
             if (facturaForm) {
                 facturaForm.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevenir envío hasta completar validaciones
+                    event.preventDefault();
                     let isValid = true;
                     let errorMessages = [];
 
-                    // Paso 1: Validar campos obligatorios del formulario principal
+                    // ===== Paso 1: Validar campos obligatorios del encabezado =====
                     const requiredFields = [
                         { id: 'id_id_sucursal', label: 'Sucursal' },
                         { id: 'id_id_punto_venta', label: 'Punto de Venta' },
@@ -2161,7 +2103,6 @@
                         { id: 'id_total', label: 'Importe' }
                     ];
 
-                    ///////////////
                     requiredFields.forEach(field => {
                         const input = document.getElementById(field.id);
                         if (!input || !input.value.trim()) {
@@ -2170,129 +2111,63 @@
                             if (input) input.classList.add('is-invalid');
                         } else {
                             if (input) input.classList.remove('is-invalid');
-                            // Validación específica para id_total (permite 0)
                             if (field.id === 'id_total') {
-                                const importeInput2 = input;
-                                const importe = parseFloat(importeInput2.value);
+                                const importe = parseFloat(input.value);
                                 if (isNaN(importe) || importe < 0) {
                                     isValid = false;
                                     errorMessages.push('El Importe no puede ser negativo.');
-                                    importeInput2.classList.add('is-invalid');
-                                } else {
-                                    importeInput2.classList.remove('is-invalid');
+                                    input.classList.add('is-invalid');
                                 }
-                            }                            
-                            //
-                        }
-                    });
-                    ///////////////
-
-                    // ===== VALIDACIÓN DE CONTENIDO DEL RECIBO (con soporte para anticipos) =====
-                    const detallesRows = document.querySelectorAll('#formset-container2 .detalle-form tbody tr:not([style*="display: none"])');
-                    let tieneMontoCobrado = false;
-
-                    detallesRows.forEach(row => {
-                        const montoInput = row.querySelector('input[name$="-monto_cobrado"]');
-                        if (montoInput) {
-                            const monto = parseFloat(montoInput.value) || 0;
-                            if (monto !== 0) {
-                                tieneMontoCobrado = true;
                             }
                         }
                     });
 
-                    // Si NO hay monto cobrado, verificar si es un anticipo (importe + formas de pago)
-                    if (!tieneMontoCobrado) {
-                        const importe = parseFloat(document.getElementById('id_total').value) || 0;
-                        const efectivo = parseFloat(document.getElementById('id_efectivo_recibo').value) || 0;
-                        const retenciones = parseFloat(document.getElementById('id_total_retenciones').value) || 0;
-                        const depositos = parseFloat(document.getElementById('id_total_depositos').value) || 0;
-                        const tarjetas = parseFloat(document.getElementById('id_total_tarjetas').value) || 0;
-                        const cheques = parseFloat(document.getElementById('id_total_cheques').value) || 0;
+                    // ===== Paso 2: Validaciones de la nueva lógica =====
+                    const importe         = parseNumber(document.getElementById('id_total')?.value) || 0;
+                    const totalFormasPago = parseNumber(document.getElementById('id_total_formas_pago')?.value) || 0;
+                    const totalCreditos   = parseNumber(document.getElementById('id_total_creditos')?.value) || 0;
+                    const restoCobrar     = parseNumber(document.getElementById('id_resto_cobrar')?.value) || 0;
+                    const pagosFacturas   = actualizarPagosFacturas();
 
-                        const totalFormasPago = efectivo + retenciones + depositos + tarjetas + cheques;
-
-                        if (totalFormasPago === 0 || importe === 0) {
-                            isValid = false;
-                            errorMessages.push('Debe agregar al menos un detalle con monto cobrado (factura) o un importe con formas de pago (anticipo).');
-                        }
-                    }
-                    // alert("completó el código");
-                    // ===== FIN VALIDACIÓN =====
-
-                    // Validar CUIT (formato: 11 dígitos numéricos)
-                    /* 
-                    const cuitInput = document.getElementById('id_cuit');
-                    if (cuitInput && cuitInput.value.trim() && !/^\d{11}$/.test(cuitInput.value.trim())) {
+                    // Validación A: Importe >= Total Formas Pago
+                    if (importe < totalFormasPago) {
                         isValid = false;
-                        errorMessages.push('El CUIT debe contener 11 dígitos numéricos.');
-                        cuitInput.classList.add('is-invalid');
-                    } else if (cuitInput) {
-                        cuitInput.classList.remove('is-invalid');
-                    }
-                    */
-
-                    ////////////////
-                    // Paso 2: Validar totales (nueva lógica)
-                    const totalFormasPagoInput = document.getElementById('id_total_formas_pago');
-                    const importeInput = document.getElementById('id_total');
-                    const totalCobradoInput = document.getElementById('id_total_cobrado');
-
-                    const totalFormasPago = totalFormasPagoInput ? parseFloat(totalFormasPagoInput.value) || 0 : 0;
-                    const importe = importeInput ? parseFloat(importeInput.value) || 0 : 0;
-                    const totalCobrado = totalCobradoInput ? parseFloat(totalCobradoInput.value) || 0 : 0;
-
-                    // 1. Si Total Cobrado es NEGATIVO, permitimos el envío (backend ajustará)
-                    // 2. Si Total Cobrado >= 0, entonces:
-                    //    - Total Formas de Pago debe ser >= Total Cobrado.
-                    //    - Importe debe ser igual a Total Formas de Pago.
-                    if (totalCobrado < 0) {
-                        // No se agrega error, se permite el envío.
-                        // (opcional) se puede mostrar un mensaje informativo no bloqueante.
-                        console.log("Total Cobrado negativo: será ajustado por el backend.");
+                        errorMessages.push('El Importe debe ser mayor o igual al Total Formas Pago.');
+                        document.getElementById('id_total')?.classList.add('is-invalid');
+                        document.getElementById('id_total_formas_pago')?.classList.add('is-invalid');
                     } else {
-                        // Solo cuando totalCobrado >= 0
-                        if (totalFormasPago < totalCobrado) {
-                            isValid = false;
-                            errorMessages.push('El Total de Formas de Pago debe ser al menos el Total Cobrado.');
-                            if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
-                            if (totalCobradoInput) totalCobradoInput.classList.add('is-invalid');
-                        } else {
-                            if (totalFormasPagoInput) totalFormasPagoInput.classList.remove('is-invalid');
-                            if (totalCobradoInput) totalCobradoInput.classList.remove('is-invalid');
-                        }
+                        document.getElementById('id_total')?.classList.remove('is-invalid');
+                        document.getElementById('id_total_formas_pago')?.classList.remove('is-invalid');
                     }
 
-                    // Regla 3: Importe debe ser igual a Total Formas de Pago (siempre)
-                    if (importe !== totalFormasPago) {
+                    // Validación B: Resto a Cobrar >= 0
+                    if (restoCobrar < 0) {
                         isValid = false;
-                        errorMessages.push('El Importe debe ser igual al Total de Formas de Pago.');
-                        if (importeInput) importeInput.classList.add('is-invalid');
-                        if (totalFormasPagoInput) totalFormasPagoInput.classList.add('is-invalid');
-                    } else {
-                        if (importeInput) importeInput.classList.remove('is-invalid');
-                        if (totalFormasPagoInput) totalFormasPagoInput.classList.remove('is-invalid');
+                        errorMessages.push('El Resto a Cobrar no puede ser negativo. Los pagos aplicados a facturas superan los fondos disponibles.');
+                        document.getElementById('id_resto_cobrar')?.classList.add('is-invalid');
                     }
-                    ////////////////
 
-                    // Mostrar errores si los hay y detener el procesamiento
+                    // Validación C: no todo vacío
+                    if (totalFormasPago === 0 && totalCreditos === 0 && pagosFacturas === 0 && importe === 0) {
+                        isValid = false;
+                        errorMessages.push('Debe cargar al menos una forma de pago, un crédito o un pago a factura.');
+                    }
+
+                    // ===== Paso 3: Detener si hay errores =====
                     if (!isValid) {
                         alert("Por favor, corrija los siguientes errores:\n- " + errorMessages.join('\n- '));
                         return;
                     }
 
-                    // Lógica original: Procesar formset de detalles de recibo
+                    // ===== Paso 4: Reindexar filas del formset de recibo =====
                     const tbody = document.querySelector('#formset-container2 .detalle-form tbody');
                     const rows = tbody.querySelectorAll('tr[data-form-index]');
                     let validRows = 0;
 
                     rows.forEach(row => {
-                        const montoCobradoInput = row.querySelector('input[name$="-monto_cobrado"]');
-                        const montoCobrado = parseFloat(montoCobradoInput.value) || 0;
-
-                        // Actualiza los índices de los inputs para mantenerlos consecutivos
                         const index = validRows;
                         row.setAttribute('data-form-index', index);
+
                         row.querySelectorAll('input, select').forEach(input => {
                             if (input.getAttribute('name')) {
                                 const oldName = input.getAttribute('name');
@@ -2306,19 +2181,13 @@
                             }
                         });
                         validRows++;
-                        
                     });
 
-                    // Actualiza TOTAL_FORMS
                     document.getElementById('id_detallerecibo_set-TOTAL_FORMS').value = validRows;
 
-                    // Log para depuración
                     console.log(`Filas válidas enviadas: ${validRows}`);
-                    if (validRows === 0) {
-                        console.log('No hay detalles con monto_cobrado > 0');
-                    }
 
-                    // Enviar el formulario si todo es válido
+                    // ===== Paso 5: Enviar =====
                     facturaForm.submit();
                 });
             }
@@ -2543,27 +2412,47 @@
             ///
 
             ////
-            // Autocompletar monto cobrado con el saldo al hacer doble clic
+            // Autocompletar monto cobrado al hacer doble clic en la columna Pagos
+            //  - Recibo / Nota de Crédito (data-mult-saldo = -1): asigna saldo completo.
+            //  - Factura / Remito (data-mult-saldo = 1): asigna min(saldo, Resto a Cobrar).
+            //    Si Resto a Cobrar <= 0, alerta y no asigna.
             const formsetContainer2 = document.getElementById('formset-container2');
             if (formsetContainer2) {
                 formsetContainer2.addEventListener('dblclick', function(e) {
                     const target = e.target;
-                    // Verificar que el clic sea sobre un input de monto_cobrado (columna Pagos)
-                    if (target.matches('[name*="-monto_cobrado"]')) {
-                        const row = target.closest('tr');
-                        if (row) {
-                            const saldoInput = row.querySelector('[name*="-saldo"]');
-                            if (saldoInput) {
-                                // Copiar el valor del saldo al input de monto_cobrado
-                                target.value = saldoInput.value;
-                                // Disparar evento 'input' para activar validaciones y actualizaciones
-                                target.dispatchEvent(new Event('input', { bubbles: true }));
-                                // Actualizar todos los totales (ya existe la función)
-                                if (typeof actualizarTodo === 'function') {
-                                    actualizarTodo();
-                                }
-                            }
+
+                    // Solo aplicar sobre inputs de monto_cobrado
+                    if (!target.matches('[name*="-monto_cobrado"]')) {
+                        return;
+                    }
+
+                    const row = target.closest('tr');
+                    if (!row) return;
+
+                    const multSaldo = parseInt(row.dataset.multSaldo) || 1;
+                    const saldoInput = row.querySelector('[name*="-saldo"]');
+                    const saldo = parseNumber(saldoInput?.value) || 0;
+
+                    if (multSaldo === -1) {
+                        // Recibo / Nota de Crédito: asignar saldo completo
+                        target.value = saldo.toFixed(2);
+                    } else {
+                        // Factura / Remito: asignar min(saldo, Resto a Cobrar)
+                        const restoCobrarInput = document.getElementById('id_resto_cobrar');
+                        const restoCobrar = parseNumber(restoCobrarInput?.value) || 0;
+
+                        if (restoCobrar <= 0) {
+                            alert('Sin fondos disponibles. Primero aplique créditos (recibos o notas de crédito).');
+                            return;
                         }
+
+                        const monto = Math.min(saldo, restoCobrar);
+                        target.value = monto.toFixed(2);
+                    }
+
+                    // Disparar recálculo general
+                    if (typeof actualizarTodo === 'function') {
+                        actualizarTodo();
                     }
                 });
             }

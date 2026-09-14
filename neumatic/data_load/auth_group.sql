@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict DKMdGbnFzLC1WD8chdervRF2BMjddMAoNs6loYcKbHEtUcRQGLudNZ6QAej7AJy
+\restrict OzVP4B5pJDm9qczvhVOTYgeO03ZWvGb9aFgqskhcMUlgdTCQkpkJkK5uHZEaeBV
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-09-01 00:35:14
+-- Started on 2026-09-13 20:40:36
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,33 +22,33 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5387 (class 0 OID 59066)
+-- TOC entry 5395 (class 0 OID 69613)
 -- Dependencies: 221
 -- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 INSERT INTO public.auth_group VALUES (1, 'Administracion');
-INSERT INTO public.auth_group VALUES (2, 'Puntos de Ventas');
 INSERT INTO public.auth_group VALUES (3, 'Vendedores');
 INSERT INTO public.auth_group VALUES (4, 'Encargado Sucursal');
 INSERT INTO public.auth_group VALUES (5, 'Deposito');
 INSERT INTO public.auth_group VALUES (6, 'Super');
+INSERT INTO public.auth_group VALUES (2, 'Puntos de Ventas');
 
 
 --
--- TOC entry 5394 (class 0 OID 0)
+-- TOC entry 5402 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.auth_group_id_seq', 1, false);
+SELECT pg_catalog.setval('public.auth_group_id_seq', 6, true);
 
 
--- Completed on 2026-09-01 00:35:14
+-- Completed on 2026-09-13 20:40:36
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict DKMdGbnFzLC1WD8chdervRF2BMjddMAoNs6loYcKbHEtUcRQGLudNZ6QAej7AJy
+\unrestrict OzVP4B5pJDm9qczvhVOTYgeO03ZWvGb9aFgqskhcMUlgdTCQkpkJkK5uHZEaeBV
 

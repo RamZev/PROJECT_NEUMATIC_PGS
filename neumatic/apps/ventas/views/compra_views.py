@@ -203,6 +203,11 @@ class CompraCreateView(MaestroDetalleCreateView):
 					self.object.id_factura_origen = None  # Aseguramos NULL para RT y otros
 				self.object.save()
 
+				# 3.b Cerrar la vinculación con la Factura origen (solo RM)
+				if factura_origen:
+					factura_origen.estado = "R"
+					factura_origen.save(update_fields=["estado"])
+
 				# 4. Guardar detalles (una sola vez)
 				formset_detalle.instance = self.object
 				detalles = formset_detalle.save()

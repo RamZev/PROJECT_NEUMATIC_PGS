@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 5BOJGaGvWtzhi3QQ7vLpmrUQHiWfTFJxgDl0MZnhdZwSSa9lgyY6dSjexqTvA8J
+\restrict VAEOQjZK4sZEVnBsJUPEXo6gWA4tG1iN6t4YyV1CMQ7KaHftWZGEv9BSemeU0yy
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-09-01 00:40:25
+-- Started on 2026-09-13 20:46:18
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5390 (class 0 OID 59412)
+-- TOC entry 5398 (class 0 OID 69959)
 -- Dependencies: 295
 -- Data for Name: menu_menuitem_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -488,12 +488,6 @@ INSERT INTO public.menu_menuitem_groups VALUES (485, 183, 3);
 INSERT INTO public.menu_menuitem_groups VALUES (486, 183, 4);
 INSERT INTO public.menu_menuitem_groups VALUES (487, 183, 5);
 INSERT INTO public.menu_menuitem_groups VALUES (488, 183, 6);
-INSERT INTO public.menu_menuitem_groups VALUES (489, 184, 1);
-INSERT INTO public.menu_menuitem_groups VALUES (490, 184, 2);
-INSERT INTO public.menu_menuitem_groups VALUES (491, 184, 3);
-INSERT INTO public.menu_menuitem_groups VALUES (492, 184, 4);
-INSERT INTO public.menu_menuitem_groups VALUES (493, 184, 5);
-INSERT INTO public.menu_menuitem_groups VALUES (494, 184, 6);
 INSERT INTO public.menu_menuitem_groups VALUES (2, 185, 2);
 INSERT INTO public.menu_menuitem_groups VALUES (3, 185, 3);
 INSERT INTO public.menu_menuitem_groups VALUES (5, 185, 5);
@@ -504,22 +498,37 @@ INSERT INTO public.menu_menuitem_groups VALUES (16, 187, 6);
 INSERT INTO public.menu_menuitem_groups VALUES (17, 188, 6);
 INSERT INTO public.menu_menuitem_groups VALUES (19, 147, 5);
 INSERT INTO public.menu_menuitem_groups VALUES (21, 147, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (495, 189, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (496, 189, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (497, 189, 6);
+INSERT INTO public.menu_menuitem_groups VALUES (498, 182, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (499, 191, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (500, 191, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (501, 191, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (502, 191, 6);
+INSERT INTO public.menu_menuitem_groups VALUES (503, 192, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (504, 192, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (505, 192, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (506, 192, 6);
+INSERT INTO public.menu_menuitem_groups VALUES (507, 185, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (508, 185, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (509, 185, 6);
 
 
 --
--- TOC entry 5397 (class 0 OID 0)
+-- TOC entry 5405 (class 0 OID 0)
 -- Dependencies: 296
 -- Name: menu_menuitem_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.menu_menuitem_groups_id_seq', 21, true);
+SELECT pg_catalog.setval('public.menu_menuitem_groups_id_seq', 509, true);
 
 
--- Completed on 2026-09-01 00:40:26
+-- Completed on 2026-09-13 20:46:18
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 5BOJGaGvWtzhi3QQ7vLpmrUQHiWfTFJxgDl0MZnhdZwSSa9lgyY6dSjexqTvA8J
+\unrestrict VAEOQjZK4sZEVnBsJUPEXo6gWA4tG1iN6t4YyV1CMQ7KaHftWZGEv9BSemeU0yy
 
