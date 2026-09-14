@@ -1576,3 +1576,80 @@ def consultar_padron_percepcion(request):
             'minimo_percepcion': minimo_provincia,
             'mensaje': 'CUIT no encontrado en el padrón'
         })
+
+
+@require_GET
+def obtener_numero_comprobante_recibo(request):
+    """
+    Endpoint exclusivo para Recibos.
+    Resuelve el código AFIP del ComprobanteVenta para que RB, RR, RC
+    compartan la misma secuencia en `Numero`.
+    """
+    id_sucursal = request.GET.get('id_sucursal')
+    id_punto_venta = request.GET.get('id_punto_venta')
+    comprobante = request.GET.get('comprobante')
+
+    if not all([id_sucursal, id_punto_venta, comprobante]):
+        return JsonResponse({'error': 'Faltan parámetros requeridos'}, status=400)
+
+    try:
+        # ------------------------------------------------------------------
+        # Resolver el código de búsqueda en `Numero` a partir de los códigos
+        # AFIP del ComprobanteVenta. Los recibos tienen codigo_afip_a ==
+        # codigo_afip_b, por lo que el lookup es directo.
+        # ------------------------------------------------------------------
+        comprobante_data = ComprobanteVenta.objects.filter(
+            codigo_comprobante_venta=comprobante
+        ).first()
+
+        if not comprobante_data:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se encontró la configuración del comprobante, consulte al Administrador.',
+            })
+
+        codigo_afip_a = comprobante_data.codigo_afip_a
+        codigo_afip_b = comprobante_data.codigo_afip_b
+
+        if not codigo_afip_a or not codigo_afip_b:
+            return JsonResponse({
+                'success': False,
+                'message': 'La configuración AFIP del comprobante está incompleta.',
+            })
+
+        if codigo_afip_a != codigo_afip_b:
+            comprobante_afip = codigo_afip_a
+        else:
+            comprobante_afip = codigo_afip_a
+
+        # ------------------------------------------------------------------
+        # Buscar el último número bajo ese código AFIP
+        # ------------------------------------------------------------------
+        ultimo_numero = Numero.objects.filter(
+            id_sucursal=id_sucursal,
+            id_punto_venta=id_punto_venta,
+            comprobante=comprobante_afip,
+        ).order_by('-numero').first()
+
+        if not ultimo_numero:
+            return JsonResponse({
+                'success': False,
+                'message': 'No se puede obtener la numeración de este comprobante, consulte al Administrador del Sistema!',
+            })
+
+        numero_referencial = ultimo_numero.numero + 1
+        letra = ultimo_numero.letra
+        numero_definitivo = numero_referencial
+
+        return JsonResponse({
+            'numero_referencial': numero_referencial,
+            'numero_definitivo': numero_definitivo,
+            'letra': letra,
+            'success': True
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e),
+            'success': False
+        }, status=500)

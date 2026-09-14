@@ -49,9 +49,6 @@ create_view_name = f"{model_string}_create"
 update_view_name = f"{model_string}_update"
 delete_view_name = f"{model_string}_delete"
 
-COMPROBANTES_COMPARTEN_NUMERACION = {
-    'RR': 'RB',   # Recibo sin comisión → usa numeración del Recibo
-}
 
 class ReciboListView(MaestroDetalleListView):
 	model = modelo
@@ -259,7 +256,8 @@ class ReciboCreateView(MaestroDetalleCreateView):
 				return redirect(self.list_view_name)
 
 		# 3. OBTENER CONTEXTO Y VALIDAR FORMSETS
-		context = self._get_context_with_preserved_data(form)
+		context = self.get_context_data()
+		context['form'] = form
 		formsets = [
 			context['formset_recibo'],
 			context['formset_retencion'],
@@ -326,22 +324,41 @@ class ReciboCreateView(MaestroDetalleCreateView):
 					nuevo_numero = numero_ingresado
 
 				else:
-					# Numeración automática (igual que el código original)
+					###############################
+					# Numeración automática
 					sucursal = form.cleaned_data['id_sucursal']
 					punto_venta = form.cleaned_data['id_punto_venta']
 					comprobante = form.cleaned_data['compro']
 					letra = form.cleaned_data['letra_comprobante']
 
+					# ------------------------------------------------------------------
+					# Resolver el código de búsqueda en `Numero` a partir de los códigos
+					# AFIP del ComprobanteVenta. Los recibos tienen codigo_afip_a ==
+					# codigo_afip_b, por lo que RB, RR y RC comparten secuencia.
+					# ------------------------------------------------------------------
+					codigo_afip_a = comprobante_venta.codigo_afip_a
+					codigo_afip_b = comprobante_venta.codigo_afip_b
+
+					if not codigo_afip_a or not codigo_afip_b:
+						form.add_error(None, 'La configuración AFIP del comprobante está incompleta.')
+						return self.form_invalid(form)
+
+					if codigo_afip_a != codigo_afip_b:
+						comprobante_afip = codigo_afip_a
+					else:
+						comprobante_afip = codigo_afip_a
+
 					numero_obj, created = Numero.objects.select_for_update(nowait=True).get_or_create(
 						id_sucursal=sucursal,
 						id_punto_venta=punto_venta,
-						comprobante=comprobante,
+						comprobante=comprobante_afip,
 						letra=letra,
 						defaults={'numero': 0}
 					)
 
 					nuevo_numero = numero_obj.numero + 1
 					Numero.objects.filter(pk=numero_obj.pk).update(numero=F('numero') + 1)
+					###############################
 
 
 				# Asignar el número al modelo
@@ -349,21 +366,33 @@ class ReciboCreateView(MaestroDetalleCreateView):
 				form.instance.full_clean()
 				###########################
 
-				# Asignar total_cobrado a entrega
+				# Calcular Total Pagado = Total Cobrado − Resto a Cobrar
+				# (lo efectivamente aplicado a facturas; el remanente queda a favor del cliente)
 				total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
+				resto_cobrar  = form.cleaned_data.get('resto_cobrar', 0.0)
+				total_pagado  = total_cobrado - resto_cobrar
+
+				form.instance.entrega = total_pagado
+
 				print('total_cobrado:', total_cobrado)
-				form.instance.entrega = total_cobrado
-				
-				# ===== NUEVO: Ajuste de anticipos =====
-				total_cobrado = form.cleaned_data.get('total_cobrado', 0.0)
-				if total_cobrado < 0:
-					# El primer formset es el de detalles de recibo
-					formset_recibo = formsets[0]
-					self._ajustar_anticipos(formset_recibo)
-					# Después del ajuste, el neto es 0
-					form.instance.entrega = 0
-				# ===== FIN NUEVO =====				
-				
+				print('resto_cobrar :', resto_cobrar)
+				print('total_pagado :', total_pagado)
+
+				# ---- TRAZABILIDAD DE CABECERA DEL RECIBO ----
+				print("=" * 60)
+				print("📋 VALORES QUE SE VAN A GUARDAR EN LA CABECERA DEL RECIBO")
+				print(f"  compro                : {form.cleaned_data.get('compro')}")
+				print(f"  letra_comprobante     : {form.cleaned_data.get('letra_comprobante')}")
+				print(f"  numero_comprobante    : {form.instance.numero_comprobante}")
+				print(f"  total (Importe)       : {form.instance.total}")
+				print(f"  entrega (Total Cobrado): {form.instance.entrega}")
+				print(f"  efectivo_recibo       : {form.cleaned_data.get('efectivo_recibo')}")
+				print(f"  compensa_factura      : {form.cleaned_data.get('compensa_factura')}")
+				print(f"  id_cliente            : {form.cleaned_data.get('id_cliente')}")
+				print("=" * 60)
+				# ---- FIN TRAZABILIDAD ----
+
+
 				# 8. Guardar el formulario principal
 				self.object = form.save()
 				
@@ -419,12 +448,35 @@ class ReciboCreateView(MaestroDetalleCreateView):
 					formset.save()
 				
 				# 11. Actualizar el campo entrega en Factura
+				# ---- TRAZABILIDAD DE FACTURAS COBRADAS ----
+				print("=" * 60)
+				print("📋 FACTURAS QUE SE VAN A ACTUALIZAR (entrega += monto_cobrado)")
+
 				for detalle in self.object.detalles_recibo.filter(monto_cobrado__gt=0):
+					###
+					print(f"  id_factura_cobrada = {detalle.id_factura_cobrada_id} "
+											f"| monto_cobrado = {detalle.monto_cobrado} "
+											f"| entrega_actual_factura = {detalle.id_factura_cobrada.entrega} "
+											f"| nuevo_entrega = {detalle.id_factura_cobrada.entrega + detalle.monto_cobrado}")
+					###
+
 					factura = detalle.id_factura_cobrada
 					if factura:
 						print("actualizando monto de entrega en Factura")
 						factura.entrega += detalle.monto_cobrado
 						factura.save()
+
+				print("=" * 60)
+				# ---- FIN TRAZABILIDAD ----
+				
+				# ---- TRAZABILIDAD DE CONFIRMACIÓN ----
+				print("=" * 60)
+				print(f"✅ RECIBO GUARDADO. ID = {self.object.id_factura}")
+				print(f"  total   = {self.object.total}")
+				print(f"  entrega = {self.object.entrega}")
+				print(f"  id_caja = {self.object.id_caja}")
+				print("=" * 60)
+				# ---- FIN TRAZABILIDAD ----
 				
 				messages.success(self.request, "Recibo creado correctamente")
 				return redirect(self.get_success_url())
@@ -435,98 +487,6 @@ class ReciboCreateView(MaestroDetalleCreateView):
 		except Exception as e:
 			messages.error(self.request, f"Error inesperado: {str(e)}")
 			return self.form_invalid(form)
-
-
-	def _ajustar_anticipos(self, formset_recibo):
-		"""
-		Ajusta los montos de los anticipos (mult_saldo = -1) para que el neto sea 0.
-		Prioridad: montos idénticos primero, luego fecha (más antiguo conserva, más reciente se recorta).
-		Retorna el nuevo neto ajustado (siempre 0).
-		"""
-		from decimal import Decimal
-		from django import forms  # si no está importado al inicio
-
-		# 1. Recopilar datos de cada línea del detalle
-		lineas = []
-		for form in formset_recibo.forms:
-			if form.cleaned_data.get('DELETE', False):
-				continue
-			monto = form.cleaned_data.get('monto_cobrado', Decimal('0.00'))
-			if monto == 0:
-				continue
-			factura_cobrada = form.cleaned_data.get('id_factura_cobrada')
-			if not factura_cobrada:
-				continue
-			mult_saldo = factura_cobrada.id_comprobante_venta.mult_saldo if factura_cobrada.id_comprobante_venta else 0
-			fecha = factura_cobrada.fecha_comprobante
-			lineas.append({
-				'form': form,
-				'monto': monto,
-				'mult_saldo': mult_saldo,
-				'fecha': fecha,
-				'id_factura_cobrada': factura_cobrada.id_factura,
-				'es_anticipo': mult_saldo == -1,
-			})
-
-		# 2. Separar facturas y anticipos
-		facturas = [l for l in lineas if l['mult_saldo'] == 1]
-		anticipos = [l for l in lineas if l['mult_saldo'] == -1]
-
-		total_facturas = sum(l['monto'] for l in facturas)
-		total_anticipos = sum(l['monto'] for l in anticipos)
-
-		# Si no hay excedente, no hacer nada
-		if total_anticipos <= total_facturas:
-			return
-
-		excedente = total_anticipos - total_facturas
-
-		# 3. Aplicar reglas de prioridad
-		# a) Identificar anticipos con montos idénticos a alguna factura
-		montos_facturas = set(l['monto'] for l in facturas)
-		anticipos_prioritarios = []
-		anticipos_restantes = []
-
-		for a in anticipos:
-			if a['monto'] in montos_facturas:
-				anticipos_prioritarios.append(a)
-			else:
-				anticipos_restantes.append(a)
-
-		# Los anticipos prioritarios no se tocan (se conservan completos)
-		# Ordenar los restantes por fecha (más antiguos primero)
-		anticipos_restantes.sort(key=lambda x: x['fecha'])
-
-		# b) Recortar desde el más reciente (último en la lista) hasta eliminar el excedente
-		for a in reversed(anticipos_restantes):
-			if excedente <= 0:
-				break
-			monto_actual = a['monto']
-			if monto_actual <= excedente:
-				nuevo_monto = 0
-				excedente -= monto_actual
-			else:
-				nuevo_monto = monto_actual - excedente
-				excedente = 0
-			# Actualizar el monto en el formulario y en la instancia
-			a['form'].cleaned_data['monto_cobrado'] = nuevo_monto
-			a['form'].instance.monto_cobrado = nuevo_monto
-
-		# Si aún queda excedente, lanzar error (no debería ocurrir)
-		if excedente > 0:
-			raise forms.ValidationError("No se pudo ajustar el excedente de anticipos.")
-
-	
-	def _get_context_with_preserved_data(self, form):
-		"""Obtener contexto con datos del formulario preservados"""
-		context = self.get_context_data()
-		context['form'] = form
-		return context
-	
-	def _return_with_preserved_data(self, form):
-		"""Retornar al formulario con datos preservados"""
-		context = self._get_context_with_preserved_data(form)
-		return render(self.request, self.template_name, context)
 	
 	def form_invalid(self, form):
 		print("Entro a form_invalid")
@@ -552,7 +512,6 @@ class ReciboCreateView(MaestroDetalleCreateView):
 
 		initial['id_sucursal'] = usuario.id_sucursal
 		initial['id_punto_venta'] = usuario.id_punto_venta
-		initial['cambia_precio_descripcion'] = usuario.cambia_precio_descripcion
 
 		return initial
 	
@@ -596,7 +555,8 @@ class ReciboUpdateView(MaestroDetalleUpdateView):
 						'fecha_comprobante': detalle.id_factura_cobrada.fecha_comprobante.strftime('%d/%m/%Y'),
 						'total': detalle.id_factura_cobrada.total,
 						'entrega': detalle.id_factura_cobrada.entrega,
-						'saldo': detalle.id_factura_cobrada.total - detalle.id_factura_cobrada.entrega,
+						'saldo_factura': detalle.saldo_factura,
+						'entrega': detalle.id_factura_cobrada.total - (detalle.saldo_factura or 0),
 					} for detalle in DetalleRecibo.objects.filter(id_factura=self.object).select_related('id_factura_cobrada__id_comprobante_venta')
 				]
 			)

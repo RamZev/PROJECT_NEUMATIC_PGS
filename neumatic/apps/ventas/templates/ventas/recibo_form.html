@@ -646,7 +646,7 @@
                                                         <td>{{ formdet.fecha_comprobante }}</td>
                                                         <td>{{ formdet.total }}</td>
                                                         <td>{{ formdet.entrega }}</td>
-                                                        <td>{{ formdet.saldo }}</td>
+                                                        <td>{{ formdet.saldo_factura }}</td>
                                                         <td>{{ formdet.monto_cobrado }}</td>
                                                         <td>
                                                             <button type="button" class="btn btn-danger btn-sm btn-delete" 
@@ -1524,7 +1524,7 @@
                                 <input type="number" name="detallerecibo_set-${index}-entrega" class="${formControlClass} text-end ${readonlyClass}" value="${factura.entrega}" readonly>
                             </td>
                             <td>
-                                <input type="number" name="detallerecibo_set-${index}-saldo" class="${formControlClass} text-end ${readonlyClass}" value="${saldo.toFixed(2)}" readonly>
+                                <input type="number" name="detallerecibo_set-${index}-saldo_factura" class="${formControlClass} text-end ${readonlyClass}" value="${saldo.toFixed(2)}" readonly>
                             </td>
                             <td>
                                 <input type="number" name="detallerecibo_set-${index}-monto_cobrado" class="${montoCobradoClass}" value="0.00" min="0" step="0.01" required style="font-size: 0.8rem; padding: 0.25rem;">
@@ -2726,7 +2726,7 @@
                 if (!manual && id_sucursal && id_punto_venta && compro) {
                     alert("Entro aqui");
                     
-                    const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
+                    const url = new URL('/ventas/obtener-numero-comprobante-recibo/', window.location.origin);
                     url.searchParams.append('id_sucursal', id_sucursal);
                     url.searchParams.append('id_punto_venta', id_punto_venta);
                     url.searchParams.append('comprobante', compro);
@@ -3241,7 +3241,7 @@
                     // Validar parámetros
                     if (!manual && id_sucursal && id_punto_venta && compro) {
                         console.log("Ha entrado a la vista!");
-                        const url = new URL('/ventas/obtener-numero-comprobante2/', window.location.origin);
+                        const url = new URL('/ventas/obtener-numero-comprobante-recibo/', window.location.origin);
                         url.searchParams.append('id_sucursal', id_sucursal);
                         url.searchParams.append('id_punto_venta', id_punto_venta);
                         url.searchParams.append('comprobante', compro);

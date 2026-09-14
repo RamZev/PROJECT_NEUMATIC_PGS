@@ -18,7 +18,7 @@ Ejecutar los algoritmos de de deupración de la base datos de datos de VisualFox
 
 * **01_genera_json.sql**
 
-* **01_genera_user_menu_sql.sql**
+* **01_genera_user_menu_sql.sql** (YA NO HACERLO MANUAL)
 
 ## 1. Renombrar o Eliminar la base de datos de la carpeta
 
@@ -369,18 +369,16 @@ python 07_migra_detalle_recibo.py
 
 python 08_migra_caja.py  
 
-
-
 **Migración de padrones para percepciones**
 
 1. En dataload: python padron_entrerios_migra.py
+
 2. En dataload: python padron_santafe_migra.py
+
 3. Actualizar la tabla provincia:
    
    UPDATE provincia SET minimo_percepcion = 20000 WHERE id_provincia = 6;
    UPDATE provincia SET minimo_percepcion = 200000 WHERE id_provincia = 13;
-
-
 
 De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en pgAdmin, luego de abrir la BD neumatic.
 
@@ -413,8 +411,6 @@ Cuando lo haga, en el script usuarios_user.sql, **elimine** el primer insert (us
 * actualiza_color_producto_estado.sql  
 
 * actualiza_tipo_comprobante.sql  
-
-* 
 
 * actualiza_producto_operario.sql  
 
@@ -458,17 +454,6 @@ Cuando lo haga, en el script usuarios_user.sql, **elimine** el primer insert (us
   UPDATE comprobante_venta 
   SET interno='true' 
   WHERE remito='true' AND nombre_comprobante_venta ILIKE '%int%';
-  
-  -- marcar los comprobantes manuales
-  UPDATE 
-  comprobante_venta 
-  SET manual='true' 
-  WHERE nombre_comprobante_venta ILIKE '%manual%';
-  
-  -- marcar los comprobantes que se puede dejar mercaderia en stock de clientes
-  UPDATE comprobante_venta 
-  SET stock_clie='true' 
-  WHERE mult_stock < 0 AND interno = 'false' AND ncr_ndb = 'false' AND codigo_comprobante_venta <> 'MM'
 
 **Sincronización de secuencias de ID** (OJO)
 
@@ -479,15 +464,24 @@ sincro_ventas_id_seq.sql
 
 sincro_menu_id_seq.sql
 
+**Actualizar la tabla numero**
+
+UPDATE numero 
+SET letra = 'R'
+WHERE comprobante IN ('RB', 'RC') 
+  AND letra = 'X';
+
 **Al finalizar las migraciones:**
 
 Ejecute la actualización del superusuario (OBLIGATORIO)
 
-1. **actualiza_user.py** y 
+1. **actualiza_user.py**
 
-2. (actualiza_user2.py (usuarios_user.json),  **YA NO**
+2. **empresa.sql** en pgAdmin
 
-3. Crear las vistas en la base de datos
+3. (actualiza_user2.py (usuarios_user.json),  **YA NO**
+
+4. Crear las vistas en la base de datos
    
    2.1. Abrir la base de datos en DB Browser
    
@@ -499,7 +493,7 @@ Ejecute la actualización del superusuario (OBLIGATORIO)
    
    2.5. Grabar los cambios y salir de DB Browser
 
-4. Entrar al sistema e ir a comprobantes de venta
+5. Entrar al sistema e ir a comprobantes de venta
    
    3.1. Asignar los documentos relacionados a Facturas Remito  y otras marcas necesarias
    
@@ -509,4 +503,4 @@ Ejecute la actualización del superusuario (OBLIGATORIO)
    
    3.4. En Comprobantes Compra, asinarg los Remitos y Retenciones
 
-5. 
+6. 

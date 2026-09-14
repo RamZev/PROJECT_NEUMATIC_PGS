@@ -331,15 +331,15 @@ class DetalleReciboForm(forms.ModelForm):
                                     'class': 'form-control form-control-sm border border-primary text-end small-font readonly-select',
                                     'readonly': 'readonly'
                                 }))
-    saldo = forms.DecimalField(max_digits=12, decimal_places=2, required=False, disabled=True,
-                              widget=forms.NumberInput(attrs={
-                                  'class': 'form-control form-control-sm border border-primary text-end small-font readonly-select',
-                                  'readonly': 'readonly'
-                              }))
+    saldo_factura = forms.DecimalField(max_digits=12, decimal_places=2, required=False,
+                                   widget=forms.NumberInput(attrs={
+                                       'class': 'form-control form-control-sm border border-primary text-end small-font readonly-select',
+                                       'readonly': 'readonly'
+                                   }))
 
     class Meta:
         model = DetalleRecibo
-        fields = ['id_detalle_recibo', 'id_factura', 'id_factura_cobrada', 'monto_cobrado']
+        fields = ['id_detalle_recibo', 'id_factura', 'id_factura_cobrada', 'monto_cobrado', 'saldo_factura']
         widgets = {
             'id_detalle_recibo': forms.HiddenInput(),
             'id_factura': forms.HiddenInput(),
@@ -355,14 +355,23 @@ class DetalleReciboForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         # Inicializar campos derivados desde id_factura_cobrada
         if self.instance and self.instance.id_factura_cobrada:
+            ###
             factura_cobrada = self.instance.id_factura_cobrada
             self.initial['comprobante'] = factura_cobrada.id_comprobante_venta.nombre_comprobante_venta
             self.initial['letra_comprobante'] = factura_cobrada.letra_comprobante
             self.initial['numero_comprobante'] = factura_cobrada.numero_comprobante
-            self.initial['fecha_comprobante'] = factura_cobrada.fecha_comprobante  # Fecha como objeto date
+            self.initial['fecha_comprobante'] = factura_cobrada.fecha_comprobante
             self.initial['total'] = factura_cobrada.total
-            self.initial['entrega'] = factura_cobrada.entrega
-            self.initial['saldo'] = factura_cobrada.total - factura_cobrada.entrega
+
+            if self.instance.pk and self.instance.saldo_factura is not None:
+                # Modo edición: usar el saldo congelado persistido
+                self.initial['saldo_factura'] = self.instance.saldo_factura
+                self.initial['entrega'] = factura_cobrada.total - self.instance.saldo_factura
+            else:
+                # Modo creación: calcular desde el estado actual de la factura
+                self.initial['saldo_factura'] = factura_cobrada.total - factura_cobrada.entrega
+                self.initial['entrega'] = factura_cobrada.entrega
+            ###
 
 # Formularios de Retenciones
 class RetencionReciboInputForm(forms.ModelForm):

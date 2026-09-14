@@ -72,6 +72,7 @@ from .views.consultas_factura_views import (
     anular_remito,
     actualizar_campos_remito,
     verificar_numero_comprobante,
+    obtener_numero_comprobante_recibo,
 )
 from .views.consultas_compra_views import (
 	obtener_numero_compra,
@@ -190,5 +191,7 @@ urlpatterns = [
 	path('verificar-numero-comprobante/', verificar_numero_comprobante, name='verificar_numero_comprobante'),
 
 	path('consultar-padron/', consultar_padron_percepcion, name='consultar_padron'),
+
+	    path('obtener-numero-comprobante-recibo/', obtener_numero_comprobante_recibo, name='obtener_numero_comprobante_recibo'),
 
 ]
