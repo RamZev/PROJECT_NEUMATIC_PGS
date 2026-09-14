@@ -25,5 +25,6 @@ urlpatterns = [
 	path('usuario/listar/', UsuarioListView.as_view(), name='usuario_listar'),
 	path('usuario/crear/', UsuarioCreateView.as_view(), name='usuario_crear'),
 	path('usuario/editar/<int:pk>/', UsuarioUpdateView.as_view(), name='usuario_editar'),
-	path('usuario/eliminar/<int:pk>/', UsuarioDeleteView.as_view(), name='usuario_eliminar')
+	path('usuario/eliminar/<int:pk>/', UsuarioDeleteView.as_view(), name='usuario_eliminar'),
+	path('ajax/cargar-puntos-venta/', cargar_puntos_venta, name='cargar_puntos_venta'),
 ]

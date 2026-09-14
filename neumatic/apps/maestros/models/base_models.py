@@ -1168,6 +1168,10 @@ class PuntoVenta(ModeloBaseGenerico):
 		
 		errors = {}
 		
+		#-- Validar Sucursal.
+		if not self.id_sucursal:
+			errors.update({'id_sucursal': 'Debe indicar una Sucursal.'})
+		
 		#-- Limpiar y formatear el valor de `punto_venta` con ceros a la izquierda.
 		if self.punto_venta:
 			try:

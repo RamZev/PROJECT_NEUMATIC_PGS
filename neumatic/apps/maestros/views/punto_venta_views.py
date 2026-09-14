@@ -53,11 +53,12 @@ class ConfigViews():
 
 class DataViewList():
 	search_fields = [
+		'id_sucursal__nombre_sucursal',
 		'punto_venta',
 		'descripcion_punto_venta'
 	]
 	
-	ordering = ['punto_venta']
+	ordering = ['id_sucursal__nombre_sucursal', 'punto_venta']
 	
 	paginate_by = 8
 	

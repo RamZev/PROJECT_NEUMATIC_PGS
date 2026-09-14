@@ -1,12 +1,10 @@
 # neumatic\apps\usuarios\forms\user_form.py
 from django import forms
-
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import Group
 
-#from apps.usuarios.models.user_models import User
 from apps.usuarios.models import User
-
+from apps.maestros.models.base_models import PuntoVenta
 from diseno_base.diseno_bootstrap import (
 	formclasstext, formclassselect, formclasscheck)
 
@@ -21,6 +19,11 @@ class RegistroUsuarioForm(UserCreationForm):
 		label="Confirmar Contraseña",
 		widget=forms.PasswordInput(attrs={**formclasstext})
 	)
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		#-- Al crear, no mostrar ningún punto de venta hasta elegir sucursal.
+		self.fields['id_punto_venta'].queryset = PuntoVenta.objects.none()
 	
 	class Meta:
 		model = User
@@ -73,9 +76,35 @@ class RegistroUsuarioForm(UserCreationForm):
 			'cambia_precio_descripcion':
 				forms.Select(attrs={**formclassselect}),
 		}
+	
+	def clean(self):
+		cleaned_data = super().clean()
+		sucursal = cleaned_data.get('id_sucursal')
+		punto_venta = cleaned_data.get('id_punto_venta')
+		
+		if sucursal and punto_venta:
+			if punto_venta.id_sucursal_id != sucursal.id_sucursal:
+				self.add_error(
+					'id_punto_venta',
+					'El punto de venta seleccionado no pertenece a la sucursal indicada.'
+				)
+		
+		return cleaned_data
 
 
 class EditarUsuarioForm(UserChangeForm):
+	
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		
+		#-- Filtrar puntos de venta según la sucursal del usuario.
+		if self.instance and self.instance.pk and self.instance.id_sucursal_id:
+			self.fields['id_punto_venta'].queryset = PuntoVenta.objects.filter(
+				id_sucursal_id=self.instance.id_sucursal_id,
+				estatus_punto_venta=True
+			).order_by('punto_venta')
+		else:
+			self.fields['id_punto_venta'].queryset = PuntoVenta.objects.none()
 	
 	class Meta:
 		model = User
@@ -125,9 +154,21 @@ class EditarUsuarioForm(UserChangeForm):
 				forms.Select(attrs={**formclassselect}),
 			'cambia_precio_descripcion':
 				forms.Select(attrs={**formclassselect}),
-			'cambia_precio_descripcion':
-				forms.Select(attrs={**formclassselect}),
 		}
+	
+	def clean(self):
+		cleaned_data = super().clean()
+		sucursal = cleaned_data.get('id_sucursal')
+		punto_venta = cleaned_data.get('id_punto_venta')
+		
+		if sucursal and punto_venta:
+			if punto_venta.id_sucursal_id != sucursal.id_sucursal:
+				self.add_error(
+					'id_punto_venta',
+					'El punto de venta seleccionado no pertenece a la sucursal indicada.'
+				)
+		
+		return cleaned_data
 
 
 class GroupForm(forms.ModelForm):

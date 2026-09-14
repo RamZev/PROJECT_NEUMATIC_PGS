@@ -1,22 +1,16 @@
 # neumatic\apps\usuarios\views\user_views.py
-from django.urls import reverse_lazy
-
-#from django.contrib.auth import authenticate, login, logout
-#from django.contrib.auth.forms import AuthenticationForm
-
-from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-#from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.models import Group, Permission
 from django.contrib.auth import authenticate
 from django.contrib import messages
+from django.urls import reverse_lazy
+from django.http import JsonResponse
 
 from .user_views_generics import *
 from apps.usuarios.forms.user_form import *
-
-#from apps.usuarios.models.user_models import User
 from apps.usuarios.models import User
-
+from apps.maestros.models.sucursal_models import Sucursal
+from apps.maestros.models.base_models import PuntoVenta
 
 #-- Indicar las aplicaciones del proyecto para poder filtrar los modelos de las mismas.
 project_app_labels = ['usuarios', 'maestros', 'ventas']
@@ -97,8 +91,8 @@ class CustomLogoutView(GenericLogoutView):
 		#-- Llama al método original para cerrar la sesión.
 		return super().dispatch(request, *args, **kwargs)
 
+
 #-- Vistas de Grupos de usuarios. 
-#@method_decorator(login_required, name='dispatch')
 class GrupoListView(GenericListView):
 	model = Group
 	context_object_name = 'grupos'
@@ -109,7 +103,6 @@ class GrupoListView(GenericListView):
 	}
 
 
-#@method_decorator(login_required, name='dispatch')
 class GrupoCreateView(GenericCreateView):
 	model = Group
 	form_class = GroupForm
@@ -121,7 +114,6 @@ class GrupoCreateView(GenericCreateView):
 	}
 
 
-#@method_decorator(login_required, name='dispatch')
 class GrupoUpdateView(GenericUpdateView):
 	model = Group
 	form_class = GroupForm
@@ -163,7 +155,6 @@ class GrupoUpdateView(GenericUpdateView):
 		return response	
 
 
-#@method_decorator(login_required, name='dispatch')
 class GrupoDeleteView(GenericDeleteView):
 	model = Group
 	template_name = "usuarios/grupo_confirm_delete.html"
@@ -175,7 +166,6 @@ class GrupoDeleteView(GenericDeleteView):
 
 
 #-- Vistas de Usuarios.
-#@method_decorator(login_required, name='dispatch')
 class UsuarioListView(GenericListView):
 	model = User
 	context_object_name = 'usuarios'
@@ -186,7 +176,6 @@ class UsuarioListView(GenericListView):
 	}
 
 
-#@method_decorator(login_required, name='dispatch')
 class UsuarioCreateView(GenericCreateView):
 	model = User
 	form_class = RegistroUsuarioForm
@@ -198,7 +187,6 @@ class UsuarioCreateView(GenericCreateView):
 	}
 
 
-#@method_decorator(login_required, name='dispatch')
 class UsuarioUpdateView(GenericUpdateView):
 	model = User
 	form_class = EditarUsuarioForm
@@ -248,8 +236,8 @@ class UsuarioUpdateView(GenericUpdateView):
 		usuario.user_permissions.set(permisos_asignados)
 		
 		return response	
-	
-#@method_decorator(login_required, name='dispatch')
+
+
 class UsuarioDeleteView(GenericDeleteView):
 	model = User
 	template_name = "usuarios/usuario_confirm_delete.html"
@@ -259,3 +247,25 @@ class UsuarioDeleteView(GenericDeleteView):
 		"list_view_name": "usuario_listar"
 	}
 
+
+#-- Vista AJAX para cargar puntos de venta según la sucursal.
+def cargar_puntos_venta(request):
+	sucursal_id = request.GET.get('sucursal_id')
+	puntos_venta = PuntoVenta.objects.none()
+	
+	if sucursal_id:
+		puntos_venta = PuntoVenta.objects.filter(
+			id_sucursal_id=sucursal_id,
+			estatus_punto_venta=True
+		).order_by('punto_venta')
+	
+	data = [
+		{
+			'id': pv.id_punto_venta,
+			'punto_venta': pv.punto_venta,
+			'descripcion': pv.descripcion_punto_venta or '',
+			'texto': f"{pv.punto_venta} - {pv.descripcion_punto_venta or ''}".strip(' -'),
+		}
+		for pv in puntos_venta
+	]
+	return JsonResponse({'puntos_venta': data})

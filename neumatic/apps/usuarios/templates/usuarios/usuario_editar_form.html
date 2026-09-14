@@ -3,23 +3,23 @@
 {% load static %}
 {% load custom_tags %}
 
-<!-- Block Title  ----------------------------------------------------------->
+<!-- Block Title  --------------------------------------------------------- -->
 {% block title %}
 	Usuarios
 {% endblock %}
 
-<!-- Block style  ----------------------------------------------------------->
+<!-- Block style  --------------------------------------------------------- -->
 {% block style %}
 {% endblock style %}
 
 {% debug %}
 
-<!-- Block Header ----------------------------------------------------------->
+<!-- Block Header --------------------------------------------------------- -->
 {% block header %}
 	{% include 'top_nav.html' %}
 {% endblock %}
 
-<!-- Block Main - ----------------------------------------------------------->
+<!-- Block Main - --------------------------------------------------------- -->
 {% block main %}
 	
 	{% block sidebar %}
@@ -65,7 +65,7 @@
 									</div>
 								{% endif %}
 								
-								<form method="post" novalidate>
+								<form method="post" novalidate id="usuario-form" data-url-puntos-venta="{% url 'cargar_puntos_venta' %}">
 									{% csrf_token %}
 									
 									<!-- Datos del Usuario -->
@@ -307,16 +307,17 @@
 	
 {% endblock main %}
 
-<!-- Block Fotter ----------------------------------------------------------->
+<!-- Block Fotter --------------------------------------------------------- -->
 {% block footer %}
 {% endblock footer %}
 
 
-<!-- Block script ----------------------------------------------------------->
+<!-- Block script --------------------------------------------------------- -->
 {% block script %}
 	
 	{% load static %}
 	<script src="{% static 'js/grp_perm.js' %}"></script>
+	<script src="{% static 'js/sucursal_punto_venta.js' %}"></script>
 	
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
