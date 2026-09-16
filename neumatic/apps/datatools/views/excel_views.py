@@ -602,7 +602,7 @@ class ActualizarProductosView(TemplateView):
 								
 								#-- MANEJO ESPECIAL PARA EL CAMPO ESTADO PRODUCTO.
 								if columna_label == "ESTADO":
-									#-- Buscar el EstadoProducto por el valor del campo estado_producto.
+									#-- Buscar en EstadoProducto por el valor del campo estado_producto.
 									try:
 										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
 											#-- Si el valor está vacío, establecer id_producto_estado como None.
@@ -835,7 +835,7 @@ class AgregarProductosView(TemplateView):
 						
 						for columna_label, campo_modelo in label_to_field_map.items():
 							#-- Saltar la columna Código porque el id se genera automáticamente.
-							if columna_label == 'Código' or campo_modelo == 'id_producto':
+							if columna_label == 'CODIGO' or campo_modelo == 'id_producto':
 								continue
 							
 							#-- Comprobar si la columna existe en la fila.
@@ -843,8 +843,8 @@ class AgregarProductosView(TemplateView):
 								#-- Obtener el valor de la celda.
 								valor = fila[columna_label]
 								
-								#-- MANEJO ESPECIAL PARA EL CAMPO CAI.
-								if columna_label == "CAI":
+								#-- MANEJO ESPECIAL PARA EL CAMPO CODFABRICA (CAI).
+								if columna_label == "CODFABRICA":
 									#-- Buscar el ProductoCai por el valor del campo cai.
 									try:
 										if valor not in ['', None, 'NULL', 'null', 'NaN', 'nan']:
@@ -868,7 +868,7 @@ class AgregarProductosView(TemplateView):
 										continue
 								
 								#-- MANEJO ESPECIAL PARA EL CAMPO TIPO PRODUCTO.
-								if columna_label == "Tipo Producto":
+								if columna_label == "TIPO":
 									#-- Validar que sea obligatorio
 									if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
 										error_msg = f"Tipo Producto - Es obligatorio y no puede estar vacío"
@@ -891,13 +891,12 @@ class AgregarProductosView(TemplateView):
 									continue  #-- Saltar el procesamiento normal para este campo
 								
 								#-- MANEJO ESPECIAL PARA EL CAMPO ALICUOTA IVA
-								if columna_label == "Alic. IVA":
+								if columna_label == "IVA":
 									#-- Buscar la AlicuotaIva por el valor del campo alicuota_iva
 									try:
 										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
-											#-- Si el valor está vacío, usar valor por defecto o None
-											#-- Depende de si el campo es obligatorio en tu modelo
-											valor_final = None
+											#-- Si el valor está vacío, usar valor por defecto.
+											valor_final = AlicuotaIva.objects.get(id_alicuota_iva=1)
 										else:
 											#-- Convertir a decimal para la búsqueda
 											try:
@@ -906,8 +905,7 @@ class AgregarProductosView(TemplateView):
 													valor = valor.replace(',', '.').strip()
 												
 												#-- Buscar la AlicuotaIva por el valor de alicuota_iva
-												alicuota = AlicuotaIva.objects.get(alicuota_iva=Decimal(str(valor)))
-												valor_final = alicuota.id_alicuota_iva
+												valor_final = AlicuotaIva.objects.get(alicuota_iva=Decimal(str(valor)))
 												
 											except AlicuotaIva.DoesNotExist:
 												error_msg = f"Alic. IVA - En la Base de Datos no está registrada una alícuota con valor '{valor}'"
@@ -921,7 +919,8 @@ class AgregarProductosView(TemplateView):
 												continue
 										
 										#-- Asignar el ID de la alícuota encontrada
-										producto.id_alicuota_iva_id = valor_final
+										# producto.id_alicuota_iva_id = valor_final
+										producto.id_alicuota_iva = valor_final
 										continue  #-- Saltar el procesamiento normal para este campo
 										
 									except Exception as e:
@@ -929,6 +928,33 @@ class AgregarProductosView(TemplateView):
 										errores.append(error_msg)
 										errores_en_fila.append(error_msg)
 										continue
+								
+								#-- MANEJO ESPECIAL PARA EL CAMPO ESTADO PRODUCTO.
+								if columna_label == "ESTADO":
+									#-- Validar que sea obligatorio
+									try:
+										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+											error_msg = f"ESTADO - Es obligatorio y no puede estar vacío"
+											errores.append(error_msg)
+											errores_en_fila.append(error_msg)
+											continue
+										
+										#-- Asegurar que esté en mayúsculas (por si acaso)
+										valor = str(valor).strip().upper()
+										
+										#-- Buscar el ProductoEstado por el valor estado_producto.
+										productoestado = ProductoEstado.objects.get(estado_producto=valor)
+										
+										#-- Asignar el valor validado
+										producto.id_producto_estado = productoestado
+										continue
+									
+									except ProductoEstado.DoesNotExist:
+										error_msg = f"ESTADO - '{valor}' no existe en la base de datos"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										continue
+
 								
 								#-- Obtener el tipo de campo del modelo.
 								try:
