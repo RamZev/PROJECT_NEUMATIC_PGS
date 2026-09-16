@@ -19,7 +19,7 @@ from django.db.models import (
 
 from ..forms.excel_forms import ExcelUploadForm, CamposActualizacionForm
 from apps.maestros.models.producto_models import Producto
-from apps.maestros.models.base_models import ProductoCai, AlicuotaIva
+from apps.maestros.models.base_models import ProductoCai, AlicuotaIva, ProductoEstado
 
 
 class ExcelUploadView(FormView):
@@ -488,7 +488,7 @@ class ActualizarProductosView(TemplateView):
 					index +=1  #-- Ajustar índice para que coincida con fila Excel.
 					
 					try:
-						codigo = fila.get('Código')
+						codigo = fila.get('CODIGO')
 						if not codigo:
 							error_msg = f"No se especificó código de producto"
 							errores.append(error_msg)
@@ -529,7 +529,7 @@ class ActualizarProductosView(TemplateView):
 								#----------------------------------------------------
 								
 								#-- MANEJO ESPECIAL PARA EL CAMPO CAI.
-								if columna_label == "CAI":
+								if columna_label == "CODFABRICA":
 									#-- Buscar el ProductoCai por el valor del campo cai.
 									try:
 										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
@@ -542,27 +542,27 @@ class ActualizarProductosView(TemplateView):
 										
 										#-- Verificar si el valor cambió.
 										if producto.id_cai_id != valor_final:
-											producto.id_cai_id = valor_final
+											producto.id_cai_id = productocai
 											cambios_realizados = True
 										
 										#-- Saltar el procesamiento normal para el campo CAI.
 										continue
 										
 									except ProductoCai.DoesNotExist:
-										error_msg = f"CAI - '{valor}' no existe en la base de datos"
+										error_msg = f"CODFABRICA (CAI) - '{valor}' no existe en la base de datos"
 										errores.append(error_msg)
 										errores_en_fila.append(error_msg)
 										
 										continue
 									
 									except Exception as e:
-										error_msg = f"Error al procesar CAI '{valor}' - {str(e)}"
+										error_msg = f"Error al procesar CODFABRICA (CAI) '{valor}' - {str(e)}"
 										errores.append(error_msg)
 										errores_en_fila.append(error_msg)
 										continue
 								
 								#-- MANEJO ESPECIAL PARA EL CAMPO ALICUOTA IVA
-								if columna_label == "Alic. IVA":
+								if columna_label == "IVA":
 									#-- Buscar la AlicuotaIva por el valor del campo alicuota_iva.
 									try:
 										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
@@ -588,13 +588,47 @@ class ActualizarProductosView(TemplateView):
 										
 										#-- Verificar si el valor cambió
 										if producto.id_alicuota_iva_id != valor_final:
-											producto.id_alicuota_iva_id = valor_final
+											# producto.id_alicuota_iva_id = valor_final
+											producto.id_alicuota_iva_id = alicuota
 											cambios_realizados = True
 										
 										continue
 										
 									except Exception as e:
 										error_msg = f"Alic. IVA - Error al procesar '{valor}' - {str(e)}"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										continue
+								
+								#-- MANEJO ESPECIAL PARA EL CAMPO ESTADO PRODUCTO.
+								if columna_label == "ESTADO":
+									#-- Buscar el EstadoProducto por el valor del campo estado_producto.
+									try:
+										if valor in ['', None, 'NULL', 'null', 'NaN', 'nan']:
+											#-- Si el valor está vacío, establecer id_producto_estado como None.
+											valor_final = None
+										else:
+											#-- Buscar el ProductoEstado por el valor estado_producto.
+											productoestado = ProductoEstado.objects.get(estado_producto=valor.upper().strip())
+											valor_final = productoestado.id_producto_estado
+										
+										#-- Verificar si el valor cambió.
+										if producto.id_producto_estado != valor_final:
+											producto.id_producto_estado = productoestado
+											cambios_realizados = True
+										
+										#-- Saltar el procesamiento normal para el campo ESTADO.
+										continue
+										
+									except ProductoEstado.DoesNotExist:
+										error_msg = f"ESTADO - '{valor}' no existe en la base de datos"
+										errores.append(error_msg)
+										errores_en_fila.append(error_msg)
+										
+										continue
+									
+									except Exception as e:
+										error_msg = f"Error al procesar ESTADO '{valor}' - {str(e)}"
 										errores.append(error_msg)
 										errores_en_fila.append(error_msg)
 										continue

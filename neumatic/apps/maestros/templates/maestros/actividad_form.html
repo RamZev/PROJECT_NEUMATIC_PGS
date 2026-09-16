@@ -1,6 +1,7 @@
 <!-- neumatic\apps\maestros\templates\maestros\actividad_form.html -->
 {% extends 'maestro_form.html' %}
 {% load static %}
+
 <!-- -------------------------------------------------------------------- -->
 {% block maincomponent %}
 	{% block principalcomponent %}
@@ -63,13 +64,6 @@
 														</label>
 														{{ form.descripcion_actividad }}
 													</div>
-													
-													<div class="col-md-2">
-														<label class="form-label text-primary mb-0" for="{{ form.fecha_registro_actividad.id_for_label }}">
-															{{ form.fecha_registro_actividad.label }}
-														</label>
-														{{ form.fecha_registro_actividad }}
-													</div>
 												</div>
 											</div>
 										</div>
@@ -78,12 +72,23 @@
 								</div>
 								
 								<div class="container mt-3">
-									<button class="btn btn-primary" type="submit" id="guardarBtn">
-										Guardar
-									</button>
-									<a class="btn btn-secondary" href="{% url list_view_name %}">
-										Cancelar
-									</a>
+									{% if is_view_only %}
+										<!-- MODO CONSULTA -->
+										<a class="btn btn-secondary" href="{% url list_view_name %}">
+											Volver
+										</a>
+										<a class="btn btn-primary" href="{% url update_view_name object.pk %}">
+											<i class="fa fa-edit"></i> Editar
+										</a>
+									{% else %}
+										<!-- MODO CREAR / EDITAR -->
+										<button class="btn btn-primary" type="submit" id="guardarBtn">
+											Guardar
+										</button>
+										<a class="btn btn-secondary" href="{% url list_view_name %}">
+											Cancelar
+										</a>
+									{% endif %}
 								</div>
 							</form>
 						</div>

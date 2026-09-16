@@ -1291,6 +1291,7 @@ CREATE VIEW VLLista AS
 		p.despacho_2,
 		p.fecha_fabricacion,
 		p.id_producto_estado_id,
+		pe.estado_producto,
 		pe.nombre_producto_estado,
 		p.descripcion_producto,
 		p.carrito,

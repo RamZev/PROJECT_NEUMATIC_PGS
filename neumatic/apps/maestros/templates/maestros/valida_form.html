@@ -2,345 +2,356 @@
 {% load static %}
 
 {% block style %}
-    {{ block.super }}
-    <style>
-        /* ============================================
-           FORZAR SELECT2 A USAR MISMO ESTILO QUE OTROS INPUTS
-        ============================================ */
-        
-        /* Contenedor principal - igual a form-control-sm */
-        .select2-container--bootstrap-5 .select2-selection {
-            min-height: 31px !important;
-            height: 31px !important;
-            border: 1px solid #0d6efd !important;
-            border-radius: 0.2rem !important;
-            background-color: #fff !important;
-            font-size: 0.875rem !important;
-        }
-        
-        /* Texto interno */
-        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
-            line-height: 29px !important;
-            padding: 0 0.5rem !important;
-            font-size: 0.875rem !important;
-            color: #212529 !important;
-        }
-        
-        /* Placeholder */
-        .select2-container--bootstrap-5 .select2-selection__placeholder {
-            color: #6c757d !important;
-            font-size: 0.875rem !important;
-        }
-        
-        /* Flecha */
-        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
-            height: 29px !important;
-        }
-        
-        /* Margen inferior */
-        .select2-container--bootstrap-5 {
-            margin-bottom: 8px !important;
-        }
-        
-        /* Focus */
-        .select2-container--bootstrap-5.select2-container--focus .select2-selection {
-            border-color: #86b7fe !important;
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-        }
-        
-        /* Dropdown */
-        .select2-container--bootstrap-5 .select2-dropdown {
-            border-color: #dee2e6 !important;
-            border-radius: 0.2rem !important;
-        }
-        
-        /* Opciones del dropdown */
-        .select2-container--bootstrap-5 .select2-results__option {
-            font-size: 0.875rem !important;
-            padding: 0.25rem 0.5rem !important;
-        }
-        
-        /* Campo inválido */
-        .select2-cliente.is-invalid + .select2-container--bootstrap-5 .select2-selection,
-        .select2-container--bootstrap-5 .select2-selection.is-invalid {
-            border-color: #dc3545 !important;
-        }
-    </style>
+	{{ block.super }}
+	<style>
+		/* ============================================
+		   FORZAR SELECT2 A USAR MISMO ESTILO QUE OTROS INPUTS
+		============================================ */
+		
+		/* Contenedor principal - igual a form-control-sm */
+		.select2-container--bootstrap-5 .select2-selection {
+			min-height: 31px !important;
+			height: 31px !important;
+			border: 1px solid #0d6efd !important;
+			border-radius: 0.2rem !important;
+			background-color: #fff !important;
+			font-size: 0.875rem !important;
+		}
+		
+		/* Texto interno */
+		.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+			line-height: 29px !important;
+			padding: 0 0.5rem !important;
+			font-size: 0.875rem !important;
+			color: #212529 !important;
+		}
+		
+		/* Placeholder */
+		.select2-container--bootstrap-5 .select2-selection__placeholder {
+			color: #6c757d !important;
+			font-size: 0.875rem !important;
+		}
+		
+		/* Flecha */
+		.select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+			height: 29px !important;
+		}
+		
+		/* Margen inferior */
+		.select2-container--bootstrap-5 {
+			margin-bottom: 8px !important;
+		}
+		
+		/* Focus */
+		.select2-container--bootstrap-5.select2-container--focus .select2-selection {
+			border-color: #86b7fe !important;
+			box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+		}
+		
+		/* Dropdown */
+		.select2-container--bootstrap-5 .select2-dropdown {
+			border-color: #dee2e6 !important;
+			border-radius: 0.2rem !important;
+		}
+		
+		/* Opciones del dropdown */
+		.select2-container--bootstrap-5 .select2-results__option {
+			font-size: 0.875rem !important;
+			padding: 0.25rem 0.5rem !important;
+		}
+		
+		/* Campo inválido */
+		.select2-cliente.is-invalid + .select2-container--bootstrap-5 .select2-selection,
+		.select2-container--bootstrap-5 .select2-selection.is-invalid {
+			border-color: #dc3545 !important;
+		}
+	</style>
 {% endblock style %}
 
 {% block maincomponent %}
-    {% block principalcomponent %}
-        <div id="layoutSidenav_content">
-            <main>
-                <div class="container-fluid">
-                    
-                    <div class="card border-light mb-3 mt-2">
-                        <div class="card-header text-white bg-primary opacity-75 d-flex 
-                                    justify-content-between">
-                            {{ accion }}
-                            <div class="flex align-items-center">
-                                <a class="me-2 text-white" data-bs-toggle="modal" data-bs-target="#helpModal" style="cursor: pointer;">
-                                    <i class="bi bi-question-lg"></i>
-                                </a>
-                                <button type="button" class="btn-close btn-close-white" 
-                                    aria-label="Close"
-                                    onclick="window.location.href='{% url list_view_name %}'">
-                                </button>
-                            </div>
-                        </div>
-                        
-                        <div class="card-body bg-body-secondary">
-                            <form method="post" enctype="multipart/form-data" novalidate id="validaForm">
-                                {% csrf_token %}
-                                <div class="accordion" id="accordionPanelsStayOpenExample">
-                                    
-                                    <div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button py-2" type="button" 
-                                                data-bs-toggle="collapse" 
-                                                data-bs-target="#InformacionValidacion" 
-                                                aria-expanded="true">
-                                                <strong>Información de Validación</strong>
-                                            </button>
-                                        </h2>
-                                        <div id="InformacionValidacion" class="accordion-collapse collapse show">
-                                            <div class="accordion-body bg-secondary-subtle">
-                                                
-                                                <!-- Fila 1 -->
-                                                <div class="row">
-                                                    <div class="col-md-2">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.estatus_valida.label }}
-                                                        </label>
-                                                        {{ form.estatus_valida }}
-                                                    </div>
-                                                    
-                                                    <div class="col-md-4">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.id_sucursal.label }}
-                                                        </label>
-                                                        {{ form.id_sucursal }}
-                                                    </div>
-                                                    
-                                                    <div class="col-md-2">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.fecha_valida.label }}
-                                                        </label>
-                                                        {{ form.fecha_valida }}
-                                                    </div>
-                                                    
-                                                    <div class="col-md-1">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.hora_valida.label }}
-                                                        </label>
-                                                        {{ form.hora_valida }}
-                                                    </div>
-                                                    
-                                                    <div class="col-md-3">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.solicitado.label }}
-                                                        </label>
-                                                        {{ form.solicitado }}
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Fila 2 -->
-                                                <div class="row mt-2">
-                                                    <div class="col-md-6">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.comentario.label }}
-                                                        </label>
-                                                        {{ form.comentario }}
-                                                    </div>
-                                                    
-                                                    <!-- ============================================ -->
-                                                    <!-- CAMPO CLIENTE CON SELECT2 -->
-                                                    <!-- ============================================ -->
-                                                    <div class="col-md-6">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.cliente_busqueda.label }} <span class="text-danger">*</span>
-                                                        </label>
-                                                        
-                                                        <!-- Campo visual para Select2 -->
-                                                        {{ form.cliente_busqueda }}
-                                                        
-                                                        <!-- Campo oculto que se guarda en DB -->
-                                                        {{ form.id_cliente }}
-                                                        
-                                                        <!-- Div para mensajes de error -->
-                                                        <div class="invalid-feedback" id="cliente-error"></div>
-                                                    </div>
-                                                </div>
-                                                
-                                                <!-- Fila 3 -->
-                                                <div class="row mt-2">
-                                                    <div class="col-md-4">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.id_comprobante_venta.label }}
-                                                        </label>
-                                                        {{ form.id_comprobante_venta }}
-                                                    </div>
-
-                                                    <div class="col-md-4">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.motivo.label }}
-                                                        </label>
-                                                        {{ form.motivo }}
-                                                    </div>
-                                                    
-                                                    <div class="col-md-2">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.numero_comprobante.label }}
-                                                        </label>
-                                                        {{ form.numero_comprobante }}
-                                                    </div>
-                                                    
-                                                    <div class="col-md-2">
-                                                        <label class="form-label text-primary mb-0">
-                                                            {{ form.hs.label }}
-                                                        </label>
-                                                        {{ form.hs }}
-                                                    </div>
-                                                </div>
-                                                
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                </div>
-                                
-                                <!-- Botones -->
-                                <div class="container mt-3">
-                                    <button class="btn btn-primary" type="submit" id="guardarBtn">
-                                        Guardar
-                                    </button>
-                                    <a class="btn btn-secondary" href="{% url list_view_name %}">
-                                        Cancelar
-                                    </a>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </main>
-        </div>
-    {% endblock principalcomponent %}
+	{% block principalcomponent %}
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid">
+					
+					<div class="card border-light mb-3 mt-2">
+						<div class="card-header text-white bg-primary opacity-75 d-flex 
+									justify-content-between">
+							{{ accion }}
+							<div class="flex align-items-center">
+								<a class="me-2 text-white" data-bs-toggle="modal" data-bs-target="#helpModal" style="cursor: pointer;">
+									<i class="bi bi-question-lg"></i>
+								</a>
+								<button type="button" class="btn-close btn-close-white" 
+									aria-label="Close"
+									onclick="window.location.href='{% url list_view_name %}'">
+								</button>
+							</div>
+						</div>
+						
+						<div class="card-body bg-body-secondary">
+							<form method="post" enctype="multipart/form-data" novalidate id="validaForm">
+								{% csrf_token %}
+								<div class="accordion" id="accordionPanelsStayOpenExample">
+									
+									<div class="accordion-item">
+										<h2 class="accordion-header">
+											<button class="accordion-button py-2" type="button" 
+												data-bs-toggle="collapse" 
+												data-bs-target="#InformacionValidacion" 
+												aria-expanded="true">
+												<strong>Información de Validación</strong>
+											</button>
+										</h2>
+										<div id="InformacionValidacion" class="accordion-collapse collapse show">
+											<div class="accordion-body bg-secondary-subtle">
+												
+												<!-- Fila 1 -->
+												<div class="row">
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.estatus_valida.label }}
+														</label>
+														{{ form.estatus_valida }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_sucursal.label }}
+														</label>
+														{{ form.id_sucursal }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.fecha_valida.label }}
+														</label>
+														{{ form.fecha_valida }}
+													</div>
+													
+													<div class="col-md-1">
+														<label class="form-label text-primary mb-0">
+															{{ form.hora_valida.label }}
+														</label>
+														{{ form.hora_valida }}
+													</div>
+													
+													<div class="col-md-3">
+														<label class="form-label text-primary mb-0">
+															{{ form.solicitado.label }}
+														</label>
+														{{ form.solicitado }}
+													</div>
+												</div>
+												
+												<!-- Fila 2 -->
+												<div class="row mt-2">
+													<div class="col-md-6">
+														<label class="form-label text-primary mb-0">
+															{{ form.comentario.label }}
+														</label>
+														{{ form.comentario }}
+													</div>
+													
+													<!-- ============================================ -->
+													<!-- CAMPO CLIENTE CON SELECT2 -->
+													<!-- ============================================ -->
+													<div class="col-md-6">
+														<label class="form-label text-primary mb-0">
+															{{ form.cliente_busqueda.label }} <span class="text-danger">*</span>
+														</label>
+														
+														<!-- Campo visual para Select2 -->
+														{{ form.cliente_busqueda }}
+														
+														<!-- Campo oculto que se guarda en DB -->
+														{{ form.id_cliente }}
+														
+														<!-- Div para mensajes de error -->
+														<div class="invalid-feedback" id="cliente-error"></div>
+													</div>
+												</div>
+												
+												<!-- Fila 3 -->
+												<div class="row mt-2">
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.id_comprobante_venta.label }}
+														</label>
+														{{ form.id_comprobante_venta }}
+													</div>
+													
+													<div class="col-md-4">
+														<label class="form-label text-primary mb-0">
+															{{ form.motivo.label }}
+														</label>
+														{{ form.motivo }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.numero_comprobante.label }}
+														</label>
+														{{ form.numero_comprobante }}
+													</div>
+													
+													<div class="col-md-2">
+														<label class="form-label text-primary mb-0">
+															{{ form.hs.label }}
+														</label>
+														{{ form.hs }}
+													</div>
+												</div>
+												
+											</div>
+										</div>
+									</div>
+									
+								</div>
+								
+								<!-- Botones -->
+								<div class="container mt-3">
+									{% if is_view_only %}
+										<!-- MODO CONSULTA -->
+										<a class="btn btn-secondary" href="{% url list_view_name %}">
+											Volver
+										</a>
+										<a class="btn btn-primary" href="{% url update_view_name object.pk %}">
+											<i class="fa fa-edit"></i> Editar
+										</a>
+									{% else %}
+										<!-- MODO CREAR / EDITAR -->
+										<button class="btn btn-primary" type="submit" id="guardarBtn">
+											Guardar
+										</button>
+										<a class="btn btn-secondary" href="{% url list_view_name %}">
+											Cancelar
+										</a>
+									{% endif %}
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+	{% endblock principalcomponent %}
 {% endblock maincomponent %}
 
 {% block modals %}
-    {{ block.super }}
-    {% include 'maestros/modal_fields_requirements.html' %}
+	{{ block.super }}
+	{% include 'maestros/modal_fields_requirements.html' %}
 {% endblock modals %}
 
 {% block script %}
-    {{ block.super }}
-    <script>
-        $(document).ready(function() {
-            console.log('Inicializando Select2...');
-            
-            //
-            $('#id_cliente_busqueda').select2({
-                theme: 'bootstrap-5',
-                allowClear: true,
-                language: 'es',
-                minimumInputLength: 2,
-                containerCssClass: 'form-control-sm',  // ← NUEVO: misma clase que inputs
-                ajax: {
-                    url: '/maestros/buscar-cliente-select2/',
-                    dataType: 'json',
-                    delay: 300,
-                    data: function(params) {
-                        return { term: params.term, page: params.page || 1 };
-                    },
-                    processResults: function(data, params) {
-                        return { results: data.results, pagination: { more: data.more } };
-                    }
-                },
-                templateResult: function(cliente) {
-                    if (cliente.loading) {
-                        return cliente.text;
-                    }
-                    var html = '<div><strong>' + cliente.id + '</strong> - ' + cliente.text;
-                    if (cliente.cuit) {
-                        html += '<br><small style="font-size: 0.8rem; color: #6c757d;">CUIT: ' + cliente.cuit + '</small>';
-                    }
-                    html += '</div>';
-                    return $(html);
-                },
-                templateSelection: function(cliente) {
-                    if (!cliente || !cliente.id) {
-                        return '';
-                    }
-                    return cliente.id + ' - ' + cliente.text;
-                }
-            });
-            //
-            
-            // Evento de selección
-            $('#id_cliente_busqueda').on('select2:select', function(e) {
-                var data = e.params.data;
-                
-                // Actualizar campo oculto
-                $('#id_id_cliente').val(data.id);
-                
-                // Actualizar el span con el formato deseado
-                var $input = $(this);
-                var displayText = data.id + ' - ' + data.text;
-                var $span = $input.next('.select2-container').find('.select2-selection__rendered');
-                
-                if ($span.length) {
-                    $span.html(displayText);
-                }
-                
-                // Ocultar mensaje de error
-                $('#cliente-error').hide();
-                $(this).removeClass('is-invalid');
-            });
-            
-            // Limpieza de selección
-            $('#id_cliente_busqueda').on('select2:clearing', function() {
-                $('#id_id_cliente').val('');
-                
-                var $input = $(this);
-                var $span = $input.next('.select2-container').find('.select2-selection__rendered');
-                
-                if ($span.length) {
-                    $span.html('<span class="select2-selection__placeholder"></span>');
-                }
-                
-                $('#cliente-error').text('Debe seleccionar un cliente');
-                $('#cliente-error').show();
-                $(this).addClass('is-invalid');
-            });
-            
-            // Validación al enviar
-            $('#validaForm').on('submit', function(e) {
-                if (!$('#id_id_cliente').val()) {
-                    e.preventDefault();
-                    $('#cliente-error').text('Debe seleccionar un cliente de la lista');
-                    $('#cliente-error').show();
-                    $('#id_cliente_busqueda').addClass('is-invalid');
-                    return false;
-                }
-                return true;
-            });
-            
-            // Modo edición
-            var clienteId = $('#id_id_cliente').val();
-            var clienteNombre = $('#id_cliente_busqueda').val();
-            
-            if (clienteId && clienteNombre) {
-                setTimeout(function() {
-                    var $input = $('#id_cliente_busqueda');
-                    // var displayText = clienteId + ' - ' + clienteNombre;
+	{{ block.super }}
+	<script>
+		$(document).ready(function() {
+			console.log('Inicializando Select2...');
+			
+			//
+			$('#id_cliente_busqueda').select2({
+				theme: 'bootstrap-5',
+				allowClear: true,
+				language: 'es',
+				minimumInputLength: 2,
+				containerCssClass: 'form-control-sm',  // ← NUEVO: misma clase que inputs
+				ajax: {
+					url: '/maestros/buscar-cliente-select2/',
+					dataType: 'json',
+					delay: 300,
+					data: function(params) {
+						return { term: params.term, page: params.page || 1 };
+					},
+					processResults: function(data, params) {
+						return { results: data.results, pagination: { more: data.more } };
+					}
+				},
+				templateResult: function(cliente) {
+					if (cliente.loading) {
+						return cliente.text;
+					}
+					var html = '<div><strong>' + cliente.id + '</strong> - ' + cliente.text;
+					if (cliente.cuit) {
+						html += '<br><small style="font-size: 0.8rem; color: #6c757d;">CUIT: ' + cliente.cuit + '</small>';
+					}
+					html += '</div>';
+					return $(html);
+				},
+				templateSelection: function(cliente) {
+					if (!cliente || !cliente.id) {
+						return '';
+					}
+					return cliente.id + ' - ' + cliente.text;
+				}
+			});
+			//
+			
+			// Evento de selección
+			$('#id_cliente_busqueda').on('select2:select', function(e) {
+				var data = e.params.data;
+				
+				// Actualizar campo oculto
+				$('#id_id_cliente').val(data.id);
+				
+				// Actualizar el span con el formato deseado
+				var $input = $(this);
+				var displayText = data.id + ' - ' + data.text;
+				var $span = $input.next('.select2-container').find('.select2-selection__rendered');
+				
+				if ($span.length) {
+					$span.html(displayText);
+				}
+				
+				// Ocultar mensaje de error
+				$('#cliente-error').hide();
+				$(this).removeClass('is-invalid');
+			});
+			
+			// Limpieza de selección
+			$('#id_cliente_busqueda').on('select2:clearing', function() {
+				$('#id_id_cliente').val('');
+				
+				var $input = $(this);
+				var $span = $input.next('.select2-container').find('.select2-selection__rendered');
+				
+				if ($span.length) {
+					$span.html('<span class="select2-selection__placeholder"></span>');
+				}
+				
+				$('#cliente-error').text('Debe seleccionar un cliente');
+				$('#cliente-error').show();
+				$(this).addClass('is-invalid');
+			});
+			
+			// Validación al enviar
+			$('#validaForm').on('submit', function(e) {
+				if (!$('#id_id_cliente').val()) {
+					e.preventDefault();
+					$('#cliente-error').text('Debe seleccionar un cliente de la lista');
+					$('#cliente-error').show();
+					$('#id_cliente_busqueda').addClass('is-invalid');
+					return false;
+				}
+				return true;
+			});
+			
+			// Modo edición
+			var clienteId = $('#id_id_cliente').val();
+			var clienteNombre = $('#id_cliente_busqueda').val();
+			
+			if (clienteId && clienteNombre) {
+				setTimeout(function() {
+					var $input = $('#id_cliente_busqueda');
+					// var displayText = clienteId + ' - ' + clienteNombre;
 					var displayText = clienteNombre;
-                    var $span = $input.next('.select2-container').find('.select2-selection__rendered');
-                    
-                    if ($span.length) {
-                        $span.html(displayText);
-                    }
-                }, 100);
-            }
-        });
-    </script>
+					var $span = $input.next('.select2-container').find('.select2-selection__rendered');
+					
+					if ($span.length) {
+						$span.html(displayText);
+					}
+				}, 100);
+			}
+		});
+	</script>
 {% endblock script %}

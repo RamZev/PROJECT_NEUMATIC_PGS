@@ -65,61 +65,26 @@ class ConfigViews:
 	reporte_pantalla = f"informes/reportes/{model_string}_list.html"
 	
 	#-- Establecer las columnas del reporte y sus atributos.
+	#-- (*) Cuidado! Si se cambia el label se debe cambiar también en el método post() de la vista ActualizarProductosView.
 	table_info = {
 		"id_producto": {
-			"label": "Código",
+			"label": "CODIGO",   #-- (*)
 			"col_width_pdf": 40,
 			"pdf": True,
 			"excel": True,
 			"csv": True,
 			"protected": True  #-- No se pueda editar en el Excel.
 		},
-		"id_cai_id": {
-			"label": "Id CAI",  #-- Cuidado! Si se cambia el label se debe cambiar también en el método post() de la vista ProcesarActualizacionView.
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": False,
-			"csv": True,
-			"protected": True
-		},
-		"cai": {
-			"label": "CAI",
-			"col_width_pdf": 110,
-			"pdf": True,
-			"excel": True,
-			"csv": False
-		},
 		"tipo_producto": {
-			"label": "Tipo Producto",
+			"label": "TIPO",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True,
 			"protected": True
-		},
-		"medida": {
-			"label": "Medida",
-			"col_width_pdf": 70,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"segmento": {
-			"label": "Segmento",
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"unidad": {
-			"label": "Unidad",
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": True,
-			"csv": True
 		},
 		"id_familia_id": {
-			"label": "Id Familia",
+			"label": "ARTICULO",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
@@ -132,8 +97,15 @@ class ConfigViews:
 			"excel": False,
 			"csv": False
 		},
+		"segmento": {
+			"label": "SEGMENTO",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"id_modelo_id": {
-			"label": "Id Modelo",
+			"label": "MODELO",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
@@ -146,15 +118,30 @@ class ConfigViews:
 			"excel": False,
 			"csv": False
 		},
-		"nombre_producto": {
-			"label": "Descripción",
-			"col_width_pdf": 230,
-			"pdf": True,
+		"unidad": {
+			"label": "UNIDAD",
+			"col_width_pdf": 0,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
+		"id_cai_id": {
+			"label": "Id CAI",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": False,
+			"csv": True,
+			"protected": True
+		},
+		"cai": {
+			"label": "CODFABRICA",   #-- (*)
+			"col_width_pdf": 110,
+			"pdf": True,
+			"excel": True,
+			"csv": False
+		},
 		"id_marca_id": {
-			"label": "Id Marca",
+			"label": "MARCA",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
@@ -167,22 +154,29 @@ class ConfigViews:
 			"excel": False,
 			"csv": False
 		},
-		"precio": {
-			"label": "Precio",
-			"col_width_pdf": 60,
+		"nombre_producto": {
+			"label": "NOMBRE",
+			"col_width_pdf": 230,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"costo": {
-			"label": "Costo",
+		"medida": {
+			"label": "MEDIDA",
+			"col_width_pdf": 70,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_fabricacion": {
+			"label": "FECHA",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"descuento": {
-			"label": "Desc.",
+		"costo": {
+			"label": "COSTO",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
@@ -196,35 +190,21 @@ class ConfigViews:
 			"csv": True
 		},
 		"alicuota_iva": {
-			"label": "Alic. IVA",
+			"label": "IVA",   #-- (*)
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
 			"csv": False
 		},
-		"minimo": {
-			"label": "Mínimo",
-			"col_width_pdf": 0,
-			"pdf": False,
+		"precio": {
+			"label": "PRECIO",
+			"col_width_pdf": 60,
+			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
-		"despacho_1": {
-			"label": "Despacho 1",
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"despacho_2": {
-			"label": "Despacho 2",
-			"col_width_pdf": 0,
-			"pdf": False,
-			"excel": True,
-			"csv": True
-		},
-		"fecha_fabricacion": {
-			"label": "Fecha Fabricación",
+		"descuento": {
+			"label": "DESCUENTO",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": True,
@@ -234,11 +214,33 @@ class ConfigViews:
 			"label": "Id Estado",
 			"col_width_pdf": 0,
 			"pdf": False,
+			"excel": False,
+			"csv": False
+		},
+		"estado_producto": {
+			"label": "ESTADO",   #-- (*)
+			"col_width_pdf": 0,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"nombre_producto_estado": {
-			"label": "Estado",
+		"despacho_1": {
+			"label": "DESPACHO1",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"despacho_2": {
+			"label": "DESPACHO2",
+			"col_width_pdf": 0,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		#-- A la espera de ver qué hacer con los siguientes campos.
+		"minimo": {
+			"label": "Mínimo",
 			"col_width_pdf": 0,
 			"pdf": False,
 			"excel": False,
@@ -248,43 +250,43 @@ class ConfigViews:
 			"label": "Descripción Producto",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"carrito": {
 			"label": "Carrito",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"obliga_operario": {
 			"label": "Obliga Operario",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"iva_exento": {
 			"label": "IVA Exento",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"pts_premio": {
 			"label": "Pts. premio",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		"pts_costo": {
 			"label": "Pts. costo",
 			"col_width_pdf": 0,
 			"pdf": False,
-			"excel": True,
-			"csv": True
+			"excel": False,
+			"csv": False
 		},
 		
 	}
@@ -345,7 +347,7 @@ class VLListaInformeView(InformeFormView):
 		user = self.request.user
 		
 		#-- Si el usuario no tiene el nivel de jerarquía permitido, se elimina la columna "costo" del reporte.
-		if user.jerarquia not in ConfigViews.nivel_permitido:
+		if user.jerarquia not in ConfigViews.nivel_permitido or not user.is_superuser:
 			for col in ConfigViews.cols_vetadas:
 				ConfigViews.table_info.pop(col, None)
 		

@@ -1,11 +1,17 @@
 # neumatic\apps\maestros\views\cruds_views_generics.py
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, DetailView, View
-from django.db.models import Q
-from django.http import JsonResponse
-from django.db import transaction
-from django.db.models import ProtectedError
+from django.views.generic import (
+	ListView,
+	CreateView,
+	UpdateView,
+	DeleteView,
+	DetailView,
+	View
+)
 from django.db import transaction, IntegrityError
+from django.db.models import Q, ProtectedError
 from django.contrib import messages
+from django.http import JsonResponse
+from django.urls import reverse_lazy
 
 #-- Recursos necesarios para proteger las rutas.
 from django.utils.decorators import method_decorator
@@ -17,7 +23,80 @@ from django.shortcuts import redirect
 from django.utils import timezone
 
 
-# -- Vistas Genéricas Basada en Clases -----------------------------------------------
+class AuditoriaMixin:
+	"""Mixin para manejar correctamente la auditoría en creación y actualización"""
+	
+	def form_valid(self, form):
+		user = self.request.user
+		
+		if not form.instance.pk:  #-- CREACIÓN.
+			#-- Guardar usuario creador.
+			form.instance.id_user = user
+			form.instance.usuario = user.username
+			#-- id_user_update se queda NULL automáticamente.
+			
+		else:  #-- ACTUALIZACIÓN.
+			#-- Guardar usuario modificador.
+			form.instance.id_user_update = user
+			#-- Opcional: si quieres mantener el nombre del último que modificó.
+			# form.instance.usuario = user.username
+			
+		return super().form_valid(form)
+
+
+# -- CRUD Vistas Genéricas Basada en Clases ------------------------------------------
+# -- Clase base de configuración -----------------------------------------------------
+class BaseConfigViews:
+	"""
+	Clase base para la configuración de vistas CRUD.
+	Las subclases solo deben definir `model` y `form_class`.
+	"""
+	model = None
+	form_class = None
+	
+	#-- Opcionales (con valores por defecto).
+	model_string = None
+	app_label = None
+	home_view_name = "home"
+	context_object_name = 'objetos'
+	template_delete = "base_confirm_delete.html"
+	
+	def __init_subclass__(cls, **kwargs):
+		super().__init_subclass__(**kwargs)
+		
+		if cls.model is None:
+			return
+		
+		#-- app_label.
+		if cls.app_label is None:
+			cls.app_label = cls.model._meta.app_label
+		
+		#-- model_string.
+		if cls.model_string is None:
+			cls.model_string = cls.model.__name__.lower()
+		
+		#-- Permisos.
+		model_lower = cls.model.__name__.lower()
+		cls.permission_add = f"{cls.app_label}.add_{model_lower}"
+		cls.permission_change = f"{cls.app_label}.change_{model_lower}"
+		cls.permission_view = f"{cls.app_label}.view_{model_lower}"
+		cls.permission_delete = f"{cls.app_label}.delete_{model_lower}"
+		
+		#-- Nombres de URLs.
+		cls.list_view_name = f"{cls.model_string}_list"
+		cls.create_view_name = f"{cls.model_string}_create"
+		cls.update_view_name = f"{cls.model_string}_update"
+		cls.detail_view_name = f"{cls.model_string}_detail"
+		cls.delete_view_name = f"{cls.model_string}_delete"
+		
+		#-- Plantillas.
+		cls.template_form = f"{cls.app_label}/{cls.model_string}_form.html"
+		cls.template_list = f"{cls.app_label}/maestro_list.html"
+		
+		#-- URL de éxito.
+		cls.success_url = reverse_lazy(cls.list_view_name)
+
+
 @method_decorator(login_required, name='dispatch')
 class MaestroListView(ListView):
 	cadena_filtro = ""
@@ -103,28 +182,7 @@ class MaestroListView(ListView):
 		#-- Utilizar el valor actualizado de paginate_by.
 		return self.paginate_by
 
-
-class AuditoriaMixin:
-	"""Mixin para manejar correctamente la auditoría en creación y actualización"""
 	
-	def form_valid(self, form):
-		user = self.request.user
-		
-		if not form.instance.pk:  #-- CREACIÓN.
-			#-- Guardar usuario creador.
-			form.instance.id_user = user
-			form.instance.usuario = user.username
-			#-- id_user_update se queda NULL automáticamente.
-			
-		else:  #-- ACTUALIZACIÓN.
-			#-- Guardar usuario modificador.
-			form.instance.id_user_update = user
-			#-- Opcional: si quieres mantener el nombre del último que modificó.
-			# form.instance.usuario = user.username
-			
-		return super().form_valid(form)
-	
-
 @method_decorator(login_required, name='dispatch')
 class MaestroCreateView(AuditoriaMixin, PermissionRequiredMixin, CreateView):
 	list_view_name = None
@@ -224,12 +282,22 @@ class MaestroUpdateView(AuditoriaMixin, PermissionRequiredMixin, UpdateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class MaestroDetailView(PermissionRequiredMixin, DetailView):
+class MaestroDetailView(PermissionRequiredMixin, UpdateView):
 	"""
-	Vista para consultar/detalle de un registro sin permisos de edición.
+	Vista de solo lectura basada en UpdateView para reutilizar el form
+	y el template del formulario. El form se muestra deshabilitado
+	y se bloquea cualquier intento de POST.
 	"""
 	list_view_name = None
-	template_name = None
+	update_view_name = None
+	
+	permission_denied_message = "No tienes permiso para ver este registro."
+	
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['user'] = self.request.user
+		kwargs['is_view_only'] = True
+		return kwargs
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -239,15 +307,19 @@ class MaestroDetailView(PermissionRequiredMixin, DetailView):
 		context.update({
 			"accion": f"Consultar {self.model._meta.verbose_name} - {registro.pk}",
 			"list_view_name": self.list_view_name,
+			"update_view_name": self.update_view_name,
 			"fecha": timezone.now(),
-			"is_view_only": True,  # Bandera para identificar modo solo lectura
+			"is_view_only": True,
 		})
-		
 		return context
 	
+	def post(self, request, *args, **kwargs):
+		"""Bloquear cualquier intento de POST en modo consulta."""
+		messages.error(request, 'No puedes modificar un registro en modo consulta.')
+		return redirect(self.list_view_name or 'home')
+	
 	def handle_no_permission(self):
-		"""Maneja cuando el usuario no tiene permisos"""
-		messages.error(self.request, 'No tienes permiso para realizar esta acción.')
+		messages.error(self.request, 'No tienes permiso para ver este registro.')
 		return redirect(self.list_view_name or 'home')
 
 

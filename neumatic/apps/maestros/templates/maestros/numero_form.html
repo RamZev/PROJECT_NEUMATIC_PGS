@@ -114,12 +114,23 @@
 								</div>
 								
 								<div class="container mt-3">
-									<button class="btn btn-primary" type="submit" id="guardarBtn">
-										Guardar
-									</button>
-									<a class="btn btn-secondary" href="{% url list_view_name %}">
-										Cancelar
-									</a>
+									{% if is_view_only %}
+										<!-- MODO CONSULTA -->
+										<a class="btn btn-secondary" href="{% url list_view_name %}">
+											Volver
+										</a>
+										<a class="btn btn-primary" href="{% url update_view_name object.pk %}">
+											<i class="fa fa-edit"></i> Editar
+										</a>
+									{% else %}
+										<!-- MODO CREAR / EDITAR -->
+										<button class="btn btn-primary" type="submit" id="guardarBtn">
+											Guardar
+										</button>
+										<a class="btn btn-secondary" href="{% url list_view_name %}">
+											Cancelar
+										</a>
+									{% endif %}
 								</div>
 							</form>
 						</div>

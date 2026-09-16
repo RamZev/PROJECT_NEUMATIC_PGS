@@ -371,3 +371,31 @@ order by
 
 --select * from producto_estado
 SELECT p.id_producto, p.nombre_producto, p.precio, pc.cai FROM producto p JOIN producto_cai pc ON p.id_cai_id = pc.id_cai WHERE pc.cai ='' ORDER by pc.cai
+
+
+
+
+##################################################################################################################################
+Observaciones de los Jefes:
+
+- Archivos > Ventas > Operarios : No figura nro de operario. (como se darán cuenta, ellos están muy acostumbrados a manejarse con codigos)
+- Archivos > Productos > Marca : No tiene para tildar si es 1er marca o otras marcas. (supongo que es principal, y si no tiene es otra marca), pónganle 1ra marca!
+- Archivos > Productos > Modelos :Cuando generas uno nuevo no aparece el código, tenes que buscarlo después. Cuando se genere que aparezca el NUMERO DE CODIGO (como les decía, están acostumbrados a manejar los codigos).
+- Archivos > Productos > CAI : Que significa este item? (yo tampoco lo se).
+
+
+- Archivos > Ventas > Operarios:
+  Como lo muestra Mario en la imagen, los códigos de cada item aparece en la barra de t´titulo de la ventana, si lo prefieren se puede ser más explícito e indicar "... - Código: xxxx"
+
+- Archivos > Productos > Marca
+  He cambiado el título del Check como lo sugieres a "1ra. Marca" (si está marcado es primera marca y si no, es otra marca).
+
+- Archivos > Productos > Modelos
+  De la forma que se determina el código es la correcta, cuando ya está grabado en la Base de Datos es que se determina cuál es el correlativo que le corresponde, 
+  solo hay que consultarlo para saber cuál le tocó.
+
+- Archivos > Productos > CAI
+  Esto es lo que para el sistema en VFP es el "Código de Fábrica", allí están todos los CAIs que existen actualemente en el sistema en la tabla de productos.
+  Esto se hace así para que no exista ambigüedad, porque por ejemplo, en el sistema viejo se podría escribir un CAI así: 123 o 1 2 3 o 1-2-3 y se están refiriendo al mismo CAI,
+  como se propone solo existiría uno solo y ese se le asigna a los productos que lo requeiran. Espero haber explicado bien, si no queda claro, podemos hacer una llamada para aclararlo.
+

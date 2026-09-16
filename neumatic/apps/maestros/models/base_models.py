@@ -204,7 +204,7 @@ class ProductoMarca(ModeloBaseGenerico):
 		max_length=50
 	)
 	principal = models.BooleanField(
-		verbose_name="Principal",
+		verbose_name="1ra. Marca",
 		default=False
 	)
 	info_michelin_auto = models.BooleanField(

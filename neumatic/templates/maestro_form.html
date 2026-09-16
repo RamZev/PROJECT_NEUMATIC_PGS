@@ -38,6 +38,11 @@
 {% block script %}
 	{{ block.super }}
 	
+	<!-- Bandera de modo solo lectura para uso en JS -->
+	<script>
+		window.IS_VIEW_ONLY = {{ is_view_only|default:False|yesno:"true,false" }};
+	</script>
+	
 	<script>
 		document.addEventListener('DOMContentLoaded', function () {
 			const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
@@ -48,6 +53,30 @@
 			if (hasErrors) {
 				errorModal.show();
 			}
+			
+			//-- MODO SOLO LECTURA --------------------------------------------------
+			if (window.IS_VIEW_ONLY) {
+				// Deshabilitar todos los campos del formulario excepto los botones de acción
+				const form = document.querySelector('form');
+				if (form) {
+					const fields = form.querySelectorAll('input, select, textarea');
+					fields.forEach(field => {
+						// No deshabilitar csrf ni botones de submit
+						if (field.type === 'hidden' || field.type === 'submit' || field.tagName === 'BUTTON') {
+							return;
+						}
+						// Para SELECT, usar disabled (readonly no funciona)
+						if (field.tagName === 'SELECT') {
+							field.disabled = true;
+						} else {
+							field.readOnly = true;
+							field.classList.add('bg-light'); // Fondo gris para indicar solo lectura
+						}
+					});
+				}
+			}
+			//-----------------------------------------------------------------------
+			
 			
 			// Validación en tiempo real: remover clases al escribir.
 			// Seleccionar inputs y selects.
@@ -91,6 +120,9 @@
 		// SUSTITUIR ENTER POR TAB EN FORMULARIOS CRUD
 		// ============================================
 		document.addEventListener('DOMContentLoaded', function() {
+			// No aplicar en modo consulta
+			if (window.IS_VIEW_ONLY) return;
+			
 			// Seleccionar el primer formulario de la página (el principal)
 			const form = document.querySelector('form');
 			if (!form) return;
