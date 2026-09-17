@@ -336,6 +336,7 @@ CREATE VIEW VLRemitosPendientes AS
 		format_comprobante(f.letra_comprobante, f.numero_comprobante, 'completo') AS comprobante,
 		df.id_producto_id,
 		p.nombre_producto,
+		pc.cai,
 		p.medida,
 		df.cantidad,
 		df.precio,
@@ -350,6 +351,7 @@ CREATE VIEW VLRemitosPendientes AS
 		JOIN producto p ON df.id_producto_id = p.id_producto
 		JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 		JOIN cliente c ON f.id_cliente_id = c.id_cliente
+		LEFT JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
 	WHERE
 		cv.mult_venta = 0 AND cv.remito
 		AND f.estado = '';

@@ -67,66 +67,101 @@ class ConfigViews:
 	
 	#-- Establecer las columnas del reporte y sus atributos.
 	table_info = {
+		"comprobante": {
+			"label": "COMPROBANTE",
+			"col_width_pdf": 70,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"fecha_comprobante": {
+			"label": "FECHA",
+			"col_width_pdf": 40,
+			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
 		"id_cliente_id": {
-			"label": "Cliente",
+			"label": "CLIENTE",
 			"col_width_pdf": 30,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_cliente": {
-			"label": "Nombre",
+			"label": "NOMBRE",
 			"col_width_pdf": 180,
 			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
-		"fecha_comprobante": {
-			"label": "Fecha",
-			"col_width_pdf": 40,
-			"pdf": True,
-			"excel": True,
-			"csv": True
-		},
-		"comprobante": {
-			"label": "Comprobante",
-			"col_width_pdf": 70,
-			"pdf": True,
+		"id_producto_id": {
+			"label": "CODIGO",
+			"col_width_pdf": 0,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
 		"nombre_producto": {
-			"label": "Descripción",
+			"label": "DESCRIPCION",
 			"col_width_pdf": 200,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
+		"cai": {
+			"label": "CODFABRICA",
+			"col_width_pdf": 50,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"medida": {
-			"label": "Medida",
+			"label": "MEDIDA",
 			"col_width_pdf": 50,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"cantidad": {
-			"label": "Cantidad",
+			"label": "CANTIDAD",
 			"col_width_pdf": 60,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
 		"precio": {
-			"label": "Precio",
+			"label": "PRECIO",
 			"col_width_pdf": 70,
 			"pdf": True,
 			"excel": True,
 			"csv": True
 		},
+		"descuento": {
+			"label": "DESCUENTO",
+			"col_width_pdf": 70,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
 		"total": {
-			"label": "Total",
+			"label": "TOTAL",
 			"col_width_pdf": 70,
 			"pdf": True,
+			"excel": True,
+			"csv": True
+		},
+		"id_sucursal_fac": {
+			"label": "SUCURSAL",
+			"col_width_pdf": 70,
+			"pdf": False,
+			"excel": True,
+			"csv": True
+		},
+		"id_sucursal_cli": {
+			"label": "SUCCLIENTE",
+			"col_width_pdf": 70,
+			"pdf": False,
 			"excel": True,
 			"csv": True
 		},
