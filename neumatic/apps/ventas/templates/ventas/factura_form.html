@@ -985,12 +985,12 @@
 									<th style="width: 10%;">Marca</th>
 									<th style="width: 10%;">Medida</th>
 									<th style="width: 8%;">CAI</th>
-									<th style="width: 20%;">Nombre</th>
+									<th style="width: 27%;">Nombre</th>
 									<th style="width: 8%;">Precio</th>
-									<th style="width: 8%;">Stock</th>
-									<th style="width: 8%;">Mínimo</th>
+									<th style="width: 5%;">Stock</th>
+									<th style="width: 6%;">Mínimo</th>
 									<th style="width: 8%;">Detalle</th>
-									<th style="width: 8%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
+									<th style="width: 6%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
 								</thead>
 								
 								<tbody>
@@ -1626,7 +1626,7 @@
 						precioInput.value = nuevoPrecio.toFixed(2);
 						
 						// 2. Poner el DESCUENTO EN CERO
-						descuentoInput.value = "0";
+						// descuentoInput.value = "0";
 						
 						// 3. Forzar RECÁLCULO de la fila
 						const inputEvent = new Event('input', { bubbles: true });
@@ -1918,7 +1918,8 @@
 						
 						<td>
 							<input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
-								class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}>
+								class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}
+								title="${producto.nombre}" ${nombreInputAttributes}>
 						</td>
 						<td>
 							<input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
@@ -2195,7 +2196,7 @@
 								<td>${producto.marca}</td>
 								<td>${producto.medida}</td>
 								<td>${producto.cai || 'N/A'}</td>
-								<td>${producto.nombre}</td>
+								<td title="${producto.nombre}">${producto.nombre}</td>
 								<td class="text-end"><strong>${precioFormateado}</strong></td>
 								<td class="text-end">${producto.stock}</td>
 								<td class="text-end">${producto.minimo}</td>
@@ -2709,7 +2710,8 @@
 								<td>
 									<input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
 										class="form-control form-control-sm border border-primary" 
-										value="${detalle.nombre}" readonly>
+										value="${detalle.nombre}" readonly
+										title="${producto.nombre}" ${nombreInputAttributes}>
 								</td>
 								<td>
 									<input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
