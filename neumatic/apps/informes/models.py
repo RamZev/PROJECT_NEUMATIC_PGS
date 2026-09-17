@@ -3497,7 +3497,7 @@ class VLMovimientoInternoStockManager(models.Manager):
 			params.append(id_deposito)
 		
 		#-- Agregar el ordenamiento acá por rendimiento en la consulta.
-		query += " ORDER BY fecha_comprobante, numero_comprobante"
+		query += " ORDER BY fecha_comprobante"
 		
 		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
 		return self.raw(query, params)

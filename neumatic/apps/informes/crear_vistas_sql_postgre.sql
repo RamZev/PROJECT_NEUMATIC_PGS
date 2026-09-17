@@ -1482,7 +1482,7 @@ CREATE VIEW VLMovimientoInternoStock AS
 		INNER JOIN producto_marca pm ON p.id_marca_id = pm.id_producto_marca
 		INNER JOIN comprobante_venta cv ON f.id_comprobante_venta_id = cv.id_comprobante_venta
 	WHERE
-		cv.interno;
+		cv.codigo_comprobante_venta = 'MI';
 
 -- ============================================
 -- Stock por Cliente en Depósito.
