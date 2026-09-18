@@ -3186,7 +3186,7 @@ class VLStockGeneralSucursalManager(models.Manager):
 		#-- Crear objetos modelo simulados.
 		ModelProxy = namedtuple('ModelProxy', columns)
 		return [ModelProxy(*row) for row in rows]
-
+	
 
 class VLStockGeneralSucursal(models.Model):
 	id_familia_id = models.IntegerField()
@@ -3211,6 +3211,241 @@ class VLStockGeneralSucursal(models.Model):
 		db_table = 'vlstockgeneralsucursal'
 		verbose_name = ('Stock General por Sucursal')
 		verbose_name_plural = ('Stock General por Sucursal')
+
+
+#-----------------------------------------------------------------------------
+# Stock General por Depósito.
+#-----------------------------------------------------------------------------
+class VLStockGeneralDepositoManager(models.Manager):
+	
+	def obtener_datos(self, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta, depositos_seleccionados):
+		from django.db import connection
+		from collections import namedtuple
+		
+		#-- Construcción de la consulta base.
+		query = """
+			SELECT
+				p.id_familia_id,
+				pf.nombre_producto_familia,
+				p.id_modelo_id,
+				pm.nombre_modelo,
+				p.id_marca_id,
+				SUBSTR(px.nombre_producto_marca, 1, 90) AS nombre_producto_marca,
+				ps.id_producto_id,
+				p.id_cai_id,
+				pc.cai,
+				p.medida,
+				SUBSTR(p.nombre_producto, 1, 200) AS nombre_producto,
+				{deposito_columns},
+				{otros_depositos},
+				{total_general}
+			FROM 
+				producto_stock ps
+				JOIN producto p ON ps.id_producto_id = p.id_producto
+				JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+				JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+				JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+				JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+				JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+			WHERE
+				p.tipo_producto = 'P' {filters}
+			GROUP BY
+				p.id_familia_id, pf.nombre_producto_familia,
+				p.id_modelo_id, pm.nombre_modelo,
+				p.id_marca_id, px.nombre_producto_marca,
+				ps.id_producto_id, p.id_cai_id, pc.cai, p.medida, p.nombre_producto
+			HAVING
+				SUM(ps.stock) <> 0
+		"""
+		
+		#-- Parámetros para la consulta.
+		params = []
+		deposito_columns = []
+		
+		#-- IDs de depósitos seleccionados para usar en los filtros.
+		depositos_ids = [d.id_producto_deposito for d in depositos_seleccionados] if depositos_seleccionados else []
+		
+		#-- Columnas dinámicas para depósitos seleccionados.
+		if depositos_seleccionados:
+			for deposito in depositos_seleccionados:
+				deposito_columns.append(
+					f'SUM(CASE WHEN pd.id_producto_deposito = %s THEN ps.stock ELSE 0 END) AS stock_dep_{deposito.id_producto_deposito}'
+				)
+				params.append(deposito.id_producto_deposito)
+			
+			#-- Columna para stock en depósitos NO seleccionados.
+			otros_depositos = """
+				SUM(CASE WHEN pd.id_producto_deposito NOT IN ({}) THEN ps.stock ELSE 0 END) AS otros_dep
+			""".format(','.join(['%s']*len(depositos_ids)))
+			params.extend(depositos_ids)
+			
+			#-- Columna para el stock total.
+			total_general = "SUM(ps.stock) AS stock_total"
+		else:
+			deposito_columns.append("0 AS stock")
+			otros_depositos = "0 AS otros_dep"
+			total_general = "0 AS stock_total"
+		
+		#-- 2. Construcción de filtros.
+		conditions = []
+		
+		#-- Filtros por rango.
+		range_filters = [
+			('p.id_familia_id', id_familia_desde, id_familia_hasta),
+			('p.id_marca_id', id_marca_desde, id_marca_hasta),
+			('p.id_modelo_id', id_modelo_desde, id_modelo_hasta)
+		]
+		
+		for field, desde, hasta in range_filters:
+			if desde and hasta:
+				conditions.append(f"{field} BETWEEN %s AND %s")
+				params.extend([desde, hasta])
+			elif desde:
+				conditions.append(f"{field} >= %s")
+				params.append(desde)
+			elif hasta:
+				conditions.append(f"{field} <= %s")
+				params.append(hasta)
+		
+		filters = "AND " + " AND ".join(conditions) if conditions else ""
+		
+		#-- 4. Ensamblar consulta final.
+		final_query = query.format(
+			deposito_columns=", ".join(deposito_columns),
+			otros_depositos=otros_depositos,
+			total_general=total_general,
+			filters=filters
+		)
+		
+		#-- 5. Ejecutar con cursor y mapear a objetos del modelo.
+		with connection.cursor() as cursor:
+			cursor.execute(final_query, params)
+			columns = [col[0] for col in cursor.description]
+			rows = cursor.fetchall()
+		
+		#-- Crear objetos modelo simulados.
+		ModelProxy = namedtuple('ModelProxy', columns)
+		return [ModelProxy(*row) for row in rows]
+	
+	def obtener_datos_tabulares(self, id_familia_desde, id_familia_hasta, id_marca_desde, id_marca_hasta, id_modelo_desde, id_modelo_hasta, depositos):
+		from django.db import connection
+		from collections import namedtuple
+		
+		#-- Construcción de la consulta base.
+		query = """
+			SELECT
+				p.id_familia_id,
+				pf.nombre_producto_familia,
+				p.id_modelo_id,
+				pm.nombre_modelo,
+				p.id_marca_id,
+				SUBSTR(px.nombre_producto_marca, 1, 90) AS nombre_producto_marca,
+				ps.id_producto_id,
+				p.id_cai_id,
+				pc.cai,
+				p.medida,
+				SUBSTR(p.nombre_producto, 1, 200) AS nombre_producto,
+				{deposito_columns},
+				{total_general}
+			FROM 
+				producto_stock ps
+				JOIN producto p ON ps.id_producto_id = p.id_producto
+				JOIN producto_cai pc ON p.id_cai_id = pc.id_cai
+				JOIN producto_familia pf ON p.id_familia_id = pf.id_producto_familia
+				JOIN producto_modelo pm ON p.id_modelo_id = pm.id_modelo
+				JOIN producto_marca px ON p.id_marca_id = px.id_producto_marca
+				JOIN producto_deposito pd ON ps.id_deposito_id = pd.id_producto_deposito
+				JOIN sucursal s ON pd.id_sucursal_id = s.id_sucursal
+			WHERE
+				p.tipo_producto = 'P'
+				{filters}
+			GROUP BY
+				p.id_familia_id, pf.nombre_producto_familia,
+				p.id_modelo_id, pm.nombre_modelo,
+				p.id_marca_id, px.nombre_producto_marca,
+				ps.id_producto_id, p.id_cai_id, pc.cai, p.medida, p.nombre_producto
+			HAVING
+				SUM(ps.stock) <> 0
+		"""
+		
+		#-- Parámetros para la consulta.
+		params = []
+		deposito_columns = []
+		
+		#-- Columnas de stock por cada depósito.
+		for deposito in depositos:
+			deposito_columns.append(
+				f'SUM(CASE WHEN pd.id_producto_deposito = %s THEN ps.stock ELSE 0 END) AS stock_dep_{deposito.id_producto_deposito}'
+			)
+			params.append(deposito.id_producto_deposito)
+		
+		#-- Columna para el stock total.
+		total_general = "SUM(ps.stock) AS stock_total"
+		
+		#-- 2. Construcción de filtros.
+		conditions = []
+		
+		#-- Filtros por rango.
+		range_filters = [
+			('p.id_familia_id', id_familia_desde, id_familia_hasta),
+			('p.id_marca_id', id_marca_desde, id_marca_hasta),
+			('p.id_modelo_id', id_modelo_desde, id_modelo_hasta)
+		]
+		
+		for field, desde, hasta in range_filters:
+			if desde and hasta:
+				conditions.append(f"{field} BETWEEN %s AND %s")
+				params.extend([desde, hasta])
+			elif desde:
+				conditions.append(f"{field} >= %s")
+				params.append(desde)
+			elif hasta:
+				conditions.append(f"{field} <= %s")
+				params.append(hasta)
+		
+		filters = "AND " + " AND ".join(conditions) if conditions else ""
+		
+		#-- 4. Ensamblar consulta final.
+		final_query = query.format(
+			deposito_columns=", ".join(deposito_columns),
+			total_general=total_general,
+			filters=filters
+		)
+		
+		#-- 5. Ejecutar con cursor y mapear a objetos del modelo.
+		with connection.cursor() as cursor:
+			cursor.execute(final_query, params)
+			columns = [col[0] for col in cursor.description]
+			rows = cursor.fetchall()
+		
+		#-- Crear objetos modelo simulados.
+		ModelProxy = namedtuple('ModelProxy', columns)
+		return [ModelProxy(*row) for row in rows]
+
+
+class VLStockGeneralDeposito(models.Model):
+	id_familia_id = models.IntegerField()
+	nombre_producto_familia = models.CharField(max_length=50)
+	id_modelo_id = models.IntegerField()
+	nombre_modelo = models.CharField(max_length=50)
+	id_marca_id = models.IntegerField()
+	nombre_producto_marca = models.CharField(max_length=50)
+	id_producto = models.IntegerField()
+	id_cai_id = models.IntegerField()
+	cai = models.CharField(max_length=20)
+	medida = models.CharField(max_length=15)
+	nombre_producto = models.CharField(max_length=50)
+	stock = models.IntegerField()
+	otras_suc = models.IntegerField()
+	stock_total = models.IntegerField()
+	
+	objects = VLStockGeneralDepositoManager()
+	
+	class Meta:
+		managed = False
+		db_table = 'vlstockgeneraldeposito'
+		verbose_name = ('Stock General por Depósito')
+		verbose_name_plural = ('Stock General por Depósito')
 
 
 #-----------------------------------------------------------------------------

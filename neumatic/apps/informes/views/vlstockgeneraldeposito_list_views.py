@@ -1,4 +1,4 @@
-# neumatic\apps\informes\views\vlstockgeneralsucursal_list_views.py
+# neumatic\apps\informes\views\vlstockgeneraldeposito_list_views.py
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -11,9 +11,9 @@ from reportlab.lib.pagesizes import A4, landscape, portrait
 from reportlab.platypus import Paragraph
 
 from .report_views_generics import *
-from apps.informes.models import VLStockGeneralSucursal
-from apps.maestros.models.sucursal_models import Sucursal
-from ..forms.buscador_vlstockgeneralsucursal_forms import BuscadorStockGeneralSucursalForm
+from apps.informes.models import VLStockGeneralDeposito
+from apps.maestros.models.base_models import ProductoDeposito
+from ..forms.buscador_vlstockgeneraldeposito_forms import BuscadorStockGeneralDepositoForm
 from utils.utils import deserializar_datos, formato_argentino_entero, normalizar, raw_to_dict
 from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 
@@ -21,13 +21,13 @@ from utils.helpers.export_helpers import ExportHelper, PDFGenerator
 class ConfigViews:
 	
 	#-- Título del reporte.
-	report_title = "Listado de Stock General por Sucursal"
+	report_title = "Listado de Stock General por Depósito"
 	
 	#-- Modelo.
-	model = VLStockGeneralSucursal
+	model = VLStockGeneralDeposito
 	
 	#-- Formulario asociado al modelo.
-	form_class = BuscadorStockGeneralSucursalForm
+	form_class = BuscadorStockGeneralDepositoForm
 	
 	#-- Aplicación asociada al modelo.
 	app_label = "informes"
@@ -36,7 +36,7 @@ class ConfigViews:
 	model_string = model.__name__.lower()
 	
 	#-- Vistas del CRUD del modelo.
-	list_view_name = f"{model_string}_list"  # <== vlventacompro_list
+	list_view_name = f"{model_string}_list"
 	
 	#-- Plantilla base.
 	template_list = f'{app_label}/maestro_informe.html'
@@ -147,7 +147,7 @@ class ConfigViews:
 	}
 
 
-class VLStockGeneralSucursalInformeView(InformeFormView):
+class VLStockGeneralDepositoInformeView(InformeFormView):
 	config = ConfigViews  #-- Ahora la configuración estará disponible en self.config.
 	form_class = ConfigViews.form_class
 	template_name = ConfigViews.template_list
@@ -168,29 +168,29 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 		id_marca_hasta = cleaned_data.get('id_marca_hasta', None)
 		id_modelo_desde = cleaned_data.get('id_modelo_desde', None)
 		id_modelo_hasta = cleaned_data.get('id_modelo_hasta', None)
-		sucursales_seleccionadas = cleaned_data.get('sucursales', [])
+		depositos_seleccionados = cleaned_data.get('depositos', [])
 		
 		tipo_salida = self.request.GET.get('tipo_salida')
 		
 		if tipo_salida in ["pantalla", "pdf_preliminar"]:
-			queryset = VLStockGeneralSucursal.objects.obtener_datos(
+			queryset = VLStockGeneralDeposito.objects.obtener_datos(
 				id_familia_desde,
 				id_familia_hasta,
 				id_marca_desde,
 				id_marca_hasta,
 				id_modelo_desde,
 				id_modelo_hasta,
-				sucursales_seleccionadas
+				depositos_seleccionados
 			)
 		else:
-			queryset = VLStockGeneralSucursal.objects.obtener_datos_tabulares(
+			queryset = VLStockGeneralDeposito.objects.obtener_datos_tabulares(
 				id_familia_desde,
 				id_familia_hasta,
 				id_marca_desde,
 				id_marca_hasta,
 				id_modelo_desde,
 				id_modelo_hasta,
-				Sucursal.objects.filter(estatus_sucursal=True)
+				ProductoDeposito.objects.filter(estatus_producto_deposito=True)
 			)
 		return queryset
 	
@@ -207,7 +207,7 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 		id_marca_hasta = cleaned_data.get('id_marca_hasta', None)
 		id_modelo_desde = cleaned_data.get('id_modelo_desde', None)
 		id_modelo_hasta = cleaned_data.get('id_modelo_hasta', None)
-		sucursales_seleccionadas = cleaned_data.get('sucursales', [])
+		depositos_seleccionados = cleaned_data.get('depositos', [])
 		
 		tipo_salida = self.request.GET.get('tipo_salida')
 		
@@ -240,10 +240,10 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 				modelo = f"Hasta: {id_modelo_hasta}"
 			
 			#-- Estructura para mapeo de columnas.
-			sucursales_info = _sucursal_info(sucursales_seleccionadas)
+			depositos_info = _deposito_info(depositos_seleccionados)
 			
 			param_left = {
-				"Sucursal(es)": ", ".join([s['nombre'] for s in sucursales_info]),
+				"Depósito(s)": ", ".join([s['nombre'] for s in depositos_info]),
 			}
 			param_right = {
 				"Familia": familia,
@@ -260,8 +260,8 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 			
 			#-- Inicializar totales generales.
 			total_general = {
-				**{sucursal['nombre']: 0 for sucursal in sucursales_info},
-				'otras_suc': 0,
+				**{deposito['nombre']: 0 for deposito in depositos_info},
+				'otros_dep': 0,
 				'stock_total': 0
 			}
 			
@@ -273,8 +273,8 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 						'familia': obj['nombre_producto_familia'],
 						'modelos': {},
 						'stf': {
-							**{sucursal['nombre']: 0 for sucursal in sucursales_info},
-							'otras_suc': 0,
+							**{deposito['nombre']: 0 for deposito in depositos_info},
+							'otros_dep': 0,
 							'stock_total': 0
 						}
 					}
@@ -286,8 +286,8 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 						'modelo': obj['nombre_modelo'],
 						'detalle': [],
 						'stm': {
-							**{sucursal['nombre']: 0 for sucursal in sucursales_info},
-							'otras_suc': 0,
+							**{deposito['nombre']: 0 for deposito in depositos_info},
+							'otros_dep': 0,
 							'stock_total': 0
 						},
 					}
@@ -301,38 +301,38 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 					'nombre_producto': obj['nombre_producto'],
 					'nombre_producto_marca': obj['nombre_producto_marca'],
 					'stocks': {},
-					'otras_suc': obj.get('otras_suc', 0),
+					'otros_dep': obj.get('otros_dep', 0),
 					'stock_total': obj.get('stock_total', 0)
 				}
 				
-				#-- Procesar stocks por sucursal y acumular totales.
-				for sucursal in sucursales_info:
-					stock = obj.get(sucursal['columna'], 0)
-					detalle['stocks'][sucursal['nombre']] = stock
+				#-- Procesar stocks por depósito y acumular totales.
+				for deposito in depositos_info:
+					stock = obj.get(deposito['columna'], 0)
+					detalle['stocks'][deposito['nombre']] = stock
 					
 					#-- Acumular subtotales por modelo.
-					grouped_data[id_familia]['modelos'][id_modelo]['stm'][sucursal['nombre']] += stock
+					grouped_data[id_familia]['modelos'][id_modelo]['stm'][deposito['nombre']] += stock
 					
 					#-- Acumular subtotales por familia.
-					grouped_data[id_familia]['stf'][sucursal['nombre']] += stock
+					grouped_data[id_familia]['stf'][deposito['nombre']] += stock
 					
 					#-- Acumular total general.
-					total_general[sucursal['nombre']] += stock
+					total_general[deposito['nombre']] += stock
 				
 				#-- Procesar otras sucursales y stock total.
-				otras_suc = obj.get('otras_suc', 0)
+				otros_dep = obj.get('otros_dep', 0)
 				stock_total = obj.get('stock_total', 0)
 				
 				#-- Acumular para modelo.
-				grouped_data[id_familia]['modelos'][id_modelo]['stm']['otras_suc'] += otras_suc
+				grouped_data[id_familia]['modelos'][id_modelo]['stm']['otros_dep'] += otros_dep
 				grouped_data[id_familia]['modelos'][id_modelo]['stm']['stock_total'] += stock_total
 				
 				#-- Acumular para familia.
-				grouped_data[id_familia]['stf']['otras_suc'] += otras_suc
+				grouped_data[id_familia]['stf']['otros_dep'] += otros_dep
 				grouped_data[id_familia]['stf']['stock_total'] += stock_total
 				
 				#-- Acumular total general.
-				total_general['otras_suc'] += otras_suc
+				total_general['otros_dep'] += otros_dep
 				total_general['stock_total'] += stock_total
 				
 				grouped_data[id_familia]['modelos'][id_modelo]['detalle'].append(detalle)
@@ -342,7 +342,7 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 			#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 			return {
 				"objetos": grouped_data,
-				"sucursales_info": sucursales_info,
+				"depositos_info": depositos_info,
 				"total_general": total_general,
 				"parametros_i": param_left,
 				"parametros_d": param_right,
@@ -356,16 +356,15 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 			queryset_list = [raw_to_dict(obj) for obj in queryset]
 			
 			#-- Estructura para mapeo de columnas.
-			sucursales = Sucursal.objects.filter(estatus_sucursal=True)
+			depositos = ProductoDeposito.objects.filter(estatus_producto_deposito=True)
 			
-			sucursales_info = _sucursal_info(sucursales)
+			depositos_info = _deposito_info(depositos)
 			
 			#-- Se retorna un contexto que será consumido tanto para la vista en pantalla como para la generación del PDF.
 			return {
 				"objetos": queryset_list,
-				"sucursales_info": sucursales_info,
+				"depositos_info": depositos_info,
 			}
-			
 	
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -377,7 +376,7 @@ class VLStockGeneralSucursalInformeView(InformeFormView):
 		return context
 
 
-def vlstockgeneralsucursal_vista_pantalla(request):
+def vlstockgeneraldeposito_vista_pantalla(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -394,7 +393,7 @@ def vlstockgeneralsucursal_vista_pantalla(request):
 	return render(request, ConfigViews.reporte_pantalla, contexto_reporte)
 
 
-def vlstockgeneralsucursal_vista_pdf(request):
+def vlstockgeneraldeposito_vista_pdf(request):
 	#-- Obtener el token de la querystring.
 	token = request.GET.get("token")
 	
@@ -438,9 +437,9 @@ def generar_pdf(contexto_reporte):
 	#-- Crear instancia del generador personalizado.
 	generator = CustomPDFGenerator(contexto_reporte, pagesize=landscape(A4), body_font_size=7)
 	
-	#-- Agregar las sucursales seleccionadas a ConfigViews.table_info.
-	sucursales_info = contexto_reporte.get("sucursales_info", [])
-	table_info = _extend_table_info(sucursales_info, "pdf")
+	#-- Agregar los depositos seleccionados a ConfigViews.table_info.
+	depositos_info = contexto_reporte.get("depositos_info", [])
+	table_info = _extend_table_info(depositos_info, "pdf")
 	
 	#-- Construir datos de la tabla:
 	
@@ -452,7 +451,7 @@ def generar_pdf(contexto_reporte):
 	col_widths = [value['col_width_pdf'] for value in table_info.values() if value['pdf']]
 	
 	col_widths.insert(0, 10)
-	blank_cols = [""] * (5 + len(sucursales_info) + 2)  #-- 5 columnas fijas + las de sucursales + Otras Suc y Stock Total.
+	blank_cols = [""] * (5 + len(depositos_info) + 2)  #-- 5 columnas fijas + los de depósitos + Otros Dep y Stock Total.
 	
 	table_data = [headers_titles]
 	
@@ -504,14 +503,14 @@ def generar_pdf(contexto_reporte):
 					Paragraph(str(obj['nombre_producto_marca']), generator.styles['CellStyle'])
 				]
 				
-				#-- Agregar stocks por sucursal.
+				#-- Agregar stocks por depósito.
 				row_data.extend([
-					formato_argentino_entero(obj['stocks'][sucursal['nombre']]) for sucursal in sucursales_info
+					formato_argentino_entero(obj['stocks'][deposito['nombre']]) for deposito in depositos_info
 				])
 				
-				#-- Agregar otras sucursales y total.
+				#-- Agregar otros depósitos y total.
 				row_data.extend([
-					formato_argentino_entero(obj['otras_suc']),
+					formato_argentino_entero(obj['otros_dep']),
 					formato_argentino_entero(obj['stock_total'])
 				])
 				
@@ -520,9 +519,9 @@ def generar_pdf(contexto_reporte):
 			
 			#-- Fila subtotal por Modelo.
 			row_data = [""]*5 + ["Total Modelo:"] + [
-				formato_argentino_entero(modelo_data['stm'][sucursal['nombre']]) for sucursal in sucursales_info
+				formato_argentino_entero(modelo_data['stm'][deposito['nombre']]) for deposito in depositos_info
 			] + [
-				formato_argentino_entero(modelo_data['stm']['otras_suc']),
+				formato_argentino_entero(modelo_data['stm']['otros_dep']),
 				formato_argentino_entero(modelo_data['stm']['stock_total'])
 			]
 			table_data.append(row_data)
@@ -537,9 +536,9 @@ def generar_pdf(contexto_reporte):
 			
 		#-- Fila subtotal por Familia.
 		row_data = [""]*5 + ["Total Familia:"] + [
-			formato_argentino_entero(familia_data['stf'][sucursal['nombre']]) for sucursal in sucursales_info
+			formato_argentino_entero(familia_data['stf'][deposito['nombre']]) for deposito in depositos_info
 		] + [
-			formato_argentino_entero(familia_data['stf']['otras_suc']),
+			formato_argentino_entero(familia_data['stf']['otros_dep']),
 			formato_argentino_entero(familia_data['stf']['stock_total'])
 		]
 		table_data.append(row_data)
@@ -551,7 +550,7 @@ def generar_pdf(contexto_reporte):
 			# ('LINEABOVE', (8,current_row), (-1,current_row), 0.5, colors.black),
 		])
 		current_row += 1
-
+		
 		#-- Fila divisoria.
 		table_data.append([""] + blank_cols)
 		table_style_config.append(
@@ -562,9 +561,9 @@ def generar_pdf(contexto_reporte):
 	#-- Fila Total General.
 	total_general = contexto_reporte.get("total_general", {})
 	row_data = [""]*5 + ["Total Genral:"] + [
-		formato_argentino_entero(total_general.get(sucursal['nombre'], 0)) for sucursal in sucursales_info
+		formato_argentino_entero(total_general.get(deposito['nombre'], 0)) for deposito in depositos_info
 	] + [
-		formato_argentino_entero(total_general.get('otras_suc', 0)),
+		formato_argentino_entero(total_general.get('otros_dep', 0)),
 		formato_argentino_entero(total_general.get('stock_total', 0))
 	]
 	table_data.append(row_data)
@@ -580,14 +579,14 @@ def generar_pdf(contexto_reporte):
 	return generator.generate(table_data, col_widths, table_style_config)		
 
 
-def vlstockgeneralsucursal_vista_excel(request):
+def vlstockgeneraldeposito_vista_excel(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
-	sucursales_info = contexto_reporte.get("sucursales_info", [])
+	depositos_info = contexto_reporte.get("depositos_info", [])
 	
 	data = cache.get(token)
 	if not data or "cleaned_data" not in data:
@@ -596,12 +595,12 @@ def vlstockgeneralsucursal_vista_excel(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista y obtener el queryset.
-	view_instance = VLStockGeneralSucursalInformeView()
+	view_instance = VLStockGeneralDepositoInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	#-- Agregar las sucursales seleccionadas a ConfigViews.table_info.
-	table_info = _extend_table_info(sucursales_info, "excel")
+	#-- Agregar los depósitos seleccionados a ConfigViews.table_info.
+	table_info = _extend_table_info(depositos_info, "excel")
 	
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: table_info[field] for field in table_info if table_info[field]['excel']}
@@ -623,14 +622,14 @@ def vlstockgeneralsucursal_vista_excel(request):
 	return response
 
 
-def vlstockgeneralsucursal_vista_csv(request):
+def vlstockgeneraldeposito_vista_csv(request):
 	token = request.GET.get("token")
 	if not token:
 		return HttpResponse("Token no proporcionado", status=400)
 	
 	#-- Obtener el contexto(datos) previamente guardados en la sesión.
 	contexto_reporte = deserializar_datos(request.session.pop(token, None))
-	sucursales_info = contexto_reporte.get("sucursales_info", [])
+	depositos_info = contexto_reporte.get("depositos_info", [])
 	
 	#-- Recuperar los parámetros de filtrado desde la cache.
 	data = cache.get(token)
@@ -640,12 +639,12 @@ def vlstockgeneralsucursal_vista_csv(request):
 	cleaned_data = data["cleaned_data"]
 	
 	#-- Instanciar la vista para reejecutar la consulta y obtener el queryset.
-	view_instance = VLStockGeneralSucursalInformeView()
+	view_instance = VLStockGeneralDepositoInformeView()
 	view_instance.request = request
 	queryset = view_instance.obtener_queryset(cleaned_data)
 	
-	#-- Agregar las sucursales seleccionadas a ConfigViews.table_info.
-	table_info = _extend_table_info(sucursales_info, "csv")
+	#-- Agregar los depósitos seleccionados a ConfigViews.table_info.
+	table_info = _extend_table_info(depositos_info, "csv")
 	
 	#-- Filtrar los headers de las columnas.
 	headers_titles = {field: table_info[field] for field in table_info if table_info[field]['csv']}
@@ -664,25 +663,26 @@ def vlstockgeneralsucursal_vista_csv(request):
 	return response
 
 
-def _sucursal_info(sucursales):
+def _deposito_info(depositos):
 	info = [
 		{
-			'nombre': sucursal.nombre_sucursal[:5],			 	#-- Nombre corto de la sucursal.
-			'columna': f'stock_suc_{sucursal.id_sucursal}',		#-- Nombre real de la columna.
-			'id': sucursal.id_sucursal
+			# 'nombre': deposito.nombre_producto_deposito[:5],			 	#-- Nombre corto del depósito.
+			'nombre': f"{deposito.nombre_producto_deposito[:5]}_{deposito.id_producto_deposito}",			 	#-- Nombre corto del depósito.
+			'columna': f'stock_dep_{deposito.id_producto_deposito}',		#-- Nombre real de la columna.
+			'id': deposito.id_producto_deposito
 		}
-		for sucursal in sucursales
+		for deposito in depositos
 	]
 	return info
 
 
-def _extend_table_info(sucursales_info, salida="pantalla"):
+def _extend_table_info(depositos_info, salida="pantalla"):
 	table_info = ConfigViews.table_info.copy()
 	
-	for suc in sucursales_info:
+	for dep in depositos_info:
 		table_info.update({
-			f"{suc['columna']}": {
-				"label": f"{suc['nombre']}",
+			f"{dep['columna']}": {
+				"label": f"{dep['nombre']}",
 				"col_width_pdf": 40,
 				"pdf": True,
 				"excel": True,
@@ -692,8 +692,8 @@ def _extend_table_info(sucursales_info, salida="pantalla"):
 	
 	if salida in ["pantalla", "pdf"]:
 		table_info.update({
-			"otras_suc": {
-				"label": "Otras Suc.",
+			"otros_dep": {
+				"label": "Otros Dep.",
 				"col_width_pdf": 45,
 				"pdf": True,
 				"excel": True,

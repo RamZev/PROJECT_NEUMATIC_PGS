@@ -1,0 +1,102 @@
+<!-- neumatic\apps\informes\templates\informes\buscador_vlstockgeneraldeposito.html -->
+
+<div class="row">
+	
+	<div class="col-md-2">
+		{{ form.id_familia_desde.label }}
+		{{ form.id_familia_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_familia_hasta.label }}
+		{{ form.id_familia_hasta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_marca_desde.label }}
+		{{ form.id_marca_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_marca_hasta.label }}
+		{{ form.id_marca_hasta }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_modelo_desde.label }}
+		{{ form.id_modelo_desde }}
+	</div>
+	
+	<div class="col-md-2">
+		{{ form.id_modelo_hasta.label }}
+		{{ form.id_modelo_hasta }}
+	</div>
+	
+</div>
+
+<div class="row">
+	
+	<div class="col-md-4">
+		<label class="form-label">{{ form.depositos.label }}</label>
+		<div id="depositos-counter" class="text-muted small mb-2">Seleccionados: 0/8</div>
+		<ul class="list-group border border-primary" id="depositos-list">
+			{% for checkbox in form.depositos %}
+				<li class="list-group-item">
+					<input 
+						class="form-check-input me-1 deposito-checkbox" 
+						type="checkbox" 
+						name="{{ checkbox.data.name }}" 
+						value="{{ checkbox.data.value }}" 
+						id="{{ checkbox.id_for_label }}"
+						{% if checkbox.data.selected %}checked{% endif %}
+						onchange="updatedepositosCounter()"
+					>
+					<label class="form-check-label stretched-link" for="{{ checkbox.id_for_label }}">
+						{{ checkbox.choice_label }}
+					</label>
+				</li>
+			{% endfor %}
+		</ul>
+	</div>
+	
+</div>
+
+<style>
+	.list-group-item:hover {
+		background-color: #f8f9fa;
+	}
+	.form-check-input:checked + .form-check-label {
+		color: #0d6efd; /* Texto azul al seleccionar */
+	}
+	.checkbox-disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+</style>
+<script>
+	function updatedepositosCounter() {
+		const checkboxes = document.querySelectorAll('.deposito-checkbox:checked');
+		const counter = document.getElementById('depositos-counter');
+		const maxdepositos = 8;
+		
+		counter.textContent = `Seleccionados: ${checkboxes.length}/${maxdepositos}`;
+		
+		//-- Deshabilitar checkboxes no seleccionados si se alcanzó el máximo.
+		if (checkboxes.length >= maxdepositos) {
+			document.querySelectorAll('.deposito-checkbox:not(:checked)').forEach(checkbox => {
+				checkbox.disabled = true;
+				checkbox.parentElement.classList.add('checkbox-disabled');
+			});
+		} else {
+			document.querySelectorAll('.deposito-checkbox').forEach(checkbox => {
+				checkbox.disabled = false;
+				checkbox.parentElement.classList.remove('checkbox-disabled');
+			});
+		}
+	}
+	
+	//-- Inicializar el contador al cargar la página.
+	document.addEventListener('DOMContentLoaded', function() {
+		updatedepositosCounter();
+	});
+</script>

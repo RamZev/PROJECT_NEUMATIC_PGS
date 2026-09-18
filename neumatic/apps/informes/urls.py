@@ -88,7 +88,8 @@ from apps.informes.views.vltabladinamicaestadistica_list_views import *
 from apps.informes.views.vllista_list_views import *
 from apps.informes.views.vllistarevendedor_list_views import *
 from apps.informes.views.vlstocksucursal_list_views import *
-from apps.informes.views.vlstockgeneralsucursal_list_views import *
+# from neumatic.apps.informes.views.vlstockgeneralsucursal_list_views import *
+from apps.informes.views.vlstockgeneraldeposito_list_views import *
 # from apps.informes.views.vlstockfecha_list_views import *
 from apps.informes.views.vlstockunico_list_views import *
 from apps.informes.views.vlreposicionstock_list_views import *
@@ -1008,17 +1009,28 @@ urlpatterns = [
 	path("vlstocksucursal/vista-csv/", vlstocksucursal_vista_csv, 
 		 name="vlstocksucursal_vista_csv"),
 	
+	# #-- VL Stock General por Sucursal.
+	# path('vlstockgeneralsucursal_informe/', VLStockGeneralSucursalInformeView.as_view(), 
+	# 	 name='vlstockgeneralsucursal_informe_list'),
+	# path('vlstockgeneralsucursal/vista-preliminar/', vlstockgeneralsucursal_vista_pantalla, 
+	# 	 name="vlstockgeneralsucursal_vista_pantalla"),
+	# path("vlstockgeneralsucursal/vista-pdf/", vlstockgeneralsucursal_vista_pdf, 
+	# 	 name="vlstockgeneralsucursal_vista_pdf"),
+	# path("vlstockgeneralsucursal/vista-excel/", vlstockgeneralsucursal_vista_excel, 
+	# 	 name="vlstockgeneralsucursal_vista_excel"),
+	# path("vlstockgeneralsucursal/vista-csv/", vlstockgeneralsucursal_vista_csv, 
+	# 	 name="vlstockgeneralsucursal_vista_csv"),
 	#-- VL Stock General por Sucursal.
-	path('vlstockgeneralsucursal_informe/', VLStockGeneralSucursalInformeView.as_view(), 
-		 name='vlstockgeneralsucursal_informe_list'),
-	path('vlstockgeneralsucursal/vista-preliminar/', vlstockgeneralsucursal_vista_pantalla, 
-		 name="vlstockgeneralsucursal_vista_pantalla"),
-	path("vlstockgeneralsucursal/vista-pdf/", vlstockgeneralsucursal_vista_pdf, 
-		 name="vlstockgeneralsucursal_vista_pdf"),
-	path("vlstockgeneralsucursal/vista-excel/", vlstockgeneralsucursal_vista_excel, 
-		 name="vlstockgeneralsucursal_vista_excel"),
-	path("vlstockgeneralsucursal/vista-csv/", vlstockgeneralsucursal_vista_csv, 
-		 name="vlstockgeneralsucursal_vista_csv"),
+	path('vlstockgeneraldeposito_informe/', VLStockGeneralDepositoInformeView.as_view(), 
+		 name='vlstockgeneraldeposito_informe_list'),
+	path('vlstockgeneraldeposito/vista-preliminar/', vlstockgeneraldeposito_vista_pantalla, 
+		 name="vlstockgeneraldeposito_vista_pantalla"),
+	path("vlstockgeneraldeposito/vista-pdf/", vlstockgeneraldeposito_vista_pdf, 
+		 name="vlstockgeneraldeposito_vista_pdf"),
+	path("vlstockgeneraldeposito/vista-excel/", vlstockgeneraldeposito_vista_excel, 
+		 name="vlstockgeneraldeposito_vista_excel"),
+	path("vlstockgeneraldeposito/vista-csv/", vlstockgeneraldeposito_vista_csv, 
+		 name="vlstockgeneraldeposito_vista_csv"),
 	
 	# #-- VL Listado Stock a Fecha.
 	# path('vlstockfecha_informe/', VLStockFechaInformeView.as_view(), 
