@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict UGdNln46b5TmBbIR6UdWH6BG4gnlFtY0eqmKoDIs1BR7FMaS3oPJOqiPSxzJQzN
+\restrict Z292srJtHMWeqGxKp90NL07BxnuUUfiNLwwxYf8LNBpOQ3rhPAtg89Xe5zhEK38
 
--- Dumped from database version 18.3
--- Dumped by pg_dump version 18.3
+-- Dumped from database version 18.6
+-- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-13 20:44:39
+-- Started on 2026-09-20 23:37:55
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5398 (class 0 OID 70249)
+-- TOC entry 5398 (class 0 OID 17032)
 -- Dependencies: 355
 -- Data for Name: usuarios_user_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -82,11 +82,11 @@ INSERT INTO public.usuarios_user_groups VALUES (54, 43, 1);
 SELECT pg_catalog.setval('public.usuarios_user_groups_id_seq', 54, true);
 
 
--- Completed on 2026-09-13 20:44:39
+-- Completed on 2026-09-20 23:37:55
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict UGdNln46b5TmBbIR6UdWH6BG4gnlFtY0eqmKoDIs1BR7FMaS3oPJOqiPSxzJQzN
+\unrestrict Z292srJtHMWeqGxKp90NL07BxnuUUfiNLwwxYf8LNBpOQ3rhPAtg89Xe5zhEK38
 

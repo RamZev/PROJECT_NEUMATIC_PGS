@@ -377,8 +377,8 @@ python 08_migra_caja.py
 
 3. Actualizar la tabla provincia:
    
-   UPDATE provincia SET minimo_percepcion = 20000 WHERE id_provincia = 6;
-   UPDATE provincia SET minimo_percepcion = 200000 WHERE id_provincia = 13;
+   UPDATE provincia SET minimo_percepcion = 3000 WHERE id_provincia = 6;
+   UPDATE provincia SET minimo_percepcion = 360000 WHERE id_provincia = 13;
 
 De la carpeta data_load copie y ejecute los contenidos de los scripts SQL en pgAdmin, luego de abrir la BD neumatic.
 
