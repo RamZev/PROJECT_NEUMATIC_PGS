@@ -46,7 +46,7 @@ def reset_numero():
 def cargar_datos():
     """Lee los datos del archivo Excel, migra los datos al modelo Numero."""
     # Deshabilitado temporalmente ojo ojo
-    # reset_numero()  # Eliminar datos existentes antes de migrar
+    reset_numero()  # Eliminar datos existentes antes de migrar
 
     # Ruta del archivo Excel
     excel_path = os.path.join(BASE_DIR, 'data_load', 'numeracion.xlsx')

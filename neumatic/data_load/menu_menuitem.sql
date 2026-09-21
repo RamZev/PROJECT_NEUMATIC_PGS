@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict j3xWhXXGfqgVUXFbLplOnPx3bVCWiupszJMgZQ9vebTOAYQwWgZ0IBe3OuhOk5k
+\restrict usssXcFxuZf9MFYesIIovrtRjcNPhBgCSwHsnY6VxYzShaNghxIxue8ElfaFyTf
 
--- Dumped from database version 18.3
--- Dumped by pg_dump version 18.3
+-- Dumped from database version 18.6
+-- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-13 20:45:50
+-- Started on 2026-09-20 23:39:28
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5396 (class 0 OID 69948)
+-- TOC entry 5396 (class 0 OID 16731)
 -- Dependencies: 294
 -- Data for Name: menu_menuitem; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -96,7 +96,6 @@ INSERT INTO public.menu_menuitem VALUES (98, 'Vendedores - Detallado por Comprob
 INSERT INTO public.menu_menuitem VALUES (99, 'Sub Cuentas - Solo Totales', 'vlpercepibsubcuentatotales_informe_list', '', '', false, 2, 0, NULL, 96);
 INSERT INTO public.menu_menuitem VALUES (100, 'Sub Cuentas - Detallado por Comprobantes', 'vlpercepibsubcuentadetallado_informe_list', '', '', false, 3, 0, NULL, 96);
 INSERT INTO public.menu_menuitem VALUES (108, 'Listado de Stock por Sucursal', 'vlstocksucursal_informe_list', '', '', false, 0, 0, NULL, 141);
-INSERT INTO public.menu_menuitem VALUES (109, 'Stock General por Sucursal', 'vlstockgeneralsucursal_informe_list', '', '', false, 1, 0, NULL, 141);
 INSERT INTO public.menu_menuitem VALUES (110, 'Listado de Stock Único', 'vlstockunico_informe_list', '', '', false, 2, 0, NULL, 141);
 INSERT INTO public.menu_menuitem VALUES (111, 'Reposición de Stock', 'vlreposicionstock_informe_list', '', '', false, 3, 0, NULL, 141);
 INSERT INTO public.menu_menuitem VALUES (52, 'Números', '', '', '', false, 23, 0, NULL, 80);
@@ -198,6 +197,7 @@ INSERT INTO public.menu_menuitem VALUES (191, 'E-Commerce (Mercado Libre)', 'exp
 INSERT INTO public.menu_menuitem VALUES (192, 'Exportar Productos E-Commerce', 'exportar_productos_archivo', '', '', false, 13, 0, NULL, 136);
 INSERT INTO public.menu_menuitem VALUES (185, 'Comprobantes por Clientes', 'consulta_facturas_cliente', '', 'fas fa-address-book', false, 1, 7, 11, NULL);
 INSERT INTO public.menu_menuitem VALUES (193, 'Recalcular Pendiente', 'recalcular_saldo_pendiente', '', '', false, 2, 0, 10, NULL);
+INSERT INTO public.menu_menuitem VALUES (109, 'Stock General por Sucursal', 'vlstockgeneraldeposito_informe_list', '', '', false, 1, 0, NULL, 141);
 
 
 --
@@ -209,11 +209,11 @@ INSERT INTO public.menu_menuitem VALUES (193, 'Recalcular Pendiente', 'recalcula
 SELECT pg_catalog.setval('public.menu_menuitem_id_menu_item_seq', 193, true);
 
 
--- Completed on 2026-09-13 20:45:50
+-- Completed on 2026-09-20 23:39:29
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict j3xWhXXGfqgVUXFbLplOnPx3bVCWiupszJMgZQ9vebTOAYQwWgZ0IBe3OuhOk5k
+\unrestrict usssXcFxuZf9MFYesIIovrtRjcNPhBgCSwHsnY6VxYzShaNghxIxue8ElfaFyTf
 

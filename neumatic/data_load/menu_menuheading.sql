@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict mUp5ajfOOWbBEsHhVjRiTbCl2VPfAgz66aBv4lQ979jd5samnSNTmnAAC0MJ46x
+\restrict okE9pkCflY1vvpE8BjZnBVq9SLrxwAUMDUEufhfcWPboXdIMAVqNebgjYHxHJ6C
 
--- Dumped from database version 18.3
--- Dumped by pg_dump version 18.3
+-- Dumped from database version 18.6
+-- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-13 20:45:20
+-- Started on 2026-09-20 23:38:45
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5392 (class 0 OID 69941)
+-- TOC entry 5392 (class 0 OID 16724)
 -- Dependencies: 292
 -- Data for Name: menu_menuheading; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -48,11 +48,11 @@ INSERT INTO public.menu_menuheading VALUES (7, 'Configurar menú', 10);
 SELECT pg_catalog.setval('public.menu_menuheading_id_menu_heading_seq', 11, true);
 
 
--- Completed on 2026-09-13 20:45:20
+-- Completed on 2026-09-20 23:38:45
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict mUp5ajfOOWbBEsHhVjRiTbCl2VPfAgz66aBv4lQ979jd5samnSNTmnAAC0MJ46x
+\unrestrict okE9pkCflY1vvpE8BjZnBVq9SLrxwAUMDUEufhfcWPboXdIMAVqNebgjYHxHJ6C
 
