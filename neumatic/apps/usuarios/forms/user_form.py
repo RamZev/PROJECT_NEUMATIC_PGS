@@ -23,7 +23,19 @@ class RegistroUsuarioForm(UserCreationForm):
 	def __init__(self, *args, **kwargs):
 		super().__init__(*args, **kwargs)
 		#-- Al crear, no mostrar ningún punto de venta hasta elegir sucursal.
-		self.fields['id_punto_venta'].queryset = PuntoVenta.objects.none()
+		sucursal_id = None
+		if self.is_bound:
+			#-- POST: tomar la sucursal enviada.
+			sucursal_id = self.data.get('id_sucursal') or None
+		#-- En creación (GET) no hay sucursal previa, así que parte vacío.
+		
+		if sucursal_id:
+			self.fields['id_punto_venta'].queryset = PuntoVenta.objects.filter(
+				id_sucursal_id=sucursal_id,
+				estatus_punto_venta=True
+			).order_by('punto_venta')
+		else:
+			self.fields['id_punto_venta'].queryset = PuntoVenta.objects.none()
 	
 	class Meta:
 		model = User
@@ -98,9 +110,17 @@ class EditarUsuarioForm(UserChangeForm):
 		super().__init__(*args, **kwargs)
 		
 		#-- Filtrar puntos de venta según la sucursal del usuario.
-		if self.instance and self.instance.pk and self.instance.id_sucursal_id:
+		sucursal_id = None
+		if self.is_bound:
+			#-- POST: tomar la sucursal enviada (puede haber cambiado).
+			sucursal_id = self.data.get('id_sucursal') or None
+		elif self.instance and self.instance.pk:
+			#-- GET: tomar la sucursal del usuario que se edita.
+			sucursal_id = self.instance.id_sucursal_id
+		
+		if sucursal_id:
 			self.fields['id_punto_venta'].queryset = PuntoVenta.objects.filter(
-				id_sucursal_id=self.instance.id_sucursal_id,
+				id_sucursal_id=sucursal_id,
 				estatus_punto_venta=True
 			).order_by('punto_venta')
 		else:
