@@ -1687,7 +1687,7 @@ class VLVentasResumenIB(models.Model):
 # Estadísticas de Ventas.
 #-----------------------------------------------------------------------------
 class EstadisticasVentasManager(models.Manager):
-	
+	'''
 	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desde, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_cliente=None):
 		
 		select_columns = {
@@ -1721,7 +1721,7 @@ class EstadisticasVentasManager(models.Manager):
 			"""
 		}
 		
-        #-- Construir la consulta.
+		#-- Construir la consulta.
 		query = f"""
 			SELECT 
 				ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
@@ -1751,6 +1751,80 @@ class EstadisticasVentasManager(models.Manager):
 		
 		#-- Agregar GROUP BY.
 		query += f" GROUP BY {select_columns[agrupar]}, id_cliente_id, nombre_cliente"
+		
+		if mostrar:
+			match mostrar:
+				case "Cantidad":
+					query += " ORDER BY cantidad DESC"
+				case "Importe":
+					query += " ORDER BY total DESC"
+		
+		#-- Se ejecuta la consulta con `raw` y se devueven los resultados.
+		return self.raw(query, params)
+	'''
+	def obtener_datos(self, fecha_desde, fecha_hasta, id_marca_desde, id_marca_hasta, agrupar, mostrar, id_sucursal=None, id_cliente=None):
+		
+		select_columns = {
+			"Producto": """
+				id_producto_id,
+				cai,
+				nombre_producto,
+				unidad,
+				id_familia_id,
+				nombre_producto_familia,
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca,
+				id_cliente_id,
+				nombre_cliente
+			""",
+			"Familia": """
+				id_familia_id,
+				nombre_producto_familia,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Modelo": """
+				id_modelo_id,
+				nombre_modelo,
+				id_marca_id,
+				nombre_producto_marca
+			""",
+			"Marca": """
+				id_marca_id,
+				nombre_producto_marca
+			"""
+		}
+		
+		#-- Construir la consulta.
+		query = f"""
+			SELECT 
+				ROW_NUMBER() OVER (ORDER BY nombre_producto_marca) AS id_factura,
+				{select_columns[agrupar]},
+				SUM(cantidad) AS cantidad,
+				SUM(total) AS total
+			FROM 
+				VLEstadisticasVentas
+			WHERE 
+				fecha_comprobante BETWEEN %s AND %s
+				AND id_marca_id BETWEEN %s AND %s
+		"""
+			
+		#-- Se añaden parámetros.
+		params = [fecha_desde, fecha_hasta, id_marca_desde, id_marca_hasta]
+		
+		#-- Filtros adicionales.
+		if id_sucursal:
+			query += " AND id_sucursal_id = %s"
+			params.append(id_sucursal)
+		
+		if id_cliente:
+			query += " AND id_cliente_id = %s"
+			params.append(id_cliente)
+		
+		#-- Agregar GROUP BY.
+		query += f" GROUP BY {select_columns[agrupar]}"
 		
 		if mostrar:
 			match mostrar:
