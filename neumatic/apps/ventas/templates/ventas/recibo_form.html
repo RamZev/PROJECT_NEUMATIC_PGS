@@ -406,6 +406,17 @@
                                                 {{ form.condicion_comprobante }}
                                             </div>
 
+                                            <div class="col-md-3">
+                                                <label for="{{ form.discrimina_iva.id_for_label }}">Otros</label>
+                                            </div>
+                                            
+                                            <div class="col-md-2">
+                                                {{ form.discrimina_iva }}
+                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
+                                                    DIVA
+                                                </label>
+                                            </div>
+
                                             {% comment %} <div class="col-md-4">
                                                 {{ form.no_estadist }}
                                                 <label class="form-check-label" for="{{ form.no_estadist.id_for_label }}">
@@ -417,57 +428,31 @@
 
                                         <div class="row my-1">
                                             <div class="col-md-3">
-                                                <label for="{{ form.movil_factura.id_for_label }}">Móvil</label>
-                                            </div>
-                                        
-                                            <div class="col-md-4">
-                                                {{ form.movil_factura }}
-                                            </div>
+												<label for="{{ form.email_factura.id_for_label }}">Email/Móvil</label>
+											</div>
 
-                                            {% comment %} <div class="col-md-4">
-                                                {{ form.stock_clie }}
-                                                <label class="form-check-label" for="{{ form.stock_clie.id_for_label }}">
-                                                    Stock Cliente
-                                                </label>
-                                            </div> {% endcomment %}
+											<div class="col-md-6">
+												{{ form.email_factura }}
+											</div>
+
+											<div class="col-md-3">
+												<label for="{{ form.movil_factura.id_for_label }}" class="visually-hidden">
+													Móvil factura
+												</label>
+												{{ form.movil_factura }}
+											</div>
+
                                         </div>
 
+                                        <!-- Campo Observaciones (reemplaza al modal) -->
                                         <div class="row my-1">
                                             <div class="col-md-3">
-                                                <label for="{{ form.email_factura.id_for_label }}">Email</label>
+                                                <label for="{{ form.observa_comprobante.id_for_label }}">Observaciones</label>
                                             </div>
-
+                                            
                                             <div class="col-md-9">
-                                                {{ form.email_factura }}
+                                                {{ form.observa_comprobante }}
                                             </div>
-
-                                        </div>
-
-                                        <div class="row my-1">
-                                            <div class="col-md-3">
-                                                <label for="{{ form.discrimina_iva.id_for_label }}">Otros</label>
-                                            </div>
-                                            
-                                            <div class="col-md-2">
-                                                {{ form.discrimina_iva }}
-                                                <label class="form-check-label" for="{{ form.discrimina_iva.id_for_label }}">
-                                                    DIVA
-                                                </label>
-                                            </div>
-                                            
-                                            {% comment %} <div class="col-md-3">
-                                                {{ form.es_pendiente }}
-                                                <label class="form-check-label" for="{{ form.es_pendiente.id_for_label }}">
-                                                    Pendiente
-                                                </label>
-                                            </div> {% endcomment %}
-
-                                            {% comment %} <div class="col-md-4">
-                                                {{ form.es_presupuesto }}
-                                                <label class="form-check-label" for="{{ form.es_presupuesto.id_for_label }}">
-                                                    Presupuesto
-                                                </label>
-                                            </div> {% endcomment %}
                                         </div>
                                     </div>
                                     <!-- sector derecho del encabezado end -->
@@ -733,7 +718,10 @@
                                                     <button type="button" id="insertar-retencion" class="btn btn-primary btn-sm mt-4">Insertar</button>
                                                 </div>
                                             </div>
+
                                         </form>
+
+                                        
                                         
                                         <!-- Tabla de retenciones -->
                                         <table class="detalle-form table table-striped table-hover table-responsive" style="width: 100%;">

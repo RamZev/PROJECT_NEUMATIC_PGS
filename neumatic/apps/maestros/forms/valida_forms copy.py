@@ -64,30 +64,12 @@ class ValidaForm(CrudGenericForm):
         }
     
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
+        kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
         # Configurar formatos de hora
         self.fields['hora_valida'].input_formats = ['%H:%M']
         self.fields['hs'].input_formats = ['%H:%M']
-        
-        # =========================================================
-        # FILTRAR COMPROBANTES SEGÚN JERARQUÍA DEL USUARIO
-        # =========================================================
-        # Comprobantes base: REMITO y FACTURA (siempre visibles)
-        tipos_base = ['REMITO', 'FACTURA']
-        
-        # Si el usuario tiene jerarquía con acceso total, agregar NOTA DE CRÉDITO
-        if user and getattr(user, 'jerarquia', None) in JERARQUIAS_CON_ACCESO_TOTAL:
-            tipos_permitidos = tipos_base + ['NOTA DE CRÉDITO']
-        else:
-            tipos_permitidos = tipos_base
-        
-        self.fields['id_comprobante_venta'].queryset = ComprobanteVenta.objects.filter(
-            estatus_comprobante_venta=True,
-            tipo_comprobante__in=tipos_permitidos
-        ).order_by('nombre_comprobante_venta')
-        # =========================================================
         
         # Si es edición (registro existente), mostrar el cliente actual
         if self.instance and self.instance.pk and self.instance.id_cliente:
@@ -99,7 +81,7 @@ class ValidaForm(CrudGenericForm):
         
         # No cargar todos los clientes (150k es demasiado)
         # Select2 usará AJAX para buscar
-        self.fields['id_cliente'].queryset = Cliente.objects.none()  
+        self.fields['id_cliente'].queryset = Cliente.objects.none()
     
     def clean(self):
         """Validar que se haya seleccionado un cliente válido"""

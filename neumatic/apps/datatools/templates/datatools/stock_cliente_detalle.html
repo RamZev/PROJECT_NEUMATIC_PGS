@@ -6,7 +6,12 @@
 <div id="layoutSidenav_content">
   <main>
     <div class="container-fluid">
-      <h4>Stock del Cliente — Factura {{ factura.id_factura }}</h4>
+      <h4>Stock del Cliente — Factura 
+        {{ factura.id_factura }} /
+        {{ factura.compro }} 
+        {{ factura.letra_comprobante }} 
+        {{ factura.numero_comprobante }}
+      </h4>
       <p><strong>Cliente:</strong> {{ cliente_nombre }}</p>
       
       <!-- Formulario para retiros -->
@@ -15,9 +20,16 @@
         
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5>Gestión de Retiros</h5>
-          <button type="button" class="btn btn-success btn-sm" id="btn-generar-entrega">
-            <i class="bi bi-truck"></i> Generar Entrega
-          </button>
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-primary btn-sm" id="btn-seriales" 
+                    data-bs-toggle="modal" data-bs-target="#serialesModal">
+              <i class="bi bi-upc-scan"></i> Seriales
+              <span class="badge bg-light text-primary ms-1" id="seriales-contador-badge">0</span>
+            </button>
+            <button type="button" class="btn btn-success btn-sm" id="btn-generar-entrega">
+              <i class="bi bi-truck"></i> Generar Entrega
+            </button>
+          </div>
         </div>
       
       {% if stock_items %}
@@ -142,6 +154,42 @@
     </div>
   </div>
 </div>
+
+<!-- Modal de Seriales -->
+<div class="modal fade" id="serialesModal" tabindex="-1" aria-labelledby="serialesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary bg-opacity-25">
+        <h5 class="modal-title" id="serialesModalLabel">
+          <i class="bi bi-upc-scan me-2"></i>Seriales
+          <span class="badge bg-primary ms-2" id="seriales-contador-modal">0</span>
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="seriales-container">
+          <!-- Filas dinámicas -->
+        </div>
+        
+        <div id="seriales-vacio" class="text-center text-muted py-3">
+          <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+          No hay seriales cargados. Haga clic en "Agregar Serial" para comenzar.
+        </div>
+        
+        <button type="button" class="btn btn-outline-primary btn-sm mt-2" id="btn-agregar-serial">
+          <i class="bi bi-plus-circle"></i> Agregar Serial
+        </button>
+      </div>
+      <div class="modal-footer">
+        <small class="text-muted me-auto">
+          <i class="bi bi-info-circle"></i>
+          Los seriales se perderán si recarga la página.
+        </small>
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block script %}
@@ -220,6 +268,14 @@ document.addEventListener('DOMContentLoaded', function() {
     
     btnConfirmar.addEventListener('click', function() {
         const formData = new FormData(document.getElementById('entrega-form'));
+
+        // ===== AGREGAR SERIALES AL FORMDATA =====
+        seriales.forEach(serial => {
+            const limpio = serial.trim();
+            if (limpio) {
+                formData.append('seriales[]', limpio);
+            }
+        });
         
         btnConfirmar.disabled = true;
         btnConfirmar.innerHTML = '<i class="bi bi-hourglass-split"></i> Procesando...';
@@ -238,6 +294,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 confirmModal.hide();
                 alert('✅ ' + data.message);
+
+                // Limpiar seriales después de guardar
+                seriales = [];
+                renderSeriales();
                 
                 if (data.pdf_url) {
                     setTimeout(() => {
@@ -261,6 +321,124 @@ document.addEventListener('DOMContentLoaded', function() {
             btnConfirmar.innerHTML = '<i class="bi bi-check-lg"></i> Generar Entrega';
         });
     });
+
+    ///
+    // ============================================================
+    // GESTIÓN DE SERIALES (persistencia en memoria)
+    // ============================================================
+    let seriales = []; // Array en memoria — se pierde al recargar
+
+    const serialesModal = document.getElementById('serialesModal');
+    const serialesContainer = document.getElementById('seriales-container');
+    const serialesVacio = document.getElementById('seriales-vacio');
+    const btnAgregarSerial = document.getElementById('btn-agregar-serial');
+    const badgeContadorTop = document.getElementById('seriales-contador-badge');
+    const badgeContadorModal = document.getElementById('seriales-contador-modal');
+
+    function renderSeriales() {
+        serialesContainer.innerHTML = '';
+        
+        if (seriales.length === 0) {
+            serialesVacio.style.display = 'block';
+        } else {
+            serialesVacio.style.display = 'none';
+        }
+        
+        seriales.forEach((valor, index) => {
+            const row = document.createElement('div');
+            row.className = 'input-group input-group-sm mb-2';
+            row.innerHTML = `
+                <span class="input-group-text" style="min-width: 40px;">${index + 1}</span>
+                <input type="text" 
+                      class="form-control border border-primary serial-input" 
+                      value="${valor.replace(/"/g, '&quot;')}"
+                      data-index="${index}"
+                      placeholder="Ingrese número de serial">
+                <button type="button" class="btn btn-outline-danger btn-quitar-serial" 
+                        data-index="${index}" title="Quitar">
+                    <i class="bi bi-trash"></i>
+                </button>
+            `;
+            serialesContainer.appendChild(row);
+        });
+        
+        // Actualizar contadores
+        const total = seriales.length;
+        badgeContadorTop.textContent = total;
+        badgeContadorModal.textContent = total;
+    }
+
+    function actualizarBadges() {
+        const total = seriales.length;
+        badgeContadorTop.textContent = total;
+        badgeContadorModal.textContent = total;
+    }
+
+    // Agregar serial
+    btnAgregarSerial.addEventListener('click', function() {
+        seriales.push('');
+        renderSeriales();
+        
+        // Foco en el último input agregado
+        const inputs = serialesContainer.querySelectorAll('.serial-input');
+        if (inputs.length > 0) {
+            inputs[inputs.length - 1].focus();
+        }
+    });
+
+    // Delegación de eventos para inputs y botones de quitar
+    serialesContainer.addEventListener('input', function(e) {
+        if (e.target.classList.contains('serial-input')) {
+            const index = parseInt(e.target.dataset.index);
+            seriales[index] = e.target.value;
+        }
+    });
+
+    serialesContainer.addEventListener('click', function(e) {
+        const btnQuitar = e.target.closest('.btn-quitar-serial');
+        if (btnQuitar) {
+            const index = parseInt(btnQuitar.dataset.index);
+            
+            if (confirm(`¿Quitar el serial N° ${index + 1}?`)) {
+                seriales.splice(index, 1);
+                renderSeriales();
+            }
+        }
+    });
+
+    // Validación de duplicados al perder foco
+    serialesContainer.addEventListener('blur', function(e) {
+        if (e.target.classList && e.target.classList.contains('serial-input')) {
+            const valor = e.target.value.trim();
+            if (!valor) return;
+            
+            // Verificar duplicados
+            const duplicados = seriales.filter((s, i) => 
+                s.trim() === valor && i !== parseInt(e.target.dataset.index)
+            );
+            
+            if (duplicados.length > 0) {
+                alert(`⚠️ El serial "${valor}" ya está cargado.`);
+                e.target.focus();
+                e.target.select();
+            }
+        }
+    }, true);
+
+    // Re-renderizar al abrir el modal
+    serialesModal.addEventListener('shown.bs.modal', function() {
+        renderSeriales();
+        
+        // Foco automático en el primer input
+        const primerInput = serialesContainer.querySelector('.serial-input');
+        if (primerInput) {
+            primerInput.focus();
+        }
+    });
+
+    // Estado inicial del contador
+    actualizarBadges();
+    ///
 });
 </script>
 {% endblock %}

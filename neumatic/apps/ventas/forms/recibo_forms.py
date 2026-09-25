@@ -193,7 +193,8 @@ class FacturaReciboForm(forms.ModelForm):
                   'stock_clie',
                   'total',
                   'efectivo_recibo',
-                  'compensa_factura']
+                  'compensa_factura',
+                  'observa_comprobante']
         
         widgets = {
             'id_factura': forms.HiddenInput(),
@@ -236,6 +237,13 @@ class FacturaReciboForm(forms.ModelForm):
             }),
             'compensa_factura': forms.NumberInput(attrs={
                 **formclassnumb2, 
+            }),
+            "observa_comprobante": forms.Textarea(attrs={
+                **formclasstext,
+                'rows': 4,
+                'cols': 40,
+                'class': 'form-control',
+                'style': 'resize: vertical;'
             }),
         }
 

@@ -26,7 +26,7 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 from apps.maestros.models.base_models import ProductoDeposito, ProductoStock, ProductoEstado
 from apps.maestros.models.cliente_models import Cliente
 from apps.maestros.models.producto_models import Producto
-from apps.ventas.models.factura_models import Factura, DetalleFactura
+from apps.ventas.models.factura_models import Factura, DetalleFactura, SerialFactura
 from apps.ventas.models.venta_models import StockCliente
 
 
@@ -388,129 +388,146 @@ def stock_cliente_detalle(request, factura_id):
 @csrf_exempt
 @transaction.atomic
 def generar_entrega_cliente(request, factura_id):
-    """Vista para procesar los retiros y generar entrega"""
-    if request.method == 'POST':
-        try:
-            from decimal import Decimal
-            
-            factura = get_object_or_404(Factura, id_factura=factura_id)
-            cliente = factura.id_cliente
-            
-            datos_entrega = {
-                'cliente_id': cliente.id_cliente,
-                'cliente_nombre': cliente.nombre_cliente,
-                'cliente_direccion': getattr(cliente, 'direccion', 'No especificada'),
-                'factura_id': factura.id_factura,
-                'factura_numero': factura.numero_comprobante,
-                'fecha_entrega': date.today().strftime('%d/%m/%Y'),
-                'fecha_entrega_iso': date.today().isoformat(),
-                'productos': [],
-                'total_items': Decimal('0')  # Decimal desde el inicio
-            }
-            
-            # Procesar retiros
-            items_procesados = []
-            for key, value in request.POST.items():
-                if key.startswith('retirar_'):
-                    stock_id = key.replace('retirar_', '')
-                    
-                    # CONVERTIR A DECIMAL DE FORMA SEGURA
-                    try:
-                        # Primero limpiar el valor
-                        valor_limpio = str(value).strip() if value else '0'
-                        cantidad_retirar = Decimal(valor_limpio)
-                    except:
-                        cantidad_retirar = Decimal('0')
-                    
-                    if cantidad_retirar > 0:
-                        stock_item = StockCliente.objects.select_for_update().get(
-                            id_stock_cliente=stock_id,
-                            id_factura=factura
-                        )
-                        
-                        # OBTENER VALORES COMO DECIMAL (NUNCA FLOAT)
-                        cantidad_db = stock_item.cantidad if stock_item.cantidad is not None else Decimal('0')
-                        retirado_db = stock_item.retirado if stock_item.retirado is not None else Decimal('0')
-                        saldo_db = cantidad_db - retirado_db
-                        
-                        # COMPARACIÓN DECIMAL vs DECIMAL
-                        if cantidad_retirar <= saldo_db:
-                            # ACTUALIZAR - TODO EN DECIMAL
-                            nuevo_retirado_db = retirado_db + cantidad_retirar
-                            stock_item.retirado = nuevo_retirado_db
-                            stock_item.fecha_retiro = date.today()
-                            stock_item.save()
-                            
-                            # Para el JSON, convertir a float al final
-                            producto_data = {
-                                'stock_id': stock_item.id_stock_cliente,
-                                'producto_id': stock_item.id_producto.id_producto,
-                                'producto_nombre': stock_item.id_producto.nombre_producto,
-                                'medida': getattr(stock_item.id_producto, 'medida', 'N/A'),
-                                'cantidad_original': float(cantidad_db),
-                                'retirado_anterior': float(retirado_db),
-                                'cantidad_retirada': float(cantidad_retirar),
-                                'retirado_total': float(nuevo_retirado_db),
-                                'saldo_restante': float(saldo_db - cantidad_retirar)
-                            }
-                            datos_entrega['productos'].append(producto_data)
-                            datos_entrega['total_items'] += cantidad_retirar  # Decimal
-                            items_procesados.append(stock_id)
-                        else:
-                            return JsonResponse({
-                                'success': False,
-                                'error': f'No se puede retirar {float(cantidad_retirar):.2f}. Saldo disponible: {float(saldo_db):.2f}'
-                            })
-            
-            if not datos_entrega['productos']:
-                return JsonResponse({
-                    'success': False,
-                    'error': 'No hay cantidades válidas para retirar'
-                })
-            
-            # Convertir total_items a float para JSON
-            datos_entrega['total_items'] = float(datos_entrega['total_items'])
-            
-            # GENERAR ARCHIVO JSON
-            correlativo = obtener_proximo_correlativo(factura_id)
-            json_filename = f"sc_{factura_id}_{correlativo}.json"
-            
-            json_dir = os.path.join(settings.BASE_DIR, 'data', 'json')
-            os.makedirs(json_dir, exist_ok=True)
-            json_path = os.path.join(json_dir, json_filename)
-            
-            with open(json_path, 'w', encoding='utf-8') as f:
-                json.dump(datos_entrega, f, indent=2, ensure_ascii=False)
-            
-            print(f"✅ JSON guardado: {json_path}")
-            
-            # Guardar en session
-            request.session['ultima_entrega'] = datos_entrega
-            request.session['json_filename'] = json_filename
-            
-            return JsonResponse({
-                'success': True,
-                'message': f'Entrega generada: {len(datos_entrega["productos"])} productos, {datos_entrega["total_items"]} unidades',
-                'pdf_url': f'/stock/cliente/{factura_id}/descargar-pdf/',
-                'json_filename': json_filename,
-                'total_unidades': datos_entrega['total_items']
-            })
-            
-        except StockCliente.DoesNotExist:
-            return JsonResponse({
-                'success': False,
-                'error': 'Uno de los productos no existe en el stock'
-            })
-        except Exception as e:
-            import traceback
-            error_trace = traceback.format_exc()
-            print(f"🔴 ERROR DETALLADO:\n{error_trace}")
-            return JsonResponse({
-                'success': False,
-                'error': f'Error del sistema: {str(e)}'
-            })
-    
-    return JsonResponse({'success': False, 'error': 'Método no permitido'})
+	"""Vista para procesar los retiros y generar entrega"""
+	if request.method == 'POST':
+		try:
+			from decimal import Decimal
+			
+			factura = get_object_or_404(Factura, id_factura=factura_id)
+			cliente = factura.id_cliente
+			
+			datos_entrega = {
+				'cliente_id': cliente.id_cliente,
+				'cliente_nombre': cliente.nombre_cliente,
+				'cliente_direccion': getattr(cliente, 'direccion', 'No especificada'),
+				'factura_id': factura.id_factura,
+				'factura_numero': factura.numero_comprobante,
+				'fecha_entrega': date.today().strftime('%d/%m/%Y'),
+				'fecha_entrega_iso': date.today().isoformat(),
+				'productos': [],
+				'total_items': Decimal('0')  # Decimal desde el inicio
+			}
+			
+			# Procesar retiros
+			items_procesados = []
+			for key, value in request.POST.items():
+				if key.startswith('retirar_'):
+					stock_id = key.replace('retirar_', '')
+					
+					# CONVERTIR A DECIMAL DE FORMA SEGURA
+					try:
+						# Primero limpiar el valor
+						valor_limpio = str(value).strip() if value else '0'
+						cantidad_retirar = Decimal(valor_limpio)
+					except:
+						cantidad_retirar = Decimal('0')
+					
+					if cantidad_retirar > 0:
+						stock_item = StockCliente.objects.select_for_update().get(
+							id_stock_cliente=stock_id,
+							id_factura=factura
+						)
+						
+						# OBTENER VALORES COMO DECIMAL (NUNCA FLOAT)
+						cantidad_db = stock_item.cantidad if stock_item.cantidad is not None else Decimal('0')
+						retirado_db = stock_item.retirado if stock_item.retirado is not None else Decimal('0')
+						saldo_db = cantidad_db - retirado_db
+						
+						# COMPARACIÓN DECIMAL vs DECIMAL
+						if cantidad_retirar <= saldo_db:
+							# ACTUALIZAR - TODO EN DECIMAL
+							nuevo_retirado_db = retirado_db + cantidad_retirar
+							stock_item.retirado = nuevo_retirado_db
+							stock_item.fecha_retiro = date.today()
+							stock_item.save()
+							
+							# Para el JSON, convertir a float al final
+							producto_data = {
+								'stock_id': stock_item.id_stock_cliente,
+								'producto_id': stock_item.id_producto.id_producto,
+								'producto_nombre': stock_item.id_producto.nombre_producto,
+								'medida': getattr(stock_item.id_producto, 'medida', 'N/A'),
+								'cantidad_original': float(cantidad_db),
+								'retirado_anterior': float(retirado_db),
+								'cantidad_retirada': float(cantidad_retirar),
+								'retirado_total': float(nuevo_retirado_db),
+								'saldo_restante': float(saldo_db - cantidad_retirar)
+							}
+							datos_entrega['productos'].append(producto_data)
+							datos_entrega['total_items'] += cantidad_retirar  # Decimal
+							items_procesados.append(stock_id)
+						else:
+							return JsonResponse({
+								'success': False,
+								'error': f'No se puede retirar {float(cantidad_retirar):.2f}. Saldo disponible: {float(saldo_db):.2f}'
+							})
+			
+			if not datos_entrega['productos']:
+				return JsonResponse({
+					'success': False,
+					'error': 'No hay cantidades válidas para retirar'
+				})
+
+			# ========== GUARDAR SERIALES ==========
+			seriales_recibidos = request.POST.getlist('seriales[]')
+			seriales_limpios = [s.strip() for s in seriales_recibidos if s and s.strip()]
+
+			seriales_guardados = []
+			if seriales_limpios:
+				nuevos = [
+					SerialFactura(id_factura=factura, producto_serial=s)
+					for s in seriales_limpios
+				]
+				SerialFactura.objects.bulk_create(nuevos)
+				seriales_guardados = seriales_limpios
+				print(f"✅ {len(nuevos)} seriales guardados para factura {factura.id_factura}")
+
+			# Pasar al JSON/PDF solo los seriales recién agregados
+			datos_entrega['seriales'] = seriales_guardados			
+			
+			# Convertir total_items a float para JSON
+			datos_entrega['total_items'] = float(datos_entrega['total_items'])
+			
+			# GENERAR ARCHIVO JSON
+			correlativo = obtener_proximo_correlativo(factura_id)
+			json_filename = f"sc_{factura_id}_{correlativo}.json"
+			
+			json_dir = os.path.join(settings.BASE_DIR, 'data', 'json')
+			os.makedirs(json_dir, exist_ok=True)
+			json_path = os.path.join(json_dir, json_filename)
+			
+			with open(json_path, 'w', encoding='utf-8') as f:
+				json.dump(datos_entrega, f, indent=2, ensure_ascii=False)
+			
+			print(f"✅ JSON guardado: {json_path}")
+			
+			# Guardar en session
+			request.session['ultima_entrega'] = datos_entrega
+			request.session['json_filename'] = json_filename
+			
+			return JsonResponse({
+				'success': True,
+				'message': f'Entrega generada: {len(datos_entrega["productos"])} productos, {datos_entrega["total_items"]} unidades',
+				'pdf_url': f'/stock/cliente/{factura_id}/descargar-pdf/',
+				'json_filename': json_filename,
+				'total_unidades': datos_entrega['total_items']
+			})
+			
+		except StockCliente.DoesNotExist:
+			return JsonResponse({
+				'success': False,
+				'error': 'Uno de los productos no existe en el stock'
+			})
+		except Exception as e:
+			import traceback
+			error_trace = traceback.format_exc()
+			print(f"🔴 ERROR DETALLADO:\n{error_trace}")
+			return JsonResponse({
+				'success': False,
+				'error': f'Error del sistema: {str(e)}'
+			})
+
+	return JsonResponse({'success': False, 'error': 'Método no permitido'})
 
 
 def generar_pdf_entrega(datos_entrega):
@@ -596,6 +613,21 @@ def generar_pdf_entrega(datos_entrega):
 		]))
 		elements.append(table)
 	
+	# ===== SERIALES (como observación) =====
+	seriales = datos_entrega.get('seriales', [])
+	if seriales:
+		elements.append(Spacer(1, 15))
+		seriales_texto = ", ".join(seriales)
+		seriales_style = ParagraphStyle(
+			'SerialesStyle',
+			parent=styles['Normal'],
+			fontSize=10,
+			leading=13,
+			textColor=colors.black,
+			spaceAfter=10
+		)
+		elements.append(Paragraph(f"<b>Seriales:</b> {seriales_texto}", seriales_style))
+ 
 	# Resumen total
 	elements.append(Spacer(1, 25))
 	total_style = ParagraphStyle(
