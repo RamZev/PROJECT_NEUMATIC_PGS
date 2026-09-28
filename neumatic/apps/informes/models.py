@@ -1775,9 +1775,7 @@ class EstadisticasVentasManager(models.Manager):
 				id_modelo_id,
 				nombre_modelo,
 				id_marca_id,
-				nombre_producto_marca,
-				id_cliente_id,
-				nombre_cliente
+				nombre_producto_marca
 			""",
 			"Familia": """
 				id_familia_id,
