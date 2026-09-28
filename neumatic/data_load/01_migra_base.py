@@ -19,7 +19,7 @@ SCRIPTS = [
     'localidad_migra.py',
     'tipo_iva_migra.py',
     'alicuota_iva_migra.py',
-    'empresa_migra.py',
+    # 'empresa_migra.py',
     'medio_pago_migra.py',
     'operario_migra.py',
     'tipo_documento_identidad_migra.py',

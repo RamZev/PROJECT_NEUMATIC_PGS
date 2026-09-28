@@ -17,8 +17,8 @@ Ejecutar los algoritmos de de deupración de la base datos de datos de VisualFox
 **PostgreSQL:** Ejecutar los scripts SQL **en la base de datos de respaldo** y luego trasladar los archivos generados a la carpeta data_load
 
 * **01_genera_json.sql**
-
-* **01_genera_user_menu_sql.sql** (YA NO HACERLO MANUAL)
+  
+  
 
 ## 1. Renombrar o Eliminar la base de datos de la carpeta
 
@@ -42,7 +42,8 @@ python 00_limpiar_migraciones.py
 ## 3. Aplicar las migraciones
 
 ```shell
-(venv) PS D:\PROJECT_NEUMATIC_MIGRA\neumatic> python manage.py makemigrationso debe existir ningún problema en el proceso de migración.
+(venv) PS D:\PROJECT_NEUMATIC_MIGRA\neumatic> python manage.py makemigrations  
+No debe existir ningún problema en el proceso de migración.
 Migrations for 'informes':
   apps\informes\migrations\0001_initial.py     
     + Create model VLClienteUltimaVenta        
@@ -479,9 +480,13 @@ Ejecute la actualización del superusuario (OBLIGATORIO)
 
 2. **empresa.sql** en pgAdmin
 
-3. (actualiza_user2.py (usuarios_user.json),  **YA NO**
+3. UPDATE public.cliente
+   SET cliente_empresa = false
+   WHERE cliente_empresa = true;
 
-4. Crear las vistas en la base de datos
+4. (actualiza_user2.py (usuarios_user.json),  **YA NO**
+
+5. Crear las vistas en la base de datos
    
    2.1. Abrir la base de datos en DB Browser
    
@@ -493,7 +498,7 @@ Ejecute la actualización del superusuario (OBLIGATORIO)
    
    2.5. Grabar los cambios y salir de DB Browser
 
-5. Entrar al sistema e ir a comprobantes de venta
+6. Entrar al sistema e ir a comprobantes de venta
    
    3.1. Asignar los documentos relacionados a Facturas Remito  y otras marcas necesarias
    
@@ -503,4 +508,4 @@ Ejecute la actualización del superusuario (OBLIGATORIO)
    
    3.4. En Comprobantes Compra, asinarg los Remitos y Retenciones
 
-6. 
+7. 
