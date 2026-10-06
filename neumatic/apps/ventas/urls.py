@@ -18,12 +18,12 @@ from .views.factura3_views import (
 	PresupuestoUpdateView,
 	PresupuestoDeleteView
 )
-from .views.factura4_views import (
-	MovimientoInternoListView,
-	MovimientoInternoCreateView,
-	MovimientoInternoUpdateView,
-	MovimientoInternoDeleteView
-)
+# from .views.factura4_views import (
+# 	MovimientoInternoListView,
+# 	MovimientoInternoCreateView,
+# 	MovimientoInternoUpdateView,
+# 	MovimientoInternoDeleteView
+# )
 from .views.recibo_views import (
 	ReciboListView,
 	ReciboCreateView,
@@ -92,6 +92,18 @@ from .views.compra_retencion_views import (
 )
 from .views.pdf_retenciones import PDFRetencionView
 from .views.consultas_factura_views import consultar_padron_percepcion
+
+from .views.movimiento_interno_views import (
+    MovimientoInternoListView,
+    MovimientoInternoCreateView,
+    MovimientoInternoUpdateView,
+    MovimientoInternoDeleteView,
+)
+
+from .views.consultas_movimiento_interno_views import (
+    buscar_producto_select2,
+    detalle_producto_mi,
+)
 
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
@@ -192,6 +204,16 @@ urlpatterns = [
 
 	path('consultar-padron/', consultar_padron_percepcion, name='consultar_padron'),
 
-	    path('obtener-numero-comprobante-recibo/', obtener_numero_comprobante_recibo, name='obtener_numero_comprobante_recibo'),
+	path('obtener-numero-comprobante-recibo/', obtener_numero_comprobante_recibo, name='obtener_numero_comprobante_recibo'),
+ 
+	#-- Movimiento Interno
+	path('movimientointerno/listar/', MovimientoInternoListView.as_view(), name='movimiento_interno_list'),
+	path('movimientointerno/crear/', MovimientoInternoCreateView.as_view(), name='movimiento_interno_create'),
+	path('movimientointerno/editar/<int:pk>/', MovimientoInternoUpdateView.as_view(), name='movimiento_interno_update'),
+	path('movimientointerno/eliminar/<int:pk>/', MovimientoInternoDeleteView.as_view(), name='movimiento_interno_delete'),
+ 
+	#-- Movimiento Interno (endpoints)
+	path('movimientointerno/buscar-producto/', buscar_producto_select2, name='mi_buscar_producto'),
+	path('movimientointerno/detalle-producto/<int:id_producto>/', detalle_producto_mi, name='mi_detalle_producto'),
 
 ]

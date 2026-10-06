@@ -1,0 +1,567 @@
+{% extends 'proceso_form.html' %}
+{% load static %}
+
+{% block style %}
+<style>
+    .tbl-container { width: 100%; overflow-x: auto; }
+    .tbl-fixed {
+        overflow-x: scroll; overflow-y: scroll;
+        height: fit-content; max-height: 60vh;
+        margin-top: 0px; font-size: 80%;
+    }
+    table { width: 100%; table-layout: fixed; }
+    table th, table td {
+        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    table th { position: sticky; top: 0px; }
+    .table .form-control { width: 100%; }
+    .form-control-sm { font-size: 0.8rem; padding: 0.25rem; }
+
+    /* Panel de inserción */
+    .panel-insertar {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+    .panel-insertar .datos-producto {
+        background-color: #fff;
+        border: 1px solid #0d6efd;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        font-size: 0.85rem;
+        min-height: 60px;
+    }
+    .panel-insertar .datos-producto .label {
+        font-weight: 600;
+        color: #495057;
+        margin-right: 0.25rem;
+    }
+    .panel-insertar .datos-producto .valor {
+        color: #212529;
+    }
+
+    /* Forzar Select2 al estilo Bootstrap 5 igual que form-control-sm */
+    .select2-container--bootstrap-5 .select2-selection {
+        min-height: 31px !important;
+        height: 31px !important;
+        border: 1px solid #0d6efd !important;
+        border-radius: 0.2rem !important;
+        background-color: #fff !important;
+        font-size: 0.875rem !important;
+    }
+    .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+        line-height: 29px !important;
+        padding: 0 0.5rem !important;
+        font-size: 0.875rem !important;
+    }
+</style>
+{% endblock style %}
+
+{% block title %}{{ titulo }}{% endblock title %}
+
+{% block maincomponent %}
+{% block principalcomponent %}
+<div id="layoutSidenav_content">
+    <main>
+        <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
+        <div id="tipo-comprobante-vista" data-tipo-comprobante-vista="{{ tipo_comprobante }}"></div>
+        <div id="operario-data" data-operario='{{ operario_dict|safe }}'></div>
+        <div id="cliente-empresa-data" data-cliente-empresa="{{ cliente_empresa_id }}"></div>
+
+        <div class="container-fluid tbl-container">
+            <form method="post" id="movimiento-form" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <!-- ================= ENCABEZADO ================= -->
+                <div class="accordion mt-2" id="accordionMovimiento">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseEncabezado"
+                                    aria-expanded="true">
+                                Movimiento Interno de Stock - {{ tipo_comprobante }}
+                            </button>
+                        </h2>
+                        <div id="collapseEncabezado" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <div class="row">
+                                    <!-- Columna izquierda -->
+                                    <div class="col-md-6">
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.estatus_comprobante.id_for_label }}">Estatus</label>
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{ form.estatus_comprobante }}
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label>Sucursal</label>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="text" class="form-control form-control-sm border border-primary"
+                                                       value="{{ request.user.id_sucursal|default:'' }}" readonly>
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.id_deposito.id_for_label }}">Depósito*</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                {{ form.id_deposito }}
+                                                {% if form.id_deposito.errors %}
+                                                    <div class="text-danger small">{{ form.id_deposito.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.observa_comprobante.id_for_label }}">Descripción</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                {{ form.observa_comprobante }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Columna derecha -->
+                                    <div class="col-md-6">
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label>Número</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                <input type="text" class="form-control form-control-sm border border-primary"
+                                                       id="numero_comprobante_display" readonly
+                                                       value="{% if object.numero_comprobante %}{{ object.numero_comprobante }}{% else %}Se generará al guardar{% endif %}">
+                                            </div>
+                                        </div>
+
+                                        <div class="row my-1">
+                                            <div class="col-md-3">
+                                                <label for="{{ form.fecha_comprobante.id_for_label }}">Fecha*</label>
+                                            </div>
+                                            <div class="col-md-9">
+                                                {{ form.fecha_comprobante }}
+                                                {% if form.fecha_comprobante.errors %}
+                                                    <div class="text-danger small">{{ form.fecha_comprobante.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ================= DETALLE ================= -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseDetalle"
+                                    aria-expanded="true">
+                                Detalle del Movimiento
+                            </button>
+                        </h2>
+                        <div id="collapseDetalle" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+
+                                <!-- ============ PANEL DE INSERCIÓN INLINE ============ -->
+                                <div class="panel-insertar" id="panel-insertar">
+                                    <div class="row g-2 align-items-end mb-2">
+                                        <div class="col-md-8">
+                                            <label for="producto_select2" class="form-label mb-1 small fw-bold">
+                                                Producto (ID o Nombre)
+                                            </label>
+                                            <select id="producto_select2" class="form-select form-select-sm" style="width: 100%;"></select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="input_cantidad" class="form-label mb-1 small fw-bold">
+                                                Cantidad*
+                                            </label>
+                                            <input type="number" id="input_cantidad"
+                                                   class="form-control form-control-sm border border-primary text-end"
+                                                   step="1" placeholder="Ej: 1 o -1">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <button type="button" class="btn btn-outline-primary btn-sm w-100"
+                                                    id="btnInsertar">
+                                                Insertar <i class="bi bi-plus-circle"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <!-- Panel de datos del producto -->
+                                    <div class="datos-producto" id="datos-producto">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <span class="label">Código:</span>
+                                                <span class="valor" id="dp-codigo">-</span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span class="label">Medida:</span>
+                                                <span class="valor" id="dp-medida">-</span>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <span class="label">Marca:</span>
+                                                <span class="valor" id="dp-marca">-</span>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-1">
+                                            <div class="col-md-12">
+                                                <span class="label">Nombre:</span>
+                                                <span class="valor" id="dp-nombre">-</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- ============ TABLA DE DETALLE ============ -->
+                                <div class="row tbl-fixed my-2 mx-1" id="formset-container">
+                                    {{ formset_detalle.management_form }}
+
+                                    <table class="table table-striped table-hover" id="tabla-detalle">
+                                        <thead class="table-primary small-font">
+                                            <tr>
+                                                <th style="width: 10%;">Código</th>
+                                                <th style="width: 12%;">Cantidad</th>
+                                                <th style="width: 12%;">Medida</th>
+                                                <th style="width: 40%;">Nombre Producto</th>
+                                                <th style="width: 20%;">Marca</th>
+                                                <th style="width: 6%;">Elim</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for formdet in formset_detalle %}
+                                                <tr data-form-index="{{ forloop.counter0 }}">
+                                                    <td>
+                                                        {{ formdet.id_detalle_movimiento_interno }}
+                                                        {{ formdet.id_movimiento_interno }}
+                                                        {{ formdet.id_producto }}
+                                                        {{ formdet.codigo }}
+                                                    </td>
+                                                    <td>{{ formdet.cantidad }}</td>
+                                                    <td class="text-center celda-medida">
+                                                        {% if formdet.instance.id_producto %}
+                                                            {{ formdet.instance.id_producto.medida }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="celda-nombre">
+                                                        {{ formdet.producto_venta }}
+                                                        {% if formdet.instance.id_producto %}
+                                                            {# fallback visual #}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="celda-marca">
+                                                        {% if formdet.instance.id_producto %}
+                                                            {{ formdet.instance.id_producto.id_marca.nombre_producto_marca }}
+                                                        {% endif %}
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <button type="button"
+                                                                class="btn btn-danger btn-sm btn-delete"
+                                                                data-form-index="{{ forloop.counter0 }}">
+                                                            <i class="bi bi-trash"></i>
+                                                        </button>
+                                                        <input type="checkbox"
+                                                               name="detallemovimientointerno_set-{{ forloop.counter0 }}-DELETE"
+                                                               id="id_detallemovimientointerno_set-{{ forloop.counter0 }}-DELETE"
+                                                               style="display: none;">
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="6">
+                                                    <div class="d-flex justify-content-end gap-2 py-2">
+                                                        <button type="submit" class="btn btn-outline-success btn-sm">
+                                                            {% if is_edit %}Actualizar{% else %}Guardar{% endif %}
+                                                            <i class="bi bi-floppy"></i>
+                                                        </button>
+                                                        <a href="{% url list_view_name %}" class="btn btn-outline-secondary btn-sm">
+                                                            Cancelar <i class="bi bi-x-circle"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const formsetContainer = document.getElementById('formset-container');
+    const isEdit = document.getElementById('modo-edicion').dataset.isEdit === 'true';
+
+    // ============================================================
+    // SELECT2 - Búsqueda de producto por ID o nombre
+    // ============================================================
+    $('#producto_select2').select2({
+        theme: 'bootstrap-5',
+        allowClear: true,
+        minimumInputLength: 1,
+        placeholder: 'Buscar producto por ID o nombre...',
+        width: '100%',
+        ajax: {
+            url: '/ventas/movimientointerno/buscar-producto/',
+            dataType: 'json',
+            delay: 250,
+            data: function (params) {
+                return { term: params.term, page: params.page || 1 };
+            },
+            processResults: function (data) {
+                return { results: data.results, pagination: { more: data.pagination.more } };
+            }
+        },
+        templateResult: function (p) {
+            if (p.loading) return p.text;
+            return $('<div><strong>' + p.codigo + '</strong> - ' + p.nombre + '</div>');
+        },
+        templateSelection: function (p) {
+            return p.text || p.nombre || '';
+        }
+    });
+
+    // ============================================================
+    // Al seleccionar un producto → consultar detalle y mostrar panel
+    // ============================================================
+    $('#producto_select2').on('select2:select', function (e) {
+        const idProducto = e.params.data.id;
+        fetch(`/ventas/movimientointerno/detalle-producto/${idProducto}/`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    limpiarPanel();
+                    return;
+                }
+                document.getElementById('dp-codigo').textContent = data.codigo || '-';
+                document.getElementById('dp-medida').textContent = data.medida || '-';
+                document.getElementById('dp-marca').textContent = data.marca || '-';
+                document.getElementById('dp-nombre').textContent = data.nombre || '-';
+                document.getElementById('input_cantidad').focus();
+            })
+            .catch(err => {
+                console.error('Error al traer detalle del producto:', err);
+                alert('Error al consultar el producto');
+                limpiarPanel();
+            });
+    });
+
+    $('#producto_select2').on('select2:clearing', function () {
+        limpiarPanel();
+    });
+
+    function limpiarPanel() {
+        document.getElementById('dp-codigo').textContent = '-';
+        document.getElementById('dp-medida').textContent = '-';
+        document.getElementById('dp-marca').textContent = '-';
+        document.getElementById('dp-nombre').textContent = '-';
+        document.getElementById('input_cantidad').value = '';
+    }
+
+    // ============================================================
+    // Insertar producto a la tabla de detalle
+    // ============================================================
+    document.getElementById('btnInsertar').addEventListener('click', function () {
+        // -------- Validaciones --------
+        const selectData = $('#producto_select2').select2('data');
+        if (!selectData || selectData.length === 0) {
+            alert('Debe seleccionar un producto.');
+            return;
+        }
+        const producto = selectData[0];
+
+        const cantidadRaw = document.getElementById('input_cantidad').value;
+        if (cantidadRaw === '' || cantidadRaw === null) {
+            alert('Debe ingresar una cantidad.');
+            document.getElementById('input_cantidad').focus();
+            return;
+        }
+        const cantidad = parseInt(cantidadRaw, 10);
+        if (isNaN(cantidad)) {
+            alert('La cantidad debe ser un número entero.');
+            document.getElementById('input_cantidad').focus();
+            return;
+        }
+        if (cantidad === 0) {
+            alert('La cantidad no puede ser cero.');
+            document.getElementById('input_cantidad').focus();
+            return;
+        }
+
+        // -------- Insertar fila --------
+        const idx = formsetContainer.querySelectorAll('#tabla-detalle tbody tr').length;
+        const fila = `
+            <tr data-form-index="${idx}">
+                <td>
+                    <input type="hidden" name="detallemovimientointerno_set-${idx}-id_detalle_movimiento_interno">
+                    <input type="hidden" name="detallemovimientointerno_set-${idx}-id_movimiento_interno">
+                    <input type="hidden" name="detallemovimientointerno_set-${idx}-id_producto" value="${producto.id}">
+                    <input type="text" name="detallemovimientointerno_set-${idx}-codigo"
+                           class="form-control form-control-sm border border-primary"
+                           value="${producto.codigo}" readonly>
+                </td>
+                <td>
+                    <input type="number" name="detallemovimientointerno_set-${idx}-cantidad"
+                           class="form-control form-control-sm border border-primary text-end"
+                           value="${cantidad}" step="1" required>
+                </td>
+                <td class="text-center celda-medida">${producto.medida || '-'}</td>
+                <td class="celda-nombre">
+                    ${producto.nombre}
+                    <input type="hidden" name="detallemovimientointerno_set-${idx}-producto_venta"
+                           value="${producto.nombre}">
+                </td>
+                <td class="celda-marca">${producto.marca || '-'}</td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm btn-delete" data-form-index="${idx}">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <input type="checkbox"
+                           name="detallemovimientointerno_set-${idx}-DELETE"
+                           id="id_detallemovimientointerno_set-${idx}-DELETE"
+                           style="display: none;">
+                </td>
+            </tr>
+        `;
+        formsetContainer.querySelector('#tabla-detalle tbody').insertAdjacentHTML('beforeend', fila);
+
+        // -------- Reset del panel --------
+        $('#producto_select2').val(null).trigger('change');
+        limpiarPanel();
+        actualizarContadorFormsets();
+        $('#producto_select2').select2('open');
+    });
+
+    // Enter en cantidad → insertar
+    document.getElementById('input_cantidad').addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('btnInsertar').click();
+        }
+    });
+
+    // ============================================================
+    // Contador de formsets
+    // ============================================================
+    function actualizarContadorFormsets() {
+        const rows = formsetContainer.querySelectorAll('#tabla-detalle tbody tr').length;
+        document.getElementById('id_detallemovimientointerno_set-TOTAL_FORMS').value = rows;
+    }
+
+    // ============================================================
+    // Eliminar fila
+    // ============================================================
+    formsetContainer.addEventListener('click', function (e) {
+        if (e.target.closest('.btn-delete')) {
+            const row = e.target.closest('tr');
+            const deleteInput = row.querySelector('input[name$="-DELETE"]');
+            if (confirm('¿Eliminar este detalle?')) {
+                if (deleteInput) {
+                    deleteInput.checked = true;
+                    row.style.display = 'none';
+                } else {
+                    row.remove();
+                }
+                actualizarContadorFormsets();
+            }
+        }
+    });
+
+    // ============================================================
+    // Modo edición: deshabilitar panel de inserción y botones
+    // ============================================================
+    if (isEdit) {
+        document.getElementById('panel-insertar').style.display = 'none';
+        document.querySelectorAll('.btn-delete').forEach(b => b.disabled = true);
+    }
+
+    ///
+    
+
+    // ============================================================
+    // VALIDACIÓN AL SUBMIT  ← AGREGAR ESTE BLOQUE AQUÍ
+    // ============================================================
+    document.getElementById('movimiento-form').addEventListener('submit', function (e) {
+        // ─── 1. Validar depósito ───
+        const deposito = document.getElementById('id_id_deposito').value;
+        if (!deposito) {
+            e.preventDefault();
+            alert('Debe seleccionar un depósito antes de guardar.');
+            document.getElementById('id_id_deposito').focus();
+            return false;
+        }
+
+        // ─── 2. Validar que haya al menos una fila visible ───
+        const filas = formsetContainer.querySelectorAll('#tabla-detalle tbody tr');
+        const filasVisibles = Array.from(filas).filter(
+            tr => tr.style.display !== 'none'
+        );
+
+        if (filasVisibles.length === 0) {
+            e.preventDefault();
+            alert('Debe agregar al menos un producto al detalle antes de guardar.');
+            return false;
+        }
+
+        // ─── 3. Validar cada fila visible ───
+        for (let i = 0; i < filasVisibles.length; i++) {
+            const tr = filasVisibles[i];
+
+            const inputProducto = tr.querySelector('input[name$="-id_producto"]');
+            const inputCantidad = tr.querySelector('input[name$="-cantidad"]');
+
+            if (!inputProducto || !inputProducto.value) {
+                e.preventDefault();
+                alert(`Fila ${i + 1}: falta el producto.`);
+                return false;
+            }
+
+            if (!inputCantidad || inputCantidad.value === '') {
+                e.preventDefault();
+                alert(`Fila ${i + 1}: debe ingresar una cantidad.`);
+                inputCantidad.focus();
+                return false;
+            }
+
+            const cant = parseInt(inputCantidad.value, 10);
+            if (isNaN(cant)) {
+                e.preventDefault();
+                alert(`Fila ${i + 1}: la cantidad debe ser un número entero.`);
+                inputCantidad.focus();
+                return false;
+            }
+            if (cant === 0) {
+                e.preventDefault();
+                alert(`Fila ${i + 1}: la cantidad no puede ser cero.`);
+                inputCantidad.focus();
+                return false;
+            }
+        }
+
+        // Si pasa todo, se envía normalmente
+        return true;
+    });
+    ///
+});
+</script>
+{% endblock script %}
