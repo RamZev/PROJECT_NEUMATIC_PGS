@@ -1,0 +1,384 @@
+{% extends 'proceso_form.html' %}
+{% load static %}
+
+{% block title %}{{ titulo }}{% endblock title %}
+
+{% block maincomponent %}
+{% block principalcomponent %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid">
+            <!-- Datos auxiliares -->
+            <div id="modo-edicion" data-is-edit="{{ is_edit|yesno:'true,false' }}"></div>
+
+            <div class="card border-light mb-3 mt-2">
+                <div class="card-header text-white bg-primary opacity-75 d-flex justify-content-between">
+                    {{ titulo }}
+                    <button type="button" class="btn-close btn-close-white"
+                            onclick="window.location.href='{% url list_view_name %}'"></button>
+                </div>
+
+                <div class="card-body bg-body-secondary">
+                    <form method="post" id="servicio-form" novalidate>
+                        {% csrf_token %}
+
+                        <!-- ══════════ CABECERA ══════════ -->
+                        <div class="accordion mb-3" id="accServicio">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button" type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#cabecera">
+                                        Datos del Servicio
+                                    </button>
+                                </h2>
+                                <div id="cabecera" class="accordion-collapse collapse show">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label class="form-label text-primary mb-0" for="{{ form.estatus_servicio_vehiculo.id_for_label }}">
+                                                    {{ form.estatus_servicio_vehiculo.label }}
+                                                </label>
+                                                {{ form.estatus_servicio_vehiculo }}
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label class="form-label text-primary mb-0">Cliente</label>
+                                                <input type="text" id="cliente_select2"
+                                                       class="form-control form-control-sm"
+                                                       placeholder="Buscar cliente por nombre...">
+                                                {{ form.id_cliente }}
+                                                {{ form.cliente_display }}
+                                            </div>
+
+                                            <div class="col-md-4">
+                                                <label class="form-label text-primary mb-0">Vehículo</label>
+                                                <input type="text" id="vehiculo_select2"
+                                                       class="form-control form-control-sm"
+                                                       placeholder="Buscar vehículo por patente/marca/modelo...">
+                                                {{ form.id_vehiculo }}
+                                                {{ form.vehiculo_display }}
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <label class="form-label text-primary mb-0" for="{{ form.kmxmes.id_for_label }}">
+                                                    {{ form.kmxmes.label }}
+                                                </label>
+                                                {{ form.kmxmes }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row mt-2">
+                                            <div class="col-md-3">
+                                                <label class="form-label text-primary mb-0" for="{{ form.proxima_visita.id_for_label }}">
+                                                    {{ form.proxima_visita.label }}
+                                                </label>
+                                                {{ form.proxima_visita }}
+                                            </div>
+
+                                            <div class="col-md-9">
+                                                <label class="form-label text-primary mb-0" for="{{ form.observaciones.id_for_label }}">
+                                                    {{ form.observaciones.label }}
+                                                </label>
+                                                {{ form.observaciones }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══════════ PANEL INLINE ══════════ -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light py-2">
+                                <strong>Agregar detalle</strong>
+                            </div>
+                            <div class="card-body py-2">
+                                <div class="row g-2 align-items-end">
+                                    <div class="col-md-5">
+                                        <label class="form-label mb-0 small">Servicio</label>
+                                        <input type="text" id="producto_select2"
+                                               class="form-control form-control-sm"
+                                               placeholder="Buscar servicio por nombre o ID...">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label mb-0 small">Cantidad</label>
+                                        <input type="number" id="panel_cantidad"
+                                               class="form-control form-control-sm text-end"
+                                               value="1" min="0.01" step="0.01">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <div class="form-check mt-3">
+                                            <input type="checkbox" id="panel_exportado"
+                                                   class="form-check-input">
+                                            <label class="form-check-label" for="panel_exportado">
+                                                Exportado
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                id="btnInsertarDetalle">
+                                            <i class="bi bi-plus-circle"></i> Insertar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══════════ TABLA DETALLE ══════════ -->
+                        <div class="table-responsive">
+                            {{ formset_detalle.management_form }}
+                            <table class="table table-sm table-bordered" id="tabla-detalle">
+                                <thead class="table-primary">
+                                    <tr>
+                                        <th style="width: 40%;">Servicio</th>
+                                        <th style="width: 10%;">Cantidad</th>
+                                        <th style="width: 20%;">Vendedor</th>
+                                        <th style="width: 10%;">Exportado</th>
+                                        <th style="width: 10%;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detalle-tbody">
+                                    {% for f in formset_detalle %}
+                                    <tr class="detalle-row" data-index="{{ forloop.counter0 }}">
+                                        {{ f.id_detalle_servicio_vehiculo }}
+                                        {{ f.id_servicio_vehiculo }}
+                                        {{ f.id_producto }}
+                                        {{ f.id_vendedor }}
+                                        <td>
+                                            <span class="producto-label">
+                                                {% if f.instance.id_producto %}
+                                                    {{ f.instance.id_producto.id_producto }} - {{ f.instance.id_producto.nombre_producto }}
+                                                {% else %}—{% endif %}
+                                            </span>
+                                        </td>
+                                        <td>{{ f.cantidad }}</td>
+                                        <td>
+                                            <span class="vendedor-label">
+                                                {% if f.instance.id_vendedor %}
+                                                    {{ f.instance.id_vendedor.nombre_vendedor }}
+                                                {% else %}—{% endif %}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">{{ f.exportado }}</td>
+                                        <td class="text-center">
+                                            <button type="button"
+                                                    class="btn btn-danger btn-sm btn-eliminar-row">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                            <span class="d-none">{{ f.DELETE }}</span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- ══════════ ACCIONES ══════════ -->
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-floppy"></i> Guardar
+                            </button>
+                            <a href="{% url list_view_name %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+
+{% block script %}
+{{ block.super }}
+<script>
+// ═══════════════════════════════════════════════════════════
+// Helpers
+// ═══════════════════════════════════════════════════════════
+function getCookie(name) {
+    let v = null;
+    if (document.cookie) {
+        for (const c of document.cookie.split(';')) {
+            const t = c.trim();
+            if (t.startsWith(name + '=')) v = decodeURIComponent(t.slice(name.length + 1));
+        }
+    }
+    return v;
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const isEdit = document.getElementById('modo-edicion').dataset.isEdit === 'true';
+
+    // ═══════════════════════════════════════════════════════════
+    // Vendedor cacheado desde el cliente (para autocompletar filas)
+    // ═══════════════════════════════════════════════════════════
+    let vendedorActual = { id: '', nombre: '' };
+
+    function cargarVendedorDesdeCliente(clienteId) {
+        if (!clienteId) { vendedorActual = { id: '', nombre: '' }; return Promise.resolve(); }
+        return fetch(`/ventas/buscar/cliente/?busqueda=${encodeURIComponent(clienteId)}`)
+            .then(r => r.json())
+            .then(data => {
+                vendedorActual = {
+                    id: data.id_vendedor || '',
+                    nombre: data.nombre_vendedor || ''
+                };
+            })
+            .catch(() => { vendedorActual = { id: '', nombre: '' }; });
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // SELECT2 — Cliente
+    // ═══════════════════════════════════════════════════════════
+    $('#cliente_select2').select2({
+        theme: 'bootstrap-5',
+        allowClear: true,
+        minimumInputLength: 2,
+        placeholder: 'Buscar cliente por nombre...',
+        ajax: {
+            url: '/maestros/buscar-cliente-select2/',
+            dataType: 'json',
+            delay: 300,
+            data: p => ({ term: p.term, page: p.page || 1 }),
+            processResults: d => ({ results: d.results, pagination: { more: d.more } })
+        }
+    }).on('select2:select', function (e) {
+        const data = e.params.data;
+        document.getElementById('id_id_cliente').value = data.id;
+        cargarVendedorDesdeCliente(data.id);
+    }).on('select2:clear', function () {
+        document.getElementById('id_id_cliente').value = '';
+        vendedorActual = { id: '', nombre: '' };
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // SELECT2 — Vehículo
+    // ═══════════════════════════════════════════════════════════
+    $('#vehiculo_select2').select2({
+        theme: 'bootstrap-5',
+        allowClear: true,
+        minimumInputLength: 1,
+        placeholder: 'Buscar vehículo por patente/marca/modelo...',
+        ajax: {
+            url: '{% url "buscar_vehiculo_select2" %}',
+            dataType: 'json',
+            delay: 300,
+            data: p => ({ term: p.term, page: p.page || 1 }),
+            processResults: d => ({ results: d.results, pagination: { more: d.pagination.more } })
+        }
+    }).on('select2:select', function (e) {
+        document.getElementById('id_id_vehiculo').value = e.params.data.id;
+    }).on('select2:clear', function () {
+        document.getElementById('id_id_vehiculo').value = '';
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // SELECT2 — Servicio (panel inline, SOLO tipo_producto='S')
+    // ═══════════════════════════════════════════════════════════
+    $('#producto_select2').select2({
+        theme: 'bootstrap-5',
+        allowClear: true,
+        minimumInputLength: 1,
+        placeholder: 'Buscar servicio...',
+        ajax: {
+            url: '{% url "buscar_producto_servicio_select2" %}',
+            dataType: 'json',
+            delay: 300,
+            data: p => ({ term: p.term, page: p.page || 1 }),
+            processResults: d => ({ results: d.results, pagination: d.pagination })
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // INSERTAR DETALLE
+    // ═══════════════════════════════════════════════════════════
+    document.getElementById('btnInsertarDetalle').addEventListener('click', function () {
+        // Validaciones previas
+        const clienteId = document.getElementById('id_id_cliente').value;
+        if (!clienteId) {
+            alert('Debe seleccionar un cliente antes de agregar detalles.');
+            return;
+        }
+
+        const producto = $('#producto_select2').select2('data')[0];
+        if (!producto) { alert('Seleccione un servicio.'); return; }
+
+        const cantidad = parseFloat(document.getElementById('panel_cantidad').value) || 0;
+        if (cantidad <= 0) { alert('La cantidad debe ser mayor a cero.'); return; }
+
+        const exportado = document.getElementById('panel_exportado').checked;
+        const totalForms = document.getElementById('id_detalles-TOTAL_FORMS');
+        const index = parseInt(totalForms.value);
+
+        const nuevaFila = `
+            <tr class="detalle-row" data-index="${index}">
+                <input type="hidden" name="detalles-${index}-id_detalle_servicio_vehiculo" id="id_detalles-${index}-id_detalle_servicio_vehiculo">
+                <input type="hidden" name="detalles-${index}-id_servicio_vehiculo" id="id_detalles-${index}-id_servicio_vehiculo">
+                <input type="hidden" name="detalles-${index}-id_producto" value="${producto.id}">
+                <input type="hidden" name="detalles-${index}-id_vendedor" value="${vendedorActual.id || ''}">
+                <td><span class="producto-label">${producto.text}</span></td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-end border border-primary"
+                           name="detalles-${index}-cantidad" value="${cantidad}" min="0.01" step="0.01">
+                </td>
+                <td><span class="vendedor-label">${vendedorActual.nombre || '—'}</span></td>
+                <td class="text-center">
+                    <input type="checkbox" name="detalles-${index}-exportado"
+                           ${exportado ? 'checked' : ''}>
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-danger btn-sm btn-eliminar-row">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <input type="checkbox" name="detalles-${index}-DELETE" class="d-none">
+                </td>
+            </tr>`;
+
+        document.getElementById('detalle-tbody').insertAdjacentHTML('beforeend', nuevaFila);
+        totalForms.value = index + 1;
+
+        // Reset panel
+        $('#producto_select2').val(null).trigger('change');
+        document.getElementById('panel_cantidad').value = 1;
+        document.getElementById('panel_exportado').checked = false;
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // ELIMINAR FILA
+    // ═══════════════════════════════════════════════════════════
+    document.getElementById('detalle-tbody').addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-eliminar-row');
+        if (!btn) return;
+        if (!confirm('¿Eliminar esta línea?')) return;
+        const row = btn.closest('tr');
+        const del = row.querySelector('input[name$="-DELETE"]');
+        if (del) { del.checked = true; row.style.display = 'none'; }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    // MODO EDICIÓN: preseleccionar Cliente y Vehículo en Select2
+    // ═══════════════════════════════════════════════════════════
+    if (isEdit) {
+        const clienteHidden = document.getElementById('id_id_cliente');
+        const clienteDisplay = document.getElementById('id_cliente_display');
+        if (clienteHidden && clienteHidden.value && clienteDisplay && clienteDisplay.value) {
+            const opt = new Option(clienteDisplay.value, clienteHidden.value, true, true);
+            $('#cliente_select2').append(opt).trigger('change');
+            cargarVendedorDesdeCliente(clienteHidden.value);
+        }
+
+        const vehiculoHidden = document.getElementById('id_id_vehiculo');
+        const vehiculoDisplay = document.getElementById('id_vehiculo_display');
+        if (vehiculoHidden && vehiculoHidden.value && vehiculoDisplay && vehiculoDisplay.value) {
+            const opt = new Option(vehiculoDisplay.value, vehiculoHidden.value, true, true);
+            $('#vehiculo_select2').append(opt).trigger('change');
+        }
+    }
+});
+</script>
+{% endblock script %}

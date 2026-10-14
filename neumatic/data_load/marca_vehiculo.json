@@ -1,0 +1,221 @@
+[
+  {
+    "marca_vehiculo": "ALFA ROMEO",
+    "aliases": ["ALFA ROMEO", "ALFA  ROMEO", "ALFA", "ALAFA ROMEO"]
+  },
+  {
+    "marca_vehiculo": "AUDI",
+    "aliases": ["AUDI"]
+  },
+  {
+    "marca_vehiculo": "BMW",
+    "aliases": ["BMW", "BMWW", "BMX", "B M W", "MBW"]
+  },
+  {
+    "marca_vehiculo": "CHEVROLET",
+    "aliases": [
+      "CHEVROLET",
+      "CHEVY",
+      "CHEVROET",
+      "CHEVROLRT",
+      "CHEVROLET",
+      "CHVROLET",
+      "CHREVROLET",
+      "CHEVROELT",
+      "CEVROLET",
+      "CREVROLET",
+      "CHEVOLET",
+      "CHEVROLE"
+    ]
+  },
+  {
+    "marca_vehiculo": "CHERY",
+    "aliases": ["CHERY", "CHERRY"]
+  },
+  {
+    "marca_vehiculo": "CHRYSLER",
+    "aliases": ["CHRYSLER", "CRYSLER", "CRISLER", "CHRISLER", "CHRAYLER"]
+  },
+  {
+    "marca_vehiculo": "CITROEN",
+    "aliases": ["CITROEN", "CITRÖEN"]
+  },
+  {
+    "marca_vehiculo": "DAEWOO",
+    "aliases": ["DAEWOO", "DAEWO"]
+  },
+  {
+    "marca_vehiculo": "DAIHATSU",
+    "aliases": ["DAIHATSU", "DAHIATSU"]
+  },
+  {
+    "marca_vehiculo": "DODGE",
+    "aliases": ["DODGE", "DODGEE", "DOGGE"]
+  },
+  {
+    "marca_vehiculo": "FIAT",
+    "aliases": ["FIAT", "FUIAT", "FIART", "FIAT 147", "FIAT SIENA"]
+  },
+  {
+    "marca_vehiculo": "FORD",
+    "aliases": ["FORD", "FOERD", "FORD 100", "FORD FIESTA"]
+  },
+  {
+    "marca_vehiculo": "HONDA",
+    "aliases": ["HONDA", "HONFA", "HONDAA"]
+  },
+  {
+    "marca_vehiculo": "HYUNDAI",
+    "aliases": ["HYUNDAI", "HUNDAY", "HIUNDAY", "HYUNDAY", "HYNDAI", "HUNDAI"]
+  },
+  {
+    "marca_vehiculo": "ISUZU",
+    "aliases": ["ISUZU", "IZUZU", "IZUSU"]
+  },
+  {
+    "marca_vehiculo": "IVECO",
+    "aliases": ["IVECO", "IVECCO"]
+  },
+  {
+    "marca_vehiculo": "JEEP",
+    "aliases": ["JEEP"]
+  },
+  {
+    "marca_vehiculo": "KIA",
+    "aliases": ["KIA"]
+  },
+  {
+    "marca_vehiculo": "LAND ROVER",
+    "aliases": ["LAND ROVER", "LAND  ROVER"]
+  },
+  {
+    "marca_vehiculo": "MAZDA",
+    "aliases": ["MAZDA"]
+  },
+  {
+    "marca_vehiculo": "MERCEDES BENZ",
+    "aliases": [
+      "MERCEDES BENZ",
+      "MERCEDES-BENZ",
+      "MERCEDEZ BENZ",
+      "MB",
+      "M.BENZ",
+      "M. BENZ",
+      "M BENZ"
+    ]
+  },
+  {
+    "marca_vehiculo": "MERCURY",
+    "aliases": ["MERCURY"]
+  },
+  {
+    "marca_vehiculo": "MINI",
+    "aliases": ["MINI", "MINI COOPER", "COOPER"]
+  },
+  {
+    "marca_vehiculo": "MITSUBISHI",
+    "aliases": [
+      "MITSUBISHI",
+      "MITSU",
+      "MITSHUBISHI",
+      "MITSUBHISI",
+      "MITSIBISHI"
+    ]
+  },
+  {
+    "marca_vehiculo": "NISSAN",
+    "aliases": ["NISSAN", "NISAN", "NIZZAN", "NISANN"]
+  },
+  {
+    "marca_vehiculo": "OLTCIT",
+    "aliases": ["OLTCIT"]
+  },
+  {
+    "marca_vehiculo": "OPEL",
+    "aliases": ["OPEL"]
+  },
+  {
+    "marca_vehiculo": "PEUGEOT",
+    "aliases": ["PEUGEOT", "PEUGOET", "PEUGETO", "PEUGUEOT"]
+  },
+  {
+    "marca_vehiculo": "RENAULT",
+    "aliases": [
+      "RENAULT",
+      "REANULT",
+      "RENAULD",
+      "RENAUL",
+      "RENAULTT",
+      "RNAULD",
+      "RENAIULD",
+      "RENAULDT",
+      "RFENAULT",
+      "RENOULT",
+      "RANAULT",
+      "RENAULT N"
+    ]
+  },
+  {
+    "marca_vehiculo": "ROVER",
+    "aliases": ["ROVER"]
+  },
+  {
+    "marca_vehiculo": "SAAB",
+    "aliases": ["SAAB"]
+  },
+  {
+    "marca_vehiculo": "SEAT",
+    "aliases": ["SEAT"]
+  },
+  {
+    "marca_vehiculo": "SSANG YONG",
+    "aliases": ["SSANG YONG", "SSAN YONG", "SSANG YOUNG"]
+  },
+  {
+    "marca_vehiculo": "SUBARU",
+    "aliases": ["SUBARU"]
+  },
+  {
+    "marca_vehiculo": "SUZUKI",
+    "aliases": [
+      "SUZUKI",
+      "SUZUKY",
+      "SUSUKI",
+      "SUZUKII",
+      "SUZUQUI",
+      "SUSUKY",
+      "SUZUKI"
+    ]
+  },
+  {
+    "marca_vehiculo": "TOYOTA",
+    "aliases": [
+      "TOYOTA",
+      "TOYOYA",
+      "TOYATA",
+      "TOYOTAS",
+      "TOY OTA",
+      "TOTOTA"
+    ]
+  },
+  {
+    "marca_vehiculo": "VOLKSWAGEN",
+    "aliases": [
+      "VOLKSWAGEN",
+      "VOLKWAGEN",
+      "VOLSWAGEN",
+      "VOLKSVAGEN",
+      "VOLWAGEN",
+      "VOKSWAGEN",
+      "OLKSWAGEN",
+      "VOLSKWAGEN",
+      "V.W.",
+      "V W",
+      "VW"
+    ]
+  },
+  {
+    "marca_vehiculo": "VOLVO",
+    "aliases": ["VOLVO"]
+  }
+]

@@ -12,4 +12,5 @@ class VentasConfig(AppConfig):
         import apps.ventas.models.compra_models
         import apps.ventas.models.caja_models
         import apps.ventas.models.movimiento_interno_models
+        import apps.ventas.models.servicio_vehiculo_models
 

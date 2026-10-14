@@ -1,0 +1,205 @@
+<!-- neumatic/apps/maestros/templates/maestros/vehiculo_form.html -->
+{% extends 'maestro_form.html' %}
+{% load static %}
+
+<!-- Block Main -->
+{% block maincomponent %}
+    {% block principalcomponent %}
+    <div id="layoutSidenav_content">
+        <main>
+            <div class="container-fluid">
+                <div class="card border-light mb-3 mt-2">
+                    <div class="card-header text-white bg-primary opacity-75 d-flex justify-content-between">
+                        {{ accion }}
+                        <div class="flex align-items-center">
+                            <a class="me-2 text-white" data-bs-toggle="modal" data-bs-target="#helpModal" style="cursor: pointer;">
+                                <i class="bi bi-question-lg"></i>
+                            </a>
+                            <button type="button" class="btn-close btn-close-white" aria-label="Close"
+                                    onclick="window.location.href='{% url list_view_name %}'">
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body bg-body-secondary">
+                        <form method="post" novalidate id="vehiculoForm">
+                            {% csrf_token %}
+
+                            <!-- Fila 1: Estatus, Tipo, Segmento -->
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label class="form-label text-primary mb-0" for="{{ form.estatus_vehiculo.id_for_label }}">
+                                        {{ form.estatus_vehiculo.label }}
+                                    </label>
+                                    {{ form.estatus_vehiculo }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label text-primary mb-0" for="{{ form.tipo_vehiculo.id_for_label }}">
+                                        {{ form.tipo_vehiculo.label }}
+                                    </label>
+                                    {{ form.tipo_vehiculo }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label text-primary mb-0" for="{{ form.segmento.id_for_label }}">
+                                        {{ form.segmento.label }}
+                                    </label>
+                                    {{ form.segmento }}
+                                </div>
+
+                                <div class="col-md-3 d-flex align-items-center">
+                                    <div class="form-check mt-4">
+                                        {{ form.exportado }}
+                                        <label class="form-check-label text-primary" for="{{ form.exportado.id_for_label }}">
+                                            {{ form.exportado.label }}
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Fila 2: Marca, Modelo -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label class="form-label text-primary mb-0" for="{{ form.id_marca_vehiculo.id_for_label }}">
+                                        {{ form.id_marca_vehiculo.label }}
+                                    </label>
+                                    {{ form.id_marca_vehiculo }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label class="form-label text-primary mb-0" for="{{ form.id_modelo_vehiculo.id_for_label }}">
+                                        {{ form.id_modelo_vehiculo.label }}
+                                    </label>
+                                    {{ form.id_modelo_vehiculo }}
+                                    <small class="form-text text-muted">
+                                        Los modelos se filtran según la marca elegida.
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Fila 3: Año, Patente, Km x Mes, Visita -->
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label class="form-label text-primary mb-0" for="{{ form.anio.id_for_label }}">
+                                        {{ form.anio.label }}
+                                    </label>
+                                    {{ form.anio }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label text-primary mb-0" for="{{ form.patente.id_for_label }}">
+                                        {{ form.patente.label }}
+                                    </label>
+                                    {{ form.patente }}
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label class="form-label text-primary mb-0" for="{{ form.kmxmes.id_for_label }}">
+                                        {{ form.kmxmes.label }}
+                                    </label>
+                                    {{ form.kmxmes }}
+                                </div>
+
+                                <div class="col-md-3">
+                                    <label class="form-label text-primary mb-0" for="{{ form.visita.id_for_label }}">
+                                        {{ form.visita.label }}
+                                    </label>
+                                    {{ form.visita }}
+                                </div>
+                            </div>
+
+                            <div class="container mt-3">
+                                {% if is_view_only %}
+                                    <a class="btn btn-secondary" href="{% url list_view_name %}">
+                                        Volver
+                                    </a>
+                                    <a class="btn btn-primary" href="{% url update_view_name object.pk %}">
+                                        <i class="fa fa-edit"></i> Editar
+                                    </a>
+                                {% else %}
+                                    <button class="btn btn-primary" type="submit" id="guardarBtn">
+                                        Guardar
+                                    </button>
+                                    <a class="btn btn-secondary" href="{% url list_view_name %}">
+                                        Cancelar
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    {% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+<!-- Block Script -->
+{% block script %}
+    {{ block.super }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const marcaSelect = document.getElementById('id_marca_vehiculo');
+            const modeloSelect = document.getElementById('id_modelo_vehiculo');
+            const isViewOnly = {% if is_view_only %}true{% else %}false{% endif %};
+
+            if (!marcaSelect || !modeloSelect || isViewOnly) return;
+
+            // Guardamos el valor inicial del modelo para respetarlo cuando recargamos
+            // por primera vez (por ejemplo, en edición).
+            const modeloInicial = modeloSelect.value;
+
+            function cargarModelos(marcaId, modeloSeleccionado) {
+                modeloSelect.innerHTML = '<option value="">Cargando...</option>';
+
+                if (!marcaId) {
+                    modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+                    return;
+                }
+
+                const url = "{% url 'filtrar_modelo_vehiculo_select' %}?id_marca_vehiculo=" + encodeURIComponent(marcaId);
+
+                fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+
+                    (data.modelos || []).forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.nombre;
+
+                        // Preseleccionar si coincide con el modelo que ya estaba seleccionado
+                        if (modeloSeleccionado && String(item.id) === String(modeloSeleccionado)) {
+                            option.selected = true;
+                        }
+
+                        modeloSelect.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error al cargar modelos:', error);
+                    modeloSelect.innerHTML = '<option value="">Error al cargar modelos</option>';
+                });
+            }
+            
+            // Cargar al inicio si ya hay una marca seleccionada (modo edición)
+            if (marcaSelect.value) {
+                cargarModelos(marcaSelect.value, modeloInicial);
+            }
+
+            // Recargar cuando cambia la marca
+            marcaSelect.addEventListener('change', function () {
+                // Limpiar la selección de modelo porque ya no aplica
+                modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+                cargarModelos(this.value, null);
+            });
+        });
+    </script>
+{% endblock script %}

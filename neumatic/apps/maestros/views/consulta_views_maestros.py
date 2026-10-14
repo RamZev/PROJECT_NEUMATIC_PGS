@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from ..models.base_models import Localidad
 from ..models.empresa_models import Empresa
 from ..models.vendedor_models import Vendedor
+from ..models.vehiculo_models import ModeloVehiculo
 
 
 @login_required
@@ -81,3 +82,61 @@ def obtener_tipo_venta_vendedor(request):
 		except Vendedor.DoesNotExist:
 			return JsonResponse({'tipo_venta': None, 'error': 'Vendedor no encontrado'})
 	return JsonResponse({'tipo_venta': None})
+
+
+
+def filtrar_modelo_vehiculo(request):
+    """
+    Devuelve la lista de NOMBRES de modelos existentes para una marca.
+    Se usa para poblar el <datalist> del form de ModeloVehiculo.
+
+    GET params:
+        id_marca_vehiculo (int)
+
+    Response:
+        { "modelos": ["Corolla", "Hilux", ...] }
+    """
+    marca_id = request.GET.get('id_marca_vehiculo')
+
+    if not marca_id:
+        return JsonResponse({'modelos': []})
+
+    modelos = ModeloVehiculo.objects.filter(
+        id_marca_vehiculo=marca_id,
+        estatus_modelo_vehiculo=True
+    ).order_by('modelo_vehiculo').values_list('modelo_vehiculo', flat=True)
+
+    return JsonResponse({'modelos': list(modelos)})
+
+
+def filtrar_modelo_vehiculo_select(request):
+    """
+    Devuelve ID + nombre de modelos para poblar un <select>.
+    Se usa en el form de Vehiculo (cascada Marca → Modelo).
+
+    GET params:
+        id_marca_vehiculo (int)
+
+    Response:
+        { "modelos": [ {"id": 1, "nombre": "Corolla"}, ... ] }
+    """
+    marca_id = request.GET.get('id_marca_vehiculo')
+
+    if not marca_id:
+        return JsonResponse({'modelos': []})
+
+    modelos = ModeloVehiculo.objects.filter(
+        id_marca_vehiculo=marca_id,
+        estatus_modelo_vehiculo=True
+    ).order_by('modelo_vehiculo').values(
+        'id_modelo_vehiculo',
+        'modelo_vehiculo'
+    )
+
+    data = {
+        'modelos': [
+            {'id': m['id_modelo_vehiculo'], 'nombre': m['modelo_vehiculo']}
+            for m in modelos
+        ]
+    }
+    return JsonResponse(data)

@@ -105,6 +105,18 @@ from .views.consultas_movimiento_interno_views import (
     detalle_producto_mi,
 )
 
+from .views.servicio_vehiculo_views import (
+    ServicioVehiculoListView,
+    ServicioVehiculoCreateView,
+    ServicioVehiculoUpdateView,
+    ServicioVehiculoDeleteView,
+)
+from .views.consultas_servicio_vehiculo_views import (
+    buscar_vehiculo_select2,
+    buscar_producto_servicio_select2,
+)
+
+
 urlpatterns = [
 	path('factura/listar/', FacturaListView.as_view(), name='factura_list'),
 	path('factura/crear/', FacturaCreateView.as_view(), name='factura_create'),
@@ -215,5 +227,15 @@ urlpatterns = [
 	#-- Movimiento Interno (endpoints)
 	path('movimientointerno/buscar-producto/', buscar_producto_select2, name='mi_buscar_producto'),
 	path('movimientointerno/detalle-producto/<int:id_producto>/', detalle_producto_mi, name='mi_detalle_producto'),
+ 
+	#-- Servicio de Vehículo.
+    path('servicio_vehiculo/listar/', ServicioVehiculoListView.as_view(), name='servicio_vehiculo_list'),
+    path('servicio_vehiculo/crear/', ServicioVehiculoCreateView.as_view(), name='servicio_vehiculo_create'),
+    path('servicio_vehiculo/editar/<int:pk>/', ServicioVehiculoUpdateView.as_view(), name='servicio_vehiculo_update'),
+    path('servicio_vehiculo/eliminar/<int:pk>/', ServicioVehiculoDeleteView.as_view(), name='servicio_vehiculo_delete'),
+
+    #-- Endpoints Select2 para Servicio de Vehículo.
+    path('servicio_vehiculo/buscar-vehiculo/', buscar_vehiculo_select2, name='buscar_vehiculo_select2'),
+    path('servicio_vehiculo/buscar-producto-servicio/', buscar_producto_servicio_select2, name='buscar_producto_servicio_select2'),
 
 ]

@@ -52,11 +52,19 @@ from .views.consulta_views_maestros import (
 	verificar_codigo_postal,
 	obtener_parametros_empresa,
 	obtener_tipo_venta_vendedor,
+	filtrar_modelo_vehiculo,
+	filtrar_modelo_vehiculo_select,
 )
 from utils.validator.validaciones import buscar_cuit_view, buscar_cliente_id_view
 from .views.actualizar_producto_views import ActualizarEstadosProductosView, ActualizarPreciosProductosView
 from .views.select2_views import buscar_cliente_select2
 from .views.empresa_views import ActualizarLimitesClientesView
+
+
+from .views.marca_vehiculo_views import *
+from .views.modelo_vehiculo_views import *
+from .views.vehiculo_views import *
+
 
 urlpatterns = [
 	#-- Tablas:
@@ -371,4 +379,29 @@ urlpatterns = [
     
 	#-- URL PARA SELECT2 - BÚSQUEDA DE CLIENTES
     path('buscar-cliente-select2/', buscar_cliente_select2, name='buscar_cliente_select2'),
+    
+    #-- Marca Vehículo.
+    path('marca_vehiculo/', MarcaVehiculoListView.as_view(), name='marca_vehiculo_list'),
+    path('marca_vehiculo/nueva/', MarcaVehiculoCreateView.as_view(), name='marca_vehiculo_create'),
+    path('marca_vehiculo/<int:pk>/editar/', MarcaVehiculoUpdateView.as_view(), name='marca_vehiculo_update'),
+    path('marca_vehiculo/<int:pk>/ver/', MarcaVehiculoDetailView.as_view(), name='marca_vehiculo_detail'),
+    path('marca_vehiculo/<int:pk>/eliminar/', MarcaVehiculoDeleteView.as_view(), name='marca_vehiculo_delete'),
+    
+    #-- Modelo Vehículo.
+    path('modelo_vehiculo/', ModeloVehiculoListView.as_view(), name='modelo_vehiculo_list'),
+    path('modelo_vehiculo/nueva/', ModeloVehiculoCreateView.as_view(), name='modelo_vehiculo_create'),
+    path('modelo_vehiculo/<int:pk>/editar/', ModeloVehiculoUpdateView.as_view(), name='modelo_vehiculo_update'),
+    path('modelo_vehiculo/<int:pk>/ver/', ModeloVehiculoDetailView.as_view(), name='modelo_vehiculo_detail'),
+    path('modelo_vehiculo/<int:pk>/eliminar/', ModeloVehiculoDeleteView.as_view(), name='modelo_vehiculo_delete'),
+    
+    #-- Vehículo.
+    path('vehiculo/', VehiculoListView.as_view(), name='vehiculo_list'),
+    path('vehiculo/nueva/', VehiculoCreateView.as_view(), name='vehiculo_create'),
+    path('vehiculo/<int:pk>/editar/', VehiculoUpdateView.as_view(), name='vehiculo_update'),
+    path('vehiculo/<int:pk>/ver/', VehiculoDetailView.as_view(), name='vehiculo_detail'),
+    path('vehiculo/<int:pk>/eliminar/', VehiculoDeleteView.as_view(), name='vehiculo_delete'),
+    
+    path('filtrar-modelo-vehiculo/', filtrar_modelo_vehiculo, name='filtrar_modelo_vehiculo'),
+    path('filtrar-modelo-vehiculo-select/', filtrar_modelo_vehiculo_select, name='filtrar_modelo_vehiculo_select'),
+    
 ]
