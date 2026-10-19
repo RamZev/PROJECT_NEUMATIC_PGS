@@ -17,8 +17,6 @@ Ejecutar los algoritmos de de deupración de la base datos de datos de VisualFox
 **PostgreSQL:** Ejecutar los scripts SQL **en la base de datos de respaldo** y luego trasladar los archivos generados a la carpeta data_load
 
 * **01_genera_json.sql**
-  
-  
 
 ## 1. Renombrar o Eliminar la base de datos de la carpeta
 
@@ -366,11 +364,11 @@ python 05_migra_base_recibo.py
 
 python 06_migra_compra.py
 
-python 07_migra_detalle_recibo.py
+python 07_migra_detalle_recibo.py **(OJO)**
 
 python 08_migra_caja.py  
 
-**Migración de padrones para percepciones**
+**Migración de padrones para percepciones** (pendiente)
 
 1. En dataload: python padron_entrerios_migra.py
 
@@ -471,6 +469,91 @@ UPDATE numero
 SET letra = 'R'
 WHERE comprobante IN ('RB', 'RC') 
   AND letra = 'X';
+
+**SERVICIOS DE VEHICULO**
+
+Los archivos base están en esta carpeta
+
+\PROJECT_NEUMATIC_PGS\neumatic\data_load\vehiculo2
+
+**Paso 1:** 
+
+Copiar el archivo creaveh2.PRG en \PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutarlo, 
+
+creará el archivo reporte_marcas.csv
+
+**Paso 2:**
+
+Copiar el archivo procesar_marcas.py en \PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutarlo,
+
+Este script leerá el `reporte_marcas.csv`, unificará las marcas con errores de tipeo, actualizará el `id_marca` en el `vehiculo2.dbf` y **creará el primer archivo para PostgreSQL**.
+
+**Paso 3:**
+Copiar el archivo crea_modelos_veh2.py en \PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutarlo  
+Este script (que ya tienes) lee el `vehiculo2.dbf` (que ahora tiene los IDs de marca) y agrupa los modelos.  
+Al finalizar, tendrás el archivo reporte_modelos_por_marca.csv
+
+**Paso 4:**
+
+Copiar el archivo procesar_modelos_veh2.py en \PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutarlo
+
+Este script lee el reporte de modelos, aplica la lógica difusa (protegiendo los números de chasis) y **crea el archivo auditoria_modelos.csv**.
+
+**Paso 5:**
+
+Copiar el archivo actualiza_modelos_veh2.py en
+
+\PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutarlo
+
+Este script actualiza el id_modelo en la tabla vehiculo2.dbf, en base al archivo auditoria_modelos.csv
+
+**Paso 6:**
+
+Copiar el archivo generar_csv_finales_veh2.py en
+
+\PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutar
+
+Se van a generar tres archivos CSV:
+marca_vehiculo.csv
+
+modelo_vehiculo.csv
+
+vehiculo.csv
+
+Los copia en la carpeta DATALOAD
+
+**Paso 7:**
+En DATALOAD ejecuta el archivo genera_servicio_vehiculo.py
+
+Luego ejecuta servicio_vehiculo_migra.py
+
+**Paso 8:**
+
+Copiar el archivo trabvehd.prg
+
+\PROJECT_NEUMATIC_PGS\neumatic\data_load\datavfox
+
+Ejecutarlo,
+
+Es para depurar la tabla trabvehi.dbf
+
+**Paso 9:**
+
+En DATALOAD ejecuta el archivo detalle_servicio_vehiculo_migra.py
+
+  
 
 **Al finalizar las migraciones:**
 

@@ -34,7 +34,10 @@ class ServicioVehiculoForm(forms.ModelForm):
             'estatus_servicio_vehiculo': forms.Select(attrs={**formclassselect}),
             'id_cliente': forms.HiddenInput(),
             'id_vehiculo': forms.HiddenInput(),
-            'kmxmes': forms.NumberInput(attrs={**formclassnumb, 'min': 0}),
+            'kmxmes': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm text-end border border-primary',
+                'inputmode': 'numeric'
+            }),
             'proxima_visita': forms.TextInput(attrs={**formclassdate, 'type': 'date'}),
             'observaciones': forms.Textarea(attrs={**formclasstext, 'rows': 3}),
         }
@@ -82,8 +85,25 @@ class DetalleServicioVehiculoForm(forms.ModelForm):
             }),
             'id_vendedor': forms.HiddenInput(),
             'exportado': forms.CheckboxInput(attrs={**formclasscheck}),
+            
+            'fecha': forms.HiddenInput(), # Automático, no se muestra
+            'km': forms.TextInput(attrs={
+                'class': 'form-control form-control-sm border border-primary text-end',
+                'inputmode': 'numeric',
+                'pattern': '[0-9]*'
+            }),
+            'proxfecha': forms.DateInput(attrs={
+                **formclassdate, 'type': 'date'
+            }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Forzar el formato ISO para los inputs tipo date
+        if 'proxfecha' in self.fields:
+            self.fields['proxfecha'].widget.format = '%Y-%m-%d'
+        if 'fecha' in self.fields:
+            self.fields['fecha'].widget.format = '%Y-%m-%d'
 
 DetalleServicioVehiculoFormSet = inlineformset_factory(
     ServicioVehiculo,

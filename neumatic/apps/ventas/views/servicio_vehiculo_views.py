@@ -42,9 +42,9 @@ class ServicioVehiculoListView(MaestroDetalleListView):
 
     table_headers = {
         'id_servicio_vehiculo': (1, 'ID'),
-        'fcontrol': (2, 'Fecha'),
+        'fcontrol': (1, 'Fecha'),
         'id_cliente': (3, 'Cliente'),
-        'id_vehiculo': (3, 'Vehículo'),
+        'id_vehiculo': (4, 'Vehículo'),
         'kmxmes': (1, 'Km'),
         'opciones': (1, 'Opciones'),
     }
@@ -84,9 +84,9 @@ class ServicioVehiculoCreateView(MaestroDetalleCreateView):
         data = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            data['formset_detalle'] = DetalleServicioVehiculoFormSet(self.request.POST)
+            data['formset_detalle'] = DetalleServicioVehiculoFormSet(self.request.POST, prefix='detalles')
         else:
-            data['formset_detalle'] = DetalleServicioVehiculoFormSet(instance=self.object)
+            data['formset_detalle'] = DetalleServicioVehiculoFormSet(instance=self.object, prefix='detalles')
 
         data['is_edit'] = False
         data['titulo'] = "Crear Servicio de Vehículo"
@@ -145,15 +145,15 @@ class ServicioVehiculoUpdateView(MaestroDetalleUpdateView):
 
         if self.request.POST:
             data['formset_detalle'] = DetalleServicioVehiculoFormSet(
-                self.request.POST, instance=self.object
+                self.request.POST, instance=self.object, prefix='detalles'
             )
         else:
-            data['formset_detalle'] = DetalleServicioVehiculoFormSet(instance=self.object)
+            data['formset_detalle'] = DetalleServicioVehiculoFormSet(instance=self.object, prefix='detalles')
 
         data['is_edit'] = True
         data['titulo'] = "Editar Servicio de Vehículo"
         return data
-
+    
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['usuario'] = self.request.user

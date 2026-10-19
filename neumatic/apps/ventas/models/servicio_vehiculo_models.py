@@ -42,7 +42,7 @@ class ServicioVehiculo(ModeloBaseGenerico):
     )
 
     kmxmes = models.PositiveIntegerField(
-        verbose_name="Kilometraje actual",
+        verbose_name="Kilometraje X Mes",
         null=True, blank=True
     )
     
@@ -119,6 +119,24 @@ class DetalleServicioVehiculo(ModeloBaseGenerico):
         verbose_name="Exportado",
         default=False
     )
+    
+    fecha = models.DateField(
+        verbose_name="Fecha",
+        null=True,
+        blank=True
+    )
+    
+    km = models.PositiveIntegerField(
+        verbose_name="Kilometraje",
+        null=True, blank=True
+    )
+    
+    proxfecha = models.DateField(
+        verbose_name="Prox Fecha",
+        null=True,
+        blank=True
+    )
+    
 
     class Meta:
         db_table = "detalle_servicio_vehiculo"

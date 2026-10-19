@@ -45,19 +45,23 @@
                                             <div class="col-md-4">
                                                 <label class="form-label text-primary mb-0">Cliente</label>
                                                 <input type="text" id="cliente_select2"
-                                                       class="form-control form-control-sm"
-                                                       placeholder="Buscar cliente por nombre...">
+                                                    class="form-control form-control-sm"
+                                                    placeholder="Buscar cliente por nombre...">
                                                 {{ form.id_cliente }}
-                                                {{ form.cliente_display }}
+                                                <div class="d-none">
+                                                    {{ form.cliente_display }}
+                                                </div>
                                             </div>
 
                                             <div class="col-md-4">
                                                 <label class="form-label text-primary mb-0">Vehículo</label>
                                                 <input type="text" id="vehiculo_select2"
-                                                       class="form-control form-control-sm"
-                                                       placeholder="Buscar vehículo por patente/marca/modelo...">
+                                                    class="form-control form-control-sm"
+                                                    placeholder="Buscar vehículo por patente/marca/modelo...">
                                                 {{ form.id_vehiculo }}
-                                                {{ form.vehiculo_display }}
+                                                <div class="d-none">
+                                                    {{ form.vehiculo_display }}
+                                                </div>
                                             </div>
 
                                             <div class="col-md-2">
@@ -93,37 +97,53 @@
                             <div class="card-header bg-light py-2">
                                 <strong>Agregar detalle</strong>
                             </div>
+                            
                             <div class="card-body py-2">
                                 <div class="row g-2 align-items-end">
                                     <div class="col-md-5">
                                         <label class="form-label mb-0 small">Servicio</label>
                                         <input type="text" id="producto_select2"
                                                class="form-control form-control-sm"
-                                               placeholder="Buscar servicio por nombre o ID...">
+                                               placeholder="Buscar servicio...">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label mb-0 small">Cantidad</label>
+                                    <div class="col-md-1">
+                                        <label class="form-label mb-0 small">Cant.</label>
                                         <input type="number" id="panel_cantidad"
                                                class="form-control form-control-sm text-end"
                                                value="1" min="0.01" step="0.01">
                                     </div>
+                                    
+                                    <!-- NUEVOS CAMPOS EN EL PANEL -->
+                                    <div class="col-md-1">
+                                        <label class="form-label mb-0 small">Km</label>
+                                        <input type="text" id="panel_km"
+                                               class="form-control form-control-sm text-end"
+                                               inputmode="numeric" placeholder="0">
+                                    </div>
                                     <div class="col-md-2">
+                                        <label class="form-label mb-0 small">Próx. Fecha</label>
+                                        <input type="date" id="panel_proxfecha"
+                                               class="form-control form-control-sm">
+                                    </div>
+                                    
+                                    <div class="col-md-1">
                                         <div class="form-check mt-3">
                                             <input type="checkbox" id="panel_exportado"
                                                    class="form-check-input">
                                             <label class="form-check-label" for="panel_exportado">
-                                                Exportado
+                                                Export
                                             </label>
                                         </div>
                                     </div>
-                                    <div class="col-md-3 text-end">
-                                        <button type="button" class="btn btn-primary btn-sm"
+                                    <div class="col-md-2 text-end">
+                                        <button type="button" class="btn btn-primary btn-sm w-100"
                                                 id="btnInsertarDetalle">
                                             <i class="bi bi-plus-circle"></i> Insertar
                                         </button>
                                     </div>
                                 </div>
                             </div>
+                            
                         </div>
 
                         <!-- ══════════ TABLA DETALLE ══════════ -->
@@ -132,13 +152,17 @@
                             <table class="table table-sm table-bordered" id="tabla-detalle">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th style="width: 40%;">Servicio</th>
-                                        <th style="width: 10%;">Cantidad</th>
-                                        <th style="width: 20%;">Vendedor</th>
-                                        <th style="width: 10%;">Exportado</th>
-                                        <th style="width: 10%;">Acciones</th>
+                                        <th style="width: 25%;">Servicio</th>
+                                        <th style="width: 8%;">Cant.</th>
+                                        <th style="width: 8%;">Km</th>
+                                        <th style="width: 12%;">Fecha</th>
+                                        <th style="width: 12%;">Próx. Fecha</th>
+                                        <th style="width: 13%;">Vendedor</th>
+                                        <th style="width: 10%;">Exp.</th>
+                                        <th style="width: 12%;">Acciones</th>
                                     </tr>
                                 </thead>
+                                
                                 <tbody id="detalle-tbody">
                                     {% for f in formset_detalle %}
                                     <tr class="detalle-row" data-index="{{ forloop.counter0 }}">
@@ -146,6 +170,7 @@
                                         {{ f.id_servicio_vehiculo }}
                                         {{ f.id_producto }}
                                         {{ f.id_vendedor }}
+                                        {{ f.fecha }} <!-- Hidden -->
                                         <td>
                                             <span class="producto-label">
                                                 {% if f.instance.id_producto %}
@@ -154,6 +179,9 @@
                                             </span>
                                         </td>
                                         <td>{{ f.cantidad }}</td>
+                                        <td>{{ f.km }}</td> <!-- Nuevo campo -->
+                                        <td>{{ f.fecha.value|default:"-" }}</td> <!-- Mostrar fecha -->
+                                        <td>{{ f.proxfecha }}</td> <!-- Nuevo campo -->
                                         <td>
                                             <span class="vendedor-label">
                                                 {% if f.instance.id_vendedor %}
@@ -172,6 +200,7 @@
                                     </tr>
                                     {% endfor %}
                                 </tbody>
+
                             </table>
                         </div>
 
@@ -232,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(() => { vendedorActual = { id: '', nombre: '' }; });
     }
 
-    // ═══════════════════════════════════════════════════════════
+        // ═══════════════════════════════════════════════════════════
     // SELECT2 — Cliente
     // ═══════════════════════════════════════════════════════════
     $('#cliente_select2').select2({
@@ -246,14 +275,30 @@ document.addEventListener('DOMContentLoaded', function () {
             delay: 300,
             data: p => ({ term: p.term, page: p.page || 1 }),
             processResults: d => ({ results: d.results, pagination: { more: d.more } })
+        },
+        templateResult: function (cliente) {
+            if (cliente.loading) return cliente.text;
+            return $('<div><strong>' + cliente.id + '</strong> - ' + cliente.text + '</div>');
+        },
+        templateSelection: function (cliente) {
+            if (!cliente.id) return cliente.text;
+            // Si el texto ya incluye el ID (viene de modo edición), lo dejamos igual
+            if (cliente.text.includes(cliente.id)) return cliente.text;
+            return cliente.id + ' - ' + cliente.text;
         }
     }).on('select2:select', function (e) {
         const data = e.params.data;
         document.getElementById('id_id_cliente').value = data.id;
+        
+        const $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html(data.id + ' - ' + data.text);
+
         cargarVendedorDesdeCliente(data.id);
     }).on('select2:clear', function () {
         document.getElementById('id_id_cliente').value = '';
         vendedorActual = { id: '', nombre: '' };
+        const $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html('');
     });
 
     // ═══════════════════════════════════════════════════════════
@@ -270,16 +315,34 @@ document.addEventListener('DOMContentLoaded', function () {
             delay: 300,
             data: p => ({ term: p.term, page: p.page || 1 }),
             processResults: d => ({ results: d.results, pagination: { more: d.pagination.more } })
+        },
+        templateResult: function (v) {
+            if (v.loading) return v.text;
+            return $('<div><strong>' + (v.patente || 'S/P') + '</strong> - ' + (v.marca || '') + ' ' + (v.modelo || '') + '</div>');
+        },
+        templateSelection: function (v) {
+            if (!v.id) return v.text;
+            // Si el texto ya incluye el ID o patente, lo dejamos igual
+            if (v.text.includes(v.id)) return v.text;
+            return v.text || (v.patente + ' - ' + v.marca + ' ' + v.modelo);
         }
     }).on('select2:select', function (e) {
-        document.getElementById('id_id_vehiculo').value = e.params.data.id;
+        const data = e.params.data;
+        document.getElementById('id_id_vehiculo').value = data.id;
+
+        const $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html(data.text);
     }).on('select2:clear', function () {
         document.getElementById('id_id_vehiculo').value = '';
+        const $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html('');
     });
 
     // ═══════════════════════════════════════════════════════════
-    // SELECT2 — Servicio (panel inline, SOLO tipo_producto='S')
+    // SELECT2 — Servicio (panel inline)
     // ═══════════════════════════════════════════════════════════
+    let productoSeleccionado = null; // Variable global para guardar el producto
+
     $('#producto_select2').select2({
         theme: 'bootstrap-5',
         allowClear: true,
@@ -291,45 +354,77 @@ document.addEventListener('DOMContentLoaded', function () {
             delay: 300,
             data: p => ({ term: p.term, page: p.page || 1 }),
             processResults: d => ({ results: d.results, pagination: d.pagination })
+        },
+        templateResult: function (p) {
+            if (p.loading) return p.text;
+            return $('<div><strong>' + p.id + '</strong> - ' + p.nombre + '</div>');
+        },
+        templateSelection: function (p) {
+            if (!p.id) return p.text;
+            return p.text; 
         }
+    }).on('select2:select', function (e) {
+        // Guardamos el objeto con todos los datos (id, text, nombre, etc.)
+        productoSeleccionado = e.params.data;
+        
+        // HACK bootstrap-5: Actualizar el span visualmente
+        const $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html(productoSeleccionado.text);
+    }).on('select2:clear', function () {
+        productoSeleccionado = null;
+        const $span = $(this).next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html('');
     });
 
     // ═══════════════════════════════════════════════════════════
     // INSERTAR DETALLE
     // ═══════════════════════════════════════════════════════════
     document.getElementById('btnInsertarDetalle').addEventListener('click', function () {
-        // Validaciones previas
         const clienteId = document.getElementById('id_id_cliente').value;
-        if (!clienteId) {
-            alert('Debe seleccionar un cliente antes de agregar detalles.');
-            return;
-        }
+        if (!clienteId) { alert('Debe seleccionar un cliente antes de agregar detalles.'); return; }
 
-        const producto = $('#producto_select2').select2('data')[0];
-        if (!producto) { alert('Seleccione un servicio.'); return; }
+        if (!productoSeleccionado || !productoSeleccionado.id) { alert('Seleccione un servicio válido.'); return; }
 
         const cantidad = parseFloat(document.getElementById('panel_cantidad').value) || 0;
         if (cantidad <= 0) { alert('La cantidad debe ser mayor a cero.'); return; }
 
+        // 👇 CAPTURAMOS LOS NUEVOS VALORES
+        const km = document.getElementById('panel_km').value || '';
+        const proxfecha = document.getElementById('panel_proxfecha').value || '';
+        // Generamos la fecha de hoy en formato YYYY-MM-DD
+        const fechaHoy = new Date().toISOString().split('T')[0]; 
+
         const exportado = document.getElementById('panel_exportado').checked;
         const totalForms = document.getElementById('id_detalles-TOTAL_FORMS');
-        const index = parseInt(totalForms.value);
+        const index = totalForms ? parseInt(totalForms.value) : 0;
 
+        // 👇 AGREGAMOS LOS HIDDEN Y LAS NUEVAS COLUMNAS A LA FILA
         const nuevaFila = `
             <tr class="detalle-row" data-index="${index}">
-                <input type="hidden" name="detalles-${index}-id_detalle_servicio_vehiculo" id="id_detalles-${index}-id_detalle_servicio_vehiculo">
-                <input type="hidden" name="detalles-${index}-id_servicio_vehiculo" id="id_detalles-${index}-id_servicio_vehiculo">
-                <input type="hidden" name="detalles-${index}-id_producto" value="${producto.id}">
+                <input type="hidden" name="detalles-${index}-id_detalle_servicio_vehiculo">
+                <input type="hidden" name="detalles-${index}-id_servicio_vehiculo">
+                <input type="hidden" name="detalles-${index}-id_producto" value="${productoSeleccionado.id}">
                 <input type="hidden" name="detalles-${index}-id_vendedor" value="${vendedorActual.id || ''}">
-                <td><span class="producto-label">${producto.text}</span></td>
+                
+                <!-- Inputs hidden para los nuevos campos -->
+                <input type="hidden" name="detalles-${index}-fecha" value="${fechaHoy}">
+                <input type="hidden" name="detalles-${index}-km" value="${km}">
+                <input type="hidden" name="detalles-${index}-proxfecha" value="${proxfecha}">
+
+                <td><span class="producto-label">${productoSeleccionado.text}</span></td>
                 <td>
                     <input type="number" class="form-control form-control-sm text-end border border-primary"
                            name="detalles-${index}-cantidad" value="${cantidad}" min="0.01" step="0.01">
                 </td>
+                
+                <!-- Datos visibles en la tabla -->
+                <td class="text-end">${km || '-'}</td>
+                <td>${fechaHoy}</td>
+                <td>${proxfecha || '-'}</td>
+
                 <td><span class="vendedor-label">${vendedorActual.nombre || '—'}</span></td>
                 <td class="text-center">
-                    <input type="checkbox" name="detalles-${index}-exportado"
-                           ${exportado ? 'checked' : ''}>
+                    <input type="checkbox" name="detalles-${index}-exportado" ${exportado ? 'checked' : ''}>
                 </td>
                 <td class="text-center">
                     <button type="button" class="btn btn-danger btn-sm btn-eliminar-row">
@@ -340,11 +435,17 @@ document.addEventListener('DOMContentLoaded', function () {
             </tr>`;
 
         document.getElementById('detalle-tbody').insertAdjacentHTML('beforeend', nuevaFila);
-        totalForms.value = index + 1;
+        if (totalForms) totalForms.value = index + 1;
 
-        // Reset panel
+        // Resetear panel
         $('#producto_select2').val(null).trigger('change');
+        const $span = $('#producto_select2').next('.select2-container').find('.select2-selection__rendered');
+        if ($span.length) $span.html('');
+        
+        productoSeleccionado = null; 
         document.getElementById('panel_cantidad').value = 1;
+        document.getElementById('panel_km').value = ''; // Limpiar km
+        document.getElementById('panel_proxfecha').value = ''; // Limpiar proxfecha
         document.getElementById('panel_exportado').checked = false;
     });
 
@@ -378,6 +479,35 @@ document.addEventListener('DOMContentLoaded', function () {
             const opt = new Option(vehiculoDisplay.value, vehiculoHidden.value, true, true);
             $('#vehiculo_select2').append(opt).trigger('change');
         }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    // RESTRICCIÓN DE INPUT: Kilometraje (Solo enteros)
+    // ═══════════════════════════════════════════════════════════
+    const kmInput = document.getElementById('id_kmxmes');
+    if (kmInput) {
+        // 1. Evitar que se escriban letras, puntos o comas
+        kmInput.addEventListener('keypress', function (e) {
+            if (!/^[0-9]$/.test(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // 2. Limpiar si el usuario pega un texto con decimales
+        kmInput.addEventListener('input', function () {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+
+        // 3. CORRECCIÓN FINAL AL PERDER EL FOCO
+        // (Neutraliza cualquier script global que le agregue .00)
+        kmInput.addEventListener('blur', function () {
+            if (this.value.includes('.')) {
+                this.value = this.value.split('.')[0];
+            }
+            if (this.value.includes(',')) {
+                this.value = this.value.split(',')[0];
+            }
+        });
     }
 });
 </script>
