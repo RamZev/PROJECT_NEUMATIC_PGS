@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict ta8ZJ7wC7y6g261sBLgqSLfPj54Rkil5uKojN5gC5jHTXHdd4DYl44xAyRfSJ6H
+\restrict HgaozEPBbBkWGnhlOAq6VZSYErZ0eGwcdstrZJszemQeLpiJftGYbJuLjhWnO03
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-20 23:35:00
+-- Started on 2026-10-19 03:45:43
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5395 (class 0 OID 16396)
+-- TOC entry 5423 (class 0 OID 46269)
 -- Dependencies: 221
 -- Data for Name: auth_group; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -36,7 +36,7 @@ INSERT INTO public.auth_group VALUES (2, 'Puntos de Ventas');
 
 
 --
--- TOC entry 5402 (class 0 OID 0)
+-- TOC entry 5430 (class 0 OID 0)
 -- Dependencies: 222
 -- Name: auth_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -44,11 +44,11 @@ INSERT INTO public.auth_group VALUES (2, 'Puntos de Ventas');
 SELECT pg_catalog.setval('public.auth_group_id_seq', 6, true);
 
 
--- Completed on 2026-09-20 23:35:00
+-- Completed on 2026-10-19 03:45:44
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict ta8ZJ7wC7y6g261sBLgqSLfPj54Rkil5uKojN5gC5jHTXHdd4DYl44xAyRfSJ6H
+\unrestrict HgaozEPBbBkWGnhlOAq6VZSYErZ0eGwcdstrZJszemQeLpiJftGYbJuLjhWnO03
 

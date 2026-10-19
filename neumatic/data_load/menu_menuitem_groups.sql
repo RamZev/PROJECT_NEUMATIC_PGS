@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 23L1DwCyxQV8x4wcTvN2DH0y3nc4nx0mJZbeWt86RIjgtfLU04e6dstJZ6FxG5U
+\restrict bsoasoa5UnrzNKlO9NIzlFHPY6QzENIgwzzosvAQEjtr3cZZWylGpZ08yS1xb2f
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-20 23:40:19
+-- Started on 2026-10-19 03:56:55
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,8 +22,8 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5398 (class 0 OID 16742)
--- Dependencies: 295
+-- TOC entry 5426 (class 0 OID 46636)
+-- Dependencies: 301
 -- Data for Name: menu_menuitem_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -515,22 +515,34 @@ INSERT INTO public.menu_menuitem_groups VALUES (508, 185, 1);
 INSERT INTO public.menu_menuitem_groups VALUES (509, 185, 6);
 INSERT INTO public.menu_menuitem_groups VALUES (510, 193, 1);
 INSERT INTO public.menu_menuitem_groups VALUES (511, 193, 6);
+INSERT INTO public.menu_menuitem_groups VALUES (512, 194, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (513, 194, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (514, 194, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (515, 196, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (516, 196, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (517, 196, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (518, 197, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (519, 197, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (520, 197, 4);
+INSERT INTO public.menu_menuitem_groups VALUES (521, 198, 1);
+INSERT INTO public.menu_menuitem_groups VALUES (522, 198, 2);
+INSERT INTO public.menu_menuitem_groups VALUES (523, 198, 4);
 
 
 --
--- TOC entry 5405 (class 0 OID 0)
--- Dependencies: 296
+-- TOC entry 5433 (class 0 OID 0)
+-- Dependencies: 302
 -- Name: menu_menuitem_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.menu_menuitem_groups_id_seq', 511, true);
+SELECT pg_catalog.setval('public.menu_menuitem_groups_id_seq', 523, true);
 
 
--- Completed on 2026-09-20 23:40:19
+-- Completed on 2026-10-19 03:56:55
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 23L1DwCyxQV8x4wcTvN2DH0y3nc4nx0mJZbeWt86RIjgtfLU04e6dstJZ6FxG5U
+\unrestrict bsoasoa5UnrzNKlO9NIzlFHPY6QzENIgwzzosvAQEjtr3cZZWylGpZ08yS1xb2f
 

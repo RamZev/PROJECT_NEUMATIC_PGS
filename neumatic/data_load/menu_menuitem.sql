@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict usssXcFxuZf9MFYesIIovrtRjcNPhBgCSwHsnY6VxYzShaNghxIxue8ElfaFyTf
+\restrict ZY39HJEBp5JzZV3rJdObNd8d6BczkCicLMcaLp942KZYdSXSgPD9ywj3qj5flky
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-20 23:39:28
+-- Started on 2026-10-19 03:49:52
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,8 +22,8 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5396 (class 0 OID 16731)
--- Dependencies: 294
+-- TOC entry 5424 (class 0 OID 46625)
+-- Dependencies: 300
 -- Data for Name: menu_menuitem; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -198,22 +198,26 @@ INSERT INTO public.menu_menuitem VALUES (192, 'Exportar Productos E-Commerce', '
 INSERT INTO public.menu_menuitem VALUES (185, 'Comprobantes por Clientes', 'consulta_facturas_cliente', '', 'fas fa-address-book', false, 1, 7, 11, NULL);
 INSERT INTO public.menu_menuitem VALUES (193, 'Recalcular Pendiente', 'recalcular_saldo_pendiente', '', '', false, 2, 0, 10, NULL);
 INSERT INTO public.menu_menuitem VALUES (109, 'Stock General por Sucursal', 'vlstockgeneraldeposito_informe_list', '', '', false, 1, 0, NULL, 141);
+INSERT INTO public.menu_menuitem VALUES (196, 'Modelos de Vehiculos', 'modelo_vehiculo_list', '', '', false, 6, 0, 12, NULL);
+INSERT INTO public.menu_menuitem VALUES (194, 'Marcas Vehiculos', 'marca_vehiculo_list', '', '', false, 5, 0, 12, NULL);
+INSERT INTO public.menu_menuitem VALUES (197, 'Vehiculo', 'vehiculo_list', '', '', false, 4, 0, 12, NULL);
+INSERT INTO public.menu_menuitem VALUES (198, 'Servicios a Vehiculos', 'servicio_vehiculo_list', '', '', false, 1, 0, 12, NULL);
 
 
 --
--- TOC entry 5403 (class 0 OID 0)
--- Dependencies: 297
+-- TOC entry 5431 (class 0 OID 0)
+-- Dependencies: 303
 -- Name: menu_menuitem_id_menu_item_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.menu_menuitem_id_menu_item_seq', 193, true);
+SELECT pg_catalog.setval('public.menu_menuitem_id_menu_item_seq', 198, true);
 
 
--- Completed on 2026-09-20 23:39:29
+-- Completed on 2026-10-19 03:49:52
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict usssXcFxuZf9MFYesIIovrtRjcNPhBgCSwHsnY6VxYzShaNghxIxue8ElfaFyTf
+\unrestrict ZY39HJEBp5JzZV3rJdObNd8d6BczkCicLMcaLp942KZYdSXSgPD9ywj3qj5flky
 

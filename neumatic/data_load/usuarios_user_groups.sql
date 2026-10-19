@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict Z292srJtHMWeqGxKp90NL07BxnuUUfiNLwwxYf8LNBpOQ3rhPAtg89Xe5zhEK38
+\restrict IPulu7XQK21hxhVmRbASpa8gP4M7PrP9qDVfSIvrNvtewYSzP7LFNRc967k8rhI
 
 -- Dumped from database version 18.6
 -- Dumped by pg_dump version 18.6
 
--- Started on 2026-09-20 23:37:55
+-- Started on 2026-10-19 03:52:17
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,8 +22,8 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 5398 (class 0 OID 17032)
--- Dependencies: 355
+-- TOC entry 5426 (class 0 OID 46953)
+-- Dependencies: 367
 -- Data for Name: usuarios_user_groups; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
@@ -71,22 +71,24 @@ INSERT INTO public.usuarios_user_groups VALUES (51, 41, 6);
 INSERT INTO public.usuarios_user_groups VALUES (52, 42, 1);
 INSERT INTO public.usuarios_user_groups VALUES (53, 44, 2);
 INSERT INTO public.usuarios_user_groups VALUES (54, 43, 1);
+INSERT INTO public.usuarios_user_groups VALUES (55, 45, 4);
+INSERT INTO public.usuarios_user_groups VALUES (56, 46, 6);
 
 
 --
--- TOC entry 5405 (class 0 OID 0)
--- Dependencies: 356
+-- TOC entry 5433 (class 0 OID 0)
+-- Dependencies: 368
 -- Name: usuarios_user_groups_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.usuarios_user_groups_id_seq', 54, true);
+SELECT pg_catalog.setval('public.usuarios_user_groups_id_seq', 56, true);
 
 
--- Completed on 2026-09-20 23:37:55
+-- Completed on 2026-10-19 03:52:17
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Z292srJtHMWeqGxKp90NL07BxnuUUfiNLwwxYf8LNBpOQ3rhPAtg89Xe5zhEK38
+\unrestrict IPulu7XQK21hxhVmRbASpa8gP4M7PrP9qDVfSIvrNvtewYSzP7LFNRc967k8rhI
 

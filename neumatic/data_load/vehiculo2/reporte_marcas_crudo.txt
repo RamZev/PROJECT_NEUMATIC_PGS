@@ -1,0 +1,554 @@
+
+
+  MARCA                                                                                                                      CANTIDAD
+  .MERCEDES BENZ                                                                                                                    1
+  ABARTH                                                                                                                            1
+  ACCELO                                                                                                                            1
+  ACOPLADO                                                                                                                         19
+  ACOPLADO EL GRILLO                                                                                                                1
+  ACOPLAR                                                                                                                           3
+  AGILE                                                                                                                             4
+  AGRALE                                                                                                                           25
+  ALFA ROMEO                                                                                                                       11
+  AMAROK                                                                                                                            4
+  AQURA                                                                                                                             1
+  AST - PRA -- SEMI                                                                                                                 1
+  AST PRA                                                                                                                           1
+  AST-PRA                                                                                                                          10
+  ASTIVIA                                                                                                                           2
+  ASTPRA                                                                                                                            5
+  ATIVIA                                                                                                                            1
+  ATRON                                                                                                                             1
+  AUDI                                                                                                                            200
+  AUDY                                                                                                                              1
+  BAIC                                                                                                                             18
+  BEIGING                                                                                                                           1
+  BEIJING                                                                                                                           1
+  BEIJINNG                                                                                                                          1
+  BELGRANO                                                                                                                         10
+  BERCEDES BENZ                                                                                                                     1
+  BERLIGO                                                                                                                           1
+  BIMEX                                                                                                                             1
+  BMENZ                                                                                                                             1
+  BMW                                                                                                                             136
+  BMW SERIE III                                                                                                                     1
+  BMX                                                                                                                               1
+  BOERO                                                                                                                             1
+  BOLKSWAGEN                                                                                                                        1
+  BONANO                                                                                                                           18
+  BORA                                                                                                                              3
+  BRITO                                                                                                                             1
+  BRONCO                                                                                                                            3
+  MARCA                                                                                                                      CANTIDAD
+  BULL                                                                                                                              1
+  BUYATI                                                                                                                            1
+  BUYATTI                                                                                                                           5
+  BYD                                                                                                                               1
+  C4                                                                                                                                1
+  CA                                                                                                                                1
+  CARBALLIDO                                                                                                                        1
+  CARGO                                                                                                                             1
+  CARRETON                                                                                                                          1
+  CDITROEN                                                                                                                          1
+  CENTRA                                                                                                                            1
+  CEVROLET                                                                                                                          4
+  CGEVROLET                                                                                                                         1
+  CHEBROLET                                                                                                                         1
+  CHEERY                                                                                                                            1
+  CHEROLET                                                                                                                          1
+  CHERRI                                                                                                                            2
+  CHERRY                                                                                                                            4
+  CHERRY TIGO                                                                                                                       1
+  CHERY                                                                                                                            37
+  CHEVOLER                                                                                                                          1
+  CHEVOLET                                                                                                                          7
+  CHEVREOLET                                                                                                                        5
+  CHEVRLET                                                                                                                          2
+  CHEVRO                                                                                                                            1
+  CHEVROELT                                                                                                                         2
+  CHEVROLE                                                                                                                          1
+  CHEVROLET                                                                                                                      1693
+  CHEVROLET AGILE                                                                                                                   1
+  CHEVROLET CRUCE                                                                                                                   2
+  CHEVROLET D20                                                                                                                     1
+  CHEVROLET ONIX                                                                                                                    1
+  CHEVROLET S10                                                                                                                     1
+  CHEVROLETQ                                                                                                                        6
+  CHEVROLETQQ                                                                                                                       1
+  CHEVROLETR                                                                                                                        2
+  CHEVROLETT                                                                                                                        1
+  CHEVROLETº                                                                                                                        2
+  CHEVROLT                                                                                                                          1
+  MARCA                                                                                                                      CANTIDAD
+  CHEVY                                                                                                                             1
+  CHEWVROLET                                                                                                                        1
+  CHINA                                                                                                                             1
+  CHRYSLER                                                                                                                          1
+  CHVREOLET                                                                                                                         1
+  CHVROLET                                                                                                                          2
+  CIOTROEN                                                                                                                          1
+  CIRROEN                                                                                                                           1
+  CITREON                                                                                                                           2
+  CITROEN                                                                                                                         854
+  CITROEN   C4                                                                                                                      1
+  CITROEN C3                                                                                                                        4
+  CITROEN C4                                                                                                                        4
+  CITROENN                                                                                                                          1
+  CITROËN                                                                                                                           8
+  COMETTO                                                                                                                           1
+  COOPER                                                                                                                            1
+  CORMETAL                                                                                                                          3
+  COROLLA                                                                                                                           5
+  CORSA                                                                                                                             4
+  CREVROLET                                                                                                                         3
+  CROSS BACK                                                                                                                        1
+  CRTUZE                                                                                                                            1
+  CRUZE                                                                                                                             3
+  CRUZZE                                                                                                                            1
+  CRYSLER                                                                                                                           2
+  CVEVROLET                                                                                                                         1
+  DAEWOO                                                                                                                            1
+  DAIHATSU                                                                                                                          1
+  DANES                                                                                                                            21
+  DAWI                                                                                                                              1
+  DFM                                                                                                                               1
+  DFSK                                                                                                                              1
+  DIMEX                                                                                                                             1
+  DMF                                                                                                                               1
+  DODGE                                                                                                                            68
+  DODGE RAM                                                                                                                         2
+  DODGGE                                                                                                                            1
+  DOGE                                                                                                                              1
+  MARCA                                                                                                                      CANTIDAD
+  DOGGE                                                                                                                             4
+  DOGGE JOURNEY                                                                                                                     1
+  DOGNE                                                                                                                             1
+  DOOGE                                                                                                                             1
+  DORD                                                                                                                              2
+  DPA                                                                                                                               1
+  DS                                                                                                                               18
+  DS3                                                                                                                              13
+  DS4                                                                                                                               2
+  DS7                                                                                                                              11
+  DSFK                                                                                                                              1
+  DUCATTO                                                                                                                           1
+  DUSTER                                                                                                                            1
+  ECO SPORT                                                                                                                         4
+  ECOSPORT                                                                                                                          1
+  EL GRILLO                                                                                                                         1
+  F100                                                                                                                              1
+  FAIT                                                                                                                              2
+  FANGIO                                                                                                                            6
+  FEREZA                                                                                                                            1
+  FERRARI                                                                                                                           1
+  FH                                                                                                                                2
+  FIAT                                                                                                                           1227
+  FIAT  MOBI                                                                                                                        1
+  FIAT 147                                                                                                                          1
+  FIAT CRONOS                                                                                                                       2
+  FIAT GRAND                                                                                                                        1
+  FIAT IVECO                                                                                                                        5
+  FIAT MOVI                                                                                                                         1
+  FIATQ                                                                                                                             1
+  FIATT                                                                                                                             1
+  FLUENCE                                                                                                                           1
+  FOAT                                                                                                                              1
+  FOD                                                                                                                               5
+  FORD                                                                                                                           2418
+  FORD 1519                                                                                                                         1
+  FORD 17.5                                                                                                                         1
+  FORD CARGO                                                                                                                        3
+  FORD F-100                                                                                                                        1
+  MARCA                                                                                                                      CANTIDAD
+  FORD F100                                                                                                                         2
+  FORD FIESTA                                                                                                                       4
+  FORD FISTA                                                                                                                        1
+  FORD KA                                                                                                                           1
+  FORD KUGA                                                                                                                         2
+  FORD RANGER                                                                                                                       2
+  FORD TRANSIT                                                                                                                      1
+  FORDQ                                                                                                                             1
+  FORD|                                                                                                                             1
+  FORESTER                                                                                                                          1
+  FORF                                                                                                                              3
+  FORTD                                                                                                                             1
+  FOTD                                                                                                                              1
+  FOTON                                                                                                                             1
+  FOTON AUMARK                                                                                                                      1
+  FOTTON                                                                                                                            1
+  FRONTIER                                                                                                                          1
+  GATARIO                                                                                                                           1
+  GEELY                                                                                                                             6
+  GELLY                                                                                                                             3
+  GOL                                                                                                                               7
+  GOLF                                                                                                                              1
+  GRASANI                                                                                                                           1
+  GRASSANI                                                                                                                          4
+  GRILLO                                                                                                                            1
+  GROSS                                                                                                                            11
+  GROSSO                                                                                                                            1
+  HAVAL                                                                                                                             9
+  HEIL                                                                                                                              1
+  HELVATICA                                                                                                                         1
+  HELVETICA                                                                                                                        22
+  HERMAN                                                                                                                           11
+  HERMANN                                                                                                                          54
+  HILUX                                                                                                                             1
+  HINO                                                                                                                              3
+  HINO R17.5                                                                                                                        1
+  HIUNDAI                                                                                                                          10
+  HIUNDAY                                                                                                                          16
+  HONDA                                                                                                                           533
+  MARCA                                                                                                                      CANTIDAD
+  HONDA HRV                                                                                                                         1
+  HRMANN                                                                                                                            2
+  HYNDAI                                                                                                                           12
+  HYUNDAI                                                                                                                          56
+  HYUNDAY                                                                                                                           4
+  ICECO                                                                                                                             2
+  ICEVO                                                                                                                             1
+  IDECAR                                                                                                                            1
+  IDERO                                                                                                                             2
+  IKA                                                                                                                               1
+  INDECAR                                                                                                                           8
+  INDUMIX                                                                                                                           1
+  ISUSU                                                                                                                             2
+  ISUZU                                                                                                                            10
+  IVECCO                                                                                                                            1
+  IVECO                                                                                                                           627
+  IVECO DAILY                                                                                                                       5
+  IVECO HI-WAY                                                                                                                      1
+  IVECO STRALIS                                                                                                                     1
+  IVECO TECTOR                                                                                                                      2
+  IVECO TECTOR 15-210                                                                                                               1
+  IVECOI                                                                                                                            1
+  IVECO}                                                                                                                            1
+  IVECP                                                                                                                             1
+  IVEECO                                                                                                                            2
+  IZUSU                                                                                                                             1
+  IZUZU                                                                                                                             5
+  JAC                                                                                                                               5
+  JAGUAR                                                                                                                            1
+  JAQUE                                                                                                                             1
+  JEEEP                                                                                                                             1
+  JEEP                                                                                                                            294
+  JEEP COMPASS                                                                                                                      1
+  JEEP RENEGADE                                                                                                                     1
+  JEEP´                                                                                                                             1
+  JEPP                                                                                                                              2
+  JETOUR                                                                                                                            1
+  JMC                                                                                                                               1
+  JOST                                                                                                                              1
+  MARCA                                                                                                                      CANTIDAD
+  JOST Y JOST                                                                                                                       1
+  JULMAN                                                                                                                            1
+  KANGOO                                                                                                                            3
+  KEIL                                                                                                                              1
+  KIA                                                                                                                              84
+  KIA.                                                                                                                              1
+  KUGA                                                                                                                              1
+  KYC                                                                                                                               2
+  LA GALLARETTA                                                                                                                     1
+  LAMBERD                                                                                                                           1
+  LAMBERT                                                                                                                          56
+  LAMBERT -                                                                                                                         1
+  LAND ROVER                                                                                                                        3
+  LEXUS                                                                                                                             3
+  LIFAN                                                                                                                             2
+  LOGAN                                                                                                                             3
+  M BENZ                                                                                                                            3
+  M- BENZ                                                                                                                           1
+  M. BENZ                                                                                                                          11
+  M.BENZ                                                                                                                           97
+  M.BEZ                                                                                                                             1
+  MANCINI                                                                                                                           1
+  MARCELIN                                                                                                                          1
+  MARCELINI                                                                                                                         1
+  MARCELINO                                                                                                                         1
+  MASERATTI                                                                                                                         1
+  MAZDA                                                                                                                             3
+  MB                                                                                                                              649
+  MB /                                                                                                                              1
+  MB / HERMAN AB109SL                                                                                                               1
+  MB / HERMAN AB109SM                                                                                                               1
+  MB 0-500                                                                                                                          1
+  MB 1620                                                                                                                           1
+  MB 1725                                                                                                                           1
+  MB ACCELLO                                                                                                                        2
+  MB ACTROS                                                                                                                         1
+  MB ATEGO                                                                                                                          2
+  MB AXOR                                                                                                                           5
+  MB COLE                                                                                                                           1
+  MARCA                                                                                                                      CANTIDAD
+  MB LS                                                                                                                             2
+  MB O500                                                                                                                           3
+  MB SPRINTER                                                                                                                       5
+  MD                                                                                                                                1
+  ME BENZ                                                                                                                           1
+  MECEDES BENZ                                                                                                                      7
+  MECEDEZ                                                                                                                           1
+  MECEDEZ BENZ                                                                                                                      2
+  MEGANE                                                                                                                            1
+  MERC BENZ                                                                                                                         2
+  MERC. BENZ                                                                                                                        2
+  MERCEDE BENZ                                                                                                                      3
+  MERCEDES                                                                                                                         72
+  MERCEDES BANZ                                                                                                                     1
+  MERCEDES BENS                                                                                                                     5
+  MERCEDES BENZ                                                                                                                   323
+  MERCEDES BEZ                                                                                                                      1
+  MERCEDESBENZ                                                                                                                      1
+  MERCEDEZ                                                                                                                         18
+  MERCEDEZ BENS                                                                                                                     1
+  MERCEDEZ BENZ                                                                                                                    37
+  MERCEDEZ BENZ2010                                                                                                                 1
+  MERCEDEZ BEZN                                                                                                                     1
+  MERCES BENZ                                                                                                                       1
+  MERDECEZ                                                                                                                          1
+  MERDECEZ BENZ                                                                                                                     1
+  MERECEDES BENZ                                                                                                                    1
+  MERIVA                                                                                                                            1
+  METAGRO                                                                                                                           1
+  MIC                                                                                                                               1
+  MINI                                                                                                                             10
+  MINI COOPE                                                                                                                        1
+  MINI COOPER                                                                                                                       4
+  MINI CUPER                                                                                                                        1
+  MITSUBISHI                                                                                                                       18
+  MITSUBISI                                                                                                                         1
+  MONTE SUR                                                                                                                         1
+  MONTEBRA                                                                                                                          1
+  MONTEBRAS                                                                                                                         3
+  MARCA                                                                                                                      CANTIDAD
+  MONTEGAS                                                                                                                          1
+  MONTENEGRO                                                                                                                        6
+  MONTESUR                                                                                                                          4
+  MUSTANG                                                                                                                           1
+  NEW BEATTLE                                                                                                                       1
+  NIISSAN                                                                                                                           1
+  NISAN                                                                                                                             1
+  NISSAN                                                                                                                          493
+  NISSAN KICKS                                                                                                                      1
+  NISSAN NITE                                                                                                                       1
+  NISSSAN                                                                                                                           4
+  NIVUS                                                                                                                             1
+  NIZZAN                                                                                                                            1
+  OMBU                                                                                                                             27
+  OMBUS                                                                                                                             1
+  ONIX                                                                                                                              4
+  OPEL                                                                                                                              1
+  OYOTA                                                                                                                             1
+  PALIO                                                                                                                             1
+  PATRONE                                                                                                                           1
+  PATRONELLI                                                                                                                        3
+  PEGEOT PARTNER                                                                                                                    1
+  PEOGEOT                                                                                                                           3
+  PETERBILT                                                                                                                         1
+  PETINARI                                                                                                                          3
+  PEUGEEOT                                                                                                                          1
+  PEUGEO                                                                                                                            1
+  PEUGEOPT                                                                                                                          1
+  PEUGEOR                                                                                                                           3
+  PEUGEOT                                                                                                                        1527
+  PEUGEOT 206                                                                                                                       1
+  PEUGEOT 207                                                                                                                       1
+  PEUGEOT 208                                                                                                                       3
+  PEUGEOT 308                                                                                                                       2
+  PEUGEOT6                                                                                                                          1
+  PEUGEOTQ                                                                                                                          5
+  PEUGEOTR                                                                                                                          1
+  PEUGEOTT                                                                                                                          2
+  PEUGEPT                                                                                                                           1
+  MARCA                                                                                                                      CANTIDAD
+  PEUGET                                                                                                                            1
+  PEUGFEOT                                                                                                                          1
+  PEUGOET                                                                                                                           6
+  PEUGOT                                                                                                                            2
+  PEUGROT                                                                                                                           1
+  PEUGUEOT                                                                                                                          8
+  PICASSO                                                                                                                           1
+  PINCES                                                                                                                            1
+  PINSEN                                                                                                                            1
+  POLO                                                                                                                              1
+  PORCGE                                                                                                                            1
+  PORCHE                                                                                                                            2
+  PORSCHE                                                                                                                           3
+  PRATI                                                                                                                             2
+  PRISMA                                                                                                                            2
+  PUEGEOT                                                                                                                           1
+  PUGET                                                                                                                             1
+  RAM                                                                                                                              16
+  RAM PAGE                                                                                                                          1
+  RAMDON                                                                                                                            1
+  RAMPAGE                                                                                                                           1
+  RANAULT                                                                                                                           4
+  RANDOM                                                                                                                            5
+  RANDON                                                                                                                           41
+  RAPTOR                                                                                                                            1
+  RAW                                                                                                                               1
+  REANULD                                                                                                                           2
+  REANULT                                                                                                                           2
+  REAULT                                                                                                                            1
+  REBAUKT                                                                                                                           1
+  RENALT                                                                                                                            1
+  RENAUKT                                                                                                                           2
+  RENAUL                                                                                                                           13
+  RENAULD                                                                                                                          69
+  RENAULF                                                                                                                           1
+  RENAULKT                                                                                                                          1
+  RENAULR                                                                                                                           1
+  RENAULT                                                                                                                        1494
+  RENAULT 420                                                                                                                       1
+  MARCA                                                                                                                      CANTIDAD
+  RENAULT 440                                                                                                                       1
+  RENAULT A                                                                                                                         1
+  RENAULT KANGOO                                                                                                                    3
+  RENAULT MASTER                                                                                                                    1
+  RENAULT MEGANE                                                                                                                    1
+  RENAULTD                                                                                                                          1
+  RENAULTO                                                                                                                          1
+  RENAULTT                                                                                                                          1
+  RENAUT                                                                                                                            2
+  RENMAUL                                                                                                                           1
+  RENO                                                                                                                              2
+  RENOSTER                                                                                                                          1
+  RENSULD                                                                                                                           1
+  RENUALD                                                                                                                           1
+  RENUALT                                                                                                                           7
+  RENULT                                                                                                                            1
+  REUAULD                                                                                                                           1
+  RIMEX                                                                                                                             1
+  ROMA PAR                                                                                                                          1
+  RONDOM                                                                                                                            1
+  RUIZ DANIEL                                                                                                                       1
+  RUTERA                                                                                                                            1
+  S10                                                                                                                               1
+  SACANIA                                                                                                                           2
+  SACNIA                                                                                                                            1
+  SALTO                                                                                                                             7
+  SANDERO                                                                                                                           2
+  SANTA FE                                                                                                                          1
+  SATURNI                                                                                                                           1
+  SC                                                                                                                                1
+  SCANA                                                                                                                             1
+  SCANI                                                                                                                             3
+  SCANIA                                                                                                                          679
+  SCANIA /                                                                                                                          1
+  SCANIA 330                                                                                                                        1
+  SCANIA 6360                                                                                                                       1
+  SCANIA MARCOPOLO                                                                                                                  1
+  SCANIA P 360                                                                                                                      1
+  SCANIA P250                                                                                                                       1
+  MARCA                                                                                                                      CANTIDAD
+  SEAD                                                                                                                              1
+  SEAT                                                                                                                              4
+  SEMI                                                                                                                              4
+  SEMI HELVETICA                                                                                                                    1
+  SEMI REMOLQUE                                                                                                                     1
+  SEMIREMOLQUE                                                                                                                      2
+  SHINERAY                                                                                                                          3
+  SMART                                                                                                                             2
+  SOLA  Y BRUSA                                                                                                                     1
+  SOLA NY BRUSA                                                                                                                     1
+  SOLA Y BRUSA                                                                                                                     78
+  SOLA Y BRUZA                                                                                                                      3
+  SONIC                                                                                                                             1
+  SORRAZABAL                                                                                                                        1
+  SPRINTER                                                                                                                          4
+  STEPWAY                                                                                                                           1
+  STRADA                                                                                                                            2
+  STRALIS                                                                                                                           1
+  STRENIX                                                                                                                           1
+  SUBARU                                                                                                                            7
+  SURAN                                                                                                                             7
+  SUSUKI                                                                                                                            1
+  SUZUKI                                                                                                                           35
+  SUZUKY                                                                                                                            3
+  SUZUQUI                                                                                                                           3
+  SYB                                                                                                                               4
+  TAHNOS                                                                                                                           19
+  TANHOS                                                                                                                            4
+  TAOS                                                                                                                              1
+  TAOS 250                                                                                                                          1
+  THANOS                                                                                                                           10
+  TIGGO                                                                                                                             1
+  TILDA                                                                                                                             1
+  TIYITA                                                                                                                            1
+  TO                                                                                                                                1
+  TOOTA                                                                                                                             3
+  TOROTA                                                                                                                            1
+  TOYOTA                                                                                                                         2778
+  TOYOTA 3                                                                                                                          1
+  MARCA                                                                                                                      CANTIDAD
+  TOYOTA C                                                                                                                          1
+  TOYOTA COROLLA                                                                                                                    2
+  TOYOTA E                                                                                                                          1
+  TOYOTA HILU                                                                                                                       1
+  TOYOTA HILUX                                                                                                                      7
+  TOYOTA SIAM                                                                                                                       1
+  TOYOTA SRX                                                                                                                        1
+  TOYOTAQ                                                                                                                           1
+  TOYOTTA                                                                                                                           1
+  TOYOYA                                                                                                                            5
+  TOYTA                                                                                                                             1
+  TPYOTA                                                                                                                            1
+  TPYPTA                                                                                                                            1
+  TUCSON                                                                                                                            1
+  ULTRALIVIANOS                                                                                                                     1
+  ULTRANS                                                                                                                           8
+  UVECO                                                                                                                             1
+  UW                                                                                                                                1
+  V.W.                                                                                                                              1
+  VENTO                                                                                                                             6
+  VERCEDES                                                                                                                          1
+  VERTIS                                                                                                                            1
+  VG                                                                                                                                1
+  VMW                                                                                                                               1
+  VOKSWAGEN                                                                                                                         1
+  VOLARE                                                                                                                            1
+  VOLKAWAGEN                                                                                                                        1
+  VOLKS WAGEN                                                                                                                       1
+  VOLKSWAAGEN                                                                                                                       1
+  VOLKSWAGEN                                                                                                                      847
+  VOLKSWAGEN .                                                                                                                      1
+  VOLKSWAQGEN                                                                                                                       1
+  VOLKSWGEN                                                                                                                         2
+  VOLKWAGEN                                                                                                                         1
+  VOLSJWAGEN                                                                                                                        1
+  VOLSKWAGEN                                                                                                                      245
+  VOLSKWAGN                                                                                                                         1
+  VOLSKWWAGEN                                                                                                                       1
+  VOLSWAGEN                                                                                                                        20
+  MARCA                                                                                                                      CANTIDAD
+  VOLVO                                                                                                                           270
+  VOLVO  FH420                                                                                                                      1
+  VOLVO 330                                                                                                                         1
+  VOLVO 420                                                                                                                         1
+  VOLVO FH 520                                                                                                                      1
+  VOLWAGEN                                                                                                                          2
+  VPLSKWAGEN                                                                                                                        1
+  VULCANO                                                                                                                          47
+  VULVANO                                                                                                                           5
+  VW                                                                                                                             1933
+  VW 11180                                                                                                                          1
+  VW 15190                                                                                                                          1
+  VW 17220                                                                                                                          1
+  VW 17250                                                                                                                          1
+  VW AMAROK                                                                                                                         6
+  VW AMAROK }                                                                                                                       1
+  VW BORA                                                                                                                           2
+  VW GOL                                                                                                                            2
+  VW R17.5                                                                                                                          1
+  VW SHARON                                                                                                                         1
+  VW SURAN                                                                                                                          1
+  VW TIGUAN                                                                                                                         1
+  VW UP                                                                                                                             1
+  VW VENTO                                                                                                                          2
+  VW.                                                                                                                               1
+  VWW                                                                                                                               1
+  WABCO                                                                                                                             1
+  WOLSKWAGEN                                                                                                                        1
+  WV                                                                                                                                6
+  WV GOL                                                                                                                            1
+  WV TAOS                                                                                                                           1
+  YOYOTA                                                                                                                            1
