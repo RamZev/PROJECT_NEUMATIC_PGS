@@ -1,0 +1,282 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+<!-- Si usas otras etiquetas, déjalas aquí, pero ya no necesitas get_item -->
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        .tbl-container {
+            width: 100%;
+            max-width: 100%;
+        }
+        .tbl-container table {
+            font-size: 0.85em;
+            width: 100%;
+        }
+        .tbl-container th, .tbl-container td {
+            padding: 0.3rem 0.5rem !important;
+        }
+        .tbl-fixed {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 65vh;
+        }
+        table th {
+            position: sticky;
+            top: 0;
+            background-color: #0d6efd;
+            color: white;
+            z-index: 10;
+        }
+        .select2-container--bootstrap-5 .select2-selection {
+            min-height: 31px !important;
+            height: 31px !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 0.25rem !important;
+        }
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            line-height: 29px !important;
+        }
+    </style>
+{% endblock style %}
+
+{% block maincomponent %}
+{% block principalcomponent %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid">
+            <h4 class="mt-3">Consulta de Servicios de Vehículos</h4>
+
+            {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+
+            <!-- Formulario de búsqueda -->
+            <form method="get" class="row g-3 mb-4 mt-2 bg-light p-3 rounded border">
+                <div class="col-md-5">
+                    <label class="form-label text-primary mb-0 small">Cliente</label>
+                    <input type="hidden" id="id_cliente" name="id_cliente" value="{{ id_cliente }}">
+                    <select id="cliente_select2" style="width: 100%;"></select>
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label text-primary mb-0 small">Vehículo</label>
+                    <input type="hidden" id="id_vehiculo" name="id_vehiculo" value="{{ id_vehiculo }}">
+                    <select id="vehiculo_select2" style="width: 100%;"></select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tabla de resultados -->
+            <div class="table-responsive tbl-container">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>ID Servicio</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Vehículo (Patente)</th>
+                            <th>Km Actual</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for servicio in servicios %}
+                        <tr>
+                            <td>{{ servicio.id_servicio_vehiculo }}</td>
+                            <td>{{ servicio.fcontrol|date:"d/m/Y" }}</td>
+                            <td>{{ servicio.id_cliente.nombre_cliente }}</td>
+                            <td>
+                                {{ servicio.id_vehiculo.patente }}
+                                ({{ servicio.id_vehiculo.id_marca_vehiculo.marca_vehiculo }} 
+                                {{ servicio.id_vehiculo.id_modelo_vehiculo.modelo_vehiculo }})
+                            </td>
+                            <td class="text-end">{{ servicio.kmxmes|default:"-" }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-info" type="button" 
+                                        data-bs-toggle="collapse" 
+                                        data-bs-target="#detalles{{ servicio.id_servicio_vehiculo }}">
+                                    <i class="bi bi-eye"></i> Ver Detalle
+                                </button>
+                            </td>
+                        </tr>
+                        
+                        <!-- Fila desplegable con el detalle -->
+                        <tr class="collapse" id="detalles{{ servicio.id_servicio_vehiculo }}">
+                            <td colspan="6">
+                                <div class="table-responsive mt-2 p-2 bg-white rounded">
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th>Servicio / Producto</th>
+                                                <th>Cantidad</th>
+                                                <th>Vendedor</th>
+                                                <th>Fecha</th>
+                                                <th>Km</th>
+                                                <th>Próx. Fecha</th>
+                                                <th>Exportado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- 👇 AQUÍ USAMOS LA LISTA ASIGNADA EN LA VISTA -->
+                                            {% for detalle in servicio.detalles_lista %}
+                                            <tr>
+                                                <td>{{ detalle.id_producto.id_producto }} - {{ detalle.id_producto.nombre_producto }}</td>
+                                                <td class="text-end">{{ detalle.cantidad }}</td>
+                                                <td>{{ detalle.id_vendedor.nombre_vendedor|default:"-" }}</td>
+                                                <td>{{ detalle.fecha|date:"d/m/Y"|default:"-" }}</td>
+                                                <td class="text-end">{{ detalle.km|default:"-" }}</td>
+                                                <td>{{ detalle.proxfecha|date:"d/m/Y"|default:"-" }}</td>
+                                                <td class="text-center">
+                                                    {% if detalle.exportado %}
+                                                        <i class="bi bi-check-circle-fill text-success"></i>
+                                                    {% else %}
+                                                        <i class="bi bi-x-circle text-muted"></i>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% empty %}
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted">No hay detalles para este servicio.</td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                {% if id_cliente or id_vehiculo %}
+                                    No se encontraron servicios para los filtros seleccionados.
+                                {% else %}
+                                    Utilice los filtros superiores para buscar servicios.
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div class="pagination-container mt-3 pt-3 border-top">
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Paginación">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?id_cliente={{ id_cliente }}&id_vehiculo={{ id_vehiculo }}&page=1">&laquo; Primero</a></li>
+                            <li class="page-item"><a class="page-link" href="?id_cliente={{ id_cliente }}&id_vehiculo={{ id_vehiculo }}&page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                        {% endif %}
+                        <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?id_cliente={{ id_cliente }}&id_vehiculo={{ id_vehiculo }}&page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                            <li class="page-item"><a class="page-link" href="?id_cliente={{ id_cliente }}&id_vehiculo={{ id_vehiculo }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+</div>
+{% endblock principalcomponent %}
+{% endblock maincomponent %}
+
+{% block script %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/i18n/es.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // SELECT2 - CLIENTE
+            $('#cliente_select2').select2({
+                theme: 'bootstrap-5',
+                allowClear: true,
+                language: 'es',
+                minimumInputLength: 2,
+                placeholder: 'Buscar cliente por nombre...',
+                ajax: {
+                    url: "{% url 'buscar_cliente_select2' %}",
+                    dataType: 'json',
+                    delay: 300,
+                    data: function(params) {
+                        return { term: params.term, page: params.page || 1 };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results, pagination: { more: data.more } };
+                    }
+                },
+                templateResult: function(cliente) {
+                    if (cliente.loading) return cliente.text;
+                    return $('<div><strong>' + cliente.id + '</strong> - ' + cliente.text + '</div>');
+                },
+                templateSelection: function(cliente) {
+                    if (!cliente.id) return cliente.text;
+                    return cliente.id + ' - ' + cliente.text;
+                }
+            }).on('select2:select', function (e) {
+                $('#id_cliente').val(e.params.data.id);
+            }).on('select2:clear', function () {
+                $('#id_cliente').val('');
+            });
+
+            // SELECT2 - VEHÍCULO
+            $('#vehiculo_select2').select2({
+                theme: 'bootstrap-5',
+                allowClear: true,
+                language: 'es',
+                minimumInputLength: 1,
+                placeholder: 'Buscar vehículo por patente/marca/modelo...',
+                ajax: {
+                    url: '{% url "buscar_vehiculo_select2" %}',
+                    dataType: 'json',
+                    delay: 300,
+                    data: function(params) {
+                        return { term: params.term, page: params.page || 1 };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results, pagination: { more: data.pagination.more } };
+                    }
+                },
+                templateResult: function (v) {
+                    if (v.loading) return v.text;
+                    return $('<div><strong>' + (v.patente || 'S/P') + '</strong> - ' + (v.marca || '') + ' ' + (v.modelo || '') + '</div>');
+                },
+                templateSelection: function (v) {
+                    if (!v.id) return v.text;
+                    return v.text || (v.patente + ' - ' + v.marca + ' ' + v.modelo);
+                }
+            }).on('select2:select', function (e) {
+                $('#id_vehiculo').val(e.params.data.id);
+            }).on('select2:clear', function () {
+                $('#id_vehiculo').val('');
+            });
+
+            // PRESELECCIONAR VALORES SI VIENEN POR GET
+            {% if cliente_sel %}
+                const clienteOpt = new Option("{{ cliente_sel.id_cliente }} - {{ cliente_sel.nombre_cliente }}", "{{ cliente_sel.id_cliente }}", true, true);
+                $('#cliente_select2').append(clienteOpt).trigger('change');
+                $('#id_cliente').val("{{ cliente_sel.id_cliente }}");
+            {% endif %}
+
+            {% if vehiculo_sel %}
+                const vehiculoOpt = new Option("{{ vehiculo_sel.patente }} - {{ vehiculo_sel.id_marca_vehiculo.marca_vehiculo }} {{ vehiculo_sel.id_modelo_vehiculo.modelo_vehiculo }}", "{{ vehiculo_sel.id_vehiculo }}", true, true);
+                $('#vehiculo_select2').append(vehiculoOpt).trigger('change');
+                $('#id_vehiculo').val("{{ vehiculo_sel.id_vehiculo }}");
+            {% endif %}
+        });
+    </script>
+{% endblock %}

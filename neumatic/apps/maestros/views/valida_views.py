@@ -81,6 +81,11 @@ class ValidaCreateView(MaestroCreateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_add
+ 
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['user'] = self.request.user
+		return kwargs
 
 
 class ValidaUpdateView(MaestroUpdateView):
@@ -92,6 +97,11 @@ class ValidaUpdateView(MaestroUpdateView):
 	
 	#-- Indicar el permiso que requiere para ejecutar la acción.
 	permission_required = ConfigViews.permission_change
+ 
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs['user'] = self.request.user
+		return kwargs
 
 
 class ValidaDetailView(MaestroDetailView):

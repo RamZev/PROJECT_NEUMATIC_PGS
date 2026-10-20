@@ -32,6 +32,8 @@ from .views.actualizar_estados_views import (
 )
 from .views.productos_mercado_libre_views import ExportarProductosCarritoView, ExportarProductosArchivoView
 from apps.datatools.views.recalcular_saldo_pendiente_views import RecalcularSaldoPendienteView
+from .views.consulta_servicios_views import ConsultaServiciosVehiculoView
+
 
 urlpatterns = [
     path('facturas-cliente/', ConsultaFacturasClienteView.as_view(), name='consulta_facturas_cliente'),
@@ -72,4 +74,7 @@ urlpatterns = [
 	
 	#-- Recalcular Saldo Pendiente de un Cliente.
 	path('recalcular-saldo-pendiente/', RecalcularSaldoPendienteView.as_view(), name='recalcular_saldo_pendiente'),
+ 
+	#-- Consulta de Servicios de Vehículo.
+	path('servicios-vehiculo/', ConsultaServiciosVehiculoView.as_view(), name='consulta_servicios_vehiculo'),
 ]
