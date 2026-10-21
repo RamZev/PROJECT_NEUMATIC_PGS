@@ -1,0 +1,196 @@
+{% extends 'datatool_form.html' %}
+{% load static %}
+
+{% block style %}
+    {{ block.super }}
+    <style>
+        .tbl-container {
+            width: 100%;
+            max-width: 100%;
+            margin-top: 10px;
+        }
+        .tbl-container table {
+            font-size: 0.85em;
+            width: 100%;
+        }
+        .tbl-container th, .tbl-container td {
+            padding: 0.4rem 0.5rem !important;
+            vertical-align: middle;
+        }
+        .tbl-fixed {
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 70vh;
+        }
+        table th {
+            position: sticky;
+            top: 0;
+            background-color: #0d6efd;
+            color: white;
+            z-index: 10;
+        }
+        
+        /* Estilos específicos para la ficha del cliente y vehículo */
+        .cliente-info {
+            font-size: 0.9em;
+            line-height: 1.2;
+        }
+        .vehiculo-info {
+            font-weight: bold;
+            color: #0d6efd;
+        }
+        .fecha-visita {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #198754; /* Verde para indicar que es un servicio pendiente */
+        }
+    </style>
+{% endblock style %}
+
+{% block maincomponent %}
+{% block principalcomponent %}
+<div id="layoutSidenav_content">
+    <main>
+        <div class="container-fluid">
+            <h4 class="mt-3">Servicios a Clientes - Próximas Visitas</h4>
+
+            {% if error %}
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
+
+            <!-- Formulario de búsqueda -->
+            <form method="get" class="row g-3 mb-4 mt-2 bg-light p-3 rounded border align-items-end">
+                <div class="col-md-4">
+                    <label class="form-label text-primary mb-0 small">Sucursal</label>
+                    <select name="id_sucursal" class="form-select form-select-sm">
+                        <option value="">Todas las sucursales</option>
+                        {% for suc in sucursales %}
+                            <option value="{{ suc.id_sucursal }}" {% if id_sucursal == suc.id_sucursal|stringformat:"s" %}selected{% endif %}>
+                                {{ suc.nombre_sucursal }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-primary mb-0 small">Desde Fecha</label>
+                    <input type="date" name="desde_fecha" class="form-control form-control-sm" value="{{ desde_fecha }}">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label text-primary mb-0 small">Hasta Fecha</label>
+                    <input type="date" name="hasta_fecha" class="form-control form-control-sm" value="{{ hasta_fecha }}">
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                </div>
+            </form>
+
+            <!-- Tabla de resultados -->
+            <div class="table-responsive tbl-container tbl-fixed">
+                <table class="table table-sm table-bordered table-striped">
+                    <thead class="table-primary text-center">
+                        <tr>
+                            <th style="width: 10%;">Sucursal</th>
+                            <th style="width: 30%;">Datos del Cliente</th>
+                            <th style="width: 20%;">Datos del Vehículo</th>
+                            <th style="width: 12%;">Próx. Visita</th>
+                            <th style="width: 8%;">Km Actual</th>
+                            <th style="width: 20%;">Observaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for servicio in servicios %}
+                        <tr>
+                            <!-- SUCURSAL -->
+                            <td class="text-center font-monospace">
+                                {{ servicio.id_cliente.id_sucursal.nombre_sucursal|default:"-" }}
+                            </td>
+
+                            <!-- DATOS DEL CLIENTE -->
+                            <td class="cliente-info">
+                                <strong>{{ servicio.id_cliente.nombre_cliente }}</strong>
+                                <br>
+                                <small>
+                                    <i class="bi bi-geo-alt-fill text-muted"></i> 
+                                    {{ servicio.id_cliente.domicilio_cliente|default:"-" }}
+                                    {% if servicio.id_cliente.id_localidad %}
+                                        , {{ servicio.id_cliente.id_localidad.nombre_localidad }}
+                                    {% endif %}
+                                    {% if servicio.id_cliente.codigo_postal %}
+                                        (CP: {{ servicio.id_cliente.codigo_postal }})
+                                    {% endif %}
+                                    <br>
+                                    <i class="bi bi-telephone-fill text-muted"></i> 
+                                    Tel: {{ servicio.id_cliente.telefono_cliente|default:"-" }} 
+                                    | Móvil: {{ servicio.id_cliente.movil_cliente|default:"-" }}
+                                </small>
+                            </td>
+
+                            <!-- DATOS DEL VEHÍCULO -->
+                            <td>
+                                <span class="vehiculo-info">{{ servicio.id_vehiculo.patente }}</span>
+                                <br>
+                                <small>
+                                    {{ servicio.id_vehiculo.id_marca_vehiculo.marca_vehiculo }} 
+                                    {{ servicio.id_vehiculo.id_modelo_vehiculo.modelo_vehiculo }} 
+                                    {% if servicio.id_vehiculo.anio %}({{ servicio.id_vehiculo.anio }}){% endif %}
+                                </small>
+                            </td>
+
+                            <!-- FECHA PRÓXIMA VISITA -->
+                            <td class="text-center fecha-visita">
+                                {{ servicio.proxima_visita|date:"d/m/Y" }}
+                            </td>
+
+                            <!-- KILOMETRAJE -->
+                            <td class="text-end">
+                                {{ servicio.kmxmes|default:"-" }}
+                            </td>
+
+                            <!-- OBSERVACIONES -->
+                            <td>
+                                <small>{{ servicio.observaciones|default:"-"|truncatechars:50 }}</small>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">
+                                No se encontraron próximos servicios para los filtros seleccionados.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            {% if page_obj.has_other_pages %}
+            <div class="pagination-container mt-3 pt-3 border-top">
+                <nav aria-label="Paginación">
+                    <ul class="pagination justify-content-center mb-0">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?id_sucursal={{ id_sucursal }}&desde_fecha={{ desde_fecha }}&hasta_fecha={{ hasta_fecha }}&page=1">&laquo; Primero</a></li>
+                            <li class="page-item"><a class="page-link" href="?id_sucursal={{ id_sucursal }}&desde_fecha={{ desde_fecha }}&hasta_fecha={{ hasta_fecha }}&page={{ page_obj.previous_page_number }}">Anterior</a></li>
+                        {% endif %}
+                        <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
+                        {% if page_obj.has_next %}
+                            <li class="page-item"><a class="page-link" href="?id_sucursal={{ id_sucursal }}&desde_fecha={{ desde_fecha }}&hasta_fecha={{ hasta_fecha }}&page={{ page_obj.next_page_number }}">Siguiente</a></li>
+                            <li class="page-item"><a class="page-link" href="?id_sucursal={{ id_sucursal }}&desde_fecha={{ desde_fecha }}&hasta_fecha={{ hasta_fecha }}&page={{ page_obj.paginator.num_pages }}">Última &raquo;</a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+
+        </div>
+    </main>
+</div>
+{% endblock principalcomponent %}
+{% endblock maincomponent %}

@@ -272,6 +272,8 @@ JERARQUIA = [
 
 JERARQUIAS_CON_ACCESO_TOTAL = ['A', 'B', 'C']
 
+JERARQUIAS_CON_ACCESO_TOTAL2 = ['A', 'B', 'C', 'D', 'E', 'F']
+
 ESTATUS_CHOICES = [ 
 	('activos', 'Activos'),
 	('inactivos', 'Inactivos'), 

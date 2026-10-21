@@ -11,7 +11,7 @@ from diseno_base.diseno_bootstrap import(
     formclassselect,
     formclassdate
 )
-from entorno.constantes_base import JERARQUIAS_CON_ACCESO_TOTAL
+from entorno.constantes_base import JERARQUIAS_CON_ACCESO_TOTAL2
 
 class ValidaForm(CrudGenericForm):
     # Campo temporal para Select2 (búsqueda de cliente) - NO se guarda en DB
@@ -78,7 +78,7 @@ class ValidaForm(CrudGenericForm):
         tipos_base = ['REMITO', 'FACTURA']
         
         # Si el usuario tiene jerarquía con acceso total, agregar NOTA DE CRÉDITO
-        if user and getattr(user, 'jerarquia', None) in JERARQUIAS_CON_ACCESO_TOTAL:
+        if user and getattr(user, 'jerarquia', None) in JERARQUIAS_CON_ACCESO_TOTAL2:
             tipos_permitidos = tipos_base + ['NOTA DE CRÉDITO']
         else:
             tipos_permitidos = tipos_base

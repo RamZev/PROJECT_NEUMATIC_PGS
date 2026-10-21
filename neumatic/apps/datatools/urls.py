@@ -33,6 +33,8 @@ from .views.actualizar_estados_views import (
 from .views.productos_mercado_libre_views import ExportarProductosCarritoView, ExportarProductosArchivoView
 from apps.datatools.views.recalcular_saldo_pendiente_views import RecalcularSaldoPendienteView
 from .views.consulta_servicios_views import ConsultaServiciosVehiculoView
+from .views.consulta_visitas_views import ConsultaProximasVisitasView
+
 
 
 urlpatterns = [
@@ -77,4 +79,7 @@ urlpatterns = [
  
 	#-- Consulta de Servicios de Vehículo.
 	path('servicios-vehiculo/', ConsultaServiciosVehiculoView.as_view(), name='consulta_servicios_vehiculo'),
+ 
+	#-- Consulta de Próximas Visitas de Vehículo.
+ 	path('proximas-visitas/', ConsultaProximasVisitasView.as_view(), name='consulta_proximas_visitas'),
 ]

@@ -553,8 +553,6 @@ Es para depurar la tabla trabvehi.dbf
 
 En DATALOAD ejecuta el archivo detalle_servicio_vehiculo_migra.py
 
-  
-
 **Al finalizar las migraciones:**
 
 Ejecute la actualización del superusuario (OBLIGATORIO)
