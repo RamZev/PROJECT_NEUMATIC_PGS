@@ -541,7 +541,7 @@
 												<input type="hidden" id="id_nombre_tipo_iva" value="">
 												<input type="hidden" id="id_provincia_cliente" value="">
 												<input type="hidden" id="id_aplica_percepcion" value="false">
-												<input type="hidden" id="id_alicuota_percepcion" value="0.00">
+												<input type="hidden" id="id_alicuota_percepcion" name="alicuota_percepcion" value="0.00">
 												<input type="hidden" id="id_monto_percepcion" value="">
 												<input type="hidden" id="id_minimo_percepcion" value="">
 												<input type="hidden" id="id_tipo_percepcion_id" value="">
@@ -985,12 +985,12 @@
 									<th style="width: 10%;">Marca</th>
 									<th style="width: 10%;">Medida</th>
 									<th style="width: 8%;">CAI</th>
-									<th style="width: 20%;">Nombre</th>
+									<th style="width: 27%;">Nombre</th>
 									<th style="width: 8%;">Precio</th>
-									<th style="width: 8%;">Stock</th>
-									<th style="width: 8%;">Mínimo</th>
+									<th style="width: 5%;">Stock</th>
+									<th style="width: 6%;">Mínimo</th>
 									<th style="width: 8%;">Detalle</th>
-									<th style="width: 8%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
+									<th style="width: 6%;">Selec.</th>  <!-- Cambiar "..." por "Selec." -->
 								</thead>
 								
 								<tbody>
@@ -1522,6 +1522,34 @@
 					totalExento += no_gravado;
 					totalIva += iva;
 				});
+
+				////////////////
+				////////////////
+				// --- Cálculo de percepción de IIBB (Ingresos Brutos) ---
+
+				// Detectar si estamos en modo edición (los campos están deshabilitados)
+				const isEdit = document.getElementById('modo-edicion')?.dataset.isEdit === 'true';
+
+				if (isEdit) {
+					// MODO EDICIÓN: preservar el valor de percepción ya guardado en la BD
+					totalPercepIb = parseNumber(document.getElementById('id_percep_ib').value) || 0;
+				} else {
+					// MODO CREACIÓN: recalcular según alícuota, mínimo y gravado
+					const aplicaPercepcion = document.getElementById('id_aplica_percepcion')?.value === 'true';
+					const alicuotaPercepcion = parseFloat(document.getElementById('id_alicuota_percepcion')?.value || 0);
+					const minimoPercepcion = parseFloat(document.getElementById('id_minimo_percepcion')?.value || 0);
+
+					totalPercepIb = 0;
+					if (aplicaPercepcion && alicuotaPercepcion > 0 && totalGravado >= minimoPercepcion) {
+						totalPercepIb = totalGravado * (alicuotaPercepcion / 100);
+						totalPercepIb = Math.round(totalPercepIb * 100) / 100;
+					}
+				}
+
+				// Añadir la percepción al total general del comprobante
+				totalFactura += totalPercepIb;
+				////////////////				
+				////////////////
 				
 				// 2. Guardar valores numéricos puros
 				document.getElementById('id_gravado').value = totalGravado.toFixed(2);
@@ -1543,13 +1571,14 @@
 					const row = event.target.closest('tr');
 					const cantidad = parseFloat(row.querySelector('[name*="-cantidad"]').value) || 0;
 					const precio = parseFloat(row.querySelector('[name*="-precio"]').value) || 0;
-					const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
+					// const descuento = parseFloat(row.querySelector('[name*="-descuento"]').value) || 0;
 					const totalField = row.querySelector('[name*="-total"]');
 					
 					const alicIva = parseFloat(row.querySelector('[name*="-alic_iva"]').value) || 0;
 					
 					// Recalcular total por fila
-					const total = (cantidad * precio) - descuento;
+					// const total = (cantidad * precio) - descuento;
+					const total = cantidad * precio;
 					totalField.value = total.toFixed(2);
 					
 					// Calcular base imponible (gravado) y IVA
@@ -1598,7 +1627,7 @@
 						precioInput.value = nuevoPrecio.toFixed(2);
 						
 						// 2. Poner el DESCUENTO EN CERO
-						descuentoInput.value = "0";
+						// descuentoInput.value = "0";
 						
 						// 3. Forzar RECÁLCULO de la fila
 						const inputEvent = new Event('input', { bubbles: true });
@@ -1661,7 +1690,8 @@
 				
 				// Calcular total con descuento porcentual
 				const subtotal = cantidad * precio;
-				const totalConDescuento = subtotal * (1 - (descuento/100));
+				const totalConDescuento = subtotal
+				// const totalConDescuento = subtotal * (1 - (descuento/100));
 				
 				// Actualizar campos
 				row.querySelector('[name*="-total"]').value = totalConDescuento.toFixed(2);
@@ -1793,7 +1823,12 @@
 					// ========================================
 
 					// Detectar si el precio debe ser editable (FACTURA o PRESUPUESTO)
-					const esEditable = (tipoComprobante === "FACTURA" || tipoComprobante === "PRESUPUESTO");
+					// const esEditable = (tipoComprobante === "FACTURA" || tipoComprobante === "PRESUPUESTO");
+					const esEditable = (
+						tipoComprobante === "FACTURA" || 
+						tipoComprobante === "PRESUPUESTO" ||
+						tipoComprobante === "NOTA DE CRÉDITO"
+					);
 					const precioEditable = esEditable ? '' : 'readonly';
 					
 					// Cálculos iniciales
@@ -1885,7 +1920,8 @@
 						
 						<td>
 							<input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
-								class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}>
+								class="${formControlClass}" value="${producto.nombre}" ${nombreInputAttributes}
+								title="${producto.nombre}" ${nombreInputAttributes}>
 						</td>
 						<td>
 							<input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
@@ -2162,7 +2198,7 @@
 								<td>${producto.marca}</td>
 								<td>${producto.medida}</td>
 								<td>${producto.cai || 'N/A'}</td>
-								<td>${producto.nombre}</td>
+								<td title="${producto.nombre}">${producto.nombre}</td>
 								<td class="text-end"><strong>${precioFormateado}</strong></td>
 								<td class="text-end">${producto.stock}</td>
 								<td class="text-end">${producto.minimo}</td>
@@ -2676,7 +2712,8 @@
 								<td>
 									<input type="text" name="detallefactura_set-${currentIndex}-producto_venta" 
 										class="form-control form-control-sm border border-primary" 
-										value="${detalle.nombre}" readonly>
+										value="${detalle.nombre}" readonly
+										title="${detalle.nombre}">
 								</td>
 								<td>
 									<input type="number" name="detallefactura_set-${currentIndex}-cantidad" 
@@ -3837,79 +3874,76 @@
 					document.getElementById('id_nombre_tipo_iva').value = data.nombre_iva || '';
 					document.getElementById('id_provincia_cliente').value = data.id_provincia || '';
 
-					// alert(data.id_provincia);
-					// alert(data.nombre_iva);
-					// alert(data.discrimina_iva);
+					// Obtener el tipo de comprobante ya seleccionado
+					const comprobanteId = document.getElementById('id_id_comprobante_venta').value;
+					const tipoComprobanteDict = JSON.parse(document.getElementById('tipocomprobante-data').dataset.tipocomprobante);
+					const tipoComprobante = tipoComprobanteDict[comprobanteId] || '';
+					// alert(tipoComprobante);
 
-					// if (data.discrimina_iva){
-					//	alert(data.id_provincia);
-					//	alert("data.id_provincia");
-					// }
 					/////////////////////////
-					if (data.discrimina_iva) {
-						const provinciaId = data.id_provincia;
+					if (data.discrimina_iva && (tipoComprobante === "FACTURA" || tipoComprobante === "NOTA DE CRÉDITO"))  {
+						const sucursalId = document.getElementById('id_id_sucursal').value; // ← obtener sucursal del formulario
 						const cuit = data.cuit;
 						const fechaComprobante = document.getElementById('id_fecha_comprobante').value;
-						
-						// Si falta provincia o cuit, asignar false y 0.00, y salir del if
-						if (!provinciaId || !cuit) {
+
+						// Si falta sucursalId o cuit, asignar valores por defecto y no continuar (sin return)
+						if (!sucursalId || !cuit) {
 							document.getElementById('id_aplica_percepcion').value = 'false';
 							document.getElementById('id_alicuota_percepcion').value = '0.00';
-							// No mostrar alerts, solo asignar valores por defecto
+							document.getElementById('id_minimo_percepcion').value = '';
+							// No mostrar alert
 						} else {
-							// Construir URL para consultar el padrón
 							const url = new URL('/ventas/consultar-padron/', window.location.origin);
-							url.searchParams.append('provincia_id', provinciaId);
+							url.searchParams.append('sucursal_id', sucursalId);
 							url.searchParams.append('cuit', cuit);
-							url.searchParams.append('id_cliente', data.id_cliente);
 							if (fechaComprobante) {
 								url.searchParams.append('fecha_comprobante', fechaComprobante);
 							}
 
-							// Realizar la consulta (asíncrona, no bloquea)
 							fetch(url)
 								.then(response => {
-									if (!response.ok) {
-										throw new Error('Error en la respuesta del servidor');
-									}
+									if (!response.ok) throw new Error('Error en la respuesta del servidor');
 									return response.json();
 								})
 								.then(padronData => {
 									const aplica = padronData.aplica_percepcion === true;
 									const alicuota = padronData.alicuota_percepcion || 0.00;
+									const minimo = padronData.minimo_percepcion !== undefined && padronData.minimo_percepcion !== null
+												? padronData.minimo_percepcion : '';
 
-									// Actualizar campos ocultos
+									// Actualizar solo los campos que existen en el HTML
 									document.getElementById('id_aplica_percepcion').value = aplica ? 'true' : 'false';
 									document.getElementById('id_alicuota_percepcion').value = alicuota.toFixed(2);
-									document.getElementById('id_monto_percepcion').value = padronData.monto !== null ? padronData.monto : '';
-    								document.getElementById('id_minimo_percepcion').value = padronData.minimo !== null ? padronData.minimo : '';
-									document.getElementById('id_tipo_percepcion_id').value = padronData.id_tipo_percepcion || '';
-    								document.getElementById('id_descripcion_tipo_percepcion').value = padronData.descripcion_tipo_percepcion || '';
+									document.getElementById('id_minimo_percepcion').value = minimo;
+									// Los demás campos (monto, tipo, descripción) los dejamos vacíos o sin cambios
+									// porque ya no se usan.
+									document.getElementById('id_monto_percepcion').value = '';
+									document.getElementById('id_tipo_percepcion_id').value = '';
+									document.getElementById('id_descripcion_tipo_percepcion').value = '';
 
-									// === ALERTS SOLICITADOS ===
-									// Mostrar alert si no aplica por falta de tipo de percepción
-									if (!aplica && padronData.mensaje) {
-										alert(`⚠️ ${padronData.mensaje}`);
+									// Mostrar alert solo si hay mensaje (ej. CUIT no encontrado)
+									if (padronData.mensaje && !aplica) {
+										// alert(`⚠️ ${padronData.mensaje}`);
+									} else if (aplica) {
+										alert(`✅ CUIT encontrado - Alícuota: ${alicuota.toFixed(2)}% - Mínimo: ${minimo}`);
 									}
-
-									if (aplica) {
-										// 1er alert: Padrón conseguido
-										// alert('✅ Padrón conseguido');
-										alert(`✅ Padrón conseguido - Provincia: ${provinciaId}`);
-										// 2do alert: CUIT encontrado con su alícuota
-										alert(`✅ CUIT encontrado - Alícuota: ${alicuota.toFixed(2)}%`);
-									}
-									// Si no aplica, no se muestran alerts (solo se actualizan los campos)
 								})
 								.catch(error => {
-									// En caso de error, asignar false y 0.00 (solo log en consola)
 									console.error('Error al consultar padrón:', error);
 									document.getElementById('id_aplica_percepcion').value = 'false';
 									document.getElementById('id_alicuota_percepcion').value = '0.00';
-									// No mostrar alerts en caso de error
+									document.getElementById('id_minimo_percepcion').value = '';
 								});
 						}
-					}
+					} else {
+						// No aplica percepción: limpiar campos por si tenían valores previos
+						document.getElementById('id_aplica_percepcion').value = 'false';
+						document.getElementById('id_alicuota_percepcion').value = '0.00';
+						document.getElementById('id_minimo_percepcion').value = '';
+						document.getElementById('id_monto_percepcion').value = '';
+						document.getElementById('id_tipo_percepcion_id').value = '';
+						document.getElementById('id_descripcion_tipo_percepcion').value = '';
+					}					
 					/////////////////////////
 					
 					actualizarMensajeIVA();

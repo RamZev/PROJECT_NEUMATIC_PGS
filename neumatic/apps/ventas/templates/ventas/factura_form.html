@@ -2921,42 +2921,71 @@
 			///
 			
 			///
+			// 👇 NUEVO: Función para bloquear la pantalla con un velo oscuro
+			function bloquearPantalla(mensaje) {
+				// Si ya existe el overlay, no hacer nada para evitar duplicados
+				if (document.getElementById('overlay-carga')) return;
+				
+				const overlay = document.createElement('div');
+				overlay.id = 'overlay-carga';
+				overlay.style.position = 'fixed';
+				overlay.style.top = '0';
+				overlay.style.left = '0';
+				overlay.style.width = '100%';
+				overlay.style.height = '100%';
+				overlay.style.backgroundColor = 'rgba(0,0,0,0.7)';
+				overlay.style.zIndex = '9999';
+				overlay.style.display = 'flex';
+				overlay.style.justifyContent = 'center';
+				overlay.style.alignItems = 'center';
+				overlay.style.color = 'white';
+				overlay.style.flexDirection = 'column';
+				
+				overlay.innerHTML = `
+					<div class="spinner-border text-light" style="width: 3rem; height: 3rem;" role="status"></div>
+					<h4 class="mt-3">${mensaje}</h4>
+				`;
+				document.body.appendChild(overlay);
+			}
+
 			const facturaForm = document.getElementById('factura-form');
 			
-			// Captura del submit de todo el formulario
+			// Captura del submit de todo el formulario (Reemplazado con protección)
 			facturaForm.addEventListener('submit', function(e) {
-				 // ===== VALIDACIÓN PRIORITARIA: Verificar si hay detalles =====
-				const filasDetalle = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
 				
+				// ===== 1. VALIDACIONES PREVIAS (Igual que antes) =====
+				const filasDetalle = document.querySelectorAll('.detalle-form tbody tr:not([style*="display: none"])');
 				if (filasDetalle.length === 0) {
-					e.preventDefault(); // Detener el envío del formulario
+					e.preventDefault(); 
 					alert('❌ No se puede guardar el comprobante\n\nDebe agregar al menos un detalle al comprobante antes de guardar.');
-					return false; // Salir del evento inmediatamente
+					return false;
 				}
-				// ===== FIN VALIDACIÓN PRIORITARIA =====
 				
 				const numeroComprobante = document.getElementById('id_numero_comprobante').value.trim();
-				
-				// No se ejecuta porque numeroComprobante tiene required
 				if (!numeroComprobante) {
-					e.preventDefault(); // Detiene el envío del formulario
+					e.preventDefault(); 
 					alert("❌ Error: El número de comprobante no se ha generado.\n\nPor favor complete los datos del comprobante y verifique que se genere el número automáticamente.");
 					return false;
 				}
 				
-				
-				/////////////////////////--->
-				// Evitar envío hasta obtener estados
-				// e.preventDefault();
-				
-				e.preventDefault(); // IMPORTANTE: Prevenir envío inmediato
-				
+				e.preventDefault(); // IMPORTANTE: Prevenir envío inmediato para procesar con JS
+
 				const comprobanteSelect = document.getElementById('id_id_comprobante_venta');
 				const comprobanteId = comprobanteSelect.value;
 				const electronicaDict = JSON.parse(document.getElementById('electronica-data').dataset.electronica);
 				const electronica = electronicaDict[comprobanteId] ?? false;
 				
+				// ===== 2. BLOQUEO DE BOTÓN Y PANTALLA (NUEVO) =====
+				const btnSubmit = facturaForm.querySelector('button[type="submit"]');
+				
 				if (electronica) {
+					// CASO A: Es electrónica. Bloqueamos y consultamos a AFIP primero
+					if (btnSubmit) {
+						btnSubmit.disabled = true;
+						btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...`;
+					}
+					bloquearPantalla('Verificando servidores de ARCA...');
+
 					fetch('/ventas/obtener/estado-servidores/')
 						.then(response => response.json())
 						.then(data => {
@@ -2964,20 +2993,37 @@
 							
 							if (puedenEmitir) {
 								alert(`✅ SISTEMAS AFIP OPERATIVOS\nApp: OK | DB: OK | Auth: OK\n\nEMITIENDO DOCUMENTO...`);
-								facturaForm.submit();
+								facturaForm.submit(); // Envía el formulario al backend
 							} else {
 								alert(`❌ ERROR SISTEMAS AFIP\nApp: ${data.AppServer} | DB: ${data.DbServer} | Auth: ${data.AuthServer}\n\nNO SE PUEDE EMITIR`);
+								// Liberamos los bloqueos si falla AFIP
+								document.getElementById('overlay-carga')?.remove();
+								if (btnSubmit) {
+									btnSubmit.disabled = false;
+									btnSubmit.innerHTML = `Guardar <i class="bi bi-floppy"></i>`;
+								}
 							}
 						})
 						.catch(error => {
 							alert('❌ ERROR: No se pudo conectar con AFIP');
+							// Liberamos los bloqueos si hay error de red
+							document.getElementById('overlay-carga')?.remove();
+							if (btnSubmit) {
+								btnSubmit.disabled = false;
+								btnSubmit.innerHTML = `Guardar <i class="bi bi-floppy"></i>`;
+							}
 						});
 				} else {
-					// No es electrónico, enviar directamente
-					facturaForm.submit();
+					// CASO B: No es electrónica. Bloqueamos y enviamos directo al backend
+					if (btnSubmit) {
+						btnSubmit.disabled = true;
+						btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Procesando...`;
+					}
+					bloquearPantalla('Guardando comprobante...');
+					
+					facturaForm.submit(); // Envía el formulario al backend
 				}
-				/////////////////////////--->
-			});
+			});	
 			///
 			
 		});

@@ -35,6 +35,8 @@ from apps.datatools.views.recalcular_saldo_pendiente_views import RecalcularSald
 from .views.consulta_servicios_views import ConsultaServiciosVehiculoView
 from .views.consulta_visitas_views import ConsultaProximasVisitasView
 
+from .views.padron_entrerios_views import PadronEntreRiosUploadView, PadronEntreRiosProgressView
+from .views.padron_santafe_views import PadronSantaFeUploadView, PadronSantaFeProgressView
 
 
 urlpatterns = [
@@ -82,4 +84,12 @@ urlpatterns = [
  
 	#-- Consulta de Próximas Visitas de Vehículo.
  	path('proximas-visitas/', ConsultaProximasVisitasView.as_view(), name='consulta_proximas_visitas'),
+  
+	# Padrón Entre Ríos
+    path('padron/entrerios/', PadronEntreRiosUploadView.as_view(), name='padron_entrerios_upload'),
+    path('padron/entrerios/progreso/', PadronEntreRiosProgressView.as_view(), name='padron_entrerios_progreso'),
+    
+    # Padrón Santa Fe
+    path('padron/santafe/', PadronSantaFeUploadView.as_view(), name='padron_santafe_upload'),
+    path('padron/santafe/progreso/', PadronSantaFeProgressView.as_view(), name='padron_santafe_progreso'),
 ]
